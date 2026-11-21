@@ -22,7 +22,7 @@ function render(start, end, expression, inputs, state) {
   const context = {
     ...Object.fromEntries(names.split(' ').map(name => [name, name])),
     i: { jsx, jsxs: jsx, Fragment: 'fragment' },
-    p: { useState: () => [state, () => {}], useEffect() {}, useMemo: fn => fn() },
+    p: { useState: () => [state, () => {}], useEffect() {}, useMemo: fn => fn(), useRef: () => ({current:null}) },
     ...inputs,
   };
   const begin = source.indexOf(start);

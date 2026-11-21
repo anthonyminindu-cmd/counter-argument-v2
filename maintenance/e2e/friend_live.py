@@ -128,6 +128,7 @@ def check_rankings_and_poster(pages, expected_titles):
         side = "desktop" if index == 0 else "mobile"
         expect(page.get_by_role("heading", name="Final AI rankings", exact=True)).to_be_visible(timeout=720000)
         expect(page.get_by_role("heading", name="Final AI rankings", exact=True)).to_have_count(1)
+        expect(page.get_by_role("heading", name="Final AI rankings", exact=True)).to_be_in_viewport()
         expect(page.get_by_text("20 of 20 points submitted", exact=True)).to_be_visible()
         expect(page.locator(".dk-active-header")).not_to_contain_text("50% Complete")
         capture(page, "11-" + side + "-rankings")
@@ -184,6 +185,7 @@ def check_positions_and_arguments(sender, receiver, room, topic):
             raise
     receiver.evaluate("window.scrollTo(0, 0)")
     expect(receiver.get_by_role("link", name="Debate with a friend", exact=True)).to_be_in_viewport()
+    expect(argument(receiver, 1).get_by_role("heading", name="Point 1 of 10", exact=True)).to_be_in_viewport()
     assert receiver.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
     expect(receiver.locator(".dk-friend-points form")).to_have_count(1)
     capture(receiver, "09-mobile-writing-points")
@@ -335,7 +337,6 @@ if __name__ == "__main__":
         assert room==session(receiver)
         check("Offline invitation appeared on login and both browsers joined the same session")
         check_friend_topic_recovery(receiver, APP, room, capture)
-        check("A missing debate link offered a way back and Retry restored the same shared room after a connection error")
         capture(sender, "04-desktop-pick-topic")
         chat_field = re.compile(r"^(Type|Write) a message", re.I)
         suggest = re.compile(r"^(Propose|Suggest topic)$", re.I)

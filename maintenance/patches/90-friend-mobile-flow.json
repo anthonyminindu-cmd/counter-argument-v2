@@ -1,0 +1,22 @@
+[
+  {
+    "id": "let-the-friend-writing-form-start-higher",
+    "find": "h===\"arguments\"&&!(Mo&&((Rg=Ws.record)!=null&&Rg.snapshot))&&i.jsxs(\"div\",{className:\"space-y-6\",children:[i.jsx(ce,",
+    "replace": "h===\"arguments\"&&!(Mo&&((Rg=Ws.record)!=null&&Rg.snapshot))&&i.jsxs(\"div\",{className:\"space-y-6\",children:[!se&&i.jsx(ce,"
+  },
+  {
+    "id": "land-at-the-friend-rankings-heading",
+    "find": "sources:[.../^https?:\\/\\//.test(S.sourceUrl)?[{title:\"Submitted source\",url:S.sourceUrl}]:[],...S.sources]}});return i.jsxs(\"section\",{className:\"space-y-5 py-5 text-foreground\",\"aria-label\":\"Automatic AI results\"",
+    "replace": "sources:[.../^https?:\\/\\//.test(S.sourceUrl)?[{title:\"Submitted source\",url:S.sourceUrl}]:[],...S.sources]}});const resultsHeading=p.useRef(null);p.useEffect(()=>{if(g.rows.length&&resultsHeading.current&&!document.querySelector(\"dialog[open]\")){resultsHeading.current.focus({preventScroll:true});resultsHeading.current.scrollIntoView({block:\"start\"});}},[g.rows.length]);return i.jsxs(\"section\",{className:\"space-y-5 py-5 text-foreground\",\"aria-label\":\"Automatic AI results\""
+  },
+  {
+    "id": "make-the-results-heading-focusable",
+    "find": "i.jsx(\"h2\",{className:\"text-2xl font-bold\",children:g.rows.length?\"Final AI rankings\"",
+    "replace": "i.jsx(\"h2\",{className:\"text-2xl font-bold\",ref:resultsHeading,tabIndex:-1,children:g.rows.length?\"Final AI rankings\""
+  },
+  {
+    "id": "use-clear-ranking-evidence-language",
+    "find": "Scores reflect the saved research rubric. Evidence assessments are AI judgments, not independent factual verification.",
+    "replace": "AI ranked the points using the sources it found. Check those sources before relying on the scores."
+  }
+]

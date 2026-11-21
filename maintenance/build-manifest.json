@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "e5093b0b24c06efdeef1a13c09d834f9922bda74836d6274955bc9e9fdbb6d51",
-  "generatedAsset": "assets/index-v2-e5093b0b24c06efd.js",
+  "generatedSha256": "b332737023fa4c01ca3204fe52fb83fd1a05b77c12d14ade8ed2b681cbfa4d8e",
+  "generatedAsset": "assets/index-v2-b332737023fa4c01.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -204,6 +204,10 @@
     "remove-misleading-friend-completion-percentage",
     "show-both-friends-point-counts",
     "use-the-same-friend-results-state",
-    "report-the-saved-results-count"
+    "report-the-saved-results-count",
+    "let-the-friend-writing-form-start-higher",
+    "land-at-the-friend-rankings-heading",
+    "make-the-results-heading-focusable",
+    "use-clear-ranking-evidence-language"
   ]
 }
