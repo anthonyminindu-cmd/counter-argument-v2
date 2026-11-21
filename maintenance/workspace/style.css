@@ -118,7 +118,7 @@ html{scroll-padding-top:155px}
 .dk-welcome .dk-welcome-tagline { margin:0 0 9px; color:#bce9c7; font-size:.91rem; font-weight:650; letter-spacing:.035em; }
 .dk-welcome h1 { color:#fffaf0; font-family:"Baskervville",Georgia,"Times New Roman",serif; font-size:clamp(3.15rem,5.5vw,5rem); font-weight:400; line-height:1.02; letter-spacing:-.052em; }
 .dk-welcome h1 em { font-weight:inherit; }
-.dk-welcome .dk-welcome-question { margin:14px 0 0; color:#fffaf0; font-size:clamp(1rem,1.35vw,1.2rem); font-weight:600; text-wrap:balance; }
+.dk-welcome .dk-welcome-purpose { margin:14px 0 0; color:#fffaf0; font-size:clamp(1rem,1.35vw,1.2rem); font-weight:600; text-wrap:balance; }
 .dk-welcome .dk-welcome-mission { max-width:46ch; margin:12px 0 0; color:#e7e9e2; font-size:clamp(.98rem,1.3vw,1.14rem); line-height:1.45; text-wrap:pretty; }
 /* The public questions read as one list. Personal activity has its own surface. */
 .dk-home .dk-feed,.dk-home .dk-personal {
