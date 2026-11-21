@@ -138,8 +138,8 @@ function pa(e,t){const n=[[465,102,670,652],[20,163,492,548],[1088,163,492,548],
   return {
     height,
     questionMoved,
-    title: text(heading, 32, 44, 42, 700, {left:16,right:1584,top:4,bottom:lastHeading+10}, 'start', '#10283c', 46),
-    question: detail.length ? text(detail, 34, detailStart, 19, 400, {left:16,right:1584,top:lastHeading+12,bottom:height-2}, 'start', '#10283c', 22) : '',
+    title: text(heading, 32, 44, 42, 700, {left:16,right:1584,top:0,bottom:lastHeading+10}, 'start', '#10283c', 46),
+    question: detail.length ? text(detail, 34, detailStart, 19, 400, {left:16,right:1584,top:lastHeading+10,bottom:height-2}, 'start', '#10283c', 22) : '',
     captions: captions.map((caption, index) => {
       const content = lines((index ? 'B' : 'A') + ' · ' + caption, 23, 690, 2, 'side caption');
       const width = Math.min(755, Math.max(...content.map(line => measure(line) * 23 / 24)) + 54);

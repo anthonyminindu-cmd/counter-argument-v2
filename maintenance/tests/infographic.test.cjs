@@ -296,3 +296,15 @@ test('a correctly qualified day or a separate reference to the action on that da
     assert.equal(Array.from(piece.lines).join(' '),statement);
   }
 });
+
+test('the title and question have separate boxes that fit measured Firefox and WebKit font extents',()=>{
+  const output=header('A Fair Debate','Should schools start later?',plan.sideTitles,measure);
+  const bounds=tag=>Object.fromEntries([...tag.matchAll(/data-(top|bottom)="([0-9.]+)"/g)].map(match=>[match[1],Number(match[2])]));
+  const title=bounds(output.title), question=bounds(output.question);
+  assert.ok(title.top>=0 && title.bottom<=question.top);
+  assert.ok(question.bottom<=output.height);
+  assert.ok(1.895>=title.top && 1.895+51.462<=title.bottom);
+  for(const [top,height] of [[55,23.75],[55.281,23.406]]) {
+    assert.ok(top>=question.top && top+height<=question.bottom);
+  }
+});

@@ -1,0 +1,12 @@
+[
+  {
+    "id": "validate-title-against-available-header-space",
+    "find": "top:4,bottom:lastHeading+10",
+    "replace": "top:0,bottom:lastHeading+10"
+  },
+  {
+    "id": "share-the-header-boundary-between-title-and-question",
+    "find": "top:lastHeading+12,bottom:height-2",
+    "replace": "top:lastHeading+10,bottom:height-2"
+  }
+]
