@@ -7,6 +7,7 @@ const friend = '/debate/start?mode=friend';
 const ai = '/debate/topic?mode=ai';
 const personalTabs = ['Table','Pinned','Posters','People','Account'];
 const novemberPath = '/counter-argument-v2/demo/november-2026/';
+const examplePoster = id => novemberPath+id+'.svg?v=2';
 const trending = feed+'&sort=trending';
 const exampleRoute = id => feed+'&example='+encodeURIComponent(id);
 
@@ -184,7 +185,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function ExampleCard({entry}) {
     return h('article',{className:'dk-card dk-example-card'},
       h(Link,{to:exampleRoute(entry.id),className:'dk-example-link'},
-        h('img',{src:novemberPath+entry.id+'.svg',alt:'',width:1600,height:900,loading:'lazy'}),
+        h('img',{src:examplePoster(entry.id),alt:'',width:1600,height:900,loading:'lazy'}),
         h('div',{className:'dk-example-card-text'},h('small',null,'Example debate · '+entry.category),h('h3',null,entry.question),
           h('span',{className:'dk-link'},'See both sides ',icon('enter')))));
   }
@@ -198,7 +199,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const {user}=useAuth();
     const pointsHeading=useRef(null);
     const [exporting,setExporting]=useState(false),[exportError,setExportError]=useState('');
-    const poster=novemberPath+entry.id+'.svg';
+    const poster=examplePoster(entry.id);
     const friendTopic=friend+'&suggested='+encodeURIComponent(entry.question);
     function readPoints() {
       const heading=pointsHeading.current;
