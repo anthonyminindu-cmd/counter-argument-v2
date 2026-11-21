@@ -91,11 +91,10 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const inFeed=onHome&&new URLSearchParams(loc.search).get('view')==='feed';
     const active=loc.pathname.startsWith('/profile')?'Profile':inFeed?'Feed':onHome?'Home':'';
     const destinations=[[home,'Home','home'],[feed,'Feed','feed'],[user?profile:login(profile),'Profile','person']];
-    const actions=[
-      [user?friend:login(friend),'Find a friend','friends'],
-      [feed,'Pick a topic','trend'],
-      [user?ai:login(ai),'Debate with AI','ai']
-    ];
+    function action(to,label,glyph) {
+      return h(Link,{to,className:'dk-choice dk-'+glyph,onClick:scrollToStart},
+        h('span',{className:'dk-symbol'},icon(glyph)),h('span',null,label));
+    }
     function scrollToStart(event) {
       if(event.button===0&&!event.metaKey&&!event.ctrlKey&&!event.shiftKey&&!event.altKey)window.scrollTo(0,0);
     }
@@ -111,8 +110,14 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
           h(Link,{key:'settings',to:'/settings',className:'dk-small','aria-label':'Settings'},icon('settings')),
           h('button',{key:'out',className:'dk-small',onClick:async()=>{try{await signOut();navigate('/')}catch{setError('Sign-out failed. Try again.')}}},'Sign out')
         ]:link(login(home),'Sign in','dk-small'))),
-      h('nav',{'aria-label':'Start an exploration',className:'dk-launch'},...actions.map(([to,label,g])=>
-        h(Link,{key:g,to,className:'dk-choice dk-'+g,onClick:scrollToStart},h('span',{className:'dk-symbol'},icon(g)),h('span',null,label)))),
+      h('nav',{'aria-label':'Start and discover',className:'dk-launch'},
+        h('div',{role:'group','aria-labelledby':'dk-start-label',className:'dk-launch-group dk-start-group'},
+          h('span',{id:'dk-start-label',className:'dk-launch-label'},'Start a debate'),
+          action(user?friend:login(friend),'Debate with a friend','friends'),
+          action(user?ai:login(ai),'Debate with AI','ai')),
+        h('div',{role:'group','aria-labelledby':'dk-discover-label',className:'dk-launch-group dk-discover-group'},
+          h('span',{id:'dk-discover-label',className:'dk-launch-label'},'Discover'),
+          action(feed+'&sort=trending','Trending topics','trend'))),
       error&&status(error,true));
   }
   function useActivity(id) {
@@ -155,9 +160,9 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const imageRoot='/counter-argument-v2/assets/welcome-table-';
     return h('section',{className:'dk-welcome','aria-labelledby':'dk-welcome-title'},
       h('div',{className:'dk-welcome-copy'},
-        h('p',{className:'dk-welcome-tagline'},'Two views. One table.'),
+        h('p',{className:'dk-welcome-tagline'},'Welcome to Differ Kindly'),
         h('h1',{id:'dk-welcome-title'},'Pull up a ',h('em',null,'chair.')),
-        h('p',{className:'dk-welcome-mission'},'Bring a question you care about. Explore it with someone who sees it differently.')),
+        h('p',{className:'dk-welcome-mission'},'Two views. One table. Explore a question with someone who sees it differently.')),
       h('img',{className:'dk-welcome-photo',src:imageRoot+'wide.webp',
         srcSet:imageRoot+'small.webp 640w, '+imageRoot+'wide.webp 1280w',
         sizes:'(max-width: 600px) 100vw, (max-width: 1300px) 53vw, 650px',
@@ -188,7 +193,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const urlFor=key=>feed+(key==='trending'?'':'&sort='+key);
     if(chosen)return h('section',{className:'dk-feed'},link(feed,'Back to feed'),query.loading&&!query.data?status('Loading discussion…'):query.error?status('Could not load this discussion.',true):rows[0]?h(Thread,{key:rows[0].id,thread:rows[0],refresh:query.refresh}):status('This discussion is unavailable.'));
     return h('section',{className:'dk-feed','aria-label':'Community feed'},
-      h('div',{className:'dk-sectionline'},h(landing?'h2':'h1',null,'Community feed'),user?h('button',{className:'dk-secondary',onClick:()=>setCompose(!compose),'aria-expanded':compose},'Post a question'):link(login(feed),'Sign in to post','dk-small')),
+      h('div',{className:'dk-sectionline'},h(landing?'h2':'h1',null,landing&&icon('message'),'Community feed'),user?h('button',{className:'dk-secondary',onClick:()=>setCompose(!compose),'aria-expanded':compose},'Post a question'):link(login(feed),'Sign in to post','dk-small')),
       compose&&h('form',{onSubmit:publish,className:'dk-form dk-panel'},h('label',null,'Ask the community',h('textarea',{required:true,minLength:5,maxLength:320,value:question,onChange:e=>setQuestion(e.target.value),placeholder:'What would you like another perspective on?'})),h('small',null,'Your question and its replies will be public.'),h('button',{className:'dk-primary',disabled:busy||question.trim().length<5},busy?'Publishing…':'Publish question'),err&&status(err,true)),
       h('nav',{className:'dk-filters','aria-label':'Feed order'},...[[urlFor('trending'),'Trending','trending'],[urlFor('latest'),'Latest','latest'],...(user?[[urlFor('people'),'Your people','people']]:[])].map(([to,label,key])=>h(Link,{key,to,'aria-current':key===order?'page':undefined},label))),
       query.error?h('div',{className:'dk-panel'},status('The feed could not be loaded.',true),h('button',{className:'dk-secondary',onClick:query.refresh},'Try again')):query.loading&&!query.data?status('Loading discussions…'):

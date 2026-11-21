@@ -48,7 +48,7 @@ def login(page, member):
 
 
 def send(page, member):
-    page.get_by_role("link", name="Find a friend", exact=True).click()
+    page.get_by_role("link", name="Debate with a friend", exact=True).click()
     page.get_by_label("Search for users").fill(member["name"])
     expect(page.get_by_text(member["name"], exact=True).first).to_be_visible()
     page.get_by_role("button", name="Invite", exact=True).click()

@@ -12,14 +12,26 @@ test('all three exploration actions live in the global header across feed and ac
     for (const url of ['/','/home?view=feed&sort=latest','/home?view=feed&sort=people','/home?view=feed&question=abc','/profile','/debate/topic?mode=ai']) {
       const workspace = createWorkspace({React, Link:'link', useAuth:()=>({user}), useLocation:()=>new URL(url,'https://example.test'), useNavigate:()=>()=>{}});
       const header = workspace.Nav();
-      const nav = header.children.find(child => child?.props?.['aria-label']==='Start an exploration');
-      assert.ok(nav, url);
-      const actions = nav.children.map(child => {
-        const to = child.props.to;
-        if(!user && child.children[1].children[0]!=='Pick a topic') assert.match(to,/^\/login\?next=/);
-        return [child.children[1].children[0],to.startsWith('/login?')?afterLogin(to.slice(to.indexOf('?'))):to];
-      });
-      assert.deepEqual(actions,[['Find a friend','/debate/start?mode=friend'],['Pick a topic','/home?view=feed'],['Debate with AI','/debate/topic?mode=ai']]);
+      const nav = header.children.find(child=>child?.props?.['aria-label']==='Start and discover');
+      assert.ok(nav,url);
+      const [debate,discover]=nav.children;
+      assert.deepEqual([debate,discover].map(group=>{
+        const label=group.children[0];
+        assert.equal(group.props['aria-labelledby'],label.props.id);
+        return label.children[0];
+      }),['Start a debate','Discover']);
+      const [withFriend,withAI]=debate.children.slice(1);
+      const [trending]=discover.children.slice(1);
+      assert.equal(debate.children.length,3);
+      assert.equal(discover.children.length,2);
+      assert.deepEqual([withFriend,withAI,trending].map(link=>link.children[1].children[0]),
+        ['Debate with a friend','Debate with AI','Trending topics']);
+      for(const [link,mode] of [[withFriend,'/debate/start?mode=friend'],[withAI,'/debate/topic?mode=ai']]){
+        const to=link.props.to;
+        if(!user)assert.match(to,/^\/login\?next=/);
+        assert.equal(user?to:afterLogin(to.slice(to.indexOf('?'))),mode);
+      }
+      assert.equal(trending.props.to,'/home?view=feed&sort=trending');
     }
   }
 });
@@ -39,6 +51,7 @@ test('a fresh landing shows the welcome before the feed and keeps focused destin
     assert.equal(grid.children[1].props.compact,true);
     if(welcome){
       const [copy,photo]=welcome.type().children;
+      assert.equal(copy.children[0].children[0],'Welcome to Differ Kindly');
       assert.equal(copy.children[1].type,'h1');
       assert.equal(photo.type,'img');
       assert.ok(photo.props.srcSet.includes('640w') && photo.props.srcSet.includes('1280w'));

@@ -173,8 +173,8 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
   function FriendSetup(){
     const inbox=useContext(Inbox),navigate=useNavigate();
     const waiting=inbox.rows.find(row=>row.id===inbox.waitId);
-    if(!inbox.owner)return h('main',{className:'dk-main'},h(Link,{to:'/login?next='+encodeURIComponent(searchRoute),className:'dk-primary'},'Sign in to find a friend'));
-    return h('main',{className:'dk-main dk-friend'},h('h1',null,inbox.waitId?'Invitation sent':'Find a friend'),
+    if(!inbox.owner)return h('main',{className:'dk-main'},h(Link,{to:'/login?next='+encodeURIComponent(searchRoute),className:'dk-primary'},'Sign in to debate with a friend'));
+    return h('main',{className:'dk-main dk-friend'},h('h1',null,inbox.waitId?'Invitation sent':'Debate with a friend'),
       inbox.waitId?h('section',{className:'dk-panel','aria-live':'polite'},h('h2',null,waiting?
         ({pending:'Waiting for '+waiting.person,accepted:waiting.person+' accepted',declined:waiting.person+' declined',expired:'Invitation expired'}[inviteStatus(waiting)]||'Invitation updated'):
         inbox.loaded?'Checking this invitation':'Loading invitation…'),
