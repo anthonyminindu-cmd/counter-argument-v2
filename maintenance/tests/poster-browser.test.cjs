@@ -44,6 +44,12 @@ test('Chromium verifies both poster subjects, full-size viewing and native PNG a
             main.innerHTML=poster.svg;
             const svg=main.querySelector('svg');
             if(!x_(svg)) throw Error(drawing+' text exceeds its measured bounds');
+            const markers=svg.querySelectorAll('[data-rank-marker]');
+            if(markers.length!==20 || svg.querySelectorAll('[data-rank-marker] rect').length!==7) throw Error('Rank markers missing');
+            for(const marker of markers){
+              const label=marker.parentNode.querySelector('[data-label]'),box=marker.getBBox(),type=label.getBBox();
+              if(box.y+box.height>type.y+1 || box.x<Number(label.dataset.left)-1 || box.x+box.width>Number(label.dataset.right)+1) throw Error('Rank marker overlaps its headline or a cell boundary');
+            }
             paths.push(poster.pieces.map(p=>p.d).join(''));
             await z5(svg);
             const image=await createImageBitmap(png);

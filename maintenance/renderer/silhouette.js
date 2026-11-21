@@ -20,6 +20,20 @@ function posterDrawing(subject) {
   return subject;
 }
 
+// Older stored profiles predate generated outlines. Give them a centered
+// subject so a saved poster uses the same rank geometry as a new debate.
+function presetPosterSubject(profile) {
+  const drawings={
+    campus:['Graduation cap',1.7,[[0,34],[50,0],[100,34],[89,42],[89,76],[83,82],[83,46],[74,53],[74,77],[50,96],[24,78],[24,52]],[[[24,52],[50,68],[74,53]]]],
+    library:['Open book',1.55,[[0,8],[20,4],[36,7],[50,15],[64,7],[80,4],[100,8],[100,90],[80,87],[65,90],[50,98],[35,90],[20,87],[0,90]],[[[50,15],[50,98]]]],
+    civic:['Civic hall',1.65,[[0,30],[50,0],[100,30],[96,38],[90,38],[90,84],[97,84],[100,98],[0,98],[3,84],[10,84],[10,38],[4,38]],[[[10,38],[90,38]],[[10,84],[90,84]]]],
+    space:['Rocket',.68,[[50,0],[66,16],[73,33],[73,56],[92,80],[94,94],[65,84],[60,98],[40,98],[35,84],[6,94],[8,80],[27,56],[27,33],[34,16]],[[[27,56],[73,56]],[[35,84],[65,84]]]]
+  };
+  const [name,aspectRatio,outline,details]=drawings[profile];
+  const points=list=>list.map(([x,y])=>({x,y}));
+  return {name,aspectRatio,outline:points(outline),details:details.map(points)};
+}
+
 function projectSubject(subject, center, top, maxWidth, maxHeight) {
   const xs = subject.outline.map(p => p.x), ys = subject.outline.map(p => p.y);
   const x0 = Math.min(...xs), y0 = Math.min(...ys);
@@ -30,197 +44,163 @@ function projectSubject(subject, center, top, maxWidth, maxHeight) {
   return {outline:subject.outline.map(point), details:subject.details.map(line => line.map(point))};
 }
 
-// Intersections of a scan line with a closed polygon, paired from left to right.
-function silhouetteCrossings(poly, y) {
-  const xs = [];
-  for (let i=0; i<poly.length; i++) {
-    const [x1,y1] = poly[i], [x2,y2] = poly[(i+1)%poly.length];
-    if ((y1 > y) !== (y2 > y)) xs.push(x1 + (x2-x1)*(y-y1)/(y2-y1));
+// Allocate each rank tier across the midpoint before considering participant
+// ownership. Even a single participant can occupy all seven central pieces.
+function rankHalves(ranked) {
+  const bands=[ranked.slice(0,7),ranked.slice(7,13),ranked.slice(13)];
+  const total=ranked.reduce((sum,item)=>sum+rankAreaWeight(item.rank),0);
+  const startsLeft=ranked[0].side==='left';
+  // With a fixed 50/50 divider, both halves must account for the same total
+  // area. Enumerate the small number of allocations within each tier, keeping
+  // as many pieces on their participant's side as the centered layout allows.
+  function choices(band, quota) {
+    const results=[];
+    for(let mask=0;mask<2**band.length;mask++){
+      const left=band.filter((_,i)=>mask & (1<<i));
+      if(left.length!==quota) continue;
+      let wrong=0,alternating=0,weight=0;
+      band.forEach((item,i)=>{
+        const onLeft=Boolean(mask & (1<<i));
+        if(onLeft) weight+=rankAreaWeight(item.rank);
+        if(onLeft!==(item.side==='left')) wrong++;
+        if(onLeft!==(item.rank%2===1?startsLeft:!startsLeft)) alternating++;
+      });
+      results.push({left,weight,preference:100*wrong+3*alternating});
+    }
+    return results;
   }
-  return xs.sort((a,b) => a-b);
-}
-
-function clippedCell(poly, a, b, c) {
-  const out = [];
-  for (let i=0; i<poly.length; i++) {
-    const p = poly[i], q = poly[(i+1)%poly.length];
-    const dp = a*p[0]+b*p[1]-c, dq = a*q[0]+b*q[1]-c;
-    if (dp <= 0) out.push(p);
-    if ((dp < 0 && dq > 0) || (dp > 0 && dq < 0)) {
-      const t = dp/(dp-dq);
-      out.push([p[0]+t*(q[0]-p[0]), p[1]+t*(q[1]-p[1])]);
+  let selected,best=Infinity;
+  for(const quotas of [[4,2,4],[3,4,3]]){
+    const [cores,middles,outers]=bands.map((band,i)=>choices(band,quotas[i]));
+    for(const c of cores) for(const m of middles) for(const o of outers){
+      const difference=Math.abs(total-2*(c.weight+m.weight+o.weight));
+      const cost=1000*Math.max(0,difference-4)+difference+c.preference+m.preference+o.preference;
+      if(cost<best){best=cost;selected=[c,m,o];}
     }
   }
-  return out;
+  return [selected.map(p=>p.left),bands.map((band,i)=>band.filter(item=>!selected[i].left.includes(item)))];
 }
 
-function silhouetteArea(poly) {
-  return Math.abs(poly.reduce((sum, p, i) => {
-    const q = poly[(i+1)%poly.length];
-    return sum + p[0]*q[1]-p[1]*q[0];
-  },0))/2;
+function rankAreaWeight(rank) {
+  if (rank<=7) return 195-6*(rank-1);
+  if (rank<=13) return 126-4*(rank-8);
+  return 83-3*(rank-14);
 }
 
-function rankedWeight(rank) {
-  return rank <= 7 ? 1.52-.012*(rank-1) : rank <= 13 ? 1.02-.009*(rank-8) : .73-.006*(rank-14);
+// Put the strongest claim in the vertical middle of its column. Alternate
+// above and below it, with the secondary end pieces outside the top seven.
+function fromMiddle(items, reversed) {
+  const slots=Array.from({length:items.length},(_,i)=>i);
+  slots.sort((a,b)=>Math.abs(2*a-items.length+1)-Math.abs(2*b-items.length+1) || (reversed?b-a:a-b));
+  const result=[];
+  slots.forEach((slot,i)=>{result[slot]=items[i];});
+  return result;
 }
 
-// A weighted Voronoi diagram makes one connected polygon per argument. Moving
-// a site's boundary offset changes its area without moving its subject anchor.
-function weightedSilhouetteCells(sites, box) {
-  const {left,right,top,bottom} = box;
-  const region = [[left,top],[right,top],[right,bottom],[left,bottom]];
-  const total = sites.reduce((sum,s) => sum+rankedWeight(s.item.rank),0);
-  const target = sites.map(s => (right-left)*(bottom-top)*rankedWeight(s.item.rank)/total);
-  const offsets = sites.map(() => 0);
-  const verticalScale = 1.65;
-  const norm = sites.map(s => s.x*s.x+verticalScale*s.y*s.y);
-  const boundaries = sites.map((s,i) => sites.map((q,j) =>
-    [2*(q.x-s.x),2*verticalScale*(q.y-s.y),norm[j]-norm[i]]));
-  for (let iteration=0; iteration<460; iteration++) {
-    const polygons = sites.map((_,i) => {
-      let poly = region;
-      for (let j=0; j<sites.length && poly.length; j++) {
-        if (j===i) continue;
-        const [a,b,c] = boundaries[i][j];
-        poly = clippedCell(poly,a,b,c+offsets[i]-offsets[j]);
-      }
-      return poly;
-    });
-    const errors = polygons.map((p,i) => target[i]-silhouetteArea(p));
-    if (errors.every((e,i) => Math.abs(e) < target[i]*.003)) return polygons;
-    errors.forEach((error,i) => { offsets[i] += .19*error; });
+function rankedHalfCells(bands, sign, top, bottom, aspect) {
+  const [core,middle,outer]=bands, seam=800, span=788, height=bottom-top;
+  const inner=[middle[0],...fromMiddle(core,sign>0),middle[1]];
+  const edge=fromMiddle([...middle.slice(2),...outer],sign<0);
+  const weight=items=>items.reduce((sum,item)=>sum+rankAreaWeight(item.rank),0);
+  const innerWeight=weight(inner),outerWeight=weight(edge);
+  const mean=span*innerWeight/(innerWeight+outerWeight);
+  // A shallow slant follows the proportions of the subject. The integral
+  // preserves the target areas on both sides of the shared boundary.
+  const tilt=Math.max(-25,Math.min(25,12*(aspect-.9)))+9;
+  const divider=t=>seam+sign*(mean+tilt*(2*t-1));
+  function column(items,isInner) {
+    const avg=isInner?mean:span-mean, slope=isInner?tilt:-tilt, total=weight(items);
+    let sum=0;
+    return [0,...items.map(item=>{
+      sum+=rankAreaWeight(item.rank);
+      const area=avg*sum/total;
+      return Math.min(1,2*area/(avg-slope+Math.sqrt((avg-slope)**2+4*slope*area)));
+    })];
   }
-  return null;
-}
-
-function silhouetteSites(items, side, bounds, main, variant) {
-  const {left,right,top,bottom,seam} = bounds;
-  const width = right-left, height = bottom-top, dir = side==='left' ? -1 : 1;
-  const sites = [];
-  // Stagger the rows. The inner anchors follow the actual contour at each height.
-  const pattern = [[3,2,3,2],[2,3,2,3],[2,2,2,2,2],[2,2,2,2,2]][variant];
-  pattern.forEach((count,row) => {
-    const py = top+height*((row+.5)/pattern.length);
-    const intersections = silhouetteCrossings(main.outline,py);
-    const limit = side==='left' ? intersections[0] : intersections.at(-1);
-    const depth = Number.isFinite(limit) ? Math.max(0,dir*(limit-seam)) : 0;
-    const inner = Math.max(width*.12,Math.min(width*.32,depth*.48));
-    const outer = Math.min(width*.86,Math.max(width*.70,depth+(width-depth)*.64));
-    for (let col=0; col<count; col++) {
-      const dist = inner+(outer-inner)*col/(count-1);
-      const y = py + ((row+col)%2 ? 1 : -1)*height*(variant===3 ? .009 : .034);
-      // Positive depth means the anchor is inside the subject.
-      sites.push({x:seam+dir*dist,y,priority:(depth-dist)/width - .65*Math.abs((y-top)/height-.48) - .65*dist/width});
+  const innerCuts=column(inner,true),outerCuts=column(edge,false);
+  const cuts=[...new Set([...innerCuts,...outerCuts])].sort((a,b)=>a-b);
+  function piece(item,a,b,isInner) {
+    const fixed=isInner?seam:seam+sign*span;
+    const y=t=>top+height*t;
+    const stops=[a,...cuts.filter(t=>t>a+.00001 && t<b-.00001),b];
+    const points=[[fixed,y(a)],...stops.map(t=>[divider(t),y(t)]),[fixed,y(b)]];
+    let d='M'+points[0].map(Yn).join(' ');
+    for(let i=0;i<points.length;i++) {
+      const p=points[i],q=points[(i+1)%points.length];
+      if(Math.hypot(p[0]-q[0],p[1]-q[1])<.01) continue;
+      const border=i===points.length-1 || (i===0 && a===0) || (i===points.length-2 && b>.99999);
+      // Give coincident edges complementary tabs, including T-junctions.
+      const forward=Math.abs(p[1]-q[1])>.01?p[1]<q[1]:p[0]<q[0];
+      d+=Ua(p,q,!border,forward?1:-1);
     }
-  });
-  sites.sort((a,b) => b.priority-a.priority);
-  return sites.map((s,i) => ({...s,item:items[i]}));
+    const far=Math.min(Math.abs(divider(a)-fixed),Math.abs(divider(b)-fixed));
+    const other=fixed+(isInner?sign:-sign)*far;
+    return {...item,d:d+'Z',level:item.rank<=7?'core':item.rank<=13?'middle':'outer',
+      rect:{left:Math.min(fixed,other),right:Math.max(fixed,other),top:y(a),bottom:y(b)}};
+  }
+  return [...inner.map((item,i)=>piece(item,innerCuts[i],innerCuts[i+1],true)),
+    ...edge.map((item,i)=>piece(item,outerCuts[i],outerCuts[i+1],false))];
 }
 
-function fitSilhouetteText(poly, item, subject, measure, compact = false) {
-  const verticalMargin = compact ? 8 : 14, horizontalMargin = compact ? 10 : 15;
-  const ys = poly.map(p => p[1]), ymin = Math.min(...ys), ymax = Math.max(...ys);
-  const words = item.statement.split(' '), plans = [];
-  for (let mask=0; mask<2**(words.length-1); mask++) {
-    const lines=[words[0]];
-    words.slice(1).forEach((word,i) => { if (mask & (1<<i)) lines.push(word); else lines[lines.length-1]+=' '+word; });
-    if (lines.length<=4) plans.push({lines,width:Math.max(52,...lines.map(measure)),widths:[52,...lines.map(measure)]});
+// The rank and the full headline share one measured box. Prefer the normal
+// 24px type, then try smaller sizes for unusually narrow pieces or long words.
+function fitRankedPiece(item,measure) {
+  const core=item.rank<=7, rect=item.rect;
+  const rankSize=core?(item.rank===1?38:32):(item.rank<=13?22:19);
+  const rankHeight=core?rankSize+8:rankSize+3;
+  const available=rect.right-rect.left-32, height=rect.bottom-rect.top-26;
+  // Shorter lines keep the central claims grouped near the spine.
+  const width=core ? Math.min(available,415) : available;
+  const words=item.statement.split(' '), widths=new Map();
+  function measured(s) {
+    if(!widths.has(s)) widths.set(s,measure(s));
+    return widths.get(s);
   }
-  let best = null;
-  for (const {lines,width,widths} of plans) {
-    const blockHeight = 25+lines.length*27;
-    for (let cy=ymin+blockHeight/2+verticalMargin; cy<=ymax-blockHeight/2-verticalMargin; cy+=7) {
-      const top=cy-blockHeight/2, bottom=cy+blockHeight/2;
-      let minX=-Infinity, maxX=Infinity;
-      for (let i=0;i<widths.length;i++) {
-        const baseline=top+16+(i?27*i:0),half=widths[i]/2;
-        for (const y of [baseline-(i?23:17)-8,baseline+6+8]) {
-          const cuts=silhouetteCrossings(poly,y);
-          if (cuts.length<2) { minX=Infinity; break; }
-          minX=Math.max(minX,cuts[0]+half+horizontalMargin);
-          maxX=Math.min(maxX,cuts.at(-1)-half-horizontalMargin);
-        }
-      }
-      if (maxX<minX) continue;
-      const middle=(minX+maxX)/2;
-      const left=minX-width/2-3,right=maxX+width/2+3;
-      for (const x of [middle,(minX+middle)/2,(maxX+middle)/2,minX,maxX]) {
-        const sideEdges=[top,cy,bottom].map(y=>silhouetteCrossings(subject.outline,y));
-        let inside=0, crossings=0;
-        for (const edges of sideEdges) {
-          const inShape = v => edges.filter(edge=>edge<v).length%2;
-          inside += inShape(x);
-          crossings += edges.filter(edge=>edge>x-width/2-3 && edge<x+width/2+3).length;
-        }
-        const onFeature=subject.details.some(line=>line.slice(1).some((b,i)=>{
-          const a=line[i];
-          // Clip the segment against the candidate type block.
-          let lo=0,hi=1;
-          for (const [axis,min,max] of [[0,x-width/2-3,x+width/2+3],[1,top-2,bottom+2]]) {
-            const change=b[axis]-a[axis];
-            if (Math.abs(change)<.001) { if (a[axis]<min || a[axis]>max) return false; }
-            else { const u=(min-a[axis])/change,v=(max-a[axis])/change; lo=Math.max(lo,Math.min(u,v)); hi=Math.min(hi,Math.max(u,v)); }
-          }
-          return lo<=hi;
-        }));
-        const desired=item.rank<=7 ? 3-inside : item.rank>=14 ? inside : 0;
-        const cost=110*crossings+50*desired+36*Number(onFeature)+11*(lines.length-1)
-          +.34*Math.abs(cy-(ymin+ymax)/2)+.23*Math.abs(x-middle);
-        if (!best || cost<best.cost) best={cost,x,y:top+16,lines,lineHeight:27,bounds:{left,right,top:top-4,bottom:bottom+5}};
-      }
+  let best;
+  for(const fontSize of [24,23,22,21,20,19,18]) {
+    const lineHeight=fontSize+3;
+    for(let mask=0;mask<2**(words.length-1);mask++) {
+      const lines=[words[0]];
+      words.slice(1).forEach((word,i)=>{if(mask & (1<<i)) lines.push(word); else lines[lines.length-1]+=' '+word;});
+      if(rankHeight+4+lines.length*lineHeight>height) continue;
+      const lengths=lines.map(s=>measured(s)*fontSize/24);
+      if(Math.max(...lengths)>width-4) continue;
+      const cost=lines.length*10000+Math.max(...lengths)-Math.min(...lengths);
+      if(!best||cost<best.cost) best={cost,lines,fontSize,lineHeight};
     }
+    if(best) break;
   }
-  return best;
+  // A single unusually long word can need extra horizontal space. Preserve
+  // its spelling and all of the claim, fitting just the affected lines in SVG.
+  if(!best){
+    const fontSize=18,lineHeight=21,capacity=Math.max(1,Math.floor((height-rankHeight-4)/lineHeight));
+    const lines=[];
+    for(const word of words){
+      if(lines.length && (measured(lines.at(-1)+' '+word)*fontSize/24<=width-4 || lines.length>=capacity)) lines[lines.length-1]+=' '+word;
+      else lines.push(word);
+    }
+    best={lines,fontSize,lineHeight};
+  }
+  const {lines,fontSize,lineHeight}=best;
+  const block=rankHeight+4+lines.length*lineHeight, start=(rect.top+rect.bottom-block)/2;
+  const halfInk=Math.max(core?55:40,...lines.map(s=>Math.min(width-4,measured(s)*fontSize/24)/2));
+  const center=(rect.left+rect.right)/2;
+  const x=core ? Math.max(rect.left+16+halfInk,Math.min(rect.right-16-halfInk,800+(center-800)*.76)) : center;
+  return {...item,...best,rankSize,rankHeight,rankTop:start,x,
+    y:start+rankHeight+4+fontSize, bounds:{left:rect.left+14,right:rect.right-14,top:rect.top+5,bottom:rect.bottom-5},
+    lineLengths:lines.map(s=>Math.min(width-4,measured(s)*fontSize/24)),maxLine:width-4};
 }
 
 function silhouetteLayout(rows, scene, ownership, measure, top, bottom) {
   const labels=new Map(scene.summaries.map(s=>[s.id,s]));
-  const sides=['left','right'].map(side=>rows.filter(r=>ownership.get(r.id)===side)
-    .sort((a,b)=>a.rank-b.rank).map(r=>({...r,...labels.get(r.id),side})));
-  if (sides.some(side=>side.length!==10)) throw Error('Each submission side needs its ten original arguments.');
-  const totals=sides.map(side=>side.reduce((n,r)=>n+rankedWeight(r.rank),0));
-  const seam=Yn(12+1576*totals[0]/(totals[0]+totals[1]));
-  // Center the silhouette near the shared seam. A side with more top-ranked claims gets more room.
-  const main=projectSubject(posterDrawing(scene.objects[0]),seam,top+6,1080,bottom-top-12);
-  const fittedSides=[null,null];
-  for (let variant=0;variant<12;variant++) {
-    for (let index=0;index<2;index++) {
-      if (fittedSides[index]) continue;
-      const pieces=[];
-      const side=index?'right':'left',box={left:index?seam:12,right:index?1588:seam,top,bottom,seam};
-      const sites=silhouetteSites(sides[index],side,box,main,variant%4);
-      // Small peripheral cells can have very different proportions. On the
-      // last attempts, move each claim to a neighboring site in its own tier.
-      // The cell area calculation still uses that claim's exact rank.
-      if (variant>=8) {
-        for (const [lo,hi] of [[1,7],[8,13],[14,20]]) {
-          const band=sites.filter(site=>site.item.rank>=lo && site.item.rank<=hi);
-          const items=band.map(site=>site.item);
-          band.forEach((site,i)=>{site.item=items[(i+1+variant%4)%items.length];});
-        }
-      }
-      const polygons=weightedSilhouetteCells(sites,box);
-      if (!polygons) continue;
-      for (let i=0;i<sites.length;i++) {
-        const poly=polygons[i],item=sites[i].item, text=fitSilhouetteText(poly,item,main,measure,variant>=4);
-        if (!text) break;
-        const edge=(p,q)=>{
-          const onBorder=[12,seam,1588].some(x=>Math.abs(p[0]-x)<.01&&Math.abs(q[0]-x)<.01)
-            || [top,bottom].some(y=>Math.abs(p[1]-y)<.01&&Math.abs(q[1]-y)<.01);
-          const forward=Math.abs(p[0]-q[0])>.01?p[0]<q[0]:p[1]<q[1];
-          return Ua(p,q,!onBorder,forward?1:-1);
-        };
-        const d='M'+poly[0].map(Yn).join(' ')+poly.map((p,j)=>edge(p,poly[(j+1)%poly.length])).join('')+'Z';
-        pieces.push({...item,...text,d,level:item.rank<=7?'core':item.rank<=13?'middle':'outer'});
-      }
-      if (pieces.length===10) fittedSides[index]=pieces;
-    }
-    if (fittedSides.every(Boolean)) return {main,pieces:fittedSides.flat().sort((a,b)=>a.rank-b.rank)};
-  }
-  // Very long individual words can require the existing rank- and type-fit layout.
-  // It still uses the same silhouette, dual inks and contextual background.
-  return {main,pieces:D5(rows,labels,ownership,measure)};
+  const ranked=Array.from(rows,r=>({...r,...labels.get(r.id),side:ownership.get(r.id)})).sort((a,b)=>a.rank-b.rank);
+  if (['left','right'].some(side=>ranked.filter(r=>r.side===side).length!==10)) throw Error('Each submission side needs its ten original arguments.');
+  const main=projectSubject(posterDrawing(scene.objects[0]),800,top+6,1080,bottom-top-12);
+  const xs=main.outline.map(p=>p[0]),ys=main.outline.map(p=>p[1]);
+  const aspect=(Math.max(...xs)-Math.min(...xs))/(Math.max(...ys)-Math.min(...ys));
+  const pieces=rankHalves(ranked).flatMap((bands,i)=>rankedHalfCells(bands,i?1:-1,top,bottom,aspect))
+    .map(item=>fitRankedPiece(item,measure)).sort((a,b)=>a.rank-b.rank);
+  return {main,pieces};
 }
 
 // A dark blue subject and a saturated gold subject stay distinct from the lighter
@@ -257,14 +237,22 @@ function renderSilhouettePuzzle(rows, scene, question, measure, ownership) {
     base.push('<path d="'+p.d+'" fill="'+palette.surround[band]+'" stroke="'+palette.seam+'" stroke-width="1.8" stroke-linejoin="round"/>');
     face.push('<path d="'+p.d+'" fill="'+palette.face[p.rank-1]+'" stroke="#fff6da" stroke-width="2.8" stroke-linejoin="round"/>');
     if(left) whiteInk.push('<use href="#poster-label-'+p.rank+'" xlink:href="#poster-label-'+p.rank+'"/>');
-    const b=p.bounds, y=p.y+27;
-    const pieceNumber=label+' · #'+p.rank;
-    const lineWidths=[measure(pieceNumber)*.75,...p.lines.map(measure)];
-    lineWidths.forEach((w,i)=>{
-      const baseline=i?y+(i-1)*p.lineHeight:p.y;
-      featureClearance.push('<rect x="'+Yn(p.x-w/2-4)+'" y="'+Yn(baseline-(i?23:17))+'" width="'+Yn(w+8)+'" height="'+(i?29:22)+'" rx="3"/>');
-    });
-    ink.push('<g data-argument-id="'+wt(p.id)+'" data-rank="'+p.rank+'" data-score="'+Number(p.score)+'" data-side="'+p.side+'" data-stance="'+p.position+'" data-band="'+p.level+'" text-anchor="middle" fill="'+(left?'#081E42':'#261902')+'"><title>'+wt(p.title)+'</title><path data-puzzle-piece="" d="'+p.d+'" fill="none"/><g id="poster-label-'+p.rank+'"><text x="'+Yn(p.x)+'" y="'+Yn(p.y)+'" font-size="18" font-weight="700">'+pieceNumber+'</text><text data-label="" data-left="'+b.left+'" data-right="'+b.right+'" data-top="'+b.top+'" data-bottom="'+b.bottom+'" x="'+Yn(p.x)+'" y="'+Yn(y)+'" font-size="24" font-weight="700">'+p.lines.map((l,i)=>'<tspan x="'+Yn(p.x)+'" dy="'+(i?p.lineHeight:0)+'">'+wt(l)+'</tspan>').join('')+'</text></g></g>');
+    const b=p.bounds,core=p.rank<=7;
+    const rankText='#'+p.rank, rankWidth=core?110:78;
+    const badgeFill=left?'#082A56':'#653700';
+    const rankMarkup='<g data-rank-marker="'+p.rank+'" aria-hidden="true">'+
+      (core?'<rect x="'+Yn(p.x-rankWidth/2)+'" y="'+Yn(p.rankTop)+'" width="'+rankWidth+'" height="'+p.rankHeight+'" rx="9" fill="'+badgeFill+'" stroke="#fff6da" stroke-width="2"/>':'')+
+      '<text x="'+Yn(p.x+(core?-13:0))+'" y="'+Yn(p.rankTop+p.rankSize)+'" font-size="'+p.rankSize+'" font-weight="800"'+(core?' fill="#fff"':'')+'>'+
+      (core?rankText:label+' · '+rankText)+'</text>'+
+      (core?'<text x="'+Yn(p.x+34)+'" y="'+Yn(p.rankTop+p.rankSize-3)+'" font-size="17" font-weight="700" fill="#fff">'+label+'</text>':'')+'</g>';
+    featureClearance.push('<rect x="'+Yn(p.x-rankWidth/2-4)+'" y="'+Yn(p.rankTop-2)+'" width="'+(rankWidth+8)+'" height="'+(p.rankHeight+5)+'" rx="4"/>');
+    const textLines=p.lines.map((line,i)=>{
+      const w=p.lineLengths[i],baseline=p.y+i*p.lineHeight;
+      featureClearance.push('<rect x="'+Yn(p.x-w/2-4)+'" y="'+Yn(baseline-p.fontSize)+'" width="'+Yn(w+8)+'" height="'+(p.lineHeight+2)+'" rx="3"/>');
+      const compress=measure(line)*p.fontSize/24>p.maxLine ? ' textLength="'+Yn(p.maxLine)+'" lengthAdjust="spacingAndGlyphs"' : '';
+      return '<tspan x="'+Yn(p.x)+'" dy="'+(i?p.lineHeight:0)+'"'+compress+'>'+wt(line)+'</tspan>';
+    }).join('');
+    ink.push('<g data-argument-id="'+wt(p.id)+'" data-rank="'+p.rank+'" data-score="'+Number(p.score)+'" data-side="'+p.side+'" data-stance="'+p.position+'" data-band="'+p.level+'" text-anchor="middle" fill="'+(left?'#081E42':'#261902')+'"><title>'+wt(p.title)+'</title><path data-puzzle-piece="" d="'+p.d+'" fill="none"/><g id="poster-label-'+p.rank+'">'+rankMarkup+'<text data-label="" data-label-size="'+p.fontSize+'" data-left="'+b.left+'" data-right="'+b.right+'" data-top="'+b.top+'" data-bottom="'+b.bottom+'" x="'+Yn(p.x)+'" y="'+Yn(p.y)+'" font-size="'+p.fontSize+'" font-weight="700">'+textLines+'</text></g></g>');
   }
   const defs='<defs><clipPath id="subject-outline"><path d="'+profile+'"/></clipPath>'+
     '<linearGradient id="poster-masthead" x2="1" y2=".2" gradientUnits="objectBoundingBox"><stop stop-color="#071B3E"/><stop offset="1" stop-color="#144481"/></linearGradient>'+
@@ -272,12 +260,12 @@ function renderSilhouettePuzzle(rows, scene, question, measure, ownership) {
     '<mask id="feature-safe" maskUnits="userSpaceOnUse" x="0" y="0" width="1600" height="900"><rect width="1600" height="900" fill="white"/><g fill="black">'+featureClearance.join('')+'</g></mask></defs>';
   const faceArt='<g clip-path="url(#subject-outline)">'+face.join('')+
     '<path d="'+profile+'" fill="url(#subject-light)"/><g mask="url(#feature-safe)" fill="none" stroke="#071D3C" stroke-width="3.4" stroke-opacity=".85" stroke-linejoin="round" stroke-linecap="round">'+paths(main)+'</g></g>'+
-    '<path data-main-subject="" d="'+profile+'" fill="none" stroke="#102744" stroke-width="4.2" stroke-linejoin="round"/>';
+    '<path data-main-subject="" mask="url(#feature-safe)" d="'+profile+'" fill="none" stroke="#102744" stroke-width="4.2" stroke-linejoin="round"/>';
   const svg='<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="900" viewBox="0 0 1600 900" role="img" font-family="'+pl+'" fill="#10283c"><title>'+wt(scene.overview ? scene.title : question)+'</title><desc>Exact debate question: '+wt(question)+'. '+wt(scene.objects[0].name)+' with twenty ranked puzzle pieces.</desc>'+
-    defs+'<rect width="1600" height="900" fill="#FFFBF3"/>'+base.join('')+background+faceArt+ink.join('')+
+    defs+'<rect width="1600" height="900" fill="#FFFBF3"/>'+base.join('')+background+faceArt+'<path data-center-seam="" d="M800 '+top+'V'+bottom+'" stroke="#fff6da" stroke-width="5"/><path d="M800 '+top+'V'+bottom+'" stroke="#243750" stroke-width="1.6"/>'+ink.join('')+
     '<g aria-hidden="true" pointer-events="none" text-anchor="middle" fill="white" clip-path="url(#subject-outline)">'+whiteInk.join('')+'</g>'+
     '<rect width="1600" height="'+header.height+'" fill="url(#poster-masthead)"/>'+header.title+header.question+header.captions+
-    '<text x="800" y="883" text-anchor="middle" font-size="18">A and B show the two positions. Each number matches a full argument. #1 is the highest rank.</text></svg>';
+    '<text x="800" y="883" text-anchor="middle" font-size="18">Ranks 1–7 are largest and in the center. A and B identify the two positions. Each number matches a full argument.</text></svg>';
   return {svg,pieces};
 }
 

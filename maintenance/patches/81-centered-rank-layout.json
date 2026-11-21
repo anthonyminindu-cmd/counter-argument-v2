@@ -1,0 +1,12 @@
+[
+  {
+    "id": "validate-measured-rank-layout-type",
+    "find": "labels.every(node => fits(node, Ed, 700))",
+    "replace": "labels.every(node => { const size=Number(node.dataset.labelSize || Ed); return size>=18 && size<=Ed && fits(node, size, 700); })"
+  },
+  {
+    "id": "center-every-owned-poster-profile",
+    "find": "if(a.profile===\"custom\"&&s)return renderSilhouettePuzzle(e,a,n,r,s);",
+    "replace": "if(s)return renderSilhouettePuzzle(e,a.objects.length?a:{...a,objects:[presetPosterSubject(a.profile)]},n,r,s);"
+  }
+]

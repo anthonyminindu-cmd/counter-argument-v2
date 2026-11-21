@@ -60,7 +60,7 @@ async function generateScene(req: Request, silhouette = false, context?:ReceiptC
     const parsed = schema.parse(raw);
     const entries = aliases.map(({key,row}) => {
       const entry = label.parse(parsed.summaries[key]);
-      return {id:row.id,title:row.title,description:row.description,position:entry.position,primary:entry.primary,
+      return {id:row.id,rank:row.rank,title:row.title,description:row.description,position:entry.position,primary:entry.primary,
         alternate:entry.alternate,fallback:Array.isArray(entry.fallback) ? entry.fallback.join(' ').replace(/^./,c=>c.toUpperCase()) : entry.fallback};
     });
     const labels = silhouette && context ? await refineClaimCopy(req,context,key,input.topic,entries,deadline.signal,reader) : chooseSceneLabels(entries);

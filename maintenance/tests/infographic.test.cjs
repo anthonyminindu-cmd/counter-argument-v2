@@ -350,6 +350,41 @@ test('reader poster frames the completed discussion and links all twenty pieces 
   assert.match(visible,/Existing apps favor one platform/);
   assert.doesNotMatch(visible,/raw opening shorthand|qualifies ·|unclear<\/text>/);
   assert.match(result.svg,/<desc>Exact debate question: raw opening shorthand/);
-  for(const row of rows) assert.match(visible,new RegExp(' · #'+row.rank+'<'));
+  for(const row of rows) assert.match(visible,new RegExp('#'+row.rank+'<'));
   assert.equal(result.pieces[0].statement,scene.summaries[0].statement);
+});
+
+test('the centered spine and seven largest core pieces survive every top-seven ownership split',()=>{
+  for(let count=0;count<=7;count++){
+    const ownerMap=new Map(rows.map((r,i)=>[r.id,(i<count || (i>=7 && i<17-count))?'left':'right']));
+    const {svg,pieces}=render(rows,plan,'A shared decision',measure,ownerMap);
+    assert.match(svg,/data-center-seam="" d="M800 [\d.]+V853"/);
+    const center=svg.match(/data-main-subject=""[^>]* d="([^"]+)"/)[1].match(/-?[\d.]+/g).map(Number).filter((_,i)=>i%2===0);
+    assert.ok(Math.abs(Math.min(...center)+Math.max(...center)-1600)<.1);
+    const areas=pieces.map(p=>puzzleArea(p.d));
+    assert.ok(areas.every((area,i)=>i===0 || area<areas[i-1]),'strictly descending visible areas, split '+count);
+    assert.ok(areas[6]/areas[7]>1.20 && areas[12]/areas[13]>1.20);
+    const core=pieces.slice(0,7),spineEdge=p=>p.rect.left===800 || p.rect.right===800;
+    assert.ok(core.every(spineEdge));
+    assert.ok(core.some(p=>p.x<800) && core.some(p=>p.x>800));
+    assert.ok(Math.abs(pieces[0].x-800)<275);
+    assert.ok(pieces.slice(13).every(p=>!spineEdge(p)));
+    const coreTop=Math.min(...core.map(p=>p.rect.top)),coreBottom=Math.max(...core.map(p=>p.rect.bottom));
+    assert.ok(coreTop>pieces.reduce((min,p)=>Math.min(min,p.rect.top),Infinity)+36);
+    assert.ok(coreBottom<853-36);
+    for(const p of pieces){
+      assert.equal(p.side,ownerMap.get(p.id));
+      assert.equal(p.rankSize>=32,p.rank<=7);
+      assert.ok(p.x>=p.bounds.left && p.x<=p.bounds.right);
+    }
+  }
+});
+
+test('saved preset profiles get the same ranked center as generated silhouettes',()=>{
+  for(const profile of ['campus','library','civic','space']){
+    const {svg,pieces}=render(rows,{...plan,profile,objects:[]},'An older question',measure,mapping);
+    assert.match(svg,/data-center-seam=/);
+    assert.equal(pieces.filter(p=>p.rankSize>=32).length,7);
+    assert.ok(pieces.every(p=>p.lines.join(' ')===p.statement));
+  }
 });
