@@ -118,9 +118,8 @@ html{scroll-padding-top:155px}
 .dk-welcome .dk-welcome-tagline { margin:0 0 9px; color:#bce9c7; font-size:.91rem; font-weight:650; letter-spacing:.035em; }
 .dk-welcome h1 { color:#fffaf0; font-family:"Baskervville",Georgia,"Times New Roman",serif; font-size:clamp(3.15rem,5.5vw,5rem); font-weight:400; line-height:1.02; letter-spacing:-.052em; }
 .dk-welcome h1 em { font-weight:inherit; }
-.dk-welcome .dk-welcome-views { margin:14px 0 0; color:#fffaf0; font-size:clamp(1rem,1.35vw,1.2rem); font-weight:600; }
-.dk-welcome-views span { display:inline-block; }
-.dk-welcome .dk-welcome-mission { max-width:37ch; margin:12px 0 0; color:#e7e9e2; font-size:clamp(.98rem,1.3vw,1.14rem); line-height:1.45; text-wrap:pretty; }
+.dk-welcome .dk-welcome-question { margin:14px 0 0; color:#fffaf0; font-size:clamp(1rem,1.35vw,1.2rem); font-weight:600; text-wrap:balance; }
+.dk-welcome .dk-welcome-mission { max-width:46ch; margin:12px 0 0; color:#e7e9e2; font-size:clamp(.98rem,1.3vw,1.14rem); line-height:1.45; text-wrap:pretty; }
 /* The public questions read as one list. Personal activity has its own surface. */
 .dk-home .dk-feed,.dk-home .dk-personal {
   min-width:0; border:1px solid var(--dk-line); border-top:3px solid var(--dk-warm); border-radius:14px;
@@ -153,13 +152,15 @@ html{scroll-padding-top:155px}
   .dk-home .dk-feed>.dk-sectionline h2 { gap:6px; }
   .dk-home .dk-feed>.dk-sectionline .dk-icon { width:16px; }
   .dk-home .dk-feed>.dk-sectionline .dk-secondary { padding-inline:8px; }
+}
+@media(max-width:900px) {
   .dk-welcome { display:flex; flex-direction:column; align-items:stretch; min-height:0; border-radius:13px; margin-bottom:16px; }
-  .dk-welcome-copy { width:auto; padding:16px 18px 9px; }
+  .dk-welcome-copy { width:auto; padding:clamp(16px,3vw,26px); }
   .dk-welcome::before { display:none; }
   .dk-welcome-photo { position:static; width:100%; height:auto; aspect-ratio:1280/546; }
   .dk-welcome .dk-welcome-tagline { font-size:.82rem; margin:0 0 4px; }
   .dk-welcome h1 { font-size:clamp(2.65rem,10.5vw,3.2rem); }
-  .dk-welcome .dk-welcome-mission { font-size:1rem; max-width:41ch; margin-top:6px; }
+  .dk-welcome .dk-welcome-mission { font-size:1rem; max-width:62ch; margin-top:8px; }
 }
 .dk-topic-suggestion,.dk-topic-review {
   display:grid;
