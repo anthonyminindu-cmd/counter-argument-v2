@@ -73,6 +73,15 @@ test('active friend poster needs both verified ranks and a shared session', () =
   assert.equal(detached.find(e => 'aria-expanded' in e.props)?.props.disabled, true);
 });
 
+test('friend results report the saved point count before live counters catch up', () => {
+  const record = { snapshot: { ...snapshot, points }, ranking: points, session_id: sessionId, stage: 'complete' };
+  const elements = render('function Nx(', 'function FD(', 'Nx({workflow:{record}, userId:"alice", count:10, opponentCount:0})', {
+    record, hl: (_, ranking) => ranking, s5: {},
+  }, true);
+  const badge = elements.find(e => e.type === 'Te');
+  assert.equal(badge.props.children.join(''), '20 of 20 points submitted');
+});
+
 test('saved automatic friend debate opens its shared poster and returns to rankings before an image exists', () => {
   const poster = history(sessionId, null).find(e => e.type === 'lg')?.props;
   assert.equal(poster?.sessionId, sessionId);

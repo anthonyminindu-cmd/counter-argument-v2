@@ -16,6 +16,7 @@ from urllib.parse import parse_qs, urlparse
 from urllib.request import Request, urlopen
 
 from playwright.sync_api import expect, sync_playwright
+from friend_topic_recovery import check_friend_topic_recovery
 
 ROOT = Path(__file__).resolve().parents[2]
 APP = os.environ["DK_TEST_URL"].rstrip("/")
@@ -112,7 +113,7 @@ def resume_from_table(page, room, topic):
 
 
 def argument(page, index):
-    return page.get_by_role("region", name=f"Argument {index}", exact=True)
+    return page.get_by_role("region", name=f"Point {index} of 10", exact=True)
 
 
 def topic_to_suggest(page):
@@ -126,6 +127,9 @@ def check_rankings_and_poster(pages, expected_titles):
     for index, page in enumerate(pages):
         side = "desktop" if index == 0 else "mobile"
         expect(page.get_by_role("heading", name="Final AI rankings", exact=True)).to_be_visible(timeout=720000)
+        expect(page.get_by_role("heading", name="Final AI rankings", exact=True)).to_have_count(1)
+        expect(page.get_by_text("20 of 20 points submitted", exact=True)).to_be_visible()
+        expect(page.locator(".dk-active-header")).not_to_contain_text("50% Complete")
         capture(page, "11-" + side + "-rankings")
         with page.expect_download() as download:
             button(page, "Download rankings").click()
@@ -180,11 +184,8 @@ def check_positions_and_arguments(sender, receiver, room, topic):
             raise
     receiver.evaluate("window.scrollTo(0, 0)")
     expect(receiver.get_by_role("link", name="Debate with a friend", exact=True)).to_be_in_viewport()
-    if not receiver.evaluate("document.documentElement.scrollWidth <= window.innerWidth"):
-        print("Mobile debate page has overflow", receiver.evaluate(
-            "() => [...document.querySelectorAll('main *,header *,#argument-title-0')].filter(e=>"
-            "e.getBoundingClientRect().right>innerWidth+1).slice(0,8).map(e=>e.className)"
-        ), flush=True)
+    assert receiver.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
+    expect(receiver.locator(".dk-friend-points form")).to_have_count(1)
     capture(receiver, "09-mobile-writing-points")
     capture(sender, "09-desktop-write-points")
     subjects = (
@@ -217,23 +218,51 @@ def check_positions_and_arguments(sender, receiver, room, topic):
          "A return checklist could prevent damaged tools from going back into use.",
          "A rider survey could prevent the library from buying rarely used kits."),
     )
+    future = receiver.locator(".dk-friend-points details").filter(has_text="Draft a later point")
+    future.locator("summary").click()
+    future.get_by_label("Point to draft").select_option(label="Point 2")
+    future.get_by_label("Title", exact=True).fill(subjects[1][1])
+    future.get_by_label("Explanation", exact=True).fill(descriptions[1][1])
+    capture(receiver, "09a-mobile-draft-ahead")
+    future.locator("summary").click()
+    focused = argument(receiver, 1).get_by_label("Title", exact=True)
+    focused.fill(subjects[1][0])
+    scroll_before = receiver.evaluate("window.scrollY")
+    chat = "I can still see where to write my point."
+    sender.get_by_placeholder("Type your message...", exact=True).fill(chat)
+    button(sender, "Send message").click()
+    expect(receiver.get_by_text(chat, exact=True)).to_be_attached(timeout=20000)
+    expect(focused).to_be_focused()
+    assert abs(receiver.evaluate("window.scrollY") - scroll_before) < 4
+    check("A live chat update left the phone's writing field focused and in place")
     full = os.getenv("DK_TEST_RANKING") == "1"
     for index in range(1, 11 if full else 3):
         for side, page in enumerate(pages):
             card = argument(page, index)
-            card.get_by_label(re.compile(r"^Title")).fill(subjects[side][index-1])
-            card.get_by_label(re.compile(r"^Description")).fill(descriptions[side][index-1])
+            title = card.get_by_label("Title", exact=True)
+            explanation = card.get_by_label("Explanation", exact=True)
+            if index == 2 and side == 1:
+                expect(title).to_have_value(subjects[side][index-1])
+                expect(explanation).to_have_value(descriptions[side][index-1])
+                check("Drafting ahead survived refresh and the draft opened as the next point")
+            else:
+                title.fill(subjects[side][index-1])
+                explanation.fill(descriptions[side][index-1])
         if index == 1:
             receiver.reload()
-            expect(argument(receiver, index).get_by_label(re.compile(r"^Title"))).to_have_value(subjects[1][index-1])
-        simultaneous(*(button(argument(page, index), re.compile(rf"^(Submit Argument|Save point|Submit point) {index}$", re.I)) for page in pages))
-        for side, page in enumerate(pages):
-            expect(argument(page, index).get_by_text(re.compile(r"^(Submitted|Saved)$", re.I)).last).to_be_visible()
-            expect(argument(page, index).get_by_label(re.compile(r"^Title"))).to_have_value(subjects[side][index-1])
+            expect(argument(receiver, index).get_by_label("Title", exact=True)).to_have_value(subjects[1][index-1])
+        simultaneous(*(button(argument(page, index), f"Submit point {index}") for page in pages))
+        for page in pages:
+            heading = f"Point {index+1} of 10" if index < 10 else "All 10 points submitted"
+            expect(page.get_by_role("heading", name=heading, exact=True)).to_be_visible()
         if index == 2:
             resume_from_table(receiver, room, topic)
+            expect(argument(receiver, 3)).to_be_visible()
+            receiver.get_by_text("Review submitted points (2)", exact=True).click()
             for own_index in range(1, 3):
-                expect(argument(receiver, own_index).get_by_label(re.compile(r"^Title"))).to_have_value(subjects[1][own_index-1])
+                expect(receiver.get_by_text(subjects[1][own_index-1], exact=True)).to_be_visible()
+            expect(receiver.get_by_text("You: 2 of 10 points", exact=True)).to_be_visible()
+            expect(receiver.get_by_text("Your friend: 2 of 10 points", exact=True)).to_be_visible()
             capture(receiver, "10-mobile-resumed-points")
     check("Draft and submitted points survived refresh or returning from Your table, with both accounts retaining their own text")
     if full:
@@ -305,6 +334,8 @@ if __name__ == "__main__":
         room=session(sender)
         assert room==session(receiver)
         check("Offline invitation appeared on login and both browsers joined the same session")
+        check_friend_topic_recovery(receiver, APP, room, capture)
+        check("A missing debate link offered a way back and Retry restored the same shared room after a connection error")
         capture(sender, "04-desktop-pick-topic")
         chat_field = re.compile(r"^(Type|Write) a message", re.I)
         suggest = re.compile(r"^(Propose|Suggest topic)$", re.I)

@@ -1,0 +1,17 @@
+[
+  {
+    "id": "connect-topic-authorization-state",
+    "find": "L_=({sessionId:e,onTopicSelected:t})=>{const{user:n}=Xt(),{toast:r}=_t()",
+    "replace": "L_=({sessionId:e,onTopicSelected:t})=>{const{user:n,loading:topicAuthLoading}=Xt(),{toast:r}=_t()"
+  },
+  {
+    "id": "read-topic-room-availability",
+    "find": "[y,g]=p.useState(!0),b=p.useRef(null);DK.useFriendTopic({sessionId:e,owner:n?.id,onTopicSelected:t,messages:o,participants:u,proposal:m,loading:g,report:r});",
+    "replace": "b=p.useRef(null),topicConnection=DK.useFriendTopic({sessionId:e,owner:n?.id,authLoading:topicAuthLoading,onTopicSelected:t,messages:o,participants:u,proposal:m});"
+  },
+  {
+    "id": "show-topic-room-recovery",
+    "find": "return y?i.jsx(ce,{className:\"max-w-4xl mx-auto\",children:i.jsxs(de,{className:\"p-6 text-center\",children:[i.jsx(\"div\",{className:\"animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4\"}),i.jsx(\"p\",{className:\"text-muted-foreground\",children:\"Loading collaborative session...\"})]})}):i.jsxs(\"div\",{className:\"min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5\",children:[",
+    "replace": "return topicConnection.blocking?topicConnection.notice:i.jsxs(\"div\",{className:\"min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5\",children:[topicConnection.notice,"
+  }
+]

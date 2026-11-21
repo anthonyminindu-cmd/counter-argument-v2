@@ -177,3 +177,24 @@ html{scroll-padding-top:155px}
   white-space:normal;
   overflow-wrap:anywhere;
 }
+.dk-friend-points { display:grid; gap:14px; }
+.dk-friend-points h3 { font-size:1.16rem; font-weight:700; margin-bottom:12px; }
+.dk-friend-points section:focus { outline:2px solid var(--dk-mint); outline-offset:6px; border-radius:4px; }
+.dk-friend-points form,.dk-point-fields { display:grid; gap:9px; }
+.dk-friend-points label { font-size:.94rem; font-weight:640; }
+.dk-friend-points label span { color:var(--dk-sub); font-weight:400; }
+.dk-friend-points :is(input,textarea,select) {
+  width:100%; min-height:44px; padding:9px 11px; margin-bottom:5px;
+  border:1px solid var(--dk-line); border-radius:8px; background:var(--dk-bg); color:var(--dk-text);
+}
+.dk-friend-points textarea { min-height:105px; resize:vertical; }
+.dk-friend-points button { width:fit-content; min-height:44px; }
+.dk-friend-points button:disabled { cursor:default; opacity:.55; }
+.dk-friend-points details { padding:11px 12px; border:1px solid var(--dk-line); border-radius:8px; }
+.dk-friend-points summary { font-weight:640; cursor:pointer; }
+.dk-friend-points details[open] > summary { margin-bottom:10px; }
+.dk-friend-points details > p { color:var(--dk-sub); margin-bottom:10px; }
+.dk-friend-points ol { list-style:decimal; padding-inline-start:22px; overflow-wrap:anywhere; }
+.dk-friend-points li+li { border-top:1px solid var(--dk-line); margin-top:10px; padding-top:10px; }
+.dk-friend-points li a { text-decoration:underline; }
+@media(max-width:600px){.dk-friend-points button { width:100%; }}

@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "a64968788ead96abe9dd03ee63e027cd7e017108b876097e6d9f8358c43a169f",
-  "generatedAsset": "assets/index-v2-a64968788ead96ab.js",
+  "generatedSha256": "e5093b0b24c06efdeef1a13c09d834f9922bda74836d6274955bc9e9fdbb6d51",
+  "generatedAsset": "assets/index-v2-e5093b0b24c06efd.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -191,6 +191,19 @@
     "wrap-friend-status-card",
     "let-main-navigation-stay-above-active-header",
     "active-heading-and-progress-language",
-    "let-partner-name-wrap"
+    "let-partner-name-wrap",
+    "connect-topic-authorization-state",
+    "read-topic-room-availability",
+    "show-topic-room-recovery",
+    "show-one-point-at-a-time-in-friend-debates",
+    "keep-chat-auto-scroll-in-chat",
+    "skip-legacy-writing-title-for-friend-mode",
+    "show-one-completion-message",
+    "recognize-the-friend-results-panel",
+    "use-a-single-friend-results-heading",
+    "remove-misleading-friend-completion-percentage",
+    "show-both-friends-point-counts",
+    "use-the-same-friend-results-state",
+    "report-the-saved-results-count"
   ]
 }

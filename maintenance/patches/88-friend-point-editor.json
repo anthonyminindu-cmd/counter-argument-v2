@@ -1,0 +1,22 @@
+[
+  {
+    "id": "show-one-point-at-a-time-in-friend-debates",
+    "find": "finally{h.current=!1,d(null)}}};return i.jsxs(\"div\",{className:\"space-y-6\"",
+    "replace": "finally{h.current=!1,d(null)}}};if(r)return i.jsx(DK.FriendPointEditor,{drafts:l,submitted:e,saving:u,onSave:w,onEdit:(index,key,value)=>c(current=>current.map((point,i)=>i===index?{...point,[key]:value}:point))});return i.jsxs(\"div\",{className:\"space-y-6\""
+  },
+  {
+    "id": "keep-chat-auto-scroll-in-chat",
+    "find": "const kx=({sessionId:e,className:t=\"\"})=>{const{user:n}=Xt(),[r,s]=p.useState([]),[o,a]=p.useState(\"\"),l=p.useRef(null),c=()=>{var m;(m=l.current)==null||m.scrollIntoView({behavior:\"smooth\"})}",
+    "replace": "const kx=({sessionId:e,className:t=\"\"})=>{const{user:n}=Xt(),[r,s]=p.useState([]),[o,a]=p.useState(\"\"),l=p.useRef(null),c=()=>{const viewport=l.current?.closest(\"[data-radix-scroll-area-viewport]\");if(viewport)viewport.scrollTop=viewport.scrollHeight;}"
+  },
+  {
+    "id": "skip-legacy-writing-title-for-friend-mode",
+    "find": "children:[i.jsxs(Pe,{children:[i.jsxs(Ae,{className:\"text-lg flex items-center justify-between\",children:[i.jsx(\"span\",{children:Dd?\"Your 10 arguments are complete\"",
+    "replace": "children:[!se&&i.jsxs(Pe,{children:[i.jsxs(Ae,{className:\"text-lg flex items-center justify-between\",children:[i.jsx(\"span\",{children:Dd?\"Your 10 arguments are complete\""
+  },
+  {
+    "id": "show-one-completion-message",
+    "find": "onSubmit:Y_}),Dd&&i.jsx(\"p\",{role:\"status\",className:\"text-primary font-medium\",children:\"All 10 arguments submitted.\"})",
+    "replace": "onSubmit:Y_}),Dd&&!se&&i.jsx(\"p\",{role:\"status\",className:\"text-primary font-medium\",children:\"All 10 arguments submitted.\"})"
+  }
+]

@@ -190,20 +190,73 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
           inbox.error&&action('Try again',inbox.refresh),action('Notifications',inbox.open),h(Link,{to:searchRoute,className:'dk-secondary'},'Back to friend search'))):
       h(Directory,{onInvitationSent:id=>{navigate(searchRoute+'&waiting='+encodeURIComponent(id));void inbox.refresh();}}));
   }
-  function useFriendTopic({sessionId,owner,onTopicSelected,messages,participants,proposal,loading,report}){
-    const latest=useRef(null);
-    latest.current={onTopicSelected,messages,participants,proposal,loading,report};
+  function PointFields({prefix,point,update}) {
+    return h('div',{className:'dk-point-fields'},
+      h('label',{htmlFor:prefix+'-title'},'Title'),
+      h('input',{id:prefix+'-title',value:point.title,maxLength:150,required:true,onChange:e=>update('title',e.target.value)}),
+      h('label',{htmlFor:prefix+'-explanation'},'Explanation'),
+      h('textarea',{id:prefix+'-explanation',value:point.description,maxLength:500,required:true,onChange:e=>update('description',e.target.value)}),
+      h('label',{htmlFor:prefix+'-source'},'Link to a source ',h('span',null,'(optional)')),
+      h('input',{id:prefix+'-source',inputMode:'url',value:point.sourceUrl==='No source provided'?'':point.sourceUrl,onChange:e=>update('sourceUrl',e.target.value)}));
+  }
+  function FriendPointEditor({drafts,submitted,saving,onEdit,onSave}) {
+    const count=submitted.length, total=drafts.length;
+    const point=drafts[count];
+    const [future,setFuture]=useState(null);
+    const later=Array.from({length:Math.max(0,total-count-1)},(_,i)=>count+1+i);
+    const laterIndex=later.includes(future)?future:later[0];
+    const previous=useRef(count), stage=useRef(null);
     useEffect(()=>{
-      if(!owner||!sessionId)return;
-      let active=true,reading=false,again=false,roster='',navigated=false,reported=false;
+      if(count>previous.current&&stage.current){
+        stage.current.focus({preventScroll:true});
+        stage.current.scrollIntoView({block:'start'});
+      }
+      previous.current=count;
+    },[count]);
+    const fields=(index,prefix)=>h(PointFields,{prefix,point:drafts[index],update:(key,value)=>onEdit(index,key,value)});
+    return h('div',{className:'dk-friend-points'},
+      h('section',{ref:stage,tabIndex:-1,'aria-labelledby':'dk-current-point'},
+        h('h3',{id:'dk-current-point'},point?'Point '+(count+1)+' of '+total:'All '+total+' points submitted'),
+        point&&h('form',{onSubmit:e=>{e.preventDefault();void onSave(count);}},fields(count,'dk-point'),
+          h('button',{type:'submit',className:'dk-primary',disabled:saving!==null||!point.title.trim()||!point.description.trim()},
+            saving===count?'Submitting…':'Submit point '+(count+1)))),
+      count>0&&h('details',null,h('summary',null,'Review submitted points ('+count+')'),
+        h('ol',null,...submitted.map((saved,index)=>h('li',{key:index},
+          h('strong',null,saved.title),h('p',null,saved.description),
+          /^https?:\/\//i.test(saved.sourceUrl||'')&&h('a',{href:saved.sourceUrl,target:'_blank',rel:'noopener noreferrer'},'Open source'))))),
+      laterIndex!==undefined&&h('details',null,h('summary',null,'Draft a later point'),
+        h('p',null,'Draft ahead anytime. Submit your points in order.'),
+        h('label',{htmlFor:'dk-later-point'},'Point to draft'),
+        h('select',{id:'dk-later-point',value:laterIndex,onChange:e=>setFuture(Number(e.target.value))},
+          ...later.map(index=>h('option',{key:index,value:index},'Point '+(index+1)))),
+        fields(laterIndex,'dk-draft-point')));
+  }
+  function useFriendTopic({sessionId,owner,authLoading,onTopicSelected,messages,participants,proposal}){
+    const [connection,setConnection]=useState(null);
+    const refresh=useRef(()=>{});
+    const latest=useRef(null);
+    latest.current={onTopicSelected,messages,participants,proposal};
+    const validSession=/^[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}$/i.test(sessionId);
+    useEffect(()=>{
+      if(!owner||!validSession)return;
+      let active=true,reading=false,again=false,roster='',navigated=false,unavailable=false,roomReady=false;
+      function show(state){
+        setConnection(current=>current?.owner===owner&&current.sessionId===sessionId&&current.state===state?
+          current:{owner,sessionId,state,roomReady});
+      }
       async function sync(){
-        if(!active||navigated)return;
+        if(!active||navigated||unavailable)return;
         if(reading){again=true;return;}
         reading=true;
         try{
           const {data:session,error}=await db.from('debate_sessions').select('id,debate_id,user_a,user_b,current_phase,shared_data').eq('id',sessionId).single();
-          if(error||!session||![session.user_a,session.user_b].includes(owner))throw new Error('Session could not be loaded.');
           if(!active)return;
+          if(error?.code==='PGRST116'||(!error&&(!session||![session.user_a,session.user_b].includes(owner)))){
+            unavailable=true;
+            show('unavailable');
+            return;
+          }
+          if(error)throw error;
           const owners=[session.user_a,session.user_b].filter(Boolean);
           if(owners.join()!==roster){
             const {data,error}=await db.from('profiles').select('user_id,display_name,username,avatar_url').in('user_id',owners);
@@ -215,24 +268,44 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
           const shared=session.shared_data||{};
           latest.current.messages(shared.chat_messages||[]);
           latest.current.proposal(shared.topic_proposal||null);
-          latest.current.loading(false);reported=false;
+          roomReady=true;
+          show('ready');
           if(!['matching','topic_selection'].includes(session.current_phase)&&shared.topic_proposal?.topic){
             navigated=true;latest.current.onTopicSelected(shared.topic_proposal.topic);
           }
-        }catch{if(active&&!reported){reported=true;latest.current.report({title:'Could not refresh the session',description:'Reconnecting to your partner…',variant:'destructive'});}}
+        }catch{if(active)show('retry');}
         finally{reading=false;if(active&&again){again=false;void sync();}}
       }
       function onVisible(){if(!document.hidden)void sync();}
+      refresh.current=sync;
       const channel=db.channel('dk-topic-'+sessionId).on('postgres_changes',{schema:'public',table:'debate_sessions',event:'UPDATE',filter:'id=eq.'+sessionId},sync)
         .subscribe(state=>{if(state==='SUBSCRIBED')void sync();});
       void sync();
       const timer=setInterval(onVisible,5000);
       window.addEventListener('focus',onVisible);
+      window.addEventListener('online',onVisible);
       window.addEventListener('dk-topic-changed',sync);
       document.addEventListener('visibilitychange',onVisible);
-      return ()=>{active=false;clearInterval(timer);db.removeChannel(channel);window.removeEventListener('focus',onVisible);
+      return ()=>{active=false;refresh.current=()=>{};clearInterval(timer);db.removeChannel(channel);window.removeEventListener('focus',onVisible);
+        window.removeEventListener('online',onVisible);
         window.removeEventListener('dk-topic-changed',sync);document.removeEventListener('visibilitychange',onVisible);};
-    },[sessionId,owner]);
+    },[sessionId,owner,validSession]);
+    const current=connection?.owner===owner&&connection?.sessionId===sessionId?connection:null;
+    const state=!validSession?'unavailable':!owner&&!authLoading?'sign-in':current?.state||'loading';
+    if(state==='ready')return {blocking:false,notice:null};
+    if(state==='loading')return {blocking:true,notice:h('p',{className:'dk-panel',role:'status'},'Opening your debate…')};
+    const notice=h('section',{className:'dk-panel mb-4','aria-label':'Debate access'},
+      h('h2',null,{unavailable:'This debate is unavailable',retry:'Could not connect to this debate','sign-in':'Sign in to join your debate'}[state]),
+      h('p',{role:'status'},{
+        unavailable:'Open an accepted invitation from Notifications or go back to the friend search.',
+        retry:'Check your connection and try again.',
+        'sign-in':'Sign in with the account that sent or accepted the invitation.'
+      }[state]),
+      h('div',{className:'dk-actions'},
+        state==='retry'&&action('Try again',()=>refresh.current(),true),
+        state==='sign-in'&&h(Link,{className:'dk-primary',to:'/login?next='+encodeURIComponent('/debate/topic?session='+sessionId)},'Sign in to join'),
+        h(Link,{className:'dk-secondary',to:searchRoute},'Back to friend search')));
+    return {blocking:state!=='retry'||!current?.roomReady,notice};
   }
   function useFriendPreparationSync(sessionId,owner,phase,refresh){
     const callback=useRef(refresh);
@@ -255,5 +328,5 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
       };
     },[sessionId,owner,phase]);
   }
-  return {InboxProvider,Notifications,FriendSetup,useFriendTopic,useFriendPreparationSync};
+  return {InboxProvider,Notifications,FriendSetup,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
 }
