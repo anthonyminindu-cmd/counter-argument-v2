@@ -1,0 +1,68 @@
+[
+  {
+    "id": "route-production-workspace",
+    "find": "i.jsxs(\"div\",{className:\"min-h-screen bg-background\",children:[i.jsx(R4,{}),",
+    "replace": "i.jsxs(DK.Provider,{children:[i.jsx(DK.Nav,{}),"
+  },
+  {
+    "id": "workspace-route-start-root",
+    "find": "path:\"/\",element:i.jsx(zO,{})",
+    "replace": "path:\"/\",element:i.jsx(DK.Start,{})"
+  },
+  {
+    "id": "workspace-route-start",
+    "find": "path:\"/home\",element:i.jsx(p3,{})",
+    "replace": "path:\"/home\",element:i.jsx(DK.Start,{})"
+  },
+  {
+    "id": "workspace-route-profile",
+    "find": "path:\"/profile\",element:i.jsx(y3,{})",
+    "replace": "path:\"/profile\",element:i.jsx(DK.Profile,{})"
+  },
+  {
+    "id": "default-dark-new-preferences",
+    "find": "theme:\"system\",pushNotifications:!0",
+    "replace": "theme:\"dark\",pushNotifications:!0",
+    "expectedCount": 2
+  },
+  {
+    "id": "account-brand",
+    "find": "children:\"Counter Argument V2\"",
+    "replace": "children:\"Differ Kindly\""
+  },
+  {
+    "id": "account-brand-welcome",
+    "find": "\"Welcome to Debate AI!\"",
+    "replace": "\"Welcome to Differ Kindly!\""
+  },
+  {
+    "id": "return-to-selected-signin",
+    "find": "description:\"You have successfully signed in.\"}),s(\"/home\")",
+    "replace": "description:\"You have successfully signed in.\"}),s(DK.afterLogin(window.location.search))"
+  },
+  {
+    "id": "return-to-selected-signup",
+    "find": "description:\"Welcome to Differ Kindly!\"}),s(\"/home\")",
+    "replace": "description:\"Welcome to Differ Kindly!\"}),s(DK.afterLogin(window.location.search))"
+  },
+  {
+    "id": "prefill-saved-person",
+    "find": "const V5=({onInvitationSent:e})=>{const{user:t}=Xt(),{isUserOnline:n}=E4(),{toast:r}=_t(),[s,o]=p.useState(\"\")",
+    "replace": "const V5=({onInvitationSent:e})=>{const{user:t}=Xt(),{isUserOnline:n}=E4(),{toast:r}=_t(),[s,o]=p.useState(()=>new URLSearchParams(window.location.search).get(\"person\")||\"\")"
+  },
+  {
+    "id": "save-validated-poster",
+    "find": "i.jsx(G,{variant:\"outline\",disabled:!R||j,onClick:()=>void k(),children:\"Download PNG\"})",
+    "replace": "R&&i.jsx(DK.SavePoster,{title:t,svg:d.svg}),i.jsx(G,{variant:\"outline\",disabled:!R||j,onClick:()=>void k(),children:\"Download PNG\"})"
+  },
+  {
+    "id": "engagement-start-route",
+    "find": "path:\"/debate/start\",element:i.jsx(nD,{})",
+    "replace": "path:\"/debate/start\",element:i.jsx(DK.Setup,{})"
+  },
+  {
+    "id": "engagement-topic-route",
+    "find": "path:\"/debate/topic\",element:i.jsx(vD,{})",
+    "replace": "path:\"/debate/topic\",element:i.jsx(DK.Topic,{})"
+  }
+]

@@ -33,6 +33,11 @@ export function compile() {
   }
   const silhouette = fs.readFileSync(path.join(root, 'maintenance/renderer/silhouette.js'), 'utf8');
   output = output.slice(0,start) + silhouette + output.slice(end);
+  const mount = 'Zw(document.getElementById("root")).render(i.jsx(aM,{}));';
+  if (output.split(mount).length !== 2) throw new Error('Review the V2 mount before integrating the workspace');
+  const workspace = fs.readFileSync(path.join(root, 'maintenance/workspace/app.mjs'), 'utf8').replace(/^export /gm, '');
+  const adapter = 'const DK=(()=>{' + workspace + '\nreturn {...createWorkspace({React:p,Link:Qe,useAuth:Xt,useLocation:Vi,useNavigate:Mn,db:$,Account:y3,OriginalTopic:vD,OriginalStart:nD}),afterLogin};})();\n';
+  output = output.replace(mount, () => adapter + mount);
   if (!output.includes('bqhyropctavxjdnogmor.supabase.co')) throw new Error('V2 backend identity missing');
   if (output.includes('jgmkhntqfffkwggqzxql')) throw new Error('Legacy backend identity is forbidden');
   const sha256 = digest(output);
@@ -51,12 +56,14 @@ export function build(check = false) {
     fs.writeFileSync(assetFile, result.output);
     fs.writeFileSync(manifestFile, manifestText);
   }
+  const css = fs.readFileSync(path.join(root, 'maintenance/workspace/style.css'));
+  const cssUrl = '/counter-argument-v2/maintenance/workspace/style.css?v=' + digest(css).slice(0,12);
   for (const shell of shells) {
     const target = path.join(root, shell);
     const html = fs.readFileSync(target, 'utf8');
-    const updated = html.replace(/(<script\b[^>]*\bsrc=")[^"]*\/assets\/index-[^"]+\.js("[^>]*><\/script>)/, `$1/counter-argument-v2/${result.manifest.generatedAsset}$2`);
+    const updated = html.replace(/(href=")[^"]*maintenance\/workspace\/style\.css[^"]*(")/, (_, before, after) => before + cssUrl + after).replace(/(<script\b[^>]*\bsrc=")[^"]*\/assets\/index-[^"]+\.js("[^>]*><\/script>)/, `$1/counter-argument-v2/${result.manifest.generatedAsset}$2`);
     if (updated === html && !html.includes(`/counter-argument-v2/${result.manifest.generatedAsset}`)) throw new Error(`Runtime reference missing in ${shell}`);
-    if (!updated.includes('<title>Counter Argument V2</title>')) throw new Error(`V2 title missing in ${shell}`);
+    if (!updated.includes('<title>Differ Kindly</title>') || !updated.includes(cssUrl)) throw new Error(`Workspace assets missing in ${shell}`);
     if (check && updated !== html) throw new Error(`Stale runtime reference in ${shell}`);
     if (!check) fs.writeFileSync(target, updated);
   }
