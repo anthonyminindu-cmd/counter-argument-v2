@@ -1,0 +1,42 @@
+[
+  {
+    "id": "single-global-notification-center",
+    "find": "i.jsx(FO,{}),i.jsxs(DK.Provider",
+    "replace": "i.jsxs(DK.Provider"
+  },
+  {
+    "id": "send-one-durable-friend-invitation",
+    "find": "const{data:w,error:x}=await $.from(\"topics\").insert([{title:\"Friend Debate Session\",category:\"General\",created_by:t.id,is_active:!0}]).select().single();if(x)throw x;const{data:j,error:S}=await $.from(\"debates\").insert([{topic_id:w.id,participant_a:t.id,status:\"waiting\"}]).select().single();if(S)throw S;const{data:N,error:E}=await $.from(\"debate_sessions\").insert([{debate_id:j.id,user_a:t.id,current_phase:\"invitation_pending\"}]).select().single();if(E)throw E;const{data:_,error:C}=await $.from(\"invitations\").insert([{sender_id:t.id,receiver_id:g.user_id,debate_session_id:N.id,message:`${f({id:\"\",user_id:t.id,display_name:(b=t.user_metadata)==null?void 0:b.display_name,username:(v=t.user_metadata)==null?void 0:v.username,avatar_url:null})} has invited you to a debate!`,expires_at:new Date(Date.now()+24*60*60*1e3).toISOString()}]).select().single();if(C)throw C;r({title:\"Invitation Sent!\",description:`Your debate invitation has been sent to ${f(g)}`}),e(_.id)",
+    "replace": "const {data:invite,error}=await $.rpc(\"dk_invite_friend\",{p_receiver:g.user_id});if(error||!invite)throw error||new Error(\"No invitation was returned\");e(invite)"
+  },
+  {
+    "id": "restore-friend-topic-and-follow-phase",
+    "find": "p.useEffect(()=>!n||!e?void 0:(console.log(\"🔄 Setting up real-time subscription for user:\",n.id),j()),[n,e,c]),p.useEffect(()=>{const k=P=>{var O;console.log(\"🔄 Session updated event received:\",P.detail);const A=(O=P.detail)==null?void 0:O.session;A&&A.current_phase===\"position_selection\"&&console.log(\"🚀 Phase change to position_selection detected via event!\"),x()};return window.addEventListener(\"session-updated\",k),()=>{window.removeEventListener(\"session-updated\",k)}},[t]),p.useEffect(()=>{n&&e&&w()},[n,e]),p.useEffect(()=>{v()},[s]);const v=()=>{var k;(k=b.current)==null||k.scrollIntoView({behavior:\"smooth\"})},w=async()=>{try{const{data:k,error:P}=await $.from(\"debate_sessions\").select(\"user_a, user_b\").eq(\"id\",e).single();if(P)throw P;const A=[k.user_a,k.user_b].filter(Boolean),{data:O,error:L}=await $.from(\"profiles\").select(\"user_id, display_name, username, avatar_url\").in(\"user_id\",A);if(L)throw L;const W=A.map(T=>({user_id:T,profile:O.find(M=>M.user_id===T)}));u(W),x()}catch(k){console.error(\"Error fetching session data:\",k),r({title:\"Error\",description:\"Failed to load session data\",variant:\"destructive\"})}finally{g(!1)}},x=async()=>{try{const{data:k,error:P}=await $.from(\"debate_sessions\").select(\"shared_data, current_phase\").eq(\"id\",e).single();if(P)throw P;console.log(\"📥 Fetched session data:\",k),console.log(\"📥 Current phase from DB:\",k.current_phase);const A=k==null?void 0:k.shared_data;A!=null&&A.chat_messages&&o(A.chat_messages),A!=null&&A.topic_proposal&&(m(A.topic_proposal),k.current_phase===\"position_selection\"&&A.topic_proposal.topic&&(console.log(\"🚀 Session already in position_selection phase, navigating immediately!\"),setTimeout(()=>{t(A.topic_proposal.topic)},1e3)))}catch(k){console.error(\"Error fetching chat history:\",k)}},j=()=>{console.log(\"🔔 CollaborativeTopicSelection: Setting up subscription for session:\",e),console.log(\"🔔 Current user:\",n==null?void 0:n.id);const k=$.channel(`collaborative-topic-${e}`).on(\"postgres_changes\",{event:\"UPDATE\",schema:\"public\",table:\"debate_sessions\",filter:`id=eq.${e}`},P=>{var T,M;console.log(\"📨 CollaborativeTopicSelection: Update received by user:\",n==null?void 0:n.id);const A=(T=P.old)==null?void 0:T.shared_data,O=(M=P.new)==null?void 0:M.shared_data,L=(A==null?void 0:A.chat_messages)||[],W=(O==null?void 0:O.chat_messages)||[];if(O!=null&&O.chat_messages&&JSON.stringify(L)!==JSON.stringify(W)&&(console.log(\"💬 CollaborativeTopicSelection: Updating chat messages from\",L.length,\"to\",W.length),o(W.map(J=>({...J})))),O!=null&&O.topic_proposal){const J=O.topic_proposal;console.log(\"📝 Topic proposal update received:\",J),m(J)}window.dispatchEvent(new CustomEvent(\"session-updated\",{detail:{session:P.new}}))}).subscribe(P=>{console.log(\"🔌 CollaborativeTopicSelection subscription status for user\",n==null?void 0:n.id,\":\",P)});return()=>{console.log(\"🔌 CollaborativeTopicSelection: Unsubscribing from updates for user:\",n==null?void 0:n.id),$.removeChannel(k)}},S=async()=>",
+    "replace": "DK.useFriendTopic({sessionId:e,owner:n?.id,onTopicSelected:t,messages:o,participants:u,proposal:m,loading:g,report:r});const S=async()=>"
+  },
+  {
+    "id": "refresh-topic-on-local-write",
+    "find": "if (saved) return {...row,...patch};",
+    "replace": "if (saved) { if (typeof window!==\"undefined\" && typeof CustomEvent!==\"undefined\") window.dispatchEvent(new CustomEvent(\"dk-topic-changed\")); return {...row,...patch}; }"
+  },
+  {
+    "id": "show-turn-for-topic-agreement",
+    "find": "!f.agreed_by.includes((n==null?void 0:n.id)||\"\")&&i.jsxs(\"div\",{className:\"flex space-x-3 pt-2\"",
+    "replace": "i.jsx(\"p\",{role:\"status\",className:\"font-semibold\",children:f.agreed_by.includes(n?.id)?\"You agreed. Waiting for your partner.\":\"Your turn to review this topic.\"}),!f.agreed_by.includes((n==null?void 0:n.id)||\"\")&&i.jsxs(\"div\",{className:\"flex space-x-3 pt-2\""
+  },
+  {
+    "id": "remove-topic-debug-banner",
+    "find": "i.jsxs(\"div\",{className:\"bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 text-sm\",children:[i.jsx(\"strong\",{children:\"DEBUG:\"}),\" Session: \",e,\" | Participants: \",c.length,\" | Current Proposal: \",f?`\"${f.topic}\" (${f.agreed_by.length}/${c.length} agreed)`:\"None\"]}),",
+    "replace": ""
+  },
+  {
+    "id": "remove-active-debug-banner",
+    "find": "o&&i.jsxs(\"div\",{className:\"bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 text-sm\",children:[i.jsx(\"strong\",{children:\"DEBUG:\"}),\" Session ID: \",o,\" | Current Phase: \",h,\" | User: \",r==null?void 0:r.id]}),",
+    "replace": ""
+  },
+  {
+    "id": "single-topic-phase-navigation",
+    "find": "setTimeout(()=>{t(f.topic)},1500)",
+    "replace": "void 0"
+  }
+]

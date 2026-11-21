@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const {pathToFileURL}=require('node:url');
-let bundle,css,prep,friendExpr,chatExpr;
+let bundle,css,prep,chatExpr;
 before(async()=>{
   const {compile}=await import(pathToFileURL(path.resolve(__dirname,'../build.mjs')).href);
   bundle=process.env.V2_TEST_BUNDLE?fs.readFileSync(process.env.V2_TEST_BUNDLE,'utf8'):compile().output;
@@ -12,7 +12,6 @@ before(async()=>{
   const marker='h==="preparation"&&i.jsx("div",{className:"space-y-4"';
   const start=bundle.indexOf(marker);assert.ok(start>=0);
   prep=bundle.slice(start+'h==="preparation"&&'.length,bundle.indexOf(',h==="arguments"&&',start));
-  friendExpr=slice('gx=',',K5=');
   chatExpr=slice('const kx=',';function qD');
 });
 const noop = () => {};
@@ -64,28 +63,10 @@ test('responsive classes are present in the deployed stylesheet, without CSS reb
   assert.ok(css.includes('@media (min-width: 1024px)')||css.includes('@media(min-width:1024px)'));
 });
 
-test('friend flow mounts no local invitation modal and keeps sender acceptance notices',()=>{
-  const c=context(friendExpr),tree=c.run()({mode:'friend'}),nodes=walk(tree);
-  assert.equal(nodes.filter(n=>n.type==='q5').length,0);
-  assert.equal(nodes.filter(n=>n.type==='G5').length,1);
-  assert.equal(bundle.split('i.jsx(FO,{})').length-1,1);
-});
-test('friend invitation counter refreshes on global invitation changes and unregisters cleanly',async()=>{
-  let reads=0;
-  const chain={select(){return this},eq(){return this},gte:async()=>{reads++;return{count:2,error:null}}};
-  const c=context(friendExpr,{$:{from:()=>chain}});
-  c.run()({mode:'friend'});
-  const cleanup=c.effects[0]();await Promise.resolve();
-  assert.equal(reads,1);
-  c.ctx.window.dispatchEvent(new CustomEvent('v2-invitations-changed'));await Promise.resolve();
-  assert.equal(reads,2);
-  cleanup();c.ctx.window.dispatchEvent(new CustomEvent('v2-invitations-changed'));await Promise.resolve();
-  assert.equal(reads,2);
-});
-test('global invitation INSERT and UPDATE callbacks notify the shared counter',()=>{
-  assert.ok(bundle.includes('r(b),o(!0),window.dispatchEvent(new CustomEvent("v2-invitations-changed")),t({title:'));
-  const foStart=bundle.indexOf('const FO='),foEnd=bundle.indexOf('const ',foStart+10),chunk=bundle.slice(foStart,foStart+5000);
-  assert.ok(chunk.includes('window.dispatchEvent(new CustomEvent("v2-invitations-changed")),n&&y.new.id===n.id'));
+test('the current friend route uses the shared inbox and mounts one notification control',()=>{
+  assert.equal(bundle.includes('i.jsx(FO,{})'),false);
+  assert.ok(bundle.includes("mode==='friend'?h(FriendSetup)"));
+  assert.equal(bundle.split("h(Notifications,{key:'inbox'})").length-1,1);
 });
 
 test('chat composer disables sending when participant session is unavailable',()=>{

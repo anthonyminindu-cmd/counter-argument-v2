@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "4ab7b04b3b284285cd14de1dc096c942d769e9f6e22a13953ec45b497b12b28e",
-  "generatedAsset": "assets/index-v2-4ab7b04b3b284285.js",
+  "generatedSha256": "fb546aa4e6bfa8954ad67db634baf935c4cba63c368d2ba87f584c594cf3f60b",
+  "generatedAsset": "assets/index-v2-fb546aa4e6bfa895.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -152,6 +152,14 @@
     "prefill-saved-person",
     "save-validated-poster",
     "engagement-start-route",
-    "engagement-topic-route"
+    "engagement-topic-route",
+    "single-global-notification-center",
+    "send-one-durable-friend-invitation",
+    "restore-friend-topic-and-follow-phase",
+    "refresh-topic-on-local-write",
+    "show-turn-for-topic-agreement",
+    "remove-topic-debug-banner",
+    "remove-active-debug-banner",
+    "single-topic-phase-navigation"
   ]
 }

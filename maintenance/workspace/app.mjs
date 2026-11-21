@@ -1,3 +1,4 @@
+import {createFriendExperience} from './friend.mjs';
 // Editable production workspace. The V2 router, authenticated client and debate flows are injected by the build.
 const home = '/home';
 const feed = '/home?view=feed';
@@ -15,6 +16,7 @@ function login(next) { return '/login?next='+encodeURIComponent(next); }
 function topicRoute(title) { return '/debate/active?mode=ai&topic='+encodeURIComponent(title); }
 function profileRoute(tab) { return tab==='Table'?profile:profile+'?tab='+tab.toLowerCase(); }
 const glyphs = {
+  bell:'M18 8a6 6 0 0 0-12 0c0 7-3 8-3 10h18c0-2-3-3-3-10M10 21h4',
   home:'m3 10 9-7 9 7v10h-6v-6H9v6H3z', feed:'M3 6h18M3 12h13M3 18h16',
   person:'M16 8a4 4 0 1 1-8 0 4 4 0 0 1 8 0M4 21v-2a8 8 0 0 1 16 0v2',
   friends:'M15 8a4 4 0 1 1-8 0 4 4 0 0 1 8 0M2 21v-2a8 8 0 0 1 16 0v2m0-15a3 3 0 0 1 0 6m2 3a5 5 0 0 1 2 4',
@@ -25,11 +27,12 @@ const glyphs = {
   enter:'M4 12h14m-5-5 5 5-5 5', book:'M3 4h7l2 2 2-2h7v15h-7l-2 2-2-2H3zM12 6v15'
 };
 
-export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,Account,OriginalTopic,OriginalStart}) {
+export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,Account,OriginalTopic,OriginalStart,Directory}) {
   const h=React.createElement, {useState,useEffect,useRef,useContext,createContext}=React;
   const Collection=createContext(null);
   function Icon({name}) {return h('svg',{className:'dk-icon',viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:1.7,strokeLinecap:'round',strokeLinejoin:'round','aria-hidden':true},h('path',{d:glyphs[name]}));}
   const icon=name=>h(Icon,{name});
+  const {InboxProvider,Notifications,FriendSetup,useFriendTopic}=createFriendExperience({React,db,Link,useLocation,useNavigate,Directory,icon});
   const link=(to,label,cls='dk-link')=>h(Link,{to,className:cls},label);
   const status=(message,alert=false)=>h('p',{className:'dk-note',role:alert?'alert':'status'},message);
   function useQuery(key,load) {
@@ -47,7 +50,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function Provider({children}) {
     const {user}=useAuth(), id=user?.id;
     const query=useQuery(id||null,()=>db.from('dk_collection').select('kind,target,label,created_at').eq('owner_id',id).order('created_at',{ascending:false}));
-    return h(Collection.Provider,{value:{id,...query,items:query.data||[]}},h('div',{className:'dk-shell min-h-screen'},children));
+    return h(Collection.Provider,{value:{id,...query,items:query.data||[]}},h(InboxProvider,{key:id||'guest',owner:id},h('div',{className:'dk-shell min-h-screen'},children)));
   }
   function Save({kind,target,label,artwork}) {
     const c=useContext(Collection), [busy,setBusy]=useState(false),[error,setError]=useState('');
@@ -99,6 +102,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('nav',{'aria-label':'Primary',className:'dk-nav'},...destinations.map(([to,name,g])=>
           h(Link,{key:name,to,onClick:scrollToStart,'aria-current':active===name?'page':undefined},icon(g),name))),
         h('div',{className:'dk-account'},user?[
+          h(Notifications,{key:'inbox'}),
           h(Link,{key:'settings',to:'/settings',className:'dk-small','aria-label':'Settings'},icon('settings')),
           h('button',{key:'out',className:'dk-small',onClick:async()=>{try{await signOut();navigate('/')}catch{setError('Sign-out failed. Try again.')}}},'Sign out')
         ]:link(login(home),'Sign in','dk-small'))),
@@ -124,7 +128,8 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function Setup(){
     const loc=useLocation();
-    return new URLSearchParams(loc.search).get('mode')?h(OriginalStart):h(Start);
+    const mode=new URLSearchParams(loc.search).get('mode');
+    return mode==='friend'?h(FriendSetup):mode?h(OriginalStart):h(Start);
   }
   function Topic(){
     const loc=useLocation(),{user,loading}=useAuth(),navigate=useNavigate(),[question,set]=useState('');
@@ -216,5 +221,5 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       tab==='Table'?h(Activity,{key:user.id}):tab==='Account'?h(Account,{key:user.id}):c.error?h('button',{className:'dk-secondary',onClick:c.refresh},'Retry loading collection'):c.loading&&!c.data?status('Loading your collection…'):tab==='People'?h(People,{user}):
       h('section',{className:'dk-collection'},!items.length?h('div',{className:'dk-panel'},h('h2',null,tab==='Posters'?'Your saved posters':'Your pinned discussions'),h('p',null,tab==='Posters'?'Open a finished infographic and choose Save poster.':'Pin a public question or an exploration from your table to return to it here.'),link(tab==='Posters'?profile:feed,tab==='Posters'?'Open your table':'Browse the feed','dk-secondary')):items.map(item=>tab==='Posters'?h(SavedArtwork,{key:item.target,item}):h('article',{key:item.kind+item.target,className:'dk-card'},h('small',null,item.kind==='question'?'Public question':'Your exploration'),h('div',{className:'dk-sectionline'},link(item.kind==='question'?feed+'&question='+item.target:'/debate/view/'+item.target,item.label,'dk-titlelink'),h(Save,{kind:item.kind,target:item.target,label:item.label}))))));
   }
-  return {Nav,Provider,Start,Setup,Topic,Profile,SavePoster};
+  return {Nav,Provider,Start,Setup,Topic,Profile,SavePoster,useFriendTopic};
 }
