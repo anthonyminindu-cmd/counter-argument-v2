@@ -7,7 +7,7 @@ for(const engine of ['firefox','webkit']){
     try {
       for(const width of [390,1280]){
         const page=await browser.newPage({viewport:{width,height:844}});
-        await page.goto('https://anthonyminindu-cmd.github.io/counter-argument-v2/demo/v2-regression-fixture.html');
+        await page.goto('https://anthonyminindu-cmd.github.io/counter-argument-v2/demo/v2-regression-fixture.html?build=a86bf61');
         await page.locator('[data-pass]').nth(3).waitFor({state:'attached'});
         const results=await page.locator('[data-pass]').evaluateAll(nodes=>nodes.map(n=>[n.dataset.pass,n.innerText.slice(0,2000)]));
         console.log('QA fixture '+engine+' '+width+' '+JSON.stringify(results));
