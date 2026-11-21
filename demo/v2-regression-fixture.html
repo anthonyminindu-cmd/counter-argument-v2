@@ -334,13 +334,25 @@ function silhouetteLayout(rows, scene, ownership, measure, top, bottom) {
   const seam=Yn(12+1576*totals[0]/(totals[0]+totals[1]));
   // Center the silhouette near the shared seam. A side with more top-ranked claims gets more room.
   const main=projectSubject(posterDrawing(scene.objects[0]),seam,top+6,1080,bottom-top-12);
-  for (let variant=0;variant<8;variant++) {
-    const pieces=[];
+  const fittedSides=[null,null];
+  for (let variant=0;variant<12;variant++) {
     for (let index=0;index<2;index++) {
+      if (fittedSides[index]) continue;
+      const pieces=[];
       const side=index?'right':'left',box={left:index?seam:12,right:index?1588:seam,top,bottom,seam};
       const sites=silhouetteSites(sides[index],side,box,main,variant%4);
+      // Small peripheral cells can have very different proportions. On the
+      // last attempts, move each claim to a neighboring site in its own tier.
+      // The cell area calculation still uses that claim's exact rank.
+      if (variant>=8) {
+        for (const [lo,hi] of [[1,7],[8,13],[14,20]]) {
+          const band=sites.filter(site=>site.item.rank>=lo && site.item.rank<=hi);
+          const items=band.map(site=>site.item);
+          band.forEach((site,i)=>{site.item=items[(i+1+variant%4)%items.length];});
+        }
+      }
       const polygons=weightedSilhouetteCells(sites,box);
-      if (!polygons) break;
+      if (!polygons) continue;
       for (let i=0;i<sites.length;i++) {
         const poly=polygons[i],item=sites[i].item, text=fitSilhouetteText(poly,item,main,measure,variant>=4);
         if (!text) break;
@@ -353,8 +365,9 @@ function silhouetteLayout(rows, scene, ownership, measure, top, bottom) {
         const d='M'+poly[0].map(Yn).join(' ')+poly.map((p,j)=>edge(p,poly[(j+1)%poly.length])).join('')+'Z';
         pieces.push({...item,...text,d,level:item.rank<=7?'core':item.rank<=13?'middle':'outer'});
       }
+      if (pieces.length===10) fittedSides[index]=pieces;
     }
-    if (pieces.length===20) return {main,pieces:pieces.sort((a,b)=>a.rank-b.rank)};
+    if (fittedSides.every(Boolean)) return {main,pieces:fittedSides.flat().sort((a,b)=>a.rank-b.rank)};
   }
   // Very long individual words can require the existing rank- and type-fit layout.
   // It still uses the same silhouette, dual inks and contextual background.
