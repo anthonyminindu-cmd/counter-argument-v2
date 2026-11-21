@@ -133,6 +133,10 @@ test('mobile Chrome restores and completes an AI debate, verifies twenty saved r
     if(await open.isVisible())await open.click();
     await pg.getByText('20 of 20 labels fit',{exact:true}).waitFor({timeout:220000});
     assert.equal(await pg.locator('svg [data-label]').count(),20);
+    const study=ranked.find(row=>row.title==='Quiet study');
+    const label=await pg.locator('g[data-argument-id="'+study.id+'"] [data-label]').evaluate(el=>[...el.querySelectorAll('tspan')].map(line=>line.textContent.trim()).join(' '));
+    if (/quiet monday study/i.test(label))throw Error('Incorrect study day');
+    console.log('QA PASS saved Sunday study label: '+label);
     phase='zooming and exporting the validated PNG';
     await btn(pg,'Zoom in').click();
     await btn(pg,'Fit to width').click();
