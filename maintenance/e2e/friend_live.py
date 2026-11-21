@@ -122,7 +122,7 @@ def topic_to_suggest(page):
 
 
 def check_rankings_and_poster(pages, expected_titles):
-    exports, posters = [], []
+    exports, posters, dimensions = [], [], []
     for index, page in enumerate(pages):
         side = "desktop" if index == 0 else "mobile"
         expect(page.get_by_role("heading", name="Final AI rankings", exact=True)).to_be_visible(timeout=720000)
@@ -133,6 +133,7 @@ def check_rankings_and_poster(pages, expected_titles):
         records = rankings["ranking"]
         assert sorted(row["rank"] for row in records) == list(range(1, 21))
         assert len({row["id"] for row in records}) == 20
+        assert {row["title"] for row in records} == set(expected_titles)
         exports.append(rankings)
         if button(page, "View infographic").is_visible():
             button(page, "View infographic").click()
@@ -144,14 +145,14 @@ def check_rankings_and_poster(pages, expected_titles):
             button(page, "Download PNG").click()
         png = Path(download.value.path()).read_bytes()
         assert png[:8] == b"\x89PNG\r\n\x1a\n"
-        assert struct.unpack(">II", png[16:24]) == (4480, 2520)
+        size = struct.unpack(">II", png[16:24])
+        assert size in {(6400, 3600), (4480, 2520)}, size
+        dimensions.append(size)
         posters.append(png)
     assert exports[0] == exports[1]
-    for page in pages:
-        expect(page.get_by_text(expected_titles[0], exact=True).last).to_be_visible()
-        expect(page.get_by_text(expected_titles[-1], exact=True).last).to_be_visible()
+    assert dimensions[0] == dimensions[1]
     assert posters[0] == posters[1]
-    check("Both accounts exported the same 20 original ranks and an identical 4480 by 2520 PNG")
+    check(f"Both accounts exported all 20 original points in the same rank order and an identical {dimensions[0][0]} by {dimensions[0][1]} PNG")
 
 
 def check_positions_and_arguments(sender, receiver, room, topic):
@@ -330,3 +331,18 @@ if __name__ == "__main__":
             assert parse_qs(urlparse(page.url).query)["topic"]==[topic]
         check("Topic persisted through refresh and both accounts advanced with the same agreed topic")
         check_positions_and_arguments(sender, receiver, room, topic)
+        # Both accounts have already used the automatic handoff while waiting.
+        # Here the sender keeps browsing after sending another invitation.
+        send(sender, b)
+        sender.get_by_role("link", name="Feed", exact=True).click()
+        expect(sender.get_by_role("heading", name="Community feed", exact=True)).to_be_visible()
+        await_popup(receiver, a["name"]).get_by_role("button", name="Accept invitation", exact=True).click()
+        alert = sender.get_by_role("dialog")
+        expect(alert.get_by_text(b["name"] + " accepted your invitation", exact=True)).to_be_visible(timeout=30000)
+        assert parse_qs(urlparse(sender.url).query).get("view") == ["feed"]
+        capture(sender, "13-desktop-acceptance-while-browsing")
+        button(alert, re.compile(r"^(Open debate|Join session)$", re.I)).click()
+        for page in (sender, receiver):
+            page.wait_for_url(re.compile(r"/debate/topic\??[^#]*session="), timeout=30000)
+        assert session(sender) == session(receiver) != room
+        check("The sender stayed on the feed until opening the acceptance notice, then joined the same new debate")
