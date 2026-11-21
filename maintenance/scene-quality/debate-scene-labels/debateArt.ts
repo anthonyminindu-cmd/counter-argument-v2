@@ -1,6 +1,6 @@
 import {aiInputHash,type ReceiptContext} from '../_shared/aiRequestLedger.ts';
 import {corsHeaders} from 'npm:@supabase/supabase-js@2/cors';
-import {SCENE_VERSION,validateScene} from '../_shared/illustratedScene.mjs';
+import {LABEL_VERSION,SCENE_VERSION,validateScene} from '../_shared/illustratedScene.mjs';
 import {requestDeadline} from '../_shared/rankingRequest.ts';
 
 export const ART_VERSION='split-editorial-art-v2';
@@ -11,11 +11,13 @@ export async function generateDebateArt(req:Request,{admin,receiptOwner}:Receipt
   const key=Deno.env.get('OPENAI_API_KEY');
   if(!key)return reply({error:'Illustration generation is not configured.'},503);
   const input=await req.json();
-  const hash=await aiInputHash('summary',input,SCENE_VERSION);
-  const receipt=await admin.from('ai_request_ledger').select('response_path,status').eq('user_id',receiptOwner).eq('stage','summary').eq('input_hash',hash).maybeSingle();
-  if(receipt.error)return reply({error:'Unable to read the saved art brief.'},503);
-  if(receipt.data?.status!=='complete'||!receipt.data.response_path)return reply({error:'The debate needs a completed illustration brief.'},409);
-  const stored=await admin.storage.from('ai-response-cache').download(receipt.data.response_path);
+  const hashes = await Promise.all([LABEL_VERSION, SCENE_VERSION].map(version => aiInputHash('summary',input,version)));
+  const receipts = await admin.from('ai_request_ledger').select('input_hash,response_path')
+    .eq('user_id',receiptOwner).eq('stage','summary').eq('status','complete').in('input_hash',hashes);
+  if(receipts.error)return reply({error:'Unable to read the saved art brief.'},503);
+  const path = hashes.map(hash => receipts.data?.find(row => row.input_hash === hash)?.response_path).find(Boolean);
+  if(!path)return reply({error:'The debate needs a completed illustration brief.'},409);
+  const stored=await admin.storage.from('ai-response-cache').download(path);
   if(stored.error||!stored.data)return reply({error:'Unable to load the saved art brief.'},503);
   const plan=validateScene(input.rows,JSON.parse(await stored.data.text()));
   const brief={question:input.topic,submittedPositions:input.positions,mainSubject:plan.objects[0]?.name,leftSubject:plan.objects[1]?.name,rightSubject:plan.objects[2]?.name,foreground:plan.objects[3]?.name,
