@@ -13,4 +13,4 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - run: npm install --prefix /tmp/cross-qa --ignore-scripts playwright-core@1.55.0
-      - run: node --test qa/browser-fixture.cjs
+      - run: runuser -u pwuser -- node --test qa/browser-fixture.cjs
