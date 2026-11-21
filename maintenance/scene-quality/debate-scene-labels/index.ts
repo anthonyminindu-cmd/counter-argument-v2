@@ -63,8 +63,10 @@ async function generateScene(req: Request) {
     return reply({ error:presentationFailure(error) + ' Your original rankings are preserved.' }, deadline.signal.aborted ? 504 : presentationStatus(error));
   } finally { deadline.dispose(); }
 }
-const forParticipant=withAiRequest('summary',generateScene,LABEL_VERSION,resolveFriendScene);
-const forArtwork=withAiRequest('image',generateDebateArt,ART_VERSION,resolveFriendScene);
+// Active and saved views can open the same poster while its provider call is still running.
+const posterOptions = {pollWhenBusy: true};
+const forParticipant=withAiRequest('summary',generateScene,LABEL_VERSION,resolveFriendScene,'',posterOptions);
+const forArtwork=withAiRequest('image',generateDebateArt,ART_VERSION,resolveFriendScene,'',posterOptions);
 Deno.serve((req:Request)=>{
   const path=new URL(req.url).pathname;
   if(path.endsWith('/repair-solo'))return repairSavedSoloScene(req,generateScene);

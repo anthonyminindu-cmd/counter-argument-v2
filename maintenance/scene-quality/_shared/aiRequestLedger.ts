@@ -25,7 +25,7 @@ export async function aiInputHash(stage: string,input: unknown,identityVersion =
 type SharedInputResolver = (client: ReturnType<typeof createClient>, viewer: string, input: Record<string,unknown>) =>
   Promise<Response | { owner: string; input: Record<string,unknown> } | null>;
 
-export function withAiRequest(stage: string,handler: Handler,identityVersion = '',resolveShared?: SharedInputResolver, fixed422Version = ''): Handler {
+export function withAiRequest(stage: string,handler: Handler,identityVersion = '',resolveShared?: SharedInputResolver, fixed422Version = '', options: {pollWhenBusy?: boolean} = {}): Handler {
   return async req => {
     if(req.method==='OPTIONS') return new Response('ok',{headers});
     if(req.method!=='POST') return reply('POST required',405);
@@ -52,13 +52,13 @@ export function withAiRequest(stage: string,handler: Handler,identityVersion = '
       }
     }
     const admin=createClient(url,service);
-    return runAccountedAiRequest(admin,receiptOwner,stage,req,input,handler,identityVersion,shared,fixed422Version);
+    return runAccountedAiRequest(admin,receiptOwner,stage,req,input,handler,identityVersion,shared || options.pollWhenBusy === true,fixed422Version);
   };
 }
 
 /** Internal workers supply an owner only after authenticating the job and loading its saved inputs. */
 export async function runAccountedAiRequest(admin: ReturnType<typeof createClient>,receiptOwner:string,stage:string,req:Request,
-  input:Record<string,unknown>,handler:Handler,identityVersion:string,shared=false,fixed422Version=''):Promise<Response> {
+  input:Record<string,unknown>,handler:Handler,identityVersion:string,pollWhenBusy=false,fixed422Version=''):Promise<Response> {
   let hash:string;
   try{hash=await aiInputHash(stage,input,identityVersion);}catch{return reply('AI request nesting exceeds its limit',400);}
   if (fixed422Version) {
@@ -70,7 +70,7 @@ export async function runAccountedAiRequest(admin: ReturnType<typeof createClien
     }
   }
   const {data:claim,error:claimError}=await admin.rpc('claim_ai_request',{p_user_id:receiptOwner,p_stage:stage,p_input_hash:hash,p_retry:input.retry===true});
-  if(shared && claimError?.message==='This AI request is already in progress') return new Response(JSON.stringify({pending:true}),{status:202,headers});
+  if(pollWhenBusy && claimError?.message==='This AI request is already in progress') return new Response(JSON.stringify({pending:true}),{status:202,headers});
   if(claimError||!claim) return reply(claimError?.message||'AI request could not be reserved',429);
   if(claim.cached) {
     if(!claim.path) return reply('The saved AI response is unavailable; no new paid request was started',409);
