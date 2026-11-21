@@ -13,12 +13,12 @@ export function presentationFailure(error: unknown) {
   return 'The presentation response could not be validated.';
 }
 /** One bounded, structured OpenAI call per reserved presentation stage. */
-export async function presentationJson(key: string, instructions: string, input: unknown, name: string, schema: object, signal: AbortSignal): Promise<unknown> {
+export async function presentationJson(key: string, instructions: string, input: unknown, name: string, schema: object, signal: AbortSignal, options: {model:string;maxTokens:number} = {model:'gpt-5.4-mini',maxTokens:5000}): Promise<unknown> {
   const response = await fetch('https://api.openai.com/v1/responses', {
     method: 'POST', signal,
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'gpt-5.4-mini', store: false, stream: false, max_output_tokens: 5000,
+      model: options.model, store: false, stream: false, max_output_tokens: options.maxTokens,
       instructions, input: JSON.stringify(input), tools: [],
       text: { format: { type: 'json_schema', name, strict: true, schema } },
     }),

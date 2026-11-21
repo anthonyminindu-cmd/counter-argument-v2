@@ -1,0 +1,52 @@
+[
+  {
+    "id": "render-subject-shaped-puzzle",
+    "find": "return M5(e,a,n,r,s,o);",
+    "replace": "return renderSilhouettePuzzle(e,a,n,r,s);"
+  },
+  {
+    "id": "version-silhouette-plans",
+    "find": "const Wf=\"illustrated-debate-split-v4\"",
+    "replace": "const Wf=\"illustrated-debate-silhouette-v5\""
+  },
+  {
+    "id": "accept-single-subject-and-optional-context",
+    "find": "t.objects.length!==4||t.objects.some",
+    "replace": "![1,2,4].includes(t.objects.length)||t.objects.some"
+  },
+  {
+    "id": "request-one-illustration-plan",
+    "find": "T(\"debate-scene-labels\"),me=Sp",
+    "replace": "T(\"debate-scene-labels/silhouette\"),me=Sp"
+  },
+  {
+    "id": "draw-artwork-from-the-approved-outline",
+    "find": "let J;try{const ne=sx(a,\"header\",u);J=await mx.request(ne,async()=>{const me=await T(\"debate-scene-labels/art\");if(typeof me.artwork!=\"string\"||!/^data:image\\/(jpeg|png);base64,[A-Za-z0-9+/=]+$/.test(me.artwork))throw Error(\"Invalid illustrated background.\");return me.artwork},W)}catch(ne){P&&g(ne instanceof Error?ne.message:\"The illustrated background is unavailable.\")}",
+    "replace": ""
+  },
+  {
+    "id": "use-one-renderer-for-preview-and-export",
+    "find": "new Map(JSON.parse(c)),J);P&&h",
+    "replace": "new Map(JSON.parse(c)));P&&h"
+  },
+  {
+    "id": "remove-unused-artwork-warning-state",
+    "find": "[y,g]=p.useState(\"\"),[b,v]=",
+    "replace": "[b,v]="
+  },
+  {
+    "id": "reset-poster-status",
+    "find": "v(\"\"),g(\"\"),m({scope:\"\",text:\"\"})",
+    "replace": "v(\"\"),m({scope:\"\",text:\"\"})"
+  },
+  {
+    "id": "remove-obsolete-artwork-retry",
+    "find": "y&&!I&&i.jsxs(\"div\",{role:\"status\",children:[i.jsxs(\"p\",{children:[\"The outline edition is ready. \",y]}),i.jsx(G,{variant:\"outline\",onClick:()=>E(P=>({scope:u,count:P.scope===u?P.count+1:1})),children:\"Retry artwork\"})]}),",
+    "replace": ""
+  },
+  {
+    "id": "validate-short-claims-for-silhouette-plans",
+    "find": "!L5.test(u.statement)",
+    "replace": "!(t.profile===\"custom\"&&t.objects.length<=2?/^\\S+(?: \\S+){1,3}$/:L5).test(u.statement)"
+  }
+]

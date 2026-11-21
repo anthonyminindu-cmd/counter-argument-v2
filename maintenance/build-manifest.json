@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "db7a311e20d4ff07c056f7cbd61c061358dbc38aa89314e510e7128c364cd90d",
-  "generatedAsset": "assets/index-v2-db7a311e20d4ff07.js",
+  "generatedSha256": "5d6733427ab97b48b3bf0fb86e3a909d6ce56ea1bea80c51cb387e5af1b4af6a",
+  "generatedAsset": "assets/index-v2-5d6733427ab97b48.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -106,6 +106,16 @@
     "name-active-chat-send-button",
     "keep-original-short-title-when-weekday-qualifier-drops",
     "validate-title-against-available-header-space",
-    "share-the-header-boundary-between-title-and-question"
+    "share-the-header-boundary-between-title-and-question",
+    "render-subject-shaped-puzzle",
+    "version-silhouette-plans",
+    "accept-single-subject-and-optional-context",
+    "request-one-illustration-plan",
+    "draw-artwork-from-the-approved-outline",
+    "use-one-renderer-for-preview-and-export",
+    "remove-unused-artwork-warning-state",
+    "reset-poster-status",
+    "remove-obsolete-artwork-retry",
+    "validate-short-claims-for-silhouette-plans"
   ]
 }

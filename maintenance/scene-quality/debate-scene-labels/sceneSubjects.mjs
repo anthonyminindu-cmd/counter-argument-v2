@@ -18,8 +18,8 @@ const points = pairs => pairs.map(([x,y])=>({x,y}));
 const validPoint = p => p && Number.isInteger(p.x) && Number.isInteger(p.y) && p.x>=0 && p.x<=100 && p.y>=0 && p.y<=100;
 const validLine = (v,min,max) => Array.isArray(v) && v.length>=min && v.length<=max && v.every(validPoint);
 
-export function illustratedSubjects(subjects) {
-  return subjectRoles.map(role => {
+export function illustratedSubjects(subjects, roles = subjectRoles) {
+  return roles.map(role => {
     const subject = subjects[role];
     const {name,form,outline,details} = subject;
     if (!subjectForms.includes(form)) throw Error('Unknown illustration form.');
@@ -27,19 +27,38 @@ export function illustratedSubjects(subjects) {
       const next=outline[(i+1)%outline.length]; return sum+p.x*next.y-next.x*p.y;
     },0))/2 : 0;
     const lines = Array.isArray(details) ? details.filter(line=>validLine(line,2,12)).slice(0,3) : [];
-    if (area<450) return {name,outline:points(outlines[form]),details:[points(detail[form])]};
-    return {name,outline,details:lines.length ? lines : [points(detail[form])]};
+    const scale = Number.isFinite(subject.aspectRatio) ? {aspectRatio:subject.aspectRatio, ...(subject.drawing ? {drawing:subject.drawing} : {})} : {};
+    if (area<450) return {name,...scale,outline:points(outlines[form]),details:[points(detail[form])]};
+    return {name,...scale,outline,details:lines.length ? lines : [points(detail[form])]};
   });
 }
 
+// Guarantee a compact alternative made of real words, including technical
+// terms from this debate. The two free-text headlines can use any vocabulary.
+export function headlineVocabulary(rows) {
+  const common = 'can may limits reduces increases favors helps requires misses costs supports blocks enables weakens offers complicates simplifies preserves delays improves saves narrows expands risks higher lower fewer better more less access choice lock-in workload staffing costs time labor training measurement uncertainty oversight'.split(' ');
+  const tokens = text => (text.match(/[A-Za-z0-9]+(?:[-’'][A-Za-z0-9]+)*/g)||[]).filter(w=>w.length>1 && w.length<=22);
+  const words = [...new Set([...common,...rows.flatMap(r=>tokens(r.title)),...rows.flatMap(r=>tokens(r.description))])];
+  return words.slice(0,450);
+}
+
 // Prefer a concise submitted title when it fits. Match complete alternatives globally.
-export function chooseSceneLabels(entries) {
+export function chooseSceneLabels(entries, claimsOnly = false) {
   const clean = text => typeof text==='string' ? text.trim().replace(/\s+/g,' ') : '';
-  const fragment = /\b(?:a|an|the|and|or|for|to|with|from|if|than|of|in|on|by|can|could|would|should|may|might|must|already|gets|leave|leaves)\s*[.!?]?$/i;
+  const fragment = /(?<!-)\b(?:a|an|the|and|or|for|to|with|from|if|than|of|in|on|by|can|could|would|should|may|might|must|already|gets|leave|leaves)\s*[.!?]?$/i;
   const unfinishedPredicate = /\b(?:can|could|will|would|may|might|must|should|still|already|often)\s+(?:add|beat|outweigh|require|cause|provide|reduce|improve|affect|depend|compare|need|increase|offer|inspect|outperform)s?\s*[.!?]?$/i;
-  const options = entries.map(entry=>[...new Set([entry.title,entry.primary,entry.alternate,entry.fallback].map(clean))]
-    .filter(text=>/^\S+(?: \S+){2,3}$/.test(text) && text.length<=90 && !/…|\.\.\./.test(text))
-    .filter(text=>!fragment.test(text) && !unfinishedPredicate.test(text) && !/\b(?:major|significant|such|various|several|multiple)\s*[.!?]?$/i.test(text)));
+  const lengthPattern = claimsOnly ? /^\S+(?: \S+){1,3}$/ : /^\S+(?: \S+){2,3}$/;
+  const candidates = entry => claimsOnly ? [entry.primary,entry.alternate,entry.fallback] : [entry.title,entry.primary,entry.alternate,entry.fallback];
+  const fluent = (phrase, entry) => {
+    if (!claimsOnly) return true;
+    if (/\b(?:different|stronger|weaker|broader|flexible|big|include|includes|offer|offers|settle)\s*[.!?]?$/i.test(phrase)) return false;
+    const original = [entry.title,entry.description].join(' ').toLowerCase();
+    if (phrase.split(' ').some(w=>w.length>15 && !original.includes(w.toLowerCase()))) return false;
+    return phrase.split(' ').every(word=>!/[a-z][A-Z]/.test(word) || original.includes(word.toLowerCase()));
+  };
+  const options = entries.map(entry=>[...new Set(candidates(entry).map(clean))]
+    .filter(text=>lengthPattern.test(text) && text.length<=90 && !/…|\.\.\./.test(text))
+    .filter(text=>fluent(text,entry) && !fragment.test(text) && !unfinishedPredicate.test(text) && !/\b(?:major|significant|such|various|several|multiple)\s*[.!?]?$/i.test(text)));
   const taken = new Map(), chosen = new Array(entries.length);
   function assign(index,seen) {
     for(const phrase of options[index]){
@@ -51,6 +70,9 @@ export function chooseSceneLabels(entries) {
     }
     return false;
   }
-  for(let i=0;i<entries.length;i++)if(!assign(i,new Set()))throw Error('Every argument needs a distinct complete 3–4 word label.');
+  for(let i=0;i<entries.length;i++)if(!assign(i,new Set())){
+    if(claimsOnly) throw Error('Every argument needs a distinct complete headline (item '+(i+1)+', viable choices '+options[i].length+').');
+    throw Error('Every argument needs a distinct complete 3–4 word label.');
+  }
   return entries.map((entry,i)=>({id:entry.id,position:entry.position,statement:chosen[i]}));
 }

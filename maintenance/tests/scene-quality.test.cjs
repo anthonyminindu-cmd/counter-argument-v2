@@ -10,13 +10,13 @@ test('label selection uses complete alternatives when proposed copy ends mid-tho
   assert.deepEqual(labels.map(label => label.statement), ['Online borrowing already works', 'Payroll squeezes collections']);
 });
 
-test('the current scene uses a single proportion-preserving plate and a matching brief version', async () => {
+test('custom posters use the versioned silhouette brief and a single art request', async () => {
   const { compile } = await import('../build.mjs');
-  const { SCENE_VERSION } = await import('../scene-quality/_shared/illustratedScene.mjs');
+  const { SILHOUETTE_VERSION } = await import('../scene-quality/_shared/silhouetteBrief.mjs');
   const { output } = compile();
-  assert.ok(output.includes(SCENE_VERSION));
-  assert.match(output, /<image data-original-art=""[^>]+preserveAspectRatio="xMidYMid slice"/);
-  assert.doesNotMatch(output, /full-scene-plate/);
+  assert.ok(output.includes(SILHOUETTE_VERSION));
+  assert.ok(output.includes('T("debate-scene-labels/silhouette")'));
+  assert.doesNotMatch(output, /T\("debate-scene-labels\/art"\)/);
 });
 
 test('published labels preserve concise original titles and reject unfinished comparisons', async () => {
@@ -66,4 +66,24 @@ test('whole-phrase alternatives replace cropped predicates and unfinished modifi
     { id:'3',primary:'Renters can inspect',alternate:'Renter appliance testing' },
   ];
   assert.deepEqual(chooseSceneLabels(entries).map(row=>row.statement), ['Unmeasured high-power appliances','Existing utility assistance','Renter appliance testing']);
+});
+
+test('silhouette labels retain the conclusion over short, topic-only titles', async () => {
+  const { chooseSceneLabels } = await import('../scene-quality/debate-scene-labels/sceneSubjects.mjs');
+  const cases=[
+    {title:'Revit and Power BI',primary:'Windows apps create lock-in'},
+    {title:'Mixed OS estate',primary:'Roles need different platforms'},
+    {title:'Weatherization assistance programs',primary:'Energy audits cover more'}
+  ];
+  assert.deepEqual(chooseSceneLabels(cases,true).map(s=>s.statement),cases.map(s=>s.primary));
+});
+
+test('silhouette fallback vocabulary uses real words from the submitted claims', async () => {
+  const {headlineVocabulary,chooseSceneLabels} = await import('../scene-quality/debate-scene-labels/sceneSubjects.mjs');
+  const rows=[{title:'Windows lock-in',description:'Existing software can require Windows in engineering.'}];
+  const vocabulary=headlineVocabulary(rows);
+  assert.ok(vocabulary.includes('lock-in') && vocabulary.includes('engineering'));
+  assert.ok(vocabulary.every(word=>!word.includes(' ')));
+  const [label]=chooseSceneLabels([{...rows[0],primary:'Workloads vary bydepartmentandrequiredtools',alternate:'Different roles need different',fallback:'Vendor lock-in'}],true);
+  assert.equal(label.statement,'Vendor lock-in');
 });

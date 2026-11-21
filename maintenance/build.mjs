@@ -24,7 +24,15 @@ export function compile() {
   const patchFiles = fs.readdirSync(patchDir).filter(file => file.endsWith('.json')).sort();
   const patches = patchFiles.flatMap(file => JSON.parse(fs.readFileSync(path.join(patchDir, file), 'utf8')));
   if (!patches.length) throw new Error('No V2 maintenance patches found');
-  const output = applyPatches(baseline, patches);
+  let output = applyPatches(baseline, patches);
+  // Replace only the reviewed custom-poster function. Keep its editable source outside the bundle.
+  const start = output.indexOf('function M5(');
+  const end = output.indexOf('const Wf=', start);
+  if (start < 0 || end <= start || digest(output.slice(start,end)) !== '8fca088b30f740937ae317444a701c391e0894f63216ca9d96403711a0e93f97') {
+    throw new Error('The V2 custom poster renderer changed. Review the integration before building.');
+  }
+  const silhouette = fs.readFileSync(path.join(root, 'maintenance/renderer/silhouette.js'), 'utf8');
+  output = output.slice(0,start) + silhouette + output.slice(end);
   if (!output.includes('bqhyropctavxjdnogmor.supabase.co')) throw new Error('V2 backend identity missing');
   if (output.includes('jgmkhntqfffkwggqzxql')) throw new Error('Legacy backend identity is forbidden');
   const sha256 = digest(output);

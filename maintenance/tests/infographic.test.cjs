@@ -308,3 +308,24 @@ test('the title and question have separate boxes that fit measured Firefox and W
     assert.ok(top>=question.top && top+height<=question.bottom);
   }
 });
+
+test('the main subject changes visible geometry with either ownership distribution and no artwork download',()=>{
+  const subjects=[
+    {name:'Open laptop',aspectRatio:1.6,shape:[[14,5],[86,5],[89,8],[89,64],[99,90],[95,95],[5,95],[1,90],[11,64],[11,8]],features:[[[12,65],[88,65]],[[23,73],[77,73],[82,84],[18,84],[23,73]]]},
+    {name:'Plug-in energy meter',aspectRatio:.68,shape:[[28,2],[74,2],[87,9],[91,20],[89,76],[73,92],[60,95],[59,100],[38,100],[38,95],[19,85],[10,70],[10,20],[15,9]],features:[[[23,18],[78,18],[78,35],[23,35],[23,18]],[[35,55],[35,65]],[[62,55],[62,65]]]}
+  ].map(s=>({name:s.name,aspectRatio:s.aspectRatio,outline:s.shape.map(([x,y])=>({x,y})),details:s.features.map(line=>line.map(([x,y])=>({x,y})))}));
+  for(const owners of [mapping,new Map(rows.map((r,i)=>[r.id,i%2?'left':'right']))]){
+    const posters=subjects.map(subject=>render(rows,{...plan,objects:[subject]},'Same rankings',measure,owners));
+    assert.notDeepEqual(posters[0].pieces.map(p=>p.d),posters[1].pieces.map(p=>p.d));
+    for(const poster of posters){
+      assert.equal(poster.pieces.length,20);
+      assert.match(poster.svg,/data-main-subject=/);
+      assert.doesNotMatch(poster.svg,/<image |rx="13"/);
+      for(const p of poster.pieces){
+        assert.equal(p.side,owners.get(p.id));
+        assert.equal(rows.find(r=>r.id===p.id).score,p.score);
+        assert.equal(rows.find(r=>r.id===p.id).rank,p.rank);
+      }
+    }
+  }
+});

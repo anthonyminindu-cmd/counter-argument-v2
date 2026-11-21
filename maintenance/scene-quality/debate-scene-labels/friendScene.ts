@@ -7,7 +7,7 @@ const failure = (error: string, status: number) =>
   Response.json({error}, {status, headers:corsHeaders});
 
 /** Resolve a shared illustration from the participant-visible, saved debate. */
-export async function resolveFriendScene(client: ReturnType<typeof createClient>, viewer: string, request: Record<string,unknown>) {
+export async function resolveFriendScene(client: ReturnType<typeof createClient>, viewer: string, request: Record<string,unknown>, formatVersion = SCENE_VERSION) {
   if (!('sessionId' in request)) return null;
   const sessionId = request.sessionId;
   if (typeof sessionId !== 'string' || !/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(sessionId)) {
@@ -33,7 +33,7 @@ export async function resolveFriendScene(client: ReturnType<typeof createClient>
     return {
       owner: session.user_a,
       input: {
-        topic: saved.snapshot.topic, positions, formatVersion: SCENE_VERSION,
+        topic: saved.snapshot.topic, positions, formatVersion,
         rows: ranked.map(({id,rank,score,title,description}) => ({id,rank,score,title,description})),
         ...(request.retry === true ? {retry:true} : {}),
       },

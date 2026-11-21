@@ -16,7 +16,7 @@ export function validateScene(rows, value) {
   const validPoint = p => p && [p.x,p.y].every(x => Number.isInteger(x) && x >= 0 && x <= 100);
   const trace = (p, min, max) => Array.isArray(p) && p.length >= min && p.length <= max && p.every(validPoint);
   if (value.profile === 'custom') {
-    if (value.objects.length !== 4 || value.objects.some(o => !o || typeof o.name !== 'string' || !o.name.trim() || o.name.length > 80 || !trace(o.outline,8,40) || !Array.isArray(o.details) || !o.details.length || o.details.length > 3 || o.details.some(d => !trace(d,2,12)))) throw Error('Four complete illustrated subjects are required.');
+    if (![1,2,4].includes(value.objects.length) || value.objects.some(o => !o || typeof o.name !== 'string' || !o.name.trim() || o.name.length > 80 || !trace(o.outline,8,40) || !Array.isArray(o.details) || !o.details.length || o.details.length > 3 || o.details.some(d => !trace(d,2,12)))) throw Error('A topic subject needs a complete outline and details.');
     for (const o of value.objects) {
       const poly=o.outline;
       const area=Math.abs(poly.reduce((sum,p,i)=>{const q=poly[(i+1)%poly.length];return sum+p.x*q.y-q.x*p.y},0))/2;
@@ -25,10 +25,11 @@ export function validateScene(rows, value) {
   } else if(value.objects.length) throw Error('Unexpected illustration objects.');
   const list = Array.isArray(value.summaries) ? value.summaries : Object.entries(value.summaries || {}).map(([id,s])=>({...s,id}));
   if (list.length !== 20 || new Set(list.map(s=>s?.id)).size !== 20) throw Error('Expected one label for each of the twenty arguments.');
+  const pattern = value.profile==='custom' && value.objects.length<=2 ? /^\S+(?: \S+){1,3}$/ : LABEL_PATTERN;
   const used=new Set();
   const summaries=rows.map(r=>{
     const s=list.find(item=>item?.id===r.id);
-    if(!s || !positions.includes(s.position) || typeof s.statement!=='string' || !LABEL_PATTERN.test(s.statement) || /[\n\r…]|\.\.\./.test(s.statement) || s.statement.length>90 || used.has(s.statement.toLowerCase())) throw Error('Every argument needs a distinct complete 3–4 word label.');
+    if(!s || !positions.includes(s.position) || typeof s.statement!=='string' || !pattern.test(s.statement) || /[\n\r…]|\.\.\./.test(s.statement) || s.statement.length>90 || used.has(s.statement.toLowerCase())) throw Error('Every argument needs a distinct complete 3–4 word label.');
     used.add(s.statement.toLowerCase());return {id:r.id,statement:s.statement,position:s.position};
   });
   const sideTitles = Array.isArray(value.sideTitles) && value.sideTitles.length===2 && value.sideTitles.every(s=>typeof s==='string' && s.trim() && s.length<=46) ? value.sideTitles.map(s=>s.trim()) : undefined;
