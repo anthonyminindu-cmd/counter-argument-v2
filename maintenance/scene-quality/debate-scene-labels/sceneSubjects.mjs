@@ -32,11 +32,13 @@ export function illustratedSubjects(subjects) {
   });
 }
 
-// Prefer the primary copy, using a complete alternate when two submissions get the same wording.
+// Prefer standalone wording, then use alternates to maintain unique labels.
 export function chooseSceneLabels(entries) {
   const clean = text => typeof text==='string' ? text.trim().replace(/\s+/g,' ') : '';
+  const fragment = /\b(?:a|an|the|and|or|for|to|with|from|if|than|of|in|on|by|can|could|would|should|may|might|must|already|gets|leave|leaves)\s*[.!?]?$/i;
   const options = entries.map(entry=>[...new Set([entry.primary,entry.alternate].map(clean))]
-    .filter(text=>/^\S+(?: \S+){2,3}$/.test(text) && !/\b(?:a|an|the|and|or|for|to|with|from|if|than|of|in|on|by|can|could|would|should|may|might|must|already|gets|leave|leaves)\s*[.!?]?$/i.test(text) && text.length<=90 && !/…|\.\.\./.test(text)));
+    .filter(text=>/^\S+(?: \S+){2,3}$/.test(text) && text.length<=90 && !/…|\.\.\./.test(text))
+    .sort((a,b)=>Number(fragment.test(a))-Number(fragment.test(b))));
   const taken = new Map(), chosen = new Array(entries.length);
   function assign(index,seen) {
     for(const phrase of options[index]){
