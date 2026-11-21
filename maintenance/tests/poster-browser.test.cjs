@@ -50,6 +50,14 @@ test('Chromium verifies three poster subjects, full-size viewing and native PNG 
               const label=marker.parentNode.querySelector('[data-label]'),box=marker.getBBox(),type=label.getBBox();
               if(Number(marker.getAttribute('font-size'))>=Number(label.getAttribute('font-size')) || box.y+box.height>type.y+1 || box.x<Number(label.dataset.left)-1 || box.x+box.width>Number(label.dataset.right)+1) throw Error('Rank marker overlaps its headline or a cell boundary');
             }
+            if(drawing==='robot_bust'){
+              const outline=svg.querySelector('[data-main-subject]'), body=outline.getBBox();
+              const centers=Array.from(svg.querySelectorAll('[data-label]'),node=>{
+                const b=node.getBBox();
+                return new DOMPoint(b.x+b.width/2,b.y+b.height/2);
+              });
+              if(centers.some(center=>!outline.isPointInFill(center)) || centers.filter(p=>p.y<body.y+body.height*.44).length<4) throw Error('Robot head or body lost its labels');
+            }
             paths.push(poster.pieces.map(p=>p.d).join(''));
             await z5(svg);
             const image=await createImageBitmap(png);
@@ -62,7 +70,7 @@ test('Chromium verifies three poster subjects, full-size viewing and native PNG 
             image.close();
             await downloadPoster(svg,'debate-scene.svg','svg');
             const exported=await readVector();
-            if(exported.localName!=='svg'||exported.getAttribute('viewBox')!=='0 0 1600 900'||exported.querySelectorAll('[data-argument-id]').length!==20||exported.querySelectorAll('[data-core-pieces][clip-path] [data-piece-rank]').length!==8||exported.querySelectorAll('[data-peripheral-pieces] [data-piece-rank]').length!==12||exported.querySelector('image')) throw Error('Vector poster lost scalable artwork or argument labels');
+            if(exported.localName!=='svg'||exported.getAttribute('viewBox')!=='0 0 1600 900'||exported.querySelectorAll('[data-argument-id]').length!==20||exported.querySelectorAll('[data-core-pieces][clip-path] [data-piece-rank]').length!==8||exported.querySelectorAll('[data-secondary-pieces] [data-piece-rank], [data-attached-pieces] [data-piece-rank]').length!==12||exported.querySelector('image')) throw Error('Vector poster lost scalable artwork or argument labels');
             if(!openPosterDetail(svg)) throw Error('Full-size viewer failed');
             const dialog=document.querySelector('dialog[open]');
             const detail=dialog.querySelector('img');

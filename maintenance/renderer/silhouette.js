@@ -13,11 +13,10 @@ function posterDrawing(subject, topic = "") {
   const aiRisk=/\b(?:ai|artificial intelligence|superintelligence)\b/i.test(topic) &&
     /\b(?:humanity|extinction|existential|human extinction|human race)\b/i.test(topic);
   if (subject.drawing==='robot_bust' || aiRisk) {
-    const robot=shape(1.30,
+    const robot=shape(1.80,
       [[0,99],[2,83],[6,72],[12,67],[32,58],[35,55],[35,49],[25,46],[20,39],[17,39],[14,36],[14,23],[17,20],[20,20],[21,14],[26,9],[39,7],[49,7],[49,3],[47,2],[48,0],[52,0],[54,2],[52,4],[52,7],[64,7],[76,10],[81,16],[82,20],[85,20],[88,23],[88,36],[85,39],[82,39],[77,46],[66,49],[66,55],[69,58],[88,67],[94,72],[98,83],[100,99],[97,100],[3,100]],
       [[[20,22],[20,37]],[[82,22],[82,37]],[[35,49],[43,51],[60,51],[66,49]]]);
     robot.kind='robot';
-    robot.visor=[[27,18],[73,18],[77,22],[77,33],[73,37],[27,37],[24,33],[24,22]];
     return robot;
   }
   if (subject.drawing==='open_laptop') return Object.assign(shape(1.64,
@@ -26,7 +25,7 @@ function posterDrawing(subject, topic = "") {
   if (subject.drawing==='plug_in_energy_meter') {
     // Keep the socket and LCD together on the instrument panel; the lower casing
     // forms a continuous label surface and the two plug pins stay visible.
-    return Object.assign(shape(1.04,
+    return Object.assign(shape(1.14,
       [[15,0],[83,0],[91,4],[95,12],[95,26],[92,35],[89,40],[89,78],[86,86],[79,91],[65,93],[65,99],[59,99],[59,93],[41,93],[41,100],[35,100],[35,93],[21,91],[13,87],[9,81],[8,41],[5,33],[3,26],[3,12],[7,5]],
       [[[14,8],[61,8],[61,23],[14,23],[14,8]],[[9,29],[89,29]]]),{kind:"meter"});
   }
@@ -54,7 +53,7 @@ function projectSubject(subject, center, top, maxWidth, maxHeight) {
   const aspect = Number.isFinite(subject.aspectRatio) ? Math.max(.4, Math.min(3, subject.aspectRatio)) : 1.5 * dx / dy;
   const width = Math.min(maxWidth, maxHeight * aspect), height = width / aspect;
   const point = p => [center + width * ((p.x-x0)/dx - .5), top + (maxHeight-height)/2 + height*(p.y-y0)/dy];
-  return {outline:subject.outline.map(point), details:subject.details.map(line => line.map(point)), local:(x,y)=>point({x,y}),kind:subject.kind,visor:subject.visor?.map(([x,y])=>point({x,y}))};
+  return {outline:subject.outline.map(point), details:subject.details.map(line => line.map(point)), local:(x,y)=>point({x,y}),kind:subject.kind};
 }
 
 // Cut the illustrated surface itself. A piece keeps every contour vertex it intersects.
@@ -87,23 +86,30 @@ function fractionCut(poly,axis,frac) {
   }
   return (lo+hi)/2;
 }
-function partitionSurface(poly,counts) {
+// Larger central pieces and smaller margin pieces share one continuous outline.
+function partitionSurface(poly,pattern) {
   const cells=[],seams=[];
-  let rest=poly,remaining=8;
-  counts.forEach((count,row)=>{
-    const end=row===counts.length-1;
-    const cut=end?0:fractionCut(rest,1,count/remaining);
-    const strip=end?rest:clipped(rest,1,cut,true);
-    if(!end){seams.push([1,cut]);rest=clipped(rest,1,cut,false);}
-    remaining-=count;
-    let band=strip;
-    for(let i=0;i<count;i++){
-      const last=i===count-1;
-      const fraction=(1+(row%2?.10:-.08))/(count-i);
-      const x=last?0:fractionCut(band,0,fraction);
-      cells.push(last?band:clipped(band,0,x,true));
-      if(!last){seams.push([0,x]);band=clipped(band,0,x,false);}
+  const weight=cell=>cell==='C'?1.85:1;
+  const rowMass=band=>Array.from(band).reduce((sum,slot)=>sum+weight(slot),0);
+  let rest=poly,remaining=pattern.reduce((sum,band)=>sum+rowMass(band),0);
+  pattern.forEach((band,row)=>{
+    let mass=rowMass(band),strip=rest;
+    if(row<pattern.length-1){
+      const cut=fractionCut(rest,1,mass/remaining);
+      strip=clipped(rest,1,cut,true);rest=clipped(rest,1,cut,false);
+      seams.push([1,cut]);
     }
+    remaining-=mass;
+    Array.from(band).forEach((slot,col)=>{
+      let piece=strip;
+      if(col<band.length-1){
+        const cut=fractionCut(strip,0,weight(slot)/mass);
+        piece=clipped(strip,0,cut,true);strip=clipped(strip,0,cut,false);
+        seams.push([0,cut]);
+      }
+      mass-=weight(slot);
+      cells.push({poly:piece,core:slot==='C',inside:true});
+    });
   });
   return {cells,seams};
 }
@@ -148,7 +154,7 @@ function safeSpan(poly,y,height) {
   }
   return runs.sort((a,b)=>(b[1]-b[0])-(a[1]-a[0]))[0];
 }
-function fitContour(poly,item,measure,core) {
+function fitContour(poly,item,measure,core,eyeBand) {
   const rect=boundsOf(poly),middle=(rect.bottom+rect.top)/2;
   const rankSize=core?16:14,rankHeight=rankSize+4,margin=core?11:6;
   const words=item.statement.split(/\s+/);
@@ -167,7 +173,9 @@ function fitContour(poly,item,measure,core) {
   for(const size of core?[24,22,20,18]:[20,19,18]){
     for(const wrap of options.filter(Boolean)){
       const lineHeight=size+2,height=rankHeight+4+wrap.lines.length*lineHeight;
-      const lo=rect.top+height/2+margin,hi=rect.bottom-height/2-margin;
+      const top=eyeBand&&Math.abs(rect.top-eyeBand)<.01?rect.top+11:rect.top;
+      const bottom=eyeBand&&Math.abs(rect.bottom-eyeBand)<.01?rect.bottom-11:rect.bottom;
+      const lo=top+height/2+5,hi=bottom-height/2-5;
       if(hi<lo)continue;
       for(const f of [.5,.38,.62,.25,.75,0,1]){
         const y=lo+(hi-lo)*f, span=safeSpan(poly,y,height+4);
@@ -185,101 +193,134 @@ function fitContour(poly,item,measure,core) {
   }
   return best;
 }
-function perimeterSlots(main,top,bottom,coreArea) {
-  const box=boundsOf(main.outline),distance=Math.min(335,Math.max(224,box.left-45));
-  const mid=(top+bottom)/2;
-  return [-1,1].flatMap(sign=>{
-    const anchor=sign<0?42:1558;
-    const heights=[86,91,100,98,88,83],total=heights.reduce((a,b)=>a+b);
-    const scale=Math.min(1,(bottom-top-18)/total);
-    let y=mid-total*scale/2;
-    const cuts=heights.reduce((all,h)=>{y+=h*scale;return [...all,y]},[y]);
-    const widths=[.84,.91,.99,1,.97,.91,.83];
-    return heights.map((_,i)=>{
-      const outer=k=>anchor-sign*(1-widths[k])*36;
-      const breadth=Math.min(distance,Math.max(185,coreArea*.77/98));
-      const inner=k=>anchor-sign*breadth*widths[k];
-      return [[outer(i),cuts[i]],[inner(i),cuts[i]],[inner(i+1),cuts[i+1]],[outer(i+1),cuts[i+1]]];
-    });
-  });
+// On very narrow objects, attach only the extra pieces needed for readable type.
+function edgePieces(outline,count,top,bottom,maxArea,largePerSide) {
+  if(!count)return [];
+  const perSide=count/2,box=boundsOf(outline);
+  const firstLarge=Math.floor((perSide-largePerSide)/2);
+  const weights=Array.from({length:perSide},(_,i)=>i>=firstLarge&&i<firstLarge+largePerSide?1.4:1);
+  const total=weights.reduce((sum,n)=>sum+n,0),unit=Math.min(104,(bottom-top-16)/total);
+  const firstY=(top+bottom-total*unit)/2;
+  const cells=[];
+  for(const left of [true,false]){
+    const edgeAt=y=>{
+      const scan=Math.max(box.top+.001,Math.min(box.bottom-.001,y));
+      const runs=runsAt(outline,scan);
+      return runs.length?(left?runs[0][0]:runs[runs.length-1][1]):800;
+    };
+    let y=firstY;
+    for(let i=0;i<perSide;i++){
+      const height=unit*weights[i],y0=y,y1=y+height,core=weights[i]>1;
+      y=y1;
+      const ys=[y0,...new Set(outline.map(p=>p[1]).filter(y=>y>y0+.001&&y<y1-.001).sort((a,b)=>a-b)),y1];
+      const inner=ys.map(y=>[edgeAt(y)+(left?-3:3),y]);
+      const width=core?325:Math.min(282,Math.max(184,maxArea*.77/height));
+      const edge=left?Math.max(17,Math.min(...inner.map(p=>p[0]))-width):Math.min(1583,Math.max(...inner.map(p=>p[0]))+width);
+      // Adjacent cells keep their shared inner contour, regardless of the shape's shoulders.
+      cells.push({poly:[[edge,y0],...inner,[edge,y1]],inside:false,core});
+    }
+  }
+  return cells;
 }
 function silhouetteLayout(rows,scene,ownership,measure,top,bottom) {
   const labels=new Map(scene.summaries.map(s=>[s.id,s]));
   const ranked=Array.from(rows,r=>({...r,...labels.get(r.id),side:ownership.get(r.id)})).sort((a,b)=>a.rank-b.rank);
   if(['left','right'].some(side=>ranked.filter(r=>r.side===side).length!==10))throw Error('Each submission side needs its ten original arguments.');
   const sketch=posterDrawing(scene.objects[0],scene.title+' '+(scene.overview||''));
-  const main=projectSubject(sketch,800,top+9,900,bottom-top-18), box=boundsOf(main.outline);
-  let surface=main.outline;
-  if(main.kind==='laptop'){
-    surface=[[12,7],[88,7],[88,60],[12,60]].map(([x,y])=>main.local(x,y));
-  }else if(main.kind==='robot'){
-    surface=clipped(surface,1,main.local(50,44)[1],false);
-  }else if(main.kind==='meter'){
-    surface=clipped(clipped(surface,1,main.local(50,29)[1],false),1,main.local(50,93)[1],true);
-  }
-  const widths=new Map();
+  const main=projectSubject(sketch,800,top+4,1436,bottom-top-8);
+  const surface=main.outline, widths=new Map();
   function measured(s){if(!widths.has(s))widths.set(s,measure(s));return widths.get(s);}
-  const assign=(cells,items)=>{
-    const byX=cells.map((poly,i)=>{const r=boundsOf(poly);return {poly,i,x:(r.left+r.right)/2,y:(r.top+r.bottom)/2};}).sort((a,b)=>a.x-b.x||a.y-b.y);
+  function assign(cells,items) {
+    const sorted=cells.map(cell=>{
+      const b=boundsOf(cell.poly);
+      return {...cell,x:(b.left+b.right)/2,y:(b.top+b.bottom)/2};
+    }).sort((a,b)=>a.x-b.x||a.y-b.y);
     const leftCount=items.filter(r=>r.side==='left').length;
     return ['left','right'].flatMap((side,i)=>{
-      const locations=i?byX.slice(leftCount):byX.slice(0,leftCount);
-      locations.sort((a,b)=>Math.hypot(a.x-800,(a.y-(top+bottom)/2)*1.2)-Math.hypot(b.x-800,(b.y-(top+bottom)/2)*1.2));
-      return items.filter(r=>r.side===side).map((item,j)=>({...locations[j],item}));
+      const slots=i?sorted.slice(leftCount):sorted.slice(0,leftCount);
+      slots.sort((a,b)=>Number(b.inside)-Number(a.inside)||
+        Math.hypot(a.x-800,a.y-(top+bottom)/2)-Math.hypot(b.x-800,b.y-(top+bottom)/2));
+      return items.filter(r=>r.side===side).map((item,j)=>({...slots[j],item}));
     });
-  };
-  let winner;
-  for(const counts of [[2,2,2,2],[2,3,3],[3,3,2],[1,2,2,2,1],[1,2,3,2],[2,3,2,1],[1,1,2,2,1,1],[1,1,1,1,1,1,1,1]]){
-    const partition=partitionSurface(surface,counts);
-    const entries=assign(partition.cells,ranked.slice(0,8)).map(cell=>({...cell,fit:fitContour(cell.poly,cell.item,measured,true)}));
-    const scores=entries.map(p=>p.fit?.merit??-200);
-    const merit=Math.min(...scores)*3+scores.reduce((a,b)=>a+b)/8-3*Math.max(0,counts.length-4);
-    if(!winner||merit>winner.merit)winner={entries,partition,merit};
   }
-  const outer=perimeterSlots(main,top,bottom,Math.min(...winner.partition.cells.map(polyArea)));
-  const outerItems=ranked.slice(8).sort((a,b)=>Number(a.side==='right')-Number(b.side==='right')||a.rank-b.rank);
-  const field=outer.map((poly,i)=>({poly,item:outerItems[(i<6?0:6)+[4,2,0,1,3,5][i%6]]}));
-  const outerCuts=outer.filter((_,i)=>i%6!==0).map(poly=>[1,poly[0][1]]);
-  const coreVertices=winner.partition.cells.flat(),outerVertices=outer.flat();
-  const pieces=[...winner.entries,...field].map(({poly,item,fit},index)=>{
-    const core=index<8;
-    fit=fit||fitContour(poly,item,measured,core);
-    // Extremely narrow custom cutouts have a numbered piece with a nearby text key.
-    // Keep the entire headline legible in the open space beside the silhouette.
-    let leader;
-    if(core&&(!fit||fit.scale<.70)){
-      const b=boundsOf(poly),side=index%2===0?-1:1;
-      const y=top+(Math.floor(index/2)+.5)*(bottom-top)/4;
-      const l=side<0?340:Math.max(1000,box.right+12);
-      const r=side<0?Math.min(600,box.left-12):1260;
-      if(r-l>=115){
-        const callout=[[l,y-52],[r,y-52],[r,y+52],[l,y+52]];
-        const alternative=fitContour(callout,item,measured,false);
-        if(alternative&&(!fit||alternative.scale>fit.scale)){
-          leader=[[side<0?r:l,y],[(b.left+b.right)/2,(b.top+b.bottom)/2]];
-          fit=alternative;
+  // Each pattern has eight larger cells. Try the whole figure before using its surroundings.
+  const layouts=[
+    [['oCo','oCCo','Co','oCCoo','ooCCoo'],['oCCo','oCo','oCo','oCCoo','ooCCo'],
+      ['ooCoo','oCCCo','oCCCo','ooCoo'],['oCCo','oCCo','oCCo','ooCo','ooCo'],
+      ['oCo','oCo','oCo','oCCo','ooCCCoo'],['Co','oCo','oCo','oCo','oCo','oCo','oCC'],
+      ['oCo','CCo','oCo','oCo','oCo','CCooo']],
+    [['oCo','oCCo','CC','oCCo','oCo'],['oCCo','oCCo','oCCo','oCCo']],
+    [['oCo','CC','CC','CC','oCo'],['oCC','CCo','oCC','CCo']],
+    [['CC','CC','CC','CC'],['C','CC','CCC','CC'],['C','C','CC','CC','C','C'],['C','C','C','C','CC','C','C'],['C','C','C','C','C','C','C','C']],
+    // A tall, narrow subject can carry fewer large paragraphs. Interlock the extra
+    // large cells with the nearest shoulder instead of squeezing their letters.
+    [['C','C','C','C','C','C'],['C','C','C','C']]
+  ];
+  let winner;
+  for(const group of layouts){
+    let best;
+    for(const pattern of group){
+      const partition=partitionSurface(surface,pattern);
+      const core=partition.cells.filter(p=>p.core);
+      const outside=edgePieces(surface,20-partition.cells.length,top,bottom,Math.min(...core.map(p=>polyArea(p.poly))),(8-core.length)/2);
+      const cells=[...partition.cells,...outside];
+      const entries=[...assign(cells.filter(p=>p.core),ranked.slice(0,8)),...assign(cells.filter(p=>!p.core),ranked.slice(8))];
+      const upperCuts=main.kind==='robot'?partition.seams.filter(([axis,y])=>
+        axis===1&&y>=main.local(50,17)[1]&&y<=main.local(50,39)[1]):[];
+      const eyeBand=upperCuts.sort((a,b)=>Math.abs(a[1]-main.local(50,29)[1])-Math.abs(b[1]-main.local(50,29)[1]))[0]?.[1];
+      const fit=(cell,item)=>fitContour(cell.poly,item,measured,cell.core,eyeBand);
+      for(const cell of entries)cell.fit=fit(cell,cell.item);
+      // A short headline can occupy a tapered edge while a longer headline from the
+      // same participant and tier gets a broader cell. Preserve all original records.
+      for(const cell of entries.filter(c=>(c.fit?.scale??0)<.86)){
+        if((cell.fit?.scale??0)>=.86)continue;
+        let swap;
+        for(const other of entries){
+          if(other===cell||other.item.side!==cell.item.side||other.core!==cell.core||other.inside!==cell.inside)continue;
+          const here=fit(cell,other.item),there=fit(other,cell.item);
+          const quality=Math.min(here?.scale??0,there?.scale??0);
+          if(quality>Math.min(cell.fit?.scale??0,other.fit?.scale??0)+.045&&quality>(swap?.quality??0)){
+            swap={other,here,there,quality};
+          }
+        }
+        if(swap){
+          [cell.item,swap.other.item]=[swap.other.item,cell.item];
+          cell.fit=swap.here;swap.other.fit=swap.there;
         }
       }
+      const scales=entries.map(cell=>cell.fit?.scale??0);
+      const low=Math.min(...scales);
+      const merit=330*low+entries.reduce((sum,entry)=>sum+(entry.fit?.merit??-250),0)/20;
+      if(!best||merit>best.merit)best={entries,partition,outside,eyeBand,low,merit};
     }
+    if(!winner||best.merit>winner.merit)winner=best;
+    if(best.low>=.82){winner=best;break;}
+  }
+  const vertices=winner.partition.cells.flatMap(cell=>cell.poly),outerVertices=winner.outside.flatMap(cell=>cell.poly);
+  const edgeSeams=winner.outside.filter((_,i)=>i%(winner.outside.length/2)!==0).map(cell=>[1,cell.poly[0][1]]);
+  const pieces=winner.entries.map(({poly,item,fit,inside,core})=>{
     if(!fit){
+      // A physically tiny tip may enclose too little height for two lines. Use a single
+      // centered label block in that cell; neighboring pieces keep their own positions.
       const b=boundsOf(poly),cx=(b.left+b.right)/2,cy=(b.top+b.bottom)/2;
-      const rectangle=[[cx-85,cy-42],[cx+85,cy-42],[cx+85,cy+42],[cx-85,cy+42]];
-      fit=fitContour(rectangle,item,measured,false);
+      const width=Math.max(80,Math.min(150,(b.right-b.left)/2));
+      fit=fitContour([[cx-width,cy-46],[cx+width,cy-46],[cx+width,cy+46],[cx-width,cy+46]],item,measured,false);
     }
-    return {...item,...fit,poly,leader,level:core?'core':'outer',d:cellPath(poly,core?coreVertices:outerVertices,core?winner.partition.seams:outerCuts)};
+    return {...item,...fit,poly,inside,level:core?'core':'outer',d:cellPath(poly,inside?vertices:outerVertices,inside?winner.partition.seams:edgeSeams)};
   }).sort((a,b)=>a.rank-b.rank);
-  return {main,pieces,surface};
+  const eyeY=winner.eyeBand??main.local(50,28)[1];
+  return {main,pieces,surface,eyeY};
 }
 // Submitted sides stay identifiable even when all eight central claims come from one participant.
 const posterPalette={
-  left:{face:['#102E56','#153961','#193D66','#12335D'],surround:['#EFF3F5','#E6EDF1'],seam:'#9EAFBC'},
-  right:{face:['#EEB84F','#F2C463','#F4CC75','#EAB246'],surround:['#F7F2E8','#F4EDDF'],seam:'#B9AC96'}
+  left:{face:['#102E56','#153961','#193D66','#12335D'],surround:['#B7CFDE','#C9DCE6'],seam:'#9EAFBC'},
+  right:{face:['#EEB84F','#F2C463','#F4CC75','#EAB246'],surround:['#F5DC9F','#F9E7BC'],seam:'#B9AC96'}
 };
 function renderSilhouettePuzzle(rows,scene,question,measure,ownership){
   const header=V2SceneHeader(scene.title,scene.overview||question,scene.sideTitles||['First position','Second position'],measure);
   const captionBottom=Math.max(...Array.from(header.captions.matchAll(/<rect[^>]*y="([\d.]+)"[^>]*height="([\d.]+)"/g),m=>Number(m[1])+Number(m[2])));
   const top=Math.ceil(captionBottom+10),bottom=848;
-  const {main,pieces,surface}=silhouetteLayout(rows,scene,ownership,measure,top,bottom);
+  const {main,pieces,surface,eyeY}=silhouetteLayout(rows,scene,ownership,measure,top,bottom);
   const profile=silhouettePath(main.outline),body=silhouettePath(surface);
   const strokeLines=shape=>shape.details.map(line=>'<path d="'+silhouettePath(line,false)+'"/>').join('');
   const center=(top+bottom)/2;
@@ -299,12 +340,12 @@ function renderSilhouettePuzzle(rows,scene,question,measure,ownership){
     const detail=main.kind==='meter'?bookshelf:windows;
     context=[314,1056].map(x=>'<g transform="translate('+x+' '+(center-105)+')">'+detail+'</g>').join('');
   }
-  const fills=[],surround=[],annotation=[],safe=[];
+  const fills=[],secondary=[],outside=[],annotation=[],safe=[];
   for(const p of pieces){
     const core=p.level==='core',palette=posterPalette[p.side],index=(p.rank-1)%(core?palette.face.length:palette.surround.length);
-    (core?fills:surround).push('<path data-piece-rank="'+p.rank+'" d="'+p.d+'" fill="'+(core?palette.face[index]:palette.surround[index])+'" stroke="'+(core?'#FFFAEC':palette.seam)+'" stroke-width="'+(core?3.2:1.35)+'" stroke-linejoin="round"/>');
+    (p.inside?(core?fills:secondary):outside).push('<path data-piece-tier="'+p.level+'" data-piece-rank="'+p.rank+'" d="'+p.d+'" fill="'+(core?palette.face[index]:palette.surround[index])+'" stroke="'+(core?'#FFFAEC':palette.seam)+'" stroke-width="'+(core?3.2:1.35)+'" stroke-linejoin="round"/>');
     const faceInk=p.side==='left'?'#FFFFFF':'#261902';
-    const ink=core&&!p.leader?faceInk:(p.side==='left'?'#203952':'#493C2C');
+    const ink=core?faceInk:(p.side==='left'?'#203952':'#493C2C');
     const rankY=p.rankTop+p.rankSize;
     const marker='<text data-rank-marker="'+p.rank+'" x="'+Yn(p.x)+'" y="'+Yn(rankY)+'" font-size="'+p.rankSize+'" font-weight="700" opacity=".9">'+(p.side==='left'?'A':'B')+' · #'+p.rank+'</text>';
     safe.push('<rect x="'+Yn(p.x-36)+'" y="'+Yn(p.rankTop-2)+'" width="72" height="'+(p.rankHeight+3)+'"/>');
@@ -316,16 +357,18 @@ function renderSilhouettePuzzle(rows,scene,question,measure,ownership){
     }).join('');
     const b=p.bounds;
     annotation.push('<g data-argument-id="'+wt(p.id)+'" data-rank="'+p.rank+'" data-score="'+Number(p.score)+'" data-side="'+p.side+'" data-stance="'+p.position+'" data-band="'+p.level+'" fill="'+ink+'" text-anchor="middle"><title>'+wt(p.title)+'</title>'+
-      (p.leader?'<path d="'+silhouettePath(p.leader,false)+'" fill="none" stroke="#6A756F" stroke-width="1.3"/>':'')+
       marker+'<text data-label="" data-label-size="'+p.fontSize+'" data-left="'+Yn(b.left)+'" data-right="'+Yn(b.right)+'" data-top="'+Yn(b.top)+'" data-bottom="'+Yn(b.bottom)+'" x="'+Yn(p.x)+'" y="'+Yn(p.y)+'" font-size="'+p.fontSize+'" font-weight="700">'+spans+'</text></g>');
   }
   const localPath=(points)=>silhouettePath(points.map(([x,y])=>main.local(x,y)));
   const part=(points,fill)=>'<path d="'+localPath(points)+'" fill="'+fill+'"/>';
   let hardware='';
   if(main.kind==='robot'){
-    hardware='<path d="'+silhouettePath(main.visor)+'" fill="#0A192E" stroke="#89A7BA" stroke-width="3"/>'+
-      part([[31,24],[45,24],[45,29],[43,30],[31,30]],'#B5E5EC')+part([[57,24],[71,24],[71,30],[59,30],[57,29]],'#B5E5EC')+
-      part([[42,40],[60,40],[58,41],[44,41]],'#88A4B8');
+    // Put the eyes along a cut in the head. The label-clearance mask protects all text.
+    const x=local=>main.local(local,0)[0];
+    const strip=[[x(25),eyeY-3],[x(26),eyeY-12],[x(75),eyeY-12],[x(76),eyeY-3],
+      [x(75),eyeY+11],[x(26),eyeY+11]];
+    const eye=(left,right)=>'<path d="M'+Yn(x(left))+' '+Yn(eyeY)+'H'+Yn(x(right))+'" stroke="#A9E1E3" stroke-width="6" stroke-linecap="round"/>';
+    hardware='<path d="'+silhouettePath(strip)+'" fill="#142D43"/>'+eye(31,42)+eye(59,70);
   }else if(main.kind==='laptop'){
     hardware=part([[16,74],[84,74],[87,84],[13,84]],'#314862')+
       Array.from({length:3},(_,r)=>Array.from({length:13},(_,c)=>{
@@ -346,12 +389,13 @@ function renderSilhouettePuzzle(rows,scene,question,measure,ownership){
     '<mask id="feature-safe" maskUnits="userSpaceOnUse" x="0" y="0" width="1600" height="900"><rect width="1600" height="900" fill="white"/><g fill="black">'+safe.join('')+'</g></mask></defs>';
   const svg='<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" font-family="'+pl+'" fill="#10283c"><title>'+wt(scene.overview?scene.title:question)+'</title><desc>Exact debate question: '+wt(question)+'. '+(main.kind==='robot'?'Robot bust':wt(scene.objects[0].name))+' with twenty ranked puzzle pieces.</desc>'+
     defs+'<rect width="1600" height="900" fill="#FFFBF3"/><g data-background-context="" fill="none" stroke="#ACAA9C" stroke-width="3.2" opacity=".35">'+context+'</g>'+
-    '<g data-peripheral-pieces="">'+surround.join('')+'</g><path data-main-subject="" d="'+profile+'" fill="url(#subject-base)" stroke="#172F49" stroke-width="3.5" stroke-linejoin="round"/>'+
+    '<g data-attached-pieces="">'+outside.join('')+'</g><path data-main-subject="" d="'+profile+'" fill="url(#subject-base)" stroke="#172F49" stroke-width="3.5" stroke-linejoin="round"/>'+
+    '<g data-secondary-pieces="" clip-path="url(#subject-outline)">'+secondary.join('')+'</g>'+
     '<g data-core-pieces="" clip-path="url(#subject-outline)">'+fills.join('')+'</g>'+
-    '<g mask="url(#feature-safe)" fill="none" stroke="'+(main.kind?'#8299A9':'#233D52')+'" stroke-width="2.7" stroke-opacity=".72" stroke-linejoin="round">'+strokeLines(main)+'</g>'+hardware+
+    '<g mask="url(#feature-safe)" fill="none" stroke="'+(main.kind?'#8299A9':'#233D52')+'" stroke-width="2.7" stroke-opacity=".72" stroke-linejoin="round">'+strokeLines(main)+'</g><g mask="url(#feature-safe)" opacity="'+(main.kind==='robot'?'1':'.29')+'">'+hardware+'</g>'+
     '<path d="'+profile+'" fill="none" stroke="#192E45" stroke-width="3.2" stroke-linejoin="round"/>'+annotation.join('')+
     '<rect width="1600" height="'+header.height+'" fill="url(#poster-masthead)"/>'+header.title+header.question+header.captions+
-    '<text x="800" y="883" text-anchor="middle" font-size="18">The eight central pieces carry the highest-ranked arguments. Match each number to the full argument below.</text></svg>';
+    '<text x="800" y="883" text-anchor="middle" font-size="18">Larger pieces show ranks 1–8. Each number matches a full argument below.</text></svg>';
   return {svg,pieces};
 }
 

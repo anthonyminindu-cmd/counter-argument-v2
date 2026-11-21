@@ -270,7 +270,7 @@ function puzzleArea(pathData) {
   return Math.abs(twiceArea)/2;
 }
 
-test('the eight foreground pieces tile their actual silhouette surface for balanced and skewed debates', () => {
+test('the full outline is tiled by twenty arguments with eight larger pieces across ownership splits', () => {
   for (const pattern of ['ABBBBBAAABAABAAABBBA', 'AB'.repeat(10), 'A'.repeat(10)+'B'.repeat(10), 'B'.repeat(10)+'A'.repeat(10)]) {
     const owners = new Map(rows.map((r,i)=>[r.id,pattern[i]==='A'?'left':'right']));
     const poster = render(rows,plan,'The complete question?',measure,owners);
@@ -278,7 +278,8 @@ test('the eight foreground pieces tile their actual silhouette surface for balan
     assert.equal(areas.length, 20);
     const surface=poster.svg.match(/<clipPath id="subject-outline"><path d="([^"]+)"/)[1];
     const silhouetteArea=puzzleArea(surface);
-    assert.ok(Math.abs(areas.slice(0,8).reduce((a,b)=>a+b)-silhouetteArea)<silhouetteArea*.001);
+    assert.ok(poster.pieces.every(p=>p.inside));
+    assert.ok(Math.abs(areas.reduce((a,b)=>a+b)-silhouetteArea)<silhouetteArea*.001);
     assert.ok(Math.min(...areas.slice(0,8))>Math.max(...areas.slice(8)),pattern);
     for(const p of poster.pieces) {
       assert.equal(p.side,owners.get(p.id));
@@ -384,7 +385,30 @@ test('saved presets and a cached AI extinction plan get the contour treatment on
     assert.ok(pieces.every(p=>p.lines.join(' ')===p.statement));
   }
   const before={...plan,title:'Could AI destroy humanity within three years?',objects:plan.objects.slice(0,1)};
-  const {svg}=render(rows,before,'AI risk',measure,mapping);
+  const {svg,pieces}=render(rows,before,'AI risk',measure,mapping);
+  assert.equal(pieces.filter(p=>p.inside).length,20);
+  const vertexYs=pieces.flatMap(p=>p.poly.map(point=>point[1]));
+  const y0=Math.min(...vertexYs),height=Math.max(...vertexYs)-y0;
+  assert.ok(pieces.filter(p=>p.y<y0+.44*height).length>=4,'Head contains readable claims');
+  assert.ok(pieces.some(p=>p.y>y0+.8*height),'Torso contains readable claims');
   assert.match(svg,/Robot bust with twenty ranked puzzle pieces/);
   assert.match(svg,/<g data-background-context=""[^>]*><g transform=/);
+});
+
+test('supporting pieces on a thin subject touch the nearest contour',()=>{
+  const {svg,pieces}=render(rows,{...plan,profile:'space',objects:[]},'A space question',measure,mapping);
+  const numbers=svg.match(/data-main-subject="" d="([^"]+)"/)[1].match(/-?[\d.]+/g).map(Number);
+  const outline=numbers.flatMap((x,i)=>i%2===0?[[x,numbers[i+1]]]:[]);
+  const external=pieces.filter(piece=>!piece.inside);
+  assert.ok(external.length>0);
+  for(const cell of external){
+    const inner=cell.poly[1];
+    const xs=outline.flatMap((p,i)=>{
+      const q=outline[(i+1)%outline.length],y=inner[1];
+      return (p[1]>y)!==(q[1]>y)?[p[0]+(q[0]-p[0])*(y-p[1])/(q[1]-p[1])]:[];
+    });
+    const gap=Math.min(Math.abs(inner[0]-Math.min(...xs)),Math.abs(inner[0]-Math.max(...xs)));
+    assert.ok(gap<3.2,'attached contour gap '+gap);
+    assert.equal(cell.lines.join(' '),cell.statement);
+  }
 });
