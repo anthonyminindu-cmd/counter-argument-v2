@@ -90,10 +90,10 @@ if __name__ == "__main__":
         chrome = shutil.which("google-chrome") or shutil.which("chromium")
         if not chrome:
             raise RuntimeError("Chrome or Chromium is required")
-        def browser_page():
+        def browser_page(width):
             browser = pw.chromium.launch(executable_path=chrome)
             stack.callback(browser.close)
-            page = browser.new_page()
+            page = browser.new_page(viewport={"width":width,"height":850})
             page.set_default_timeout(20000)
             def report_rpc_failure(response):
                 if "/rest/v1/rpc/" in response.url and response.status >= 400:
@@ -101,7 +101,7 @@ if __name__ == "__main__":
                     print("RPC failure",urlparse(response.url).path,body.get("code"),body.get("message"),flush=True)
             page.on("response",report_rpc_failure)
             return page
-        sender, receiver = browser_page(), browser_page()
+        sender, receiver = browser_page(1180), browser_page(390)
         login(sender,a)
         login(receiver,b)
         receiver.get_by_role("link",name="Latest",exact=True).click()
@@ -126,6 +126,16 @@ if __name__ == "__main__":
         room=session(sender)
         assert room==session(receiver)
         check("Offline invitation appeared on login and both browsers joined the same session")
+        chat="I can see our shared table."
+        receiver.get_by_placeholder("Type a message...",exact=True).fill(chat)
+        receiver.get_by_role("button",name="Send message",exact=True).click()
+        expect(sender.get_by_text(chat,exact=True)).to_be_visible()
+        sender.get_by_placeholder("Enter your debate topic...").fill("Should the library open earlier?")
+        sender.get_by_role("button",name="Propose",exact=True).click()
+        receiver.get_by_role("button",name="Decline",exact=True).click()
+        expect(sender.get_by_placeholder("Enter your debate topic...")).to_be_visible()
+        check("Partner chat delivered and declining a proposal cleared it for both members")
+        sender,receiver=receiver,sender  # Reverse who proposes and who accepts.
         topic="Should libraries share repair tools?"
         sender.get_by_placeholder("Enter your debate topic...").fill(topic)
         sender.get_by_role("button",name="Propose",exact=True).click()
@@ -136,6 +146,7 @@ if __name__ == "__main__":
         receiver.get_by_role("button",name="Accept Topic",exact=True).click()
         for page in (sender,receiver):
             page.wait_for_url(re.compile(r'/debate/active\?'),timeout=35000)
+            expect(page.get_by_role("textbox",name="Your position",exact=True)).to_be_visible(timeout=30000)
             assert session(page)==room
             assert parse_qs(urlparse(page.url).query)["topic"]==[topic]
         check("Topic persisted through refresh and both accounts advanced with the same agreed topic")
