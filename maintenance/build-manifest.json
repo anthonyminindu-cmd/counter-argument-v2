@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "1a525fe5ececff0a6d567672897ccb28cd2cab4a327ceb7b3eb63b3f230efabd",
-  "generatedAsset": "assets/index-v2-1a525fe5ececff0a.js",
+  "generatedSha256": "3b2a7fb4a22cee094ceb98bf52df3d80f89346b928e82357537ff944fa4fb424",
+  "generatedAsset": "assets/index-v2-3b2a7fb4a22cee09.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -46,6 +46,8 @@
     "history-hide-stale-owner-before-effects",
     "use-new-topic-specific-scene-cache",
     "preserve-artwork-native-proportions",
-    "recede-puzzle-seams-behind-copy"
+    "recede-puzzle-seams-behind-copy",
+    "friend-history-use-linked-session-participants",
+    "friend-history-render-effective-participants"
   ]
 }

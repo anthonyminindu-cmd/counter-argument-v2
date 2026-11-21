@@ -1,0 +1,12 @@
+[
+  {
+    "id": "friend-history-use-linked-session-participants",
+    "find": "m.ai=\"AI\";let y,g=null,b,v=[],w=((x=l.data)==null?void 0:x.title)||\"Untitled debate\";if(o.participant_b===null)",
+    "replace": "const historyDebate=h?.user_a&&h?.user_b?{...o,participant_a:h.user_a,participant_b:h.user_b}:o;if(historyDebate.participant_b&&!m[historyDebate.participant_b]){const {data:partner}=await $.from(\"profiles\").select(\"display_name, username\").eq(\"user_id\",historyDebate.participant_b).maybeSingle();if(partner)m[historyDebate.participant_b]=partner.display_name||partner.username||\"Participant\"}m.ai=\"AI\";let y,g=null,b,v=[],w=((x=l.data)==null?void 0:x.title)||\"Untitled debate\";if(historyDebate.participant_b===null)"
+  },
+  {
+    "id": "friend-history-render-effective-participants",
+    "find": "data:{debate:o,topic:w,category:",
+    "replace": "data:{debate:historyDebate,topic:w,category:"
+  }
+]

@@ -28,7 +28,7 @@ function environment(source, options = {}) {
   let writes = 0;
   const context = {
     Xt: () => ({ user: currentOwner ? { id: currentOwner } : null }),
-    Bf: () => { throw new Error('No ranking fixture expected'); },
+    Bf: () => { if (options.friend) return {status:'ready',arguments:[{owner:ownerA},{owner:ownerB}]}; throw new Error('No ranking fixture expected'); },
     p: {
       useState(initial) {
         const index = cursor++;
@@ -56,6 +56,9 @@ function environment(source, options = {}) {
           if (table === 'debates' && options.pauseDebate && requestOwner === ownerA) await options.pauseDebate;
           if (table === 'debates') return { data: requestOwner === ownerA ? { id: filters.id, topic_id: 'topic-a', participant_a: ownerA, participant_b: null } : null, error: null };
           if (table === 'topics') return { data: { title: 'Private topic for owner A', category: 'General' }, error: null };
+          if (table === 'debate_sessions' && options.friend) return {data:{id:'friend-session',user_a:ownerA,user_b:ownerB},error:null};
+          if (table === 'automatic_debate_results' && options.friend) return {data:{snapshot:{topic:'Weekend library hours',stances:{[ownerA]:'For',[ownerB]:'Against'}},ranking:[],image_url:'test-image'},error:null};
+          if (table === 'profiles' && filters.user_id === ownerB) return {data:{display_name:'Owner B'},error:null};
           if (table === 'profiles') return { data: [{ user_id: ownerA, display_name: 'Owner A' }], error: null };
           if (table === 'arguments') return { data: [{ id: 'argument-a', content: 'Private original claim', user_id: ownerA }], error: null };
           return { data: null, error: null };
@@ -143,4 +146,15 @@ test('same-account ordinary history remains readable and a new debate URL gates 
   const nextId = '22222222-2222-4222-8222-222222222222';
   assert.equal(page.render(ownerA, nextId).data, null);
   await page.settle(); assert.equal(page.value.data.debate.id, nextId);
+});
+
+test('a linked friend session supplies the missing opponent and loads saved rankings', async () => {
+  const page = environment(output, { friend: true });
+  page.render(ownerA); await page.settle();
+  assert.equal(page.value.data.debate.participant_b, ownerB);
+  assert.equal(page.value.data.names[ownerB], 'Owner B');
+  assert.equal(page.value.data.topic, 'Weekend library hours');
+  assert.equal(page.value.data.result.status, 'ready');
+  assert.equal(page.value.data.sessionId, 'friend-session');
+  assert.ok(!page.calls.some(call => call.table === 'debate_workflows'));
 });
