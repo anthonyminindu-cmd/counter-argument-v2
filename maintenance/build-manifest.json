@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "fb546aa4e6bfa8954ad67db634baf935c4cba63c368d2ba87f584c594cf3f60b",
-  "generatedAsset": "assets/index-v2-fb546aa4e6bfa895.js",
+  "generatedSha256": "39a6414f1da9c5a151e3743694c930049920ebd3bba81e57bd70b48cdb79ae16",
+  "generatedAsset": "assets/index-v2-39a6414f1da9c5a1.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",

@@ -114,6 +114,9 @@ if __name__ == "__main__":
         check("Online delivery in Latest, inbox badge, decline, sender acknowledgement")
         if sender.get_by_role("dialog").is_visible():
             sender.get_by_role("dialog").get_by_role("button",name="Close",exact=True).click()
+        sender.get_by_role("link",name="Home",exact=True).click()
+        expect(sender.get_by_role("region",name="Your activity").get_by_text("cancelled",exact=True)).to_be_visible()
+        check("Declined invitation closed the waiting debate in the sender's table")
         receiver.get_by_role("button",name="Sign out",exact=True).click()
         expect(receiver.get_by_role("link",name="Sign in",exact=True)).to_be_visible()
         send(sender,b)

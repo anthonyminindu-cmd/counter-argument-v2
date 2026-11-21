@@ -111,7 +111,13 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       error&&status(error,true));
   }
   function useActivity(id) {
-    return useQuery(id||null,()=>db.from('debates').select('id,status,updated_at,topics(title)').or('participant_a.eq.'+id+',participant_b.eq.'+id).order('updated_at',{ascending:false}).limit(30));
+    const activity=useQuery(id||null,()=>db.from('debates').select('id,status,updated_at,topics(title)').or('participant_a.eq.'+id+',participant_b.eq.'+id).order('updated_at',{ascending:false}).limit(30));
+    useEffect(()=>{
+      const changed=()=>activity.refresh();
+      window.addEventListener('dk-activity-changed',changed);
+      return ()=>window.removeEventListener('dk-activity-changed',changed);
+    },[id]);
+    return activity;
   }
   function titleOf(row){return row.topics?.title||'Friend exploration'}
   function Activity({compact=false}) {

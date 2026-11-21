@@ -58,14 +58,18 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
     useEffect(()=>{alive.current=true;return()=>{alive.current=false}},[]);
     useEffect(()=>{
       if (!owner) return;
-      let active=true,running=false,again=false;
+      let active=true,running=false,again=false,previous=null;
       async function sync(){
         if (!active) return;
         if (running){again=true;return;}
         running=true;
         try {
           const fresh=await readInbox(db,owner,waitId);
-          if(active){setRows(fresh);setLoaded(true);setError('');}
+          if(active){
+            const revision=fresh.map(row=>row.id+row.status).join(',');
+            if(previous!==null&&previous!==revision)window.dispatchEvent(new Event('dk-activity-changed'));
+            previous=revision;setRows(fresh);setLoaded(true);setError('');
+          }
         }catch{if(active)setError('Notifications could not refresh. Try again.');}
         finally{running=false;if(active&&again){again=false;void sync();}}
       }
