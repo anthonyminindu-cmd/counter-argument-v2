@@ -131,7 +131,12 @@ test('mobile Chrome restores and completes an AI debate, verifies twenty saved r
     phase='opening the saved infographic';
     const open=btn(pg,'View infographic');
     if(await open.isVisible())await open.click();
-    await pg.getByText('20 of 20 labels fit',{exact:true}).waitFor({timeout:220000});
+    // Changing from active results to history can overlap a request for the exact same artwork.
+    const ready=pg.getByText('20 of 20 labels fit',{exact:true});
+    try { await ready.waitFor({timeout:225000}); } catch(err) {
+      const alerts=await pg.getByRole('alert').allTextContents();
+      console.log('QA panel: '+alerts.map(text=>text.slice(0,130)).join(' | ')); throw err;
+    }
     assert.equal(await pg.locator('svg [data-label]').count(),20);
     const study=ranked.find(row=>row.title==='Quiet study');
     const label=await pg.locator('g[data-argument-id="'+study.id+'"] [data-label]').evaluate(el=>[...el.querySelectorAll('tspan')].map(line=>line.textContent.trim()).join(' '));
