@@ -1,0 +1,7 @@
+[
+  {
+    "id": "refresh-only-local-summary-after-headline-repair",
+    "find": "L=sx(a,\"descriptions\",u)",
+    "replace": "L=sx(a,\"descriptions-headlines-v2\",u)"
+  }
+]

@@ -6,7 +6,7 @@ import { withAiRequest } from '../_shared/aiRequestLedger.ts';
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { z } from 'npm:zod@4';
 import { presentationJson, presentationFailure, presentationStatus } from '../_shared/presentationJson.ts';
-import { SCENE_VERSION, sceneInstructions, validateScene } from '../_shared/illustratedScene.mjs';
+import { LABEL_VERSION, sceneInstructions, validateScene } from '../_shared/illustratedScene.mjs';
 import { requestDeadline } from '../_shared/rankingRequest.ts';
 
 const inputSchema = z.object({ topic: z.string().min(1).max(2000), positions: z.array(z.string().max(2000)).max(2), rows: z.array(z.object({ id: z.string().min(1).max(300), rank: z.number(), score: z.number(), title: z.string().max(5000), description: z.string().max(30000) })).length(20) });
@@ -41,17 +41,20 @@ async function generateScene(req: Request) {
   }).strict();
   const deadline = requestDeadline(req.signal, 85_000);
   try {
-    const raw = await presentationJson(key, sceneInstructions + ' The topic must determine the main physical subject. Prefer a specific action or object over a generic building, and never add props from related topics. Every label must stand alone as a complete headline or specific noun phrase. Preserve what changes and for whom; do not end on a connector or a verb that needs its object. For example, use “Pilot measures evening demand” or “Alternatives already exist” instead of “Pilot can measure” or “Digital access already”. Put one word in each label field. Use an empty fourth field for a three-word label. Also write one different complete 3–4 word alternate for each argument, using an original detail to distinguish similar claims.', {
+    const raw = await presentationJson(key, sceneInstructions + ' The topic must determine the main physical subject. Prefer a specific action or object over a generic building, and never add props from related topics. Every label must stand alone as a complete headline or specific noun phrase. Preserve what changes and for whom; do not end on a connector or a verb that needs its object. For example, use “Pilot measures evening demand” or “Alternatives already exist” instead of “Pilot can measure” or “Digital access already”. Put one word in each label field. Use an empty fourth field for a three-word label. Make the alternate a concrete noun phrase naming the actual benefit, risk, cost or tradeoff. Comparisons must name what is compared. For example, use “Direct upgrade savings” or “Pilot policy overhead”; never leave the reader to guess what a policy adds or an alternative beats. Write one different complete 3–4 word alternate for each argument, using an original detail to distinguish similar claims.', {
       exactDebateProposition: input.topic, assignedPositionsForContextOnly: input.positions,
       arguments: aliases.map(({key,row}) => ({ id:key, rank:row.rank, score:row.score, title:row.title, description:row.description })),
     }, 'illustrated_debate', z.toJSONSchema(schema), deadline.signal);
     const parsed = schema.parse(raw);
     const labels = chooseSceneLabels(aliases.map(({key,row}) => {
       const entry = label.parse(parsed.summaries[key]);
-      return { id:row.id, position:entry.position, alternate:entry.alternate, primary:[entry.first,entry.second,entry.third,entry.fourth].filter(Boolean).join(' ') };
+      return { id:row.id, title:row.title, position:entry.position, alternate:entry.alternate, primary:[entry.first,entry.second,entry.third,entry.fourth].filter(Boolean).join(' ') };
     }));
     return reply(validateScene(input.rows,{title:parsed.title,profile:'custom',objects:illustratedSubjects(parsed.subjects),
-      sideTitles:[parsed.leftCaption,parsed.rightCaption],summaries:labels}));
+      sideTitles:[parsed.leftCaption,parsed.rightCaption].map((caption,index)=>{
+        const submitted=input.positions[index]?.trim();
+        return submitted && submitted.length<=46 ? submitted : caption;
+      }),summaries:labels}));
   } catch (error) {
     const known = error instanceof Error && /^(Every argument needs|Four complete illustrated|A topic subject|Illustration plan is|Twenty distinct original)/.test(error.message);
     if(known || error instanceof z.ZodError) {
@@ -61,7 +64,7 @@ async function generateScene(req: Request) {
     return reply({ error:presentationFailure(error) + ' Your original rankings are preserved.' }, deadline.signal.aborted ? 504 : presentationStatus(error));
   } finally { deadline.dispose(); }
 }
-const forParticipant=withAiRequest('summary',generateScene,SCENE_VERSION,resolveFriendScene);
+const forParticipant=withAiRequest('summary',generateScene,LABEL_VERSION,resolveFriendScene);
 const forArtwork=withAiRequest('image',generateDebateArt,ART_VERSION,resolveFriendScene);
 Deno.serve((req:Request)=>{
   const path=new URL(req.url).pathname;

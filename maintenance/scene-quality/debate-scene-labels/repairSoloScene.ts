@@ -1,6 +1,6 @@
 import {createClient} from 'npm:@supabase/supabase-js@2';
 import {aiInputHash,runAccountedAiRequest,type ReceiptContext} from '../_shared/aiRequestLedger.ts';
-import {SCENE_VERSION, LEGACY_SCENE_VERSION} from '../_shared/illustratedScene.mjs';
+import {SCENE_VERSION, LABEL_VERSION, LEGACY_SCENE_VERSION} from '../_shared/illustratedScene.mjs';
 
 type RankedRow = {id:string; rank:number; score:number; title:string; description:string};
 export async function repairSavedSoloScene(req:Request, generate:(req:Request,context:ReceiptContext)=>Promise<Response>,artVersion?:string) {
@@ -30,5 +30,5 @@ export async function repairSavedSoloScene(req:Request, generate:(req:Request,co
   // The authorized repair action may retry a deterministically failed receipt within its existing cap.
   const retryInput={...input,retry:true};
   const renderRequest=new Request(req.url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(retryInput),signal:req.signal});
-  return runAccountedAiRequest(admin,saved.user_id,artVersion?'image':'summary',renderRequest,retryInput,generate,artVersion||SCENE_VERSION);
+  return runAccountedAiRequest(admin,saved.user_id,artVersion?'image':'summary',renderRequest,retryInput,generate,artVersion||LABEL_VERSION);
 }

@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "9eff2d01da65dc01c9c1a2c0d3c0a08b6b34ddb3f7e645c4212021df80b3556a",
-  "generatedAsset": "assets/index-v2-9eff2d01da65dc01.js",
+  "generatedSha256": "e160cb6114552842d95771d585b7119c81f0a14edeb7effffee12728448a2bb3",
+  "generatedAsset": "assets/index-v2-e160cb6114552842.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -71,6 +71,7 @@
     "rank-sized-board-constants",
     "rank-sized-puzzle-geometry",
     "rank-sized-seam",
-    "rank-sized-subject-clips"
+    "rank-sized-subject-clips",
+    "refresh-only-local-summary-after-headline-repair"
   ]
 }
