@@ -172,7 +172,8 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
         displayed.length?h('ul',null,...displayed.map(rowView)):h('p',null,inbox.loaded?'No invitations yet.':'Loading notifications…')));
   }
   function FriendSetup(){
-    const inbox=useContext(Inbox),navigate=useNavigate();
+    const inbox=useContext(Inbox),navigate=useNavigate(), loc=useLocation();
+    const suggested=new URLSearchParams(loc.search).get('suggested')?.trim().slice(0,320);
     const waiting=inbox.rows.find(row=>row.id===inbox.waitId);
     const state=waiting&&inviteStatus(waiting);
     if(!inbox.owner)return h('main',{className:'dk-main'},h(Link,{to:'/login?next='+encodeURIComponent(searchRoute),className:'dk-primary'},'Sign in to debate with a friend'));
@@ -188,7 +189,10 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
         }[state]),
         h('div',{className:'dk-actions'},state==='accepted'&&action('Open debate',()=>inbox.respond(waiting,'join'),true,inbox.busy),
           inbox.error&&action('Try again',inbox.refresh),action('Notifications',inbox.open),h(Link,{to:searchRoute,className:'dk-secondary'},'Back to friend search'))):
-      h(Directory,{onInvitationSent:id=>{navigate(searchRoute+'&waiting='+encodeURIComponent(id));void inbox.refresh();}}));
+      h(React.Fragment,null,
+        suggested&&h('aside',{className:'dk-panel dk-suggested-topic'},h('h2',null,'Suggested topic'),
+          h('p',null,suggested),h('small',null,'Suggest this question after your friend joins.')),
+        h(Directory,{onInvitationSent:id=>{navigate(searchRoute+'&waiting='+encodeURIComponent(id));void inbox.refresh();}})));
   }
   function PointFields({prefix,point,update}) {
     return h('div',{className:'dk-point-fields'},

@@ -1,0 +1,1104 @@
+[
+  {
+    "id": "ai-data-centers",
+    "title": "AI data centers in your town",
+    "overview": "A new data center could bring tax revenue, while its demand for power and water could change life around it.",
+    "sideTitles": [
+      "Approve with safeguards",
+      "Pause until costs are clear"
+    ],
+    "arguments": [
+      [
+        "Charge for power upgrades",
+        "An agreement can require the operator to pay for new substations and power lines needed by the project."
+      ],
+      [
+        "Add local tax revenue",
+        "Property tax receipts could support local services if tax breaks leave a meaningful share for the town."
+      ],
+      [
+        "Create construction jobs",
+        "A large project can bring work for electricians, builders, and other trades during construction."
+      ],
+      [
+        "Reuse an industrial site",
+        "A site already set aside for industry may be suitable if power and water are available there."
+      ],
+      [
+        "Set a water limit",
+        "A permit can cap water use and require the operator to change how it cools equipment during shortages."
+      ],
+      [
+        "Control noise by permit",
+        "Setbacks and limits on overnight noise can help protect nearby homes."
+      ],
+      [
+        "Secure local benefits",
+        "Written terms can tie project approval to public commitments such as road improvements or training."
+      ],
+      [
+        "Upgrade power infrastructure",
+        "New grid equipment can benefit other customers if a utility plans and pays for each share of the upgrade fairly."
+      ],
+      [
+        "Require public reporting",
+        "Publishing energy use, water use, and complaints would let residents see whether the operator meets its promises."
+      ],
+      [
+        "Build only in stages",
+        "An initial phase can make later expansion conditional on the operator meeting agreed limits."
+      ],
+      [
+        "Protect household bills",
+        "Residents need to know who would cover grid costs if the operator uses less power than it promised."
+      ],
+      [
+        "Check drought demand",
+        "Even a project that fits normal water supplies may cause problems in a dry year."
+      ],
+      [
+        "Count lasting jobs",
+        "Ask how many jobs will remain after construction and compare that number with the public investment."
+      ],
+      [
+        "Read the tax breaks",
+        "A headline investment figure tells residents little about how much revenue their community will keep."
+      ],
+      [
+        "Test overnight noise",
+        "Fans and backup equipment may be more noticeable at night, so residents need a study based on local conditions."
+      ],
+      [
+        "Compare other land uses",
+        "The same site might support another project with more permanent jobs or different infrastructure needs."
+      ],
+      [
+        "Plan for grid shortages",
+        "A utility should show how the new demand fits alongside homes and other businesses during peak hours."
+      ],
+      [
+        "Count nearby projects",
+        "Several developments can put more strain on roads, water, and power than any single project suggests."
+      ],
+      [
+        "Check enforcement powers",
+        "Any promised limits need clear penalties and someone responsible for enforcing them."
+      ],
+      [
+        "Plan for closure",
+        "The town could require a funded plan to remove equipment and restore the site if the business leaves."
+      ]
+    ],
+    "comments": [
+      "I'd start with the utility agreement. If the company leaves early, who's still paying for the substation?",
+      "When the proposal says it will create jobs, can the public see two numbers? One for construction and one for permanent jobs.",
+      "I'd be more open to an old industrial site. I'd still want to know what the fans would sound like at night."
+    ],
+    "question": "Would you welcome a new AI data center in your town?",
+    "category": "AI data centers",
+    "subject": "A server rack",
+    "followUp": "If the operator paid for every new power line, would your answer change?",
+    "context": "A Nov. 4–6 Economist/YouGov poll of US registered voters found 44% favored a ban on new data centers and 39% opposed one. On Nov. 19 the Senate passed a bill addressing energy permits and data center costs.",
+    "sources": [
+      {
+        "label": "The Economist and YouGov",
+        "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/econTabReport_SuXgTtZ.pdf"
+      },
+      {
+        "label": "Associated Press",
+        "url": "https://apnews.com/article/b41c2017e4a9fe2e6de92ec77a4cdd0a"
+      }
+    ]
+  },
+  {
+    "id": "grocery-tariffs",
+    "title": "Tariffs at the grocery store",
+    "overview": "Removing food tariffs could lower import costs. Keeping some could give U.S. growers room to compete.",
+    "sideTitles": [
+      "Remove grocery tariffs",
+      "Keep selected grocery tariffs"
+    ],
+    "arguments": [
+      [
+        "Ease checkout costs",
+        "Lower import costs can help shoppers if wholesalers and grocery stores pass the savings along."
+      ],
+      [
+        "Cut taxes on staples",
+        "Removing tariffs on groceries can bring relief to households that spend a large share of their budget on food."
+      ],
+      [
+        "Help small grocers",
+        "Independent stores with limited bargaining power can benefit when their suppliers face lower import costs."
+      ],
+      [
+        "Keep off-season choices",
+        "Imports can fill shelves when a food is out of season in much of the United States."
+      ],
+      [
+        "Avoid needless tariffs",
+        "A tariff on a food the country barely grows can raise its cost with little benefit for domestic farmers."
+      ],
+      [
+        "Cut ingredient costs",
+        "Domestic food makers can spend less on imported ingredients they use in foods made here."
+      ],
+      [
+        "Reduce trade friction",
+        "A rollback can give trading partners an opening to remove duties on some U.S. farm exports."
+      ],
+      [
+        "Diversify food suppliers",
+        "Removing tariffs can put more overseas suppliers within a retailer’s budget."
+      ],
+      [
+        "Simplify import rules",
+        "Fewer tariffs mean fewer separate duties for U.S. importers to track when prices or products change."
+      ],
+      [
+        "Match sudden shortages",
+        "Open access to foreign supply can help stores restock after weather damages a domestic harvest."
+      ],
+      [
+        "Keep farms competitive",
+        "A targeted tariff can give domestic growers more room to compete with lower-cost imports."
+      ],
+      [
+        "Preserve production capacity",
+        "Keeping producers in business can help the U.S. maintain the ability to supply key foods."
+      ],
+      [
+        "Address unfair subsidies",
+        "A narrowly chosen duty can respond to imports whose prices reflect foreign government subsidies."
+      ],
+      [
+        "Protect seasonal harvests",
+        "A seasonal tariff could give local growers a better chance to sell while their crops are coming in."
+      ],
+      [
+        "Give farmers time",
+        "A gradual change can give farmers time to adjust planting, purchasing, and sales plans."
+      ],
+      [
+        "Check retail savings",
+        "Some stores or distributors may keep part of the savings, so a tariff cut may deliver less relief than expected."
+      ],
+      [
+        "Preserve food jobs",
+        "Keeping U.S. farms competitive could also support the workers who pack and process their crops."
+      ],
+      [
+        "Keep negotiating leverage",
+        "Tariffs can give negotiators something to remove in exchange for lower trade barriers on U.S. exports."
+      ],
+      [
+        "Review foods individually",
+        "A food with a strong domestic industry presents a different tradeoff from one the country mostly imports."
+      ],
+      [
+        "Target help to shoppers",
+        "Direct food assistance could reach households under the most pressure while leaving selected farm protections in place."
+      ]
+    ],
+    "comments": [
+      "I'd expect a different answer for coffee than for apples. How much of each can we realistically grow here?",
+      "Even if the importer gets a cheaper bill, how would I know whether that savings showed up on my receipt?",
+      "Seasonal rules sound promising until I try to figure out who decides the dates. Would they differ by crop?"
+    ],
+    "question": "Should the U.S. remove tariffs on imported groceries?",
+    "category": "Grocery prices and tariffs",
+    "subject": "A grocery basket",
+    "followUp": "Would you make a different rule for food the U.S. barely grows?",
+    "context": "A Nov. Reuters/Ipsos poll found 62% supported repealing the administration’s import tariffs. The survey asked about tariffs broadly. The groceries angle is our discussion prompt.",
+    "sources": [
+      {
+        "label": "Reuters and Ipsos",
+        "url": "https://www.reuters.com/world/us/most-americans-want-new-democratic-congress-end-trumps-iran-war-reutersipsos-2026-11-10/"
+      },
+      {
+        "label": "Ipsos",
+        "url": "https://www.ipsos.com/en-us/reutersipsos-post-election-survey"
+      }
+    ]
+  },
+  {
+    "id": "health-insurance",
+    "title": "Help paying for health insurance",
+    "overview": "Congress could restore extra help with monthly insurance bills or spend the money on reducing the cost of care itself.",
+    "sideTitles": [
+      "Restore larger tax credits",
+      "Focus on the price of care"
+    ],
+    "arguments": [
+      [
+        "Lower monthly premiums",
+        "Larger tax credits can reduce what eligible households pay each month for plans they buy through the marketplace."
+      ],
+      [
+        "Help sooner",
+        "Congress could restore an existing type of assistance while longer-term efforts to reduce care costs take shape."
+      ],
+      [
+        "Keep people covered",
+        "Paying less each month can make it easier for people to keep coverage after a price increase."
+      ],
+      [
+        "Help people between jobs",
+        "Marketplace credits can help people who buy their own plans after losing job-based insurance."
+      ],
+      [
+        "Support self-employed workers",
+        "Tax credits can help independent workers who lack access to an employer health plan."
+      ],
+      [
+        "Ease income cutoffs",
+        "A gradual phaseout can keep a modest raise from causing a sudden jump in what someone pays for coverage."
+      ],
+      [
+        "Protect continuity of care",
+        "Staying enrolled can help people keep appointments and continue treatment with fewer coverage disruptions."
+      ],
+      [
+        "Share insurance risk",
+        "If more healthy people stay covered, insurers can spread claims across more enrollees."
+      ],
+      [
+        "Use existing marketplaces",
+        "An updated credit can use the same enrollment process people already use to apply for financial help."
+      ],
+      [
+        "Review after a set term",
+        "A time limit would let Congress measure enrollment and costs before deciding whether to extend the larger credits."
+      ],
+      [
+        "Reduce treatment prices",
+        "Policies that address what hospitals and other providers charge can reduce spending across many kinds of plans."
+      ],
+      [
+        "Lower costs at visits",
+        "A lower premium helps with the monthly bill, while a smaller deductible could make medical visits easier to afford."
+      ],
+      [
+        "Address prescription prices",
+        "Reforms that lower drug costs can help people whose monthly pharmacy bill remains high even with coverage."
+      ],
+      [
+        "Target limited aid",
+        "Congress could concentrate extra assistance on families with the least income or the highest share of income spent on premiums."
+      ],
+      [
+        "Help outside the marketplace",
+        "Lower underlying prices could also help workers with employer plans and people who pay cash for care."
+      ],
+      [
+        "Improve price comparisons",
+        "Clear prices for routine services can help patients and employers compare costs where they have a choice of providers."
+      ],
+      [
+        "Encourage stronger competition",
+        "In places with few insurers or hospitals, policies that expand competition may improve options and pricing."
+      ],
+      [
+        "Fund primary care access",
+        "Investing in nearby primary care can help people get care sooner and avoid some costly emergency visits."
+      ],
+      [
+        "Limit the federal cost",
+        "Congress would need to weigh the ongoing cost of larger credits against other ways to spend the same public dollars."
+      ],
+      [
+        "Address the next increase",
+        "Reducing the cost of delivering care could slow future premium increases as well as ease current bills."
+      ]
+    ],
+    "comments": [
+      "Which problem comes first? If I can't pay the monthly bill, cheaper care five years from now doesn't keep me covered today.",
+      "The deductible matters too. What's the point of a cheaper plan if a doctor visit still comes out of money I haven't got?",
+      "Would a one-year extension paired with a deadline for cost reforms give people more certainty, or just put us back here next fall?"
+    ],
+    "question": "Should Congress bring back extra help paying for health insurance?",
+    "category": "Health insurance",
+    "subject": "A health insurance card",
+    "followUp": "If your monthly premium went up but your income stayed the same, what would help most?",
+    "context": "Marketplace enrollment opened Nov. 1 in most states after the enhanced premium credits expired. KFF reported that average benchmark silver premiums rose 13% for 2027.",
+    "sources": [
+      {
+        "label": "KFF open enrollment analysis",
+        "url": "https://www.kff.org/affordable-care-act/9-things-to-watch-for-the-2027-aca-open-enrollment-period/"
+      },
+      {
+        "label": "KFF midterm analysis",
+        "url": "https://www.kff.org/public-opinion/health-care-in-the-2026-midterm-election/"
+      }
+    ]
+  },
+  {
+    "id": "teen-autoplay",
+    "title": "Autoplay for younger teens",
+    "overview": "A clear place to stop versus letting families choose how videos play.",
+    "sideTitles": [
+      "Turn off autoplay",
+      "Let families choose"
+    ],
+    "arguments": [
+      [
+        "A natural stopping point",
+        "Ending each video gives teens a moment to decide if they want to watch another."
+      ],
+      [
+        "Safer defaults",
+        "The setting helps families that never open the app’s controls."
+      ],
+      [
+        "Intentional viewing",
+        "Choosing the next video gives the viewer more control over what plays."
+      ],
+      [
+        "Fewer interruptions",
+        "A video that stops on its own is less likely to keep playing when a student looks away."
+      ],
+      [
+        "Easier family rules",
+        "A common setting makes expectations easier to explain across apps."
+      ],
+      [
+        "Less unplanned viewing",
+        "An extra tap makes it easier to notice when a short break is turning into a long session."
+      ],
+      [
+        "Videos stay available",
+        "Teens can still watch material they choose, one video at a time."
+      ],
+      [
+        "Fewer surprise clips",
+        "Stopping first avoids showing the next recommendation before the viewer sees what it is."
+      ],
+      [
+        "Less checking for parents",
+        "A default lets parents spend less time finding settings on each service."
+      ],
+      [
+        "Easier to check",
+        "Platforms can demonstrate whether the next clip starts without a viewer’s input."
+      ],
+      [
+        "Different needs by age",
+        "A family might choose different settings for a 10-year-old than for a 15-year-old."
+      ],
+      [
+        "Continuous learning",
+        "Autoplay can help students follow a lecture series or tutorial playlist in order."
+      ],
+      [
+        "Accessibility needs",
+        "For someone who finds repeated taps difficult, continuous playback can be easier to use."
+      ],
+      [
+        "Family judgment",
+        "Caregivers can choose settings that fit how and when a teen uses an app."
+      ],
+      [
+        "Age checks cost privacy",
+        "Some approaches to enforcing an age rule could ask for extra personal information."
+      ],
+      [
+        "Other features matter",
+        "Notifications and recommendations can still pull teens back even if videos stop between clips."
+      ],
+      [
+        "Shared device problems",
+        "Age-based settings may work poorly when children and adults share an account or device."
+      ],
+      [
+        "Different types of video",
+        "An endless recommendation feed and a playlist the viewer chose work differently."
+      ],
+      [
+        "Teach lasting habits",
+        "Practicing how to set limits may help when teens eventually make these choices on their own."
+      ],
+      [
+        "Focus on better controls",
+        "An obvious autoplay switch and reminders could help families with fewer restrictions."
+      ]
+    ],
+    "comments": [
+      "I’d turn it off on an endless scroll and leave it on for a playlist the teen picked. Picking a series feels like an actual choice to me.",
+      "How would an app know who’s on a shared tablet? I like the pause between videos, but I’d want to know what an age check would collect.",
+      "If autoplay stays an option, put the switch right beside the video. A control buried three menus deep doesn’t give families much of a choice."
+    ],
+    "question": "Should apps turn off autoplay for everyone under 16?",
+    "category": "Teen social media",
+    "subject": "A phone with a play button",
+    "followUp": "Who should choose the default when a family never changes the settings?",
+    "context": "Google, Meta and TikTok sued California in November over youth-platform restrictions that reach autoplay and recommendations. This question focuses on one feature.",
+    "sources": [
+      {
+        "label": "Reuters",
+        "url": "https://www.reuters.com/world/us/google-meta-tiktok-sue-block-california-youth-social-media-law-2026-11-05/"
+      }
+    ]
+  },
+  {
+    "id": "iran-war-powers",
+    "title": "Who decides whether the war continues?",
+    "overview": "A public vote on continuing the conflict versus flexibility with regular oversight.",
+    "sideTitles": [
+      "Require a public vote",
+      "Allow flexibility with oversight"
+    ],
+    "arguments": [
+      [
+        "Public accountability",
+        "A recorded vote makes it clear where each elected lawmaker stands."
+      ],
+      [
+        "Clear goals",
+        "An authorization vote gives lawmakers a chance to ask what continued involvement is meant to achieve."
+      ],
+      [
+        "A deadline to review",
+        "Congress could require renewed approval after a set period."
+      ],
+      [
+        "Visible costs",
+        "Debate gives the public a place to ask how continuing the conflict affects spending and other priorities."
+      ],
+      [
+        "Shared responsibility",
+        "A public vote makes Congress and the president share responsibility for a prolonged commitment."
+      ],
+      [
+        "Voters get a voice",
+        "Lawmakers can hear from constituents before deciding whether to approve more fighting."
+      ],
+      [
+        "Defined limits",
+        "An authorization can set boundaries on what Congress is agreeing to support."
+      ],
+      [
+        "Durable public support",
+        "A public debate can show whether support for continuing goes beyond one administration."
+      ],
+      [
+        "A chance to change course",
+        "Requiring a new decision helps lawmakers reconsider when the reasons for continuing have changed."
+      ],
+      [
+        "Consider other options",
+        "The vote provides a place to compare continuing the conflict with pursuing a negotiated end."
+      ],
+      [
+        "Emergency flexibility",
+        "A president may need to respond to a sudden threat before lawmakers can assemble."
+      ],
+      [
+        "Continuous oversight",
+        "Scheduled briefings and reports can give Congress a way to review decisions between votes."
+      ],
+      [
+        "Diplomatic room",
+        "Negotiations can change quickly and may benefit from some flexibility before a vote."
+      ],
+      [
+        "Congressional delays",
+        "A fight over the wording of a bill can delay a decision even when lawmakers agree on the general goal."
+      ],
+      [
+        "Confidential information",
+        "Private briefings can let lawmakers ask questions about sensitive information."
+      ],
+      [
+        "Funding reviews",
+        "Congress can use funding debates to challenge spending and set conditions."
+      ],
+      [
+        "Narrower decisions",
+        "Lawmakers can ask for answers about specific commitments instead of voting on the entire conflict at once."
+      ],
+      [
+        "Flexible timing",
+        "A review tied to meaningful changes may reveal more than a vote on a fixed date."
+      ],
+      [
+        "Avoid rushed votes",
+        "A fast vote held to meet a deadline may leave little time for questions or testimony."
+      ],
+      [
+        "Regular public updates",
+        "A public report and hearing can create more than one chance to question the administration."
+      ]
+    ],
+    "comments": [
+      "I’d separate an immediate response from a decision to keep fighting. The first can be urgent. The second should come with a vote and a reason.",
+      "I can see the case for flexibility, but what would Congress actually receive in those briefings, and how often would the public hear an update?",
+      "A vote would matter more to me if it included a deadline and a clear goal. A yes vote with no end in sight wouldn’t settle much."
+    ],
+    "question": "Should Congress have to approve continued U.S. fighting in Iran?",
+    "category": "The war with Iran",
+    "subject": "The U.S. Capitol dome",
+    "followUp": "Should an emergency exception expire unless Congress votes to extend it?",
+    "context": "On Nov. 19 the Senate rejected a measure to end the conflict or require congressional approval by a 51–48 vote.",
+    "sources": [
+      {
+        "label": "Reuters",
+        "url": "https://www.reuters.com/world/us-senate-rejects-resolution-curbing-trumps-iran-war-powers-2026-11-19/"
+      },
+      {
+        "label": "Ipsos",
+        "url": "https://www.ipsos.com/en-us/reutersipsos-post-election-survey"
+      }
+    ]
+  },
+  {
+    "id": "federal-gas-tax",
+    "title": "A break from the federal gas tax?",
+    "overview": "Short-term relief at the pump versus road funding and more targeted help.",
+    "sideTitles": [
+      "Pause the gas tax",
+      "Keep the gas tax in place"
+    ],
+    "arguments": [
+      [
+        "Immediate pump relief",
+        "If the tax cut reaches the pump, drivers can benefit when they refill."
+      ],
+      [
+        "No forms to fill",
+        "Drivers could receive relief without applying for a credit or program."
+      ],
+      [
+        "Help for long commutes",
+        "People who have few alternatives to driving could see more relief from a per-gallon cut."
+      ],
+      [
+        "Support for small fleets",
+        "A lower pump price could help local businesses that drive frequently for work."
+      ],
+      [
+        "Temporary response",
+        "A fixed end date lets policymakers respond to a spike without making a permanent change."
+      ],
+      [
+        "Easy price comparison",
+        "Posted prices give drivers an immediate way to look for changes during the pause."
+      ],
+      [
+        "Limited travel options",
+        "The cut can reach people in places where buses and trains are hard to use."
+      ],
+      [
+        "Faster than a rebate",
+        "A price change could reach drivers sooner than a new payment system."
+      ],
+      [
+        "Clear trigger",
+        "Congress could tie a pause to a published price threshold so the rule is predictable."
+      ],
+      [
+        "Budget breathing room",
+        "Even a small drop could ease one recurring expense during a short price spike."
+      ],
+      [
+        "Protect road funding",
+        "A pause would reduce money collected for transportation unless Congress replaces it."
+      ],
+      [
+        "Savings may not pass through",
+        "Retail prices may fall by less than the amount of the suspended tax."
+      ],
+      [
+        "Help follows gallons",
+        "People who buy the most fuel could receive more relief regardless of their income."
+      ],
+      [
+        "Misses people without cars",
+        "Households that rely on transit or walking would see little direct benefit."
+      ],
+      [
+        "A small price change",
+        "A tax cut may feel modest if the main reason prices are high remains in place."
+      ],
+      [
+        "Prices may rebound",
+        "Drivers would face the return of the tax when the pause expires."
+      ],
+      [
+        "Time to change prices",
+        "A short window might end before a price cut fully reaches some communities."
+      ],
+      [
+        "Reward efficient travel",
+        "Keeping the price signal gives people a stronger reason to combine trips or use less fuel."
+      ],
+      [
+        "Target the money",
+        "Direct support could focus on low-income commuters or people with no practical alternatives."
+      ],
+      [
+        "Cover the gap elsewhere",
+        "Replacing lost revenue would use funds that could pay for other priorities."
+      ]
+    ],
+    "comments": [
+      "I’d compare what a driver might save in a month with the road money lost. ‘Relief at the pump’ sounds good, but the size of the savings matters.",
+      "A rebate can be more targeted, but how fast would it reach someone who has to fill up twice a week? That’s the strongest case for a short pause to me.",
+      "If lawmakers try it, I’d want a date it ends and numbers on how much of the cut reached drivers. Otherwise we’ll argue about a program we never measured."
+    ],
+    "question": "Should the U.S. pause the federal gas tax when prices spike?",
+    "category": "Gas prices",
+    "subject": "A gas pump",
+    "followUp": "How much would drivers have to save for a pause to be worth it?",
+    "context": "In a Nov. 6–9 poll, 71% wanted the next Congress to give fuel costs substantial attention. The federal gas tax is a major source of highway funding.",
+    "sources": [
+      {
+        "label": "Ipsos",
+        "url": "https://www.ipsos.com/en-us/reutersipsos-post-election-survey"
+      },
+      {
+        "label": "Congressional Research Service",
+        "url": "https://www.everycrsreport.com/files/2026-10-13_R48948_a9724ba690674aae322ca5b84b7ee99054afd42f.html"
+      }
+    ]
+  },
+  {
+    "id": "office-land-housing",
+    "title": "Apartments on office land",
+    "overview": "Make it easier to build homes while deciding which sites can support them.",
+    "sideTitles": [
+      "Allow apartments on office land",
+      "Review each site first"
+    ],
+    "arguments": [
+      [
+        "Reuse quiet sites",
+        "Apartments can put underused commercial parcels back into regular use."
+      ],
+      [
+        "More room for homes",
+        "Opening more land gives builders more locations to consider when demand is high."
+      ],
+      [
+        "Shorter commutes",
+        "Some office districts are close to workplaces, so new residents may have more options for getting to work."
+      ],
+      [
+        "More local customers",
+        "People who live nearby can bring customers to shops outside office hours."
+      ],
+      [
+        "Make use of transit",
+        "New homes near an existing station or bus stop can make daily travel easier."
+      ],
+      [
+        "More housing choices",
+        "Apartments add a different option in places dominated by detached homes."
+      ],
+      [
+        "Less outward growth",
+        "Building on already developed land may reduce pressure to extend development farther out."
+      ],
+      [
+        "Predictable rules",
+        "A clear rule for apartments can make projects easier to plan and review."
+      ],
+      [
+        "Add activity after work",
+        "Homes can give a district more activity in the evenings when office workers leave."
+      ],
+      [
+        "Reuse existing services",
+        "A well-equipped site may already have roads and utility connections near it."
+      ],
+      [
+        "Schools and utilities",
+        "Some office sites will need more school capacity, water service, or utility upgrades."
+      ],
+      [
+        "Safe walking routes",
+        "Wide roads and poor sidewalks can make an office district hard to live in."
+      ],
+      [
+        "Protect space for jobs",
+        "Keeping some office land available preserves room for employers and future development."
+      ],
+      [
+        "Check nearby uses",
+        "Noise, trucking, or nearby industrial activity can make certain sites poor places for homes."
+      ],
+      [
+        "Conversion can cost more",
+        "Some office buildings are hard to convert because their layouts limit windows or plumbing."
+      ],
+      [
+        "Coordinate new traffic",
+        "Apartment traffic can follow different routes and hours than office traffic."
+      ],
+      [
+        "Plan for affordable homes",
+        "A city may want affordability commitments before changing what can be built."
+      ],
+      [
+        "Account for flooding",
+        "Site review can check whether parking lots or low ground need stormwater improvements."
+      ],
+      [
+        "Make daily needs reachable",
+        "Some office parks are far from groceries, parks, and clinics."
+      ],
+      [
+        "Hear from neighbors",
+        "Site review gives residents a way to flag concrete issues before a project is approved."
+      ]
+    ],
+    "comments": [
+      "An empty office by the train station seems like a very different case from an office park by a highway. I’d start with sites people can actually walk around.",
+      "Could the city publish a short list of conditions up front? I’d want developers to know what they need, and neighbors to know what the proposal would add.",
+      "If a building costs more to convert than to replace, I’d still consider apartments on the site. Reusing the land and reusing the building are different choices."
+    ],
+    "question": "Should your city allow apartments on land set aside for offices?",
+    "category": "Housing",
+    "subject": "An office building",
+    "followUp": "What would make a former office site a good place to live?",
+    "context": "Monterey Park’s Nov. 3 ballot included a local measure on allowing limited residential uses in underused commercial and industrial areas.",
+    "sources": [
+      {
+        "label": "City of Monterey Park",
+        "url": "https://www.montereypark.ca.gov/1738/2026-General-Election-Information"
+      },
+      {
+        "label": "PNC Economics",
+        "url": "https://www.pnc.com/content/dam/pnc-com/pdf/aboutpnc/EconomicReports/EconomicUpdates/PNC_Economics_Research_Housing_Market_Index_17_November_2026.pdf"
+      }
+    ]
+  },
+  {
+    "id": "immigration-bill",
+    "title": "One immigration bill or two?",
+    "overview": "Congress could pair border security with a path to citizenship or consider each on its own.",
+    "sideTitles": [
+      "A single bill",
+      "Vote on separate bills"
+    ],
+    "arguments": [
+      [
+        "A deal for both sides",
+        "One package gives lawmakers a reason to support changes that they might block if each came up alone."
+      ],
+      [
+        "Plans work together",
+        "Congress can design border screening and legal immigration rules together so that each supports the other."
+      ],
+      [
+        "Shared deadlines",
+        "A single bill can set dates for funding border operations and opening applications for legal status."
+      ],
+      [
+        "Budget the whole plan",
+        "Lawmakers can see the combined cost of staffing, technology, and processing applications before they vote."
+      ],
+      [
+        "Room for tradeoffs",
+        "Negotiators can trade commitments on funding, eligibility, and timelines to build broader support."
+      ],
+      [
+        "Consistent rules",
+        "A single bill lets lawmakers use the same definitions for eligibility, deadlines, and appeals."
+      ],
+      [
+        "More predictable for families",
+        "People with pending cases could see whether and when they would be eligible to apply under the new rules."
+      ],
+      [
+        "Better staffing plans",
+        "Agencies can prepare for changes in screening and applications at the same time."
+      ],
+      [
+        "One public negotiation",
+        "Voters can judge the full agreement while there is still time for lawmakers to change it."
+      ],
+      [
+        "A broader coalition",
+        "Employers, border communities, and immigrant families have reasons to press for different parts of the same bill."
+      ],
+      [
+        "Let each vote stand",
+        "Separate votes show where each lawmaker stands on border security and citizenship."
+      ],
+      [
+        "Act where agreement exists",
+        "An agreed change could move ahead without waiting for a deal on the other issue."
+      ],
+      [
+        "Simpler public review",
+        "Two focused bills may be easier for voters to read and compare."
+      ],
+      [
+        "Fewer deal breakers",
+        "A dispute over one program need not sink the other proposal."
+      ],
+      [
+        "Different time horizons",
+        "Border staffing and a path to citizenship may call for different start dates."
+      ],
+      [
+        "Clearer budget choices",
+        "Separate funding debates can show what each policy costs and what Congress is paying for."
+      ],
+      [
+        "More room for testimony",
+        "Lawmakers can give each topic its own hearings and hear from people affected by it."
+      ],
+      [
+        "Avoid forced tradeoffs",
+        "A lawmaker can support a proposal on its merits without accepting unrelated terms."
+      ],
+      [
+        "Adjust each bill later",
+        "Congress can revise one policy as conditions change without reopening the original bargain."
+      ],
+      [
+        "Try narrower agreements",
+        "Smaller bills could address specific problems first, such as delays in processing immigration cases."
+      ]
+    ],
+    "comments": [
+      "I’d lean toward one bill if it gave both parts clear start dates. I’d want to know what happens if one agency meets its deadline and the other misses theirs.",
+      "I’d rather see two votes. My representative might support both, and I still want to know what they thought was strong or weak about each proposal.",
+      "Could Congress write a shared plan and still vote on the parts separately? I’m trying to figure out whether my concern is with the deal itself or with how the votes work."
+    ],
+    "question": "Should one bill address both border security and a path to citizenship?",
+    "category": "Immigration",
+    "subject": "A passport",
+    "followUp": "If one half of the deal were delayed, would you still support the other?",
+    "context": "November reporting on the next Congress identified border security, work visas and a path to citizenship as subjects for negotiations.",
+    "sources": [
+      {
+        "label": "Reuters",
+        "url": "https://www.reuters.com/legal/government/democrats-won-big-midterms-so-now-what-2026-11-21/"
+      },
+      {
+        "label": "Ipsos",
+        "url": "https://www.ipsos.com/en-us/reutersipsos-post-election-survey"
+      }
+    ]
+  },
+  {
+    "id": "fossil-fuel-deadline",
+    "title": "A global deadline for fossil fuels?",
+    "overview": "A shared date could speed investment. Countries face different costs and energy needs.",
+    "sideTitles": [
+      "Set a shared deadline",
+      "Let countries choose their dates"
+    ],
+    "arguments": [
+      [
+        "Investment needs a date",
+        "A common deadline can tell utilities and manufacturers when to plan for new equipment and power sources."
+      ],
+      [
+        "Cut pollution sooner",
+        "A deadline could prompt countries to act sooner on the emissions that warm the planet."
+      ],
+      [
+        "Measure progress together",
+        "Countries could use the same milestones to show where they are on track and where they need help."
+      ],
+      [
+        "Build supply chains",
+        "A shared timetable could give equipment makers a clearer picture of when demand will rise."
+      ],
+      [
+        "Plan for affected workers",
+        "Communities that rely on fossil fuel jobs would have a target date for training and new investment."
+      ],
+      [
+        "Finance has a schedule",
+        "A deadline can anchor talks about when countries need funding for power grids and cleaner energy."
+      ],
+      [
+        "Avoid stranded projects",
+        "A clear date could make governments and companies think twice before building equipment they may retire early."
+      ],
+      [
+        "Reduce exposure to price swings",
+        "Switching sooner could reduce some countries’ exposure to volatile fuel import costs."
+      ],
+      [
+        "Plan across borders",
+        "Neighbors can use shared milestones to plan links between power grids and coordinate purchases."
+      ],
+      [
+        "A deadline invites scrutiny",
+        "Voters and businesses can compare present decisions with the commitments governments have made."
+      ],
+      [
+        "Energy access comes first",
+        "Countries still connecting homes to electricity need room to expand access at a pace they can afford."
+      ],
+      [
+        "Keep power reliable",
+        "Regions need time to add dependable generation, storage, and power lines before retiring existing plants."
+      ],
+      [
+        "Costs differ by country",
+        "A single date may leave countries with higher borrowing costs or older infrastructure with fewer choices."
+      ],
+      [
+        "Different starting points",
+        "A country that already uses mostly low-emission electricity faces a different task from one that relies on coal or gas."
+      ],
+      [
+        "Match promises to funding",
+        "Countries could set dates around financing they can actually secure for the transition."
+      ],
+      [
+        "Protect local jobs",
+        "Regions dependent on coal, oil, or gas may need extra time to develop other sources of employment."
+      ],
+      [
+        "Tackle feasible cuts first",
+        "Countries could make progress faster by starting where cleaner options are already available."
+      ],
+      [
+        "Account for difficult sectors",
+        "Alternatives for some industrial processes and transport uses take longer to deploy than cleaner electricity."
+      ],
+      [
+        "Improve plans as costs change",
+        "National dates can change when technology, borrowing costs, and energy demand shift."
+      ],
+      [
+        "Better participation",
+        "Some governments may agree to stronger milestones if they have a say in setting the pace."
+      ]
+    ],
+    "comments": [
+      "I want a date that businesses can plan around. I’d be more comfortable with it if the agreement said who pays to upgrade power grids in countries that can’t borrow cheaply.",
+      "I’m stuck on the gap between setting a date and building enough power to meet it. I’d like to see a grid plan alongside any promise.",
+      "Would a shared deadline for power plants work better than one covering everything? Replacing a power plant seems like a different problem from replacing fuel for a cargo ship."
+    ],
+    "question": "Should countries agree on a deadline to phase out fossil fuels?",
+    "category": "Climate and energy",
+    "subject": "An oil barrel",
+    "followUp": "Should a country still connecting homes to electricity face the same deadline as a wealthy one?",
+    "context": "At the COP31 climate talks, negotiators contested whether the November draft should explicitly address moving away from fossil fuels.",
+    "sources": [
+      {
+        "label": "Reuters",
+        "url": "https://www.reuters.com/sustainability/climate-focus-cop31-draft-deal-strips-fossil-fuel-references-2026-11-20/"
+      },
+      {
+        "label": "Associated Press",
+        "url": "https://apnews.com/article/b54eebcade92e5ee4c513b9a5b2192a7"
+      }
+    ]
+  },
+  {
+    "id": "cloud-outage-backup",
+    "title": "A backup channel for work outages?",
+    "overview": "An independent alert channel costs money. Existing phone trees may be enough for smaller teams.",
+    "sideTitles": [
+      "Pay for a backup channel",
+      "Use existing emergency contacts"
+    ],
+    "arguments": [
+      [
+        "Reach staff during outages",
+        "A channel that uses a different provider or sign-in system can still work when the main apps are unavailable."
+      ],
+      [
+        "Critical shifts stay covered",
+        "A backup alert can tell on-call staff about schedule changes when dispatch or scheduling apps are down."
+      ],
+      [
+        "One trusted update",
+        "A known backup channel gives employees a place to look for confirmed instructions during an outage."
+      ],
+      [
+        "Confirm who got the message",
+        "An alert service can help managers see who acknowledged an urgent notice and who needs a call."
+      ],
+      [
+        "Scale beyond one office",
+        "A separate channel can reach teams in different locations without relying on one manager’s contact list."
+      ],
+      [
+        "Practice the switch",
+        "A short drill can show whether staff know where to go and whether emergency contact details are current."
+      ],
+      [
+        "Fast notices reduce downtime",
+        "Employees can move to offline work or reschedule customer appointments while the main tools recover."
+      ],
+      [
+        "Reach workers away from desks",
+        "A backup that supports calls or text can reach field workers who rarely open a laptop."
+      ],
+      [
+        "Manage access to numbers",
+        "A properly configured alert system can limit who has access to employees’ personal contact details."
+      ],
+      [
+        "Keep an incident record",
+        "An alert service can keep a record of instructions and acknowledgments for an outage review."
+      ],
+      [
+        "Start with the phone tree",
+        "A small team with up-to-date numbers can often make calls faster than it can learn another platform."
+      ],
+      [
+        "Avoid recurring fees",
+        "A subscription may be hard to justify for a small workplace that rarely needs simultaneous alerts."
+      ],
+      [
+        "Keep instructions simple",
+        "Employees may remember a designated number or meeting spot more easily than a second app."
+      ],
+      [
+        "A backup can fail too",
+        "A second tool can share the same sign-in provider, carrier, or network dependencies as the first."
+      ],
+      [
+        "Protect personal time",
+        "A general-purpose emergency channel can turn into after-hours messaging unless its use is limited."
+      ],
+      [
+        "Collect less personal data",
+        "Using existing emergency contacts can avoid giving another vendor employee phone numbers."
+      ],
+      [
+        "Support people without smartphones",
+        "Calls and written procedures can work for staff who avoid installing work apps on personal devices."
+      ],
+      [
+        "Limit the rollout to critical teams",
+        "Hospitals and utilities may need special coverage even if most offices get by with a contact list."
+      ],
+      [
+        "Set outage rules in advance",
+        "Written guidance can tell staff what to do locally while managers work to restore regular communications."
+      ],
+      [
+        "Review before spending",
+        "A practice run can reveal whether there is a reach or timing gap that actually calls for a paid service."
+      ]
+    ],
+    "comments": [
+      "For a six-person shop, I’d start with a phone tree and check it quarterly. For a hospital shift change, I’d want a way to see exactly who got the message.",
+      "We tried switching to another app and it still asked us to sign in with our regular work account. Would the backup work if both email and sign-in were down?",
+      "I’d be willing to give my number for emergencies if there were clear ground rules. A real outage qualifies. A routine meeting reminder doesn’t."
+    ],
+    "question": "Should employers pay for a backup way to reach staff when work apps go down?",
+    "category": "Cloud outages",
+    "subject": "An open laptop",
+    "followUp": "Would your answer change for a hospital, a school, or a small shop?",
+    "context": "On Nov. 12 a Microsoft outage disrupted Outlook, Teams and other services. AP reported effects on employers and government operations.",
+    "sources": [
+      {
+        "label": "Associated Press",
+        "url": "https://apnews.com/article/6376045281feb430c0b923e3a4b251c2"
+      }
+    ]
+  }
+]

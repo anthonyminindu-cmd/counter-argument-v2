@@ -45,8 +45,9 @@ test('a fresh landing shows the welcome before the feed and keeps focused destin
   ]){
     const loc=new URL(url,'https://example.test');
     const page=createWorkspace({React,useLocation:()=>loc}).Start();
-    const [welcome,grid]=page.children;
+    const [welcome,examples,grid]=page.children;
     assert.equal(Boolean(welcome),expected,url);
+    assert.equal(Boolean(examples),expected||url==='/home?view=feed',url);
     assert.equal(grid.children[0].props.landing,expected);
     assert.equal(grid.children[1].props.compact,true);
     if(welcome){

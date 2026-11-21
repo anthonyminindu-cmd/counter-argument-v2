@@ -6,6 +6,9 @@ const profile = '/profile';
 const friend = '/debate/start?mode=friend';
 const ai = '/debate/topic?mode=ai';
 const personalTabs = ['Table','Pinned','Posters','People','Account'];
+const novemberPath = '/counter-argument-v2/demo/november-2026/';
+const novemberRoute = feed+'&edition=november-2026';
+const exampleRoute = id => feed+'&example='+encodeURIComponent(id);
 
 export function afterLogin(search) {
   const next = new URLSearchParams(search).get('next') || '';
@@ -171,11 +174,88 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         sizes:'(max-width: 600px) 100vw, (max-width: 1300px) 53vw, 650px',
         width:1280,height:853,alt:'',decoding:'async',fetchPriority:'high'}));
   }
+  function useNovemberEdition() {
+    return useQuery('november-2026',async()=>{
+      const response=await fetch(novemberPath+'edition.json');
+      if(!response.ok)throw Error('The November edition is unavailable.');
+      return {data:await response.json()};
+    });
+  }
+  function ExampleCard({entry}) {
+    return h('article',{className:'dk-card dk-example-card'},
+      h(Link,{to:exampleRoute(entry.id),className:'dk-example-link'},
+        h('img',{src:novemberPath+entry.id+'.svg',alt:'',width:1600,height:900,loading:'lazy'}),
+        h('div',{className:'dk-example-card-text'},h('small',null,entry.category),h('h3',null,entry.question),
+          h('span',{className:'dk-link'},'See both sides ',icon('enter')))));
+  }
+  function NovemberShelf({entries,all=false,homeShelf=false}) {
+    if(!entries?.length)return null;
+    return h('section',{className:'dk-november'+(homeShelf?' dk-november-home':''),'aria-labelledby':'dk-november-title'},
+      h('div',{className:'dk-sectionline'},
+        h('div',null,h('small',null,'Example debates · By Differ Kindly'),h(all?'h1':'h2',{id:'dk-november-title'},'In the news this month')),
+        !all&&link(novemberRoute,'See all ten','dk-secondary')),
+      h('div',{className:'dk-example-grid'},...entries.slice(0,all?entries.length:3).map(entry=>h(ExampleCard,{key:entry.id,entry}))));
+  }
+  function ExampleDebate({entry}) {
+    const {user}=useAuth();
+    const [exporting,setExporting]=useState(false),[exportError,setExportError]=useState('');
+    const poster=novemberPath+entry.id+'.svg';
+    const friendTopic=friend+'&suggested='+encodeURIComponent(entry.question);
+    async function download() {
+      setExporting(true);setExportError('');
+      try{
+        const image=new Image();image.src=poster;await image.decode();
+        const canvas=document.createElement('canvas');canvas.width=3200;canvas.height=1800;
+        canvas.getContext('2d').drawImage(image,0,0,canvas.width,canvas.height);
+        const png=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+        if(!png)throw Error('PNG encoding failed');
+        const url=URL.createObjectURL(png), anchor=document.createElement('a');
+        anchor.href=url;anchor.download=entry.id+'.png';anchor.click();
+        setTimeout(()=>URL.revokeObjectURL(url),60000);
+      }catch{setExportError('Could not create a PNG. You can open the full-size poster instead.')}
+      finally{setExporting(false)}
+    }
+    return h(React.Fragment,null,link(novemberRoute,'All November debates'),
+      h('article',{className:'dk-example-debate'},
+        h('header',null,h('small',null,'Example debate · By Differ Kindly'),h('h1',null,entry.question),h('p',null,entry.overview)),
+        h('figure',{className:'dk-example-figure'},
+          h('a',{href:poster,target:'_blank',rel:'noopener','aria-label':'Open full-size poster in a new tab'},
+            h('img',{src:poster,alt:entry.subject+' puzzle comparing both sides. All points are listed below.',width:1600,height:900})),
+          h('figcaption',{className:'dk-actions'},h('a',{className:'dk-secondary',href:poster,target:'_blank',rel:'noopener'},'Open full-size poster'),
+            h('button',{className:'dk-secondary',type:'button',disabled:exporting,onClick:download},exporting?'Preparing PNG…':'Download PNG'),
+            link(user?friendTopic:login(friendTopic),'Debate this with a friend','dk-primary'),exportError&&status(exportError,true))),
+        h('div',{className:'dk-example-positions'},...entry.sideTitles.map((title,side)=>
+          h('section',{className:'dk-panel',key:title},h('h2',null,title),
+            h('ul',null,...entry.arguments.slice(side*10,side*10+10).map(([label,explanation],i)=>
+              h('li',{key:label},h('h3',null,h('span',null,'#'+(i*2+side+1)+' '),label),h('p',null,explanation))))))),
+        h('section',{className:'dk-panel dk-example-discussion'},h('h2',null,'Example discussion'),h('p',null,entry.followUp),
+          h('ul',null,...entry.comments.map((comment,i)=>h('li',{key:i},comment)))),
+        h('section',{className:'dk-example-sources'},h('h2',null,'November context'),h('p',null,entry.context),
+          h('ul',null,...entry.sources.map(({label,url})=>h('li',{key:url},h('a',{href:url,className:'dk-link'},label)))))));
+  }
+  function NovemberPreview({homeShelf}) {
+    const edition=useNovemberEdition();
+    return h(NovemberShelf,{entries:edition.data,homeShelf});
+  }
+  function NovemberBrowse({example}) {
+    const november=useNovemberEdition();
+    useEffect(()=>{window.scrollTo(0,0)},[example]);
+    const entry=november.data?.find(item=>item.id===example);
+    return h('main',{className:'dk-main',id:'dk-main'},
+      november.error?h('div',{className:'dk-panel'},status('Could not load the November debates.',true),h('button',{className:'dk-secondary',onClick:november.refresh},'Try again')):
+      november.loading?status('Loading the November debates…'):entry?h(ExampleDebate,{key:entry.id,entry}):
+        example?h('section',{className:'dk-panel'},h('h1',null,'Example debate unavailable'),link(novemberRoute,'Browse the November debates')):
+        h(NovemberShelf,{all:true,entries:november.data}));
+  }
   function Start() {
     const loc=useLocation(), landing=isWelcomeLocation(loc);
-    const onFeed=new URLSearchParams(loc.search).get('view')==='feed';
+    const params=new URLSearchParams(loc.search), onFeed=params.get('view')==='feed';
+    const example=params.get('example'), edition=params.get('edition')==='november-2026';
+    const shelf=landing||(onFeed&&!params.has('question')&&!['latest','people'].includes(params.get('sort')));
+    if(example||edition)return h(NovemberBrowse,{example});
     return h('main',{className:landing?'dk-main dk-home':'dk-main',id:'dk-main'},
       landing&&h(Welcome),
+      shelf&&h(NovemberPreview,{homeShelf:landing}),
       h('div',{className:'dk-grid'},h(Feed,{full:onFeed,landing}),h(Activity,{compact:true})));
   }
   function Feed({full,landing}) {
