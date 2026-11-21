@@ -1,7 +1,7 @@
 import { generateDebateArt, ART_VERSION } from './debateArt.ts';
 import { repairSavedSoloScene } from './repairSoloScene.ts';
 import { SILHOUETTE_VERSION, PREVIOUS_SILHOUETTE_VERSION, silhouetteInstructions, readerInstructions } from '../_shared/silhouetteBrief.mjs';
-import { subjectRoles, subjectForms, illustratedSubjects, chooseSceneLabels, headlineVocabulary } from './sceneSubjects.mjs';
+import { subjectRoles, subjectForms, illustratedSubjects, chooseSceneLabels, headlineVocabulary, readerBanner } from './sceneSubjects.mjs';
 import { resolveFriendScene } from './friendScene.ts';
 import { refineClaimCopy } from './claimCopy.ts';
 import { withAiRequest, type ReceiptContext } from '../_shared/aiRequestLedger.ts';
@@ -44,7 +44,11 @@ async function generateScene(req: Request, silhouette = false, context?:ReceiptC
     leftCaption:caption,rightCaption:caption,
     subjects:composition,
   }).strict();
-  const schema=reader ? baseSchema.extend({overview:z.string().min(8).max(145)}) : baseSchema;
+  // Give the model headroom to finish each sentence. Display limits are checked after parsing.
+  const bannerText=z.string().min(2).max(320);
+  const readerSchema=baseSchema.extend({title:bannerText,shortTitle:bannerText,overview:bannerText,shortOverview:bannerText,
+    leftCaption:bannerText,rightCaption:bannerText,shortLeftCaption:bannerText,shortRightCaption:bannerText});
+  const schema=reader ? readerSchema : baseSchema;
   const deadline = requestDeadline(req.signal, silhouette ? 132_000 : 85_000);
   try {
     const instructions = reader ? readerInstructions : silhouette ? silhouetteInstructions : sceneInstructions + ' The topic must determine the main physical subject. Prefer a specific action or object over a generic building, and never add props from related topics. Every label must stand alone as a complete headline or specific noun phrase. Preserve what changes and for whom; do not end on a connector or a verb that needs its object. For example, use “Pilot measures evening demand” or “Alternatives already exist” instead of “Pilot can measure” or “Digital access already”. Compose each phrase as a whole. For the primary field, name the concrete finding in 3–4 words; never cut a longer sentence to fit. For example, “Missed high-power appliances” names the limitation. Read the finished label by itself before returning it. Make the alternate a concrete noun phrase naming the actual benefit, risk, cost or tradeoff. Comparisons must name what is compared. For example, use “Direct upgrade savings” or “Pilot policy overhead”; never leave the reader to guess what a policy adds or an alternative beats. Write one different complete 3–4 word alternate for each argument, using an original detail to distinguish similar claims. Supply a third 3–4 word fallback naming a specific concrete concept in the argument, such as “Renter appliance testing” or “Utility assistance programs”.';
@@ -61,11 +65,12 @@ async function generateScene(req: Request, silhouette = false, context?:ReceiptC
     });
     const labels = silhouette && context ? await refineClaimCopy(req,context,key,input.topic,entries,deadline.signal,reader) : chooseSceneLabels(entries);
     const objects = illustratedSubjects(parsed.subjects, silhouette ? ['main', ...(parsed.subjects.context ? ['context'] : [])] : subjectRoles);
-    return reply(validateScene(input.rows,{title:parsed.title,...(reader && 'overview' in parsed ? {overview:parsed.overview} : {}),profile:'custom',objects,
+    const banner=reader ? readerBanner(parsed,input.positions) : {title:parsed.title,
       sideTitles:[parsed.leftCaption,parsed.rightCaption].map((caption,index)=>{
         const submitted=input.positions[index]?.trim();
-        return !reader && submitted && submitted.length<=46 ? submitted : caption;
-      }),summaries:labels}));
+        return submitted && submitted.length<=46 ? submitted : caption;
+      })};
+    return reply(validateScene(input.rows,{...banner,profile:'custom',objects,summaries:labels}));
   } catch (error) {
     const known = error instanceof Error && /^(Every argument needs|Four complete illustrated|A topic subject|Illustration plan is|Twenty distinct original)/.test(error.message);
     if(known || error instanceof z.ZodError) {

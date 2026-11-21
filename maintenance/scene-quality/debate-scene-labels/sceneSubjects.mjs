@@ -79,3 +79,22 @@ export function chooseSceneLabels(entries, claimsOnly = false, reader = false) {
   }
   return entries.map((entry,i)=>({id:entry.id,position:entry.position,statement:chosen[i]}));
 }
+
+// The provider sometimes fills a constrained string up to its last character,
+// even mid-thought. Select whole fields so display limits never cut prose.
+export function readerBanner(input, positions) {
+  const clean=value=>typeof value==='string' ? value.trim().replace(/\s+/g,' ') : '';
+  const unfinished=/\b(?:and|or|to|on|from|for|with|than|while|because|depends|requires|includes|offers|versus|whether)[.!?]?$/i;
+  function pick(options, limit, ending) {
+    return options.map(clean).find(value=>value && value.length<=limit && ending.test(value)
+      && !/…|\.\.\./.test(value) && !unfinished.test(value));
+  }
+  const title=pick([input.title,input.shortTitle],72,/\?$/);
+  const overview=pick([input.overview,input.shortOverview],145,/\.$/);
+  const sideTitles=[
+    pick([input.leftCaption,input.shortLeftCaption,positions[0]],46,/[\w.!?’)]$/u),
+    pick([input.rightCaption,input.shortRightCaption,positions[1]],46,/[\w.!?’)]$/u),
+  ];
+  if (!title || !overview || sideTitles.some(c=>!c)) throw Error('Illustration plan is missing complete banner copy.');
+  return {title,overview,sideTitles};
+}

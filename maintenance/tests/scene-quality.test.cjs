@@ -94,3 +94,14 @@ test('reader copy keeps up to seven words without stripping articles, uncertaint
     {id:'2',primary:'Libraries might still need to',alternate:'A short trial can miss seasonal use'}];
   assert.deepEqual(chooseSceneLabels(rows,true,true).map(x=>x.statement),[rows[0].primary,rows[1].alternate]);
 });
+
+test('banner selection keeps complete questions, sentences and side positions',async()=>{
+  const {readerBanner}=await import('../scene-quality/debate-scene-labels/sceneSubjects.mjs');
+  const fields={title:'Which device fits the job?',overview:'Borrowing can reduce costs but leave uncertain bill',
+    shortOverview:'Sharing saves households money while libraries cover upkeep.',leftCaption:'For libraries that rely on',
+    shortLeftCaption:'Lend shared devices',rightCaption:'Keep borrowing book-focused'};
+  const banner=readerBanner(fields,[]);
+  assert.equal(banner.overview,fields.shortOverview);
+  assert.deepEqual(banner.sideTitles,[fields.shortLeftCaption,fields.rightCaption]);
+  assert.throws(()=>readerBanner({...fields,shortOverview:'Ends mid-thought'},[]),/complete banner/);
+});
