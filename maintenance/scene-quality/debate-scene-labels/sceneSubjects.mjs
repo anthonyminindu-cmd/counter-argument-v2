@@ -48,7 +48,10 @@ export function chooseSceneLabels(entries, claimsOnly = false) {
   const fragment = /(?<!-)\b(?:a|an|the|and|or|for|to|with|from|if|than|of|in|on|by|can|could|would|should|may|might|must|already|gets|leave|leaves)\s*[.!?]?$/i;
   const unfinishedPredicate = /\b(?:can|could|will|would|may|might|must|should|still|already|often)\s+(?:add|beat|outweigh|require|cause|provide|reduce|improve|affect|depend|compare|need|increase|offer|inspect|outperform)s?\s*[.!?]?$/i;
   const lengthPattern = claimsOnly ? /^\S+(?: \S+){1,3}$/ : /^\S+(?: \S+){2,3}$/;
-  const candidates = entry => claimsOnly ? [entry.primary,entry.alternate,entry.fallback] : [entry.title,entry.primary,entry.alternate,entry.fallback];
+  const compact = text => clean(text).replace(/[.!]$/,'').replace(/\b(?:do not|does not|cannot|can not|is not|are not)\b/gi,m=>({
+    'do not':"don't",'does not':"doesn't",'cannot':"can't",'can not':"can't",'is not':"isn't",'are not':"aren't"
+  })[m.toLowerCase()]).replace(/^(?:the|an|a) /i,'').replace(/ (?:the|an|a) /gi,' ').replace(/\s+/g,' ');
+  const candidates = entry => claimsOnly ? [entry.primary,compact(entry.primary),entry.alternate,compact(entry.alternate),entry.fallback] : [entry.title,entry.primary,entry.alternate,entry.fallback];
   const fluent = (phrase, entry) => {
     if (!claimsOnly) return true;
     if (/\b(?:different|stronger|weaker|broader|flexible|big|include|includes|offer|offers|settle)\s*[.!?]?$/i.test(phrase)) return false;

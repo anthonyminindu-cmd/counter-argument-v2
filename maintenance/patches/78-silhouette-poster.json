@@ -7,7 +7,7 @@
   {
     "id": "version-silhouette-plans",
     "find": "const Wf=\"illustrated-debate-split-v4\"",
-    "replace": "const Wf=\"illustrated-debate-silhouette-v5\""
+    "replace": "const Wf=\"illustrated-debate-silhouette-v6\""
   },
   {
     "id": "accept-single-subject-and-optional-context",
