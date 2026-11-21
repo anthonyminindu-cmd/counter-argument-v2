@@ -7,9 +7,9 @@ const {execFileSync} = require('node:child_process');
 
 test('Firefox and WebKit render all V2 poster layout fixtures on desktop and mobile', {timeout: 420000}, async()=>{
   const deps=fs.mkdtempSync(path.join(os.tmpdir(),'v2-layout-'));
-  execFileSync('npm',['install','--silent','--ignore-scripts','--prefix',deps,'playwright-core@1.55.0'],{timeout:60000});
+  execFileSync('npm',['install','--silent','--ignore-scripts','--prefix',deps,'playwright-core@latest'],{timeout:60000});
   const pkg=path.join(deps,'node_modules/playwright-core');
-  execFileSync(process.execPath,[path.join(pkg,'cli.js'),'install','--with-deps','firefox','webkit'],{timeout:240000,stdio:'ignore'});
+  execFileSync(process.execPath,[path.join(pkg,'cli.js'),'install','firefox','webkit'],{timeout:240000,stdio:'inherit'});
   const api=require(pkg);
   for(const engine of ['firefox','webkit']){
     const browser=await api[engine].launch();
