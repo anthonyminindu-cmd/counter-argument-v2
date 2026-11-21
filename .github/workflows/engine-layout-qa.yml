@@ -1,0 +1,16 @@
+name: Measure V2 poster layouts in Firefox and WebKit
+on:
+  push:
+    branches: [qa/nov21-browser-engines]
+    paths: [qa/browser-fixture.cjs]
+permissions:
+  contents: read
+jobs:
+  layout:
+    runs-on: ubuntu-latest
+    container: mcr.microsoft.com/playwright:v1.55.0-noble
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - run: npm install --prefix /tmp/cross-qa --ignore-scripts playwright-core@1.55.0
+      - run: node --test qa/browser-fixture.cjs
