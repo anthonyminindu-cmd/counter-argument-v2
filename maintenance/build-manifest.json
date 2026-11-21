@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "52fa69dbe3330614b0d0daff3061c0d2b70c91a288b3eade00bf66c56a59bd43",
-  "generatedAsset": "assets/index-v2-52fa69dbe3330614.js",
+  "generatedSha256": "c0a6a6f1a54c48af3d771f0810b5ccb611c84bba6bf8cdaaa4546f392b93f988",
+  "generatedAsset": "assets/index-v2-c0a6a6f1a54c48af.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -103,6 +103,7 @@
     "decline-only-the-current-topic",
     "append-active-chat-to-latest-session",
     "name-topic-chat-send-button",
-    "name-active-chat-send-button"
+    "name-active-chat-send-button",
+    "keep-original-short-title-when-weekday-qualifier-drops"
   ]
 }

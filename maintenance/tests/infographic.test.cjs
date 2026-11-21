@@ -273,3 +273,26 @@ test('actual puzzle-piece areas respect all three rank tiers for both balanced a
     }
   }
 });
+
+test('the downloaded Sunday-hours label uses the submitted title when a deadline is recast as the study day',()=>{
+  const input=rows.map((row,i)=>i===0?{...row,title:'Quiet study',description:'Students who share a crowded home would have a quiet place to study before Monday.'}:row);
+  const provider={...plan,summaries:plan.summaries.map((row,i)=>i===0?{...row,statement:'Quiet Monday study'}:row)};
+  const result=render(input,provider,'Should the library open on Sunday?',measure,mapping);
+  const piece=result.pieces.find(piece=>piece.id===input[0].id);
+  assert.deepEqual(Array.from(piece.lines).join(' '),'Quiet study');
+  assert.equal(result.pieces.length,20);
+  assert.doesNotMatch(result.svg,/Quiet Monday study/);
+});
+
+test('a correctly qualified day or a separate reference to the action on that day retains the generated label',()=>{
+  for(const [description,statement] of [
+    ['A place to study before Monday.','Study before Monday'],
+    ['Reserve before Monday for quiet study on Monday.','Quiet Monday study'],
+    ['Quiet study is available on Monday.','Quiet Monday study'],
+  ]){
+    const input=rows.map((row,i)=>i?row:{...row,title:'Quiet study',description});
+    const provider={...plan,summaries:plan.summaries.map((row,i)=>i?row:{...row,statement})};
+    const piece=render(input,provider,'Library hours',measure,mapping).pieces.find(piece=>piece.id===input[0].id);
+    assert.equal(Array.from(piece.lines).join(' '),statement);
+  }
+});
