@@ -1,0 +1,20 @@
+name: Two-person debate journey
+on:
+  push:
+    branches: [qa/friend-journey-clarity]
+permissions:
+  contents: read
+jobs:
+  friend-journey:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - run: python -m pip install playwright==1.55.0
+      - name: Exercise desktop and phone with two real accounts
+        env:
+          DK_TEST_URL: https://anthonyminindu-cmd.github.io/counter-argument-v2
+          DK_TEST_SERVE_CHECKOUT: ""
+          DK_TEST_SCREENSHOTS: logs
+          DK_TEST_RANKING: "0"
+        run: python maintenance/e2e/friend_live.py
