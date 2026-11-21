@@ -1,0 +1,42 @@
+[
+  {
+    "id": "recover-friend-preparation-without-realtime",
+    "find": "[br,Ge]=p.useState(0);p.useEffect",
+    "replace": "[br,Ge]=p.useState(0);DK.useFriendPreparationSync(o,r?.id,h,()=>Sr());p.useEffect"
+  },
+  {
+    "id": "refresh-after-saving-readiness",
+    "find": "variant:\"destructive\"});return}en(U)},[vg,Ro]",
+    "replace": "variant:\"destructive\"});return}en(U);void Sr()},[vg,Ro]"
+  },
+  {
+    "id": "explain-friend-view-step",
+    "find": "se?\"Submit your position, then confirm when both participants are ready to proceed.\"",
+    "replace": "se?\"Share your view. When you’re ready, you’ll both move on to writing your points.\""
+  },
+  {
+    "id": "name-friend-view-step",
+    "find": "children:\"🎯 Step 1: Define Your Position\"",
+    "replace": "children:se?\"Step 1: Share your view\":\"Step 1: Define your position\""
+  },
+  {
+    "id": "name-friend-readiness-action",
+    "find": "?\"Complete Position Setup First\":\"Ready for Counter Arguments\"",
+    "replace": "?(se?\"Save your view first\":\"Complete Position Setup First\"):(se?\"Ready to write points\":\"Ready for Counter Arguments\")"
+  },
+  {
+    "id": "name-friend-points-step",
+    "find": "children:\"📝 Step 2: Submit your 10 Argument points\"",
+    "replace": "children:\"Step 2: Write your 10 points\""
+  },
+  {
+    "id": "clean-friend-progress-heading",
+    "find": "children:\"Friend’s field progress\"",
+    "replace": "children:\"Your friend’s progress\""
+  },
+  {
+    "id": "wrap-friend-status-card",
+    "find": "transition-colors ${qr?\"bg-green-50 border-green-200 text-green-700\":\"bg-gray-50 border-gray-200 text-gray-600\"}",
+    "replace": "transition-colors dk-friend-status ${qr?\"bg-green-50 border-green-200 text-green-700\":\"bg-gray-50 border-gray-200 text-gray-600\"}"
+  }
+]

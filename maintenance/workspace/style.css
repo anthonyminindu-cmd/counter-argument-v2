@@ -146,3 +146,21 @@ html{scroll-padding-top:155px}
   .dk-welcome h1 { font-size:clamp(2.65rem,10.5vw,3.2rem); }
   .dk-welcome .dk-welcome-mission { font-size:1rem; max-width:41ch; margin-top:6px; }
 }
+.dk-topic-suggestion,.dk-topic-review {
+  display:grid;
+  gap:8px;
+}
+.dk-topic-example {
+  min-height:44px;
+  height:auto;
+  padding-block:8px;
+  white-space:normal;
+  text-align:left;
+  justify-content:flex-start;
+}
+@media(min-width:600px){
+  .dk-topic-suggestion { grid-template-columns:minmax(0,1fr) auto; }
+  .dk-topic-review { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+.dk-friend-status { min-width:0; overflow-wrap:anywhere; }
+.dk-friend-status svg { flex-shrink:0; }

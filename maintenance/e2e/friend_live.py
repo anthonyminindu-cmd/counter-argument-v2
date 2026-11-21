@@ -1,10 +1,13 @@
 """Opt-in live integration test. Only the two newly created QA members interact."""
+import base64
 import json
 import os
 import re
 import secrets
 import shutil
+import struct
 import threading
+import time
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from contextlib import ExitStack
@@ -21,6 +24,7 @@ build = json.loads((ROOT / "maintenance/build-manifest.json").read_text())
 runtime = (ROOT / build["generatedAsset"]).read_text()
 public_key = re.search(r'sb_publishable_[A-Za-z0-9_-]+', runtime).group()
 run = secrets.token_hex(5)
+SCREENSHOTS = os.getenv("DK_TEST_SCREENSHOTS")
 print("QA cohort dk-invite-e2e-" + run, flush=True)
 
 
@@ -33,6 +37,7 @@ def create_member(role):
     }).encode(), headers={"apikey": public_key, "Content-Type": "application/json"})
     with urlopen(request, timeout=30) as response:
         result = json.load(response)
+    print("FRIEND_QA_ACCOUNT", result["user"]["id"], email, flush=True)
     if not result.get("access_token"):
         raise RuntimeError("QA signup did not produce a verified session.")
     return {"id": result["user"]["id"], "name": display, "email": email, "password": password}
@@ -51,7 +56,7 @@ def send(page, member):
     page.get_by_role("link", name="Debate with a friend", exact=True).click()
     page.get_by_label("Search for users").fill(member["name"])
     expect(page.get_by_text(member["name"], exact=True).first).to_be_visible()
-    page.get_by_role("button", name="Invite", exact=True).click()
+    page.get_by_role("button", name=re.compile(r"^(Send invitation|Invite)$", re.I)).click()
     expect(page.get_by_role("heading", name="Invitation sent", exact=True)).to_be_visible()
 
 
@@ -68,6 +73,164 @@ def session(page):
 
 def check(label):
     print("PASS " + label, flush=True)
+
+
+def capture(page, name):
+    if not SCREENSHOTS:
+        return
+    shot = page.screenshot(type="jpeg", quality=72, animations="disabled", timeout=15000)
+    if SCREENSHOTS == "logs":
+        encoded = base64.b64encode(shot).decode()
+        for offset in range(0, len(encoded), 6000):
+            print(f"DKFRIEND_{name} {offset} {encoded[offset:offset + 6000]}", flush=True)
+        return
+    directory = Path(SCREENSHOTS)
+    directory.mkdir(parents=True, exist_ok=True)
+    (directory / (name + ".jpg")).write_bytes(shot)
+
+
+def button(page, name):
+    return page.get_by_role("button", name=name, exact=isinstance(name, str))
+
+
+def simultaneous(*buttons):
+    for control in buttons:
+        expect(control).to_be_enabled()
+    start = int(time.time() * 1000) + 450
+    for control in buttons:
+        control.evaluate("(control, start) => {setTimeout(() => control.click(), Math.max(0, start-Date.now()));}", start)
+
+
+def resume_from_table(page, room, topic):
+    page.get_by_role("link", name="Profile", exact=True).click()
+    activity = page.get_by_role("region", name="Your activity")
+    activity.get_by_role("link", name=re.compile(re.escape(topic) + r"|Friend debate(?: session)?", re.I)).first.click()
+    button_or_link = page.get_by_role("link", name=re.compile(r"^Resume (friend )?debate$", re.I))
+    button_or_link.click()
+    page.wait_for_url(re.compile(r"/debate/active\?"), timeout=30000)
+    assert session(page) == room
+
+
+def argument(page, index):
+    return page.get_by_role("region", name=f"Argument {index}", exact=True)
+
+
+def topic_to_suggest(page):
+    return page.get_by_label("Topic to suggest", exact=True).or_(
+        page.get_by_placeholder(re.compile(r"Enter your debate topic|Write a topic|Enter a question to debate", re.I))
+    )
+
+
+def check_rankings_and_poster(pages, expected_titles):
+    exports, posters = [], []
+    for index, page in enumerate(pages):
+        side = "desktop" if index == 0 else "mobile"
+        expect(page.get_by_role("heading", name="Final AI rankings", exact=True)).to_be_visible(timeout=720000)
+        capture(page, "11-" + side + "-rankings")
+        with page.expect_download() as download:
+            button(page, "Download rankings").click()
+        rankings = json.loads(Path(download.value.path()).read_text())
+        records = rankings["ranking"]
+        assert sorted(row["rank"] for row in records) == list(range(1, 21))
+        assert len({row["id"] for row in records}) == 20
+        exports.append(rankings)
+        if button(page, "View infographic").is_visible():
+            button(page, "View infographic").click()
+        expect(page.locator("svg [data-label]")).to_have_count(20, timeout=210000)
+        labels = page.locator("svg [data-label]").evaluate_all("(nodes) => nodes.map(node => node.textContent.trim())")
+        assert len(set(labels)) == 20
+        capture(page, "12-" + side + "-poster")
+        with page.expect_download() as download:
+            button(page, "Download PNG").click()
+        png = Path(download.value.path()).read_bytes()
+        assert png[:8] == b"\x89PNG\r\n\x1a\n"
+        assert struct.unpack(">II", png[16:24]) == (4480, 2520)
+        posters.append(png)
+    assert exports[0] == exports[1]
+    for page in pages:
+        expect(page.get_by_text(expected_titles[0], exact=True).last).to_be_visible()
+        expect(page.get_by_text(expected_titles[-1], exact=True).last).to_be_visible()
+    assert posters[0] == posters[1]
+    check("Both accounts exported the same 20 original ranks and an identical 4480 by 2520 PNG")
+
+
+def check_positions_and_arguments(sender, receiver, room, topic):
+    pages = (sender, receiver)
+    positions = ("Lend repair kits on a trial basis", "Keep the lending collection focused on books")
+    for page, position in zip(pages, positions):
+        page.get_by_role("textbox", name="Your position", exact=True).fill(position)
+    capture(sender, "07-desktop-write-view")
+    simultaneous(*(button(page, re.compile(r"^(Save my view|Submit Position)$", re.I)) for page in pages))
+    for index, page in enumerate(pages):
+        expect(page.get_by_role("textbox", name="Your position", exact=True)).to_have_value(positions[index])
+        expect(page.get_by_role("textbox", name=re.compile(r" (position|view)$", re.I)).last).to_have_value(positions[1-index])
+    check("Both views saved without one replacing the other")
+    capture(receiver, "08-mobile-both-views")
+    receiver.reload()
+    for index, page in enumerate(pages):
+        expect(page.get_by_role("textbox", name="Your position", exact=True)).to_have_value(positions[index])
+    simultaneous(*(button(page, re.compile(r"^(Ready to write points|Ready for Counter Arguments|I.m ready)$", re.I)) for page in pages))
+    for side, page in zip(("desktop", "mobile"), pages):
+        try:
+            expect(argument(page, 1)).to_be_visible(timeout=35000)
+        except AssertionError:
+            capture(page, "09-" + side + "-waiting-for-points")
+            print(side, "headings:", page.get_by_role("heading").all_text_contents(), flush=True)
+            raise
+    capture(sender, "09-desktop-write-points")
+    subjects = (
+        ("Lower repair costs", "Keep bicycles usable", "Support library workshops", "Offer short loans",
+         "Reach infrequent riders", "Use existing lending desks", "Teach basic maintenance",
+         "Reuse durable tools", "Measure pilot demand", "Help nearby commuters"),
+        ("Protect staff time", "Budget for replacements", "Maintain tool condition", "Handle missing parts",
+         "Preserve book budgets", "Avoid duplicate services", "Keep instructions current",
+         "Store kits securely", "Check return quality", "Assess local demand"),
+    )
+    descriptions = (
+        ("Riders could borrow tools for minor adjustments instead of buying a kit they rarely use.",
+         "Keeping tires in good working order makes an existing bicycle more useful.",
+         "A workshop could pair hands-on instruction with a short kit loan.",
+         "A short loan period could serve several borrowers with the same tools.",
+         "Occasional cyclists could borrow a wrench without paying for a full kit.",
+         "Library staff could use the same checkout desk for compact tool kits.",
+         "First-time borrowers could follow a guide to patch a tire or adjust a loose seat.",
+         "Durable hand tools can support many loans when staff inspect the kit.",
+         "A limited pilot would show whether residents actually borrow the kits.",
+         "A borrower could use a tire pump to keep a short commute on schedule."),
+        ("Checking for missing parts takes staff time away from reader services.",
+         "The library budget should cover replacing lost tools.",
+         "Staff may need to inspect worn wrenches and damaged pumps before each new loan.",
+         "The library needs a plan for restocking tire patches after each loan.",
+         "New kit purchases could compete with the library's book budget.",
+         "An existing bicycle shop partnership may already provide free tools.",
+         "Instructions should cover common fittings and change whenever kits do.",
+         "A busy branch needs secure storage outside its crowded returns desk.",
+         "A return checklist could prevent damaged tools from going back into use.",
+         "A rider survey could prevent the library from buying rarely used kits."),
+    )
+    full = os.getenv("DK_TEST_RANKING") == "1"
+    for index in range(1, 11 if full else 3):
+        for side, page in enumerate(pages):
+            card = argument(page, index)
+            card.get_by_label(re.compile(r"^Title")).fill(subjects[side][index-1])
+            card.get_by_label(re.compile(r"^Description")).fill(descriptions[side][index-1])
+        if index == 1:
+            receiver.reload()
+            expect(argument(receiver, index).get_by_label(re.compile(r"^Title"))).to_have_value(subjects[1][index-1])
+        simultaneous(*(button(argument(page, index), re.compile(rf"^(Submit Argument|Save point|Submit point) {index}$", re.I)) for page in pages))
+        for side, page in enumerate(pages):
+            expect(argument(page, index).get_by_text(re.compile(r"^(Submitted|Saved)$", re.I)).last).to_be_visible()
+            expect(argument(page, index).get_by_label(re.compile(r"^Title"))).to_have_value(subjects[side][index-1])
+        if index == 2:
+            resume_from_table(receiver, room, topic)
+            for own_index in range(1, 3):
+                expect(argument(receiver, own_index).get_by_label(re.compile(r"^Title"))).to_have_value(subjects[1][own_index-1])
+            capture(receiver, "10-mobile-resumed-points")
+    check("Draft and submitted points survived refresh or returning from Your table, with both accounts retaining their own text")
+    if full:
+        check("Both members saved their ten points; confirming both submissions to start live ranking")
+        simultaneous(*(button(page, "Confirm my 10 arguments") for page in pages))
+        check_rankings_and_poster(pages, subjects[0] + subjects[1])
 
 
 if __name__ == "__main__":
@@ -106,7 +269,9 @@ if __name__ == "__main__":
         login(receiver,b)
         receiver.get_by_role("link",name="Latest",exact=True).click()
         send(sender,b)
+        capture(sender, "01-desktop-invitation-sent")
         alert = await_popup(receiver,a["name"])
+        capture(receiver, "02-mobile-live-invitation")
         alert.get_by_role("button",name="Close",exact=True).click()
         receiver.get_by_role("button",name="Notifications, 1 unread",exact=True).click()
         receiver.get_by_role("dialog").get_by_role("button",name="Decline",exact=True).click()
@@ -115,41 +280,53 @@ if __name__ == "__main__":
         if sender.get_by_role("dialog").is_visible():
             sender.get_by_role("dialog").get_by_role("button",name="Close",exact=True).click()
         sender.get_by_role("link",name="Home",exact=True).click()
-        expect(sender.get_by_role("region",name="Your activity").get_by_text("cancelled",exact=True)).to_be_visible()
+        expect(sender.get_by_role("region",name="Your activity").get_by_text(
+            re.compile(r"^(cancelled|Invitation closed)$",re.I))).to_be_visible()
         check("Declined invitation closed the waiting debate in the sender's table")
         receiver.get_by_role("button",name="Sign out",exact=True).click()
         expect(receiver.get_by_role("link",name="Sign in",exact=True)).to_be_visible()
         send(sender,b)
         login(receiver,b)
         alert=await_popup(receiver,a["name"])
+        capture(receiver, "03-mobile-invitation-after-sign-in")
         alert.get_by_role("button",name="Accept invitation",exact=True).click()
         for page in (sender,receiver):
             page.wait_for_url(re.compile(r'/debate/topic\??[^#]*session='),timeout=35000)
-            expect(page.get_by_placeholder("Enter your debate topic...")).to_be_visible()
+            expect(topic_to_suggest(page)).to_be_visible()
         room=session(sender)
         assert room==session(receiver)
         check("Offline invitation appeared on login and both browsers joined the same session")
-        chat="I can see our shared table."
-        receiver.get_by_placeholder("Type a message...",exact=True).fill(chat)
-        receiver.get_by_role("button",name="Send message",exact=True).click()
-        expect(sender.get_by_text(chat,exact=True)).to_be_visible()
-        sender.get_by_placeholder("Enter your debate topic...").fill("Should the library open earlier?")
-        sender.get_by_role("button",name="Propose",exact=True).click()
-        receiver.get_by_role("button",name="Decline",exact=True).click()
-        expect(sender.get_by_placeholder("Enter your debate topic...")).to_be_visible()
-        check("Partner chat delivered and declining a proposal cleared it for both members")
-        sender,receiver=receiver,sender  # Reverse who proposes and who accepts.
+        capture(sender, "04-desktop-pick-topic")
+        chat_field = re.compile(r"^(Type|Write) a message", re.I)
+        suggest = re.compile(r"^(Propose|Suggest topic)$", re.I)
+        chat = "I can see our shared table."
+        first_question = "Should the library open earlier?"
+        receiver.get_by_placeholder(chat_field).fill(chat)
+        topic_to_suggest(sender).fill(first_question)
+        simultaneous(button(receiver,"Send message"), button(sender,suggest))
+        for page in (sender,receiver):
+            expect(page.get_by_text(chat,exact=True)).to_be_visible()
+            expect(page.get_by_text(first_question,exact=True)).to_be_visible()
+        check("Sending a chat message while suggesting a topic preserved both changes")
+        button(receiver,re.compile(r"^(Decline|Suggest another topic|Choose another topic)$", re.I)).click()
+        for page in (sender,receiver):
+            expect(topic_to_suggest(page)).to_be_visible()
+        check("Declining a topic cleared it for both members")
         topic="Should libraries share repair tools?"
-        sender.get_by_placeholder("Enter your debate topic...").fill(topic)
-        sender.get_by_role("button",name="Propose",exact=True).click()
-        expect(sender.get_by_text("You agreed. Waiting for your partner.",exact=True)).to_be_visible()
-        receiver.reload()
-        expect(receiver.get_by_text("Your turn to review this topic.",exact=True)).to_be_visible(timeout=30000)
+        topic_to_suggest(receiver).fill(topic)
+        button(receiver,suggest).click()
         expect(receiver.get_by_text(topic,exact=True)).to_be_visible()
-        receiver.get_by_role("button",name="Accept Topic",exact=True).click()
+        capture(receiver, "05-mobile-wait-for-topic")
+        sender.reload()
+        expect(sender.get_by_text(topic,exact=True)).to_be_visible(timeout=30000)
+        accept_topic=button(sender,re.compile(r"^Accept Topic$", re.I))
+        expect(accept_topic).to_be_visible()
+        capture(sender, "06-desktop-review-topic")
+        accept_topic.click()
         for page in (sender,receiver):
             page.wait_for_url(re.compile(r'/debate/active\?'),timeout=35000)
             expect(page.get_by_role("textbox",name="Your position",exact=True)).to_be_visible(timeout=30000)
             assert session(page)==room
             assert parse_qs(urlparse(page.url).query)["topic"]==[topic]
         check("Topic persisted through refresh and both accounts advanced with the same agreed topic")
+        check_positions_and_arguments(sender, receiver, room, topic)

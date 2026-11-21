@@ -157,9 +157,10 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
         !incoming&&state==='pending'?'Waiting for '+row.person:
         row.person+' · '+state;
       return h('li',{key:row.id},h('strong',null,title),
+        state==='pending'&&incoming&&h('p',null,'Accept to choose a topic together.'),
         state==='pending'&&incoming&&h('div',{className:'dk-actions'},action('Accept invitation',()=>inbox.respond(row,'accept'),true,inbox.busy),
           action('Decline',()=>inbox.respond(row,'decline'),false,inbox.busy)),
-        state==='accepted'&&h('div',{className:'dk-actions'},action('Join session',()=>inbox.respond(row,'join'),true,inbox.busy)));
+        state==='accepted'&&h('div',{className:'dk-actions'},action('Open debate',()=>inbox.respond(row,'join'),true,inbox.busy)));
     }
     const selected=inbox.rows.find(row=>row.id===inbox.panel?.id);
     const displayed=inbox.panel?.all?inbox.rows:selected?[selected]:[];
@@ -173,14 +174,20 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
   function FriendSetup(){
     const inbox=useContext(Inbox),navigate=useNavigate();
     const waiting=inbox.rows.find(row=>row.id===inbox.waitId);
+    const state=waiting&&inviteStatus(waiting);
     if(!inbox.owner)return h('main',{className:'dk-main'},h(Link,{to:'/login?next='+encodeURIComponent(searchRoute),className:'dk-primary'},'Sign in to debate with a friend'));
     return h('main',{className:'dk-main dk-friend'},h('h1',null,inbox.waitId?'Invitation sent':'Debate with a friend'),
       inbox.waitId?h('section',{className:'dk-panel','aria-live':'polite'},h('h2',null,waiting?
-        ({pending:'Waiting for '+waiting.person,accepted:waiting.person+' accepted',declined:waiting.person+' declined',expired:'Invitation expired'}[inviteStatus(waiting)]||'Invitation updated'):
-        inbox.loaded?'Checking this invitation':'Loading invitation…'),
-        h('p',null,waiting&&inviteStatus(waiting)==='pending'?'Stay here to join automatically when they accept. You can also open the session from Notifications.':'Open Notifications to see your invitations.'),
-        h('div',{className:'dk-actions'},waiting?.status==='accepted'&&action('Join session',()=>inbox.respond(waiting,'join'),true,inbox.busy),
-          action('Notifications',inbox.open),h(Link,{to:searchRoute,className:'dk-secondary'},'Find another friend'))):
+        ({pending:'Waiting for '+waiting.person,accepted:waiting.person+' accepted',declined:waiting.person+' declined',expired:'Invitation expired'}[state]||'Invitation updated'):
+        inbox.error?'Could not check the invitation':inbox.loaded?'Invitation not found':'Loading invitation…'),
+        state&&h('p',null,{
+          pending:'You’ll choose the topic together when they accept. You can leave this page and open the debate from Notifications.',
+          accepted:'Open the debate to see where you and your friend left off.',
+          declined:'You can invite someone else to debate.',
+          expired:'You can send a new invitation from the friend search.'
+        }[state]),
+        h('div',{className:'dk-actions'},state==='accepted'&&action('Open debate',()=>inbox.respond(waiting,'join'),true,inbox.busy),
+          inbox.error&&action('Try again',inbox.refresh),action('Notifications',inbox.open),h(Link,{to:searchRoute,className:'dk-secondary'},'Back to friend search'))):
       h(Directory,{onInvitationSent:id=>{navigate(searchRoute+'&waiting='+encodeURIComponent(id));void inbox.refresh();}}));
   }
   function useFriendTopic({sessionId,owner,onTopicSelected,messages,participants,proposal,loading,report}){
@@ -227,5 +234,26 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
         window.removeEventListener('dk-topic-changed',sync);document.removeEventListener('visibilitychange',onVisible);};
     },[sessionId,owner]);
   }
-  return {InboxProvider,Notifications,FriendSetup,useFriendTopic};
+  function useFriendPreparationSync(sessionId,owner,phase,refresh){
+    const callback=useRef(refresh);
+    callback.current=refresh;
+    useEffect(()=>{
+      if(!sessionId||!owner||phase!=='preparation')return;
+      let running=false;
+      async function sync(){
+        if(running||document.hidden)return;
+        running=true;
+        try { await callback.current(); } finally { running=false; }
+      }
+      const interval=setInterval(sync,4000);
+      window.addEventListener('focus',sync);
+      document.addEventListener('visibilitychange',sync);
+      return ()=>{
+        clearInterval(interval);
+        window.removeEventListener('focus',sync);
+        document.removeEventListener('visibilitychange',sync);
+      };
+    },[sessionId,owner,phase]);
+  }
+  return {InboxProvider,Notifications,FriendSetup,useFriendTopic,useFriendPreparationSync};
 }
