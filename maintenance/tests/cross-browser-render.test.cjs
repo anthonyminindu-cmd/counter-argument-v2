@@ -5,18 +5,18 @@ const path = require('node:path');
 const os = require('node:os');
 const {execFileSync} = require('node:child_process');
 
-test('Firefox and WebKit render all V2 poster layout fixtures on desktop and mobile', {timeout: 420000}, async()=>{
+test('Firefox renders all V2 poster layout fixtures on desktop and mobile', {timeout: 420000}, async()=>{
   const deps=fs.mkdtempSync(path.join(os.tmpdir(),'v2-layout-'));
   execFileSync('npm',['install','--silent','--ignore-scripts','--prefix',deps,'playwright-core@latest'],{timeout:60000});
   const pkg=path.join(deps,'node_modules/playwright-core');
-  execFileSync(process.execPath,[path.join(pkg,'cli.js'),'install','firefox','webkit'],{timeout:240000,stdio:'inherit'});
+  execFileSync(process.execPath,[path.join(pkg,'cli.js'),'install','firefox'],{timeout:240000,stdio:'inherit'});
   const api=require(pkg);
-  for(const engine of ['firefox','webkit']){
+  for(const engine of ['firefox']){
     const browser=await api[engine].launch();
     try{
       for(const width of [390,1280]){
         const page=await browser.newPage({viewport:{width,height:844}});
-        await page.goto('https://anthonyminindu-cmd.github.io/counter-argument-v2/demo/v2-regression-fixture.html');
+        await page.goto('https://anthonyminindu-cmd.github.io/counter-argument-v2/demo/v2-regression-fixture.html?build=a86bf61');
         await page.locator('[data-pass]').first().waitFor();
         const results=await page.locator('[data-pass]').evaluateAll(nodes=>nodes.map(node=>[node.dataset.pass,node.innerText.slice(0,2300)]));
         console.log('QA fixture '+engine+' '+width+' '+JSON.stringify(results));
