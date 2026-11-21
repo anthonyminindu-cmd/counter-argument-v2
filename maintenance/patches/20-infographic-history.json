@@ -1,0 +1,17 @@
+[
+  {
+    "id": "history-canonical-friend-positions",
+    "find": "w=E.topic,v=Object.values(E.stances||{}),b=N.data.image_url||void 0,g=Bf(h.id,E,N.data.ranking,f.user_positions||{})",
+    "replace": "w=E.topic,b=N.data.image_url||void 0,g=Bf(h.id,E,N.data.ranking,f.user_positions||{}),v=[...new Set(g.arguments.map(_=>_.owner))].map(_=>E.stances?.[_]||(_===h.user_a?\"First participant’s position\":\"Second participant’s position\"))"
+  },
+  {
+    "id": "history-retain-session-identity",
+    "find": "names:m,result:g,workflow:y,positions:v,imageUrl:b,arguments:d.data||[]",
+    "replace": "names:m,result:g,workflow:y,positions:v,sessionId:h?.id,imageUrl:b,arguments:d.data||[]"
+  },
+  {
+    "id": "history-explicit-owner-side-and-shared-session",
+    "find": "i.jsx(lg,{topicTitle:l,positions:r.positions,imageUrl:r.imageUrl,args:u.arguments.map(f=>({...f,author:c[f.owner]||\"Participant\"}))},e)",
+    "replace": "i.jsx(lg,{sessionId:d?r.sessionId:void 0,topicTitle:l,positions:r.positions,imageUrl:r.imageUrl,args:u.arguments.map(f=>({...f,submissionSide:a.participant_b===null?f.owner===\"ai\"?\"right\":\"left\":d?f.owner===u.arguments[0].owner?\"left\":\"right\":f.side===\"support\"?\"left\":\"right\",author:c[f.owner]||\"Participant\"}))},e)"
+  }
+]

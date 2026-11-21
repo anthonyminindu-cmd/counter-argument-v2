@@ -1,0 +1,37 @@
+[
+  {
+    "id": "landing-labels-illustrative-activity",
+    "find": "Engage in structured debates with friends, AI opponents, or random partners. Perfect your arguments and see visual results that showcase your skills.",
+    "replace": "Build your case against a friend or an AI research opponent, then compare the results visually. The sample debates and activity shown below are illustrative."
+  },
+  {
+    "id": "landing-sample-topic-heading",
+    "find": "i.jsx(\"h2\",{className:\"text-2xl font-semibold\",children:\"Trending Debates\"})",
+    "replace": "i.jsx(\"h2\",{className:\"text-2xl font-semibold\",children:\"Sample Debate Topics\"})"
+  },
+  {
+    "id": "landing-sample-topic-badge",
+    "find": "i.jsx(Te,{variant:\"outline\",children:\"Trending\"}),i.jsx(\"span\",{className:\"text-xs text-muted-foreground\",children:e.timeAgo})",
+    "replace": "i.jsx(Te,{variant:\"outline\",children:\"Sample topic\"}),i.jsx(\"span\",{className:\"text-xs text-muted-foreground\",children:\"Illustrative\"})"
+  },
+  {
+    "id": "landing-topic-next-step",
+    "find": "\"View All Trending Debates\"",
+    "replace": "\"Start your own debate\""
+  },
+  {
+    "id": "v2-footer-name-and-current-year",
+    "find": "children:\"© 2025 Counter Argument AI. Elevating discourse through structured debate.\"",
+    "replace": "children:\"© \"+new Date().getFullYear()+\" Counter Argument V2. Structured debate, clear results.\""
+  },
+  {
+    "id": "login-instructions-match-supported-actions",
+    "find": "Having trouble? Make sure you've confirmed your email address if you recently signed up.",
+    "replace": "Having trouble? Check your email address and password, or reset your password."
+  },
+  {
+    "id": "signup-does-not-promise-disabled-email-verification",
+    "find": "Use a strong password with at least 8 characters. You'll receive a confirmation email after signing up.",
+    "replace": "Use a strong password with at least 8 characters."
+  }
+]

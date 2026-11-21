@@ -1,0 +1,12 @@
+{
+  "name": "counter-argument-v2",
+  "version": "2.0.1",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "build": "node maintenance/build.mjs",
+    "test": "node --test maintenance/tests/*.test.cjs",
+    "check": "node maintenance/build.mjs --check"
+  }
+}

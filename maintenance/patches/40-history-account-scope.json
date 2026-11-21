@@ -1,0 +1,17 @@
+[
+  {
+    "id": "history-auth-owner-scope",
+    "find": "function c5(e){const[t,n]=p.useState({loading:!0,error:\"\",data:null});return p.useEffect(()=>{let r=!0;return n({loading:!0,error:\"\",data:null}),(async()=>{var x,j,S;if(!e",
+    "replace": "function c5(e){const{user:v2HistoryUser}=Xt(),v2HistoryOwner=v2HistoryUser?.id||\"\",v2HistoryScope=JSON.stringify([v2HistoryOwner,e]),[t,n]=p.useState({scope:\"\",loading:!0,error:\"\",data:null});return p.useEffect(()=>{let r=!0;return n({scope:v2HistoryScope,loading:!0,error:\"\",data:null}),(async()=>{var x,j,S;if(!v2HistoryOwner)throw new Error(\"Sign in to view this debate.\");if(!e"
+  },
+  {
+    "id": "history-success-stays-in-owner-scope",
+    "find": "r&&n({loading:!1,error:\"\",data:{debate:o,topic:w",
+    "replace": "r&&n({scope:v2HistoryScope,loading:!1,error:\"\",data:{debate:o,topic:w"
+  },
+  {
+    "id": "history-hide-stale-owner-before-effects",
+    "find": "})})().catch(o=>{r&&n({loading:!1,error:o instanceof Error?o.message:\"Debate could not be loaded.\",data:null})}),()=>{r=!1}},[e]),t}",
+    "replace": "})})().catch(o=>{r&&n({scope:v2HistoryScope,loading:!1,error:o instanceof Error?o.message:\"Debate could not be loaded.\",data:null})}),()=>{r=!1}},[e,v2HistoryOwner]),t.scope===v2HistoryScope&&v2HistoryOwner?t:{loading:!!v2HistoryOwner,error:v2HistoryOwner?\"\":\"Sign in to view this debate.\",data:null}}"
+  }
+]

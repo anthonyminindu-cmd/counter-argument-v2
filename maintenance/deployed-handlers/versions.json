@@ -1,0 +1,31 @@
+{
+  "projectId": "bqhyropctavxjdnogmor",
+  "projectName": "Debate AI V2",
+  "retrievedAt": "2026-11-21T03:26:03.853Z",
+  "origin": "Read-only Supabase get_edge_function retrieval; exact deployed handler source",
+  "limitations": [
+    "Fixtures are review snapshots, not an instruction or mechanism to deploy backend functions.",
+    "Mocked tests execute these handlers but do not validate live JWTs, RLS, RPC bodies, database ownership, or draft-table persistence.",
+    "submit_ai_debate, retry_debate_workflow, complete_debate_checked, confirm_automatic_debate and retry_automatic_debate_for_user enforce additional database rules not verified here because SQL access timed out."
+  ],
+  "handlers": [
+    {
+      "slug": "submit-ai-debate",
+      "version": 6,
+      "path": "deployed-handlers/submit-ai-debate/index.ts",
+      "sha256": "ba550434afb1d1c4c6c009632e4390105d8f211970edcd38c8bde78e8adb7298"
+    },
+    {
+      "slug": "automatic-debate",
+      "version": 7,
+      "path": "deployed-handlers/automatic-debate/index.ts",
+      "sha256": "30fb997b44ce2f66ff0461ba17826836ff9934fc811ae6804f515f41eb521f59"
+    },
+    {
+      "slug": "complete-debate",
+      "version": 6,
+      "path": "deployed-handlers/complete-debate/index.ts",
+      "sha256": "4297e70aeaae1d7664af31dd2a7b3567d5579d57a0f6d5f81af583b63da4dede"
+    }
+  ]
+}

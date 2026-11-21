@@ -1,0 +1,72 @@
+[
+  {
+    "id": "friend-invitations-single-dialog",
+    "find": "children:[i.jsx(q5,{onNewInvitation:f}),i.jsx(G5,{onInvitationAccepted:h})",
+    "replace": "children:[i.jsx(G5,{onInvitationAccepted:h})"
+  },
+  {
+    "id": "global-invitation-refresh-count-after-insert",
+    "find": "r(b),o(!0),t({title:\"🎯 New Debate Invitation!\"",
+    "replace": "r(b),o(!0),window.dispatchEvent(new CustomEvent(\"v2-invitations-changed\")),t({title:\"🎯 New Debate Invitation!\""
+  },
+  {
+    "id": "global-invitation-refresh-count-after-update",
+    "find": "console.log(\"📝 Invitation status updated:\",y),n&&y.new.id===n.id",
+    "replace": "console.log(\"📝 Invitation status updated:\",y),window.dispatchEvent(new CustomEvent(\"v2-invitations-changed\")),n&&y.new.id===n.id"
+  },
+  {
+    "id": "friend-invitation-count-listener",
+    "find": "p.useEffect(()=>{n&&u()},[n]);const u=async()=>",
+    "replace": "p.useEffect(()=>{if(!n)return;u();const y=()=>u();window.addEventListener(\"v2-invitations-changed\",y);return()=>window.removeEventListener(\"v2-invitations-changed\",y)},[n]);const u=async()=>"
+  },
+  {
+    "id": "argument-order-is-not-ranking",
+    "find": "Submit earlier arguments first to preserve your ranking order",
+    "replace": "Submit earlier arguments first. Research will assess all ten together."
+  },
+  {
+    "id": "preparation-responsive-columns",
+    "find": "h===\"preparation\"&&i.jsx(\"div\",{className:\"space-y-4\",children:i.jsxs(\"div\",{className:\"flex gap-4\",children:[i.jsxs(\"div\",{className:\"w-1/2\",children:",
+    "replace": "h===\"preparation\"&&i.jsx(\"div\",{className:\"space-y-4\",children:i.jsxs(\"div\",{className:se?\"grid gap-4 lg:grid-cols-2\":\"space-y-4\",children:[i.jsxs(\"div\",{className:\"min-w-0\",children:"
+  },
+  {
+    "id": "solo-preparation-has-no-inactive-chat",
+    "find": "i.jsx(\"div\",{className:\"w-1/2 p-4 border-l bg-muted/5\",children:i.jsxs(\"div\",{className:\"sticky top-6\",children:[i.jsxs(\"h3\",{className:\"text-lg font-semibold mb-4 flex items-center gap-2\",children:[i.jsx(sl,{className:\"w-5 h-5\"}),\"Chat\"]}),i.jsx(kx,{sessionId:o,className:\"h-[calc(100vh-250px)]\"})]})})",
+    "replace": "se&&o&&i.jsx(\"div\",{className:\"min-w-0 p-4 border rounded-lg bg-muted/5\",children:i.jsxs(\"div\",{className:\"lg:sticky lg:top-6\",children:[i.jsxs(\"h3\",{className:\"text-lg font-semibold mb-4 flex items-center gap-2\",children:[i.jsx(sl,{className:\"w-5 h-5\"}),\"Chat\"]}),i.jsx(kx,{sessionId:o,className:\"\"})]})})"
+  },
+  {
+    "id": "solo-readiness-is-one-participant",
+    "find": "className:\"mt-4 space-y-4\",children:[i.jsxs(\"div\",{className:\"grid grid-cols-2 gap-4\",children:",
+    "replace": "className:\"mt-4 space-y-4\",children:[i.jsxs(\"div\",{className:se?\"grid grid-cols-2 gap-4\":\"grid gap-4\",children:"
+  },
+  {
+    "id": "solo-readiness-does-not-imply-ai-confirmation",
+    "find": "children:or?\"Ready for counter arguments\":\"Confirm your position\"})]}),i.jsxs(\"div\",{className:`p-3 rounded-lg border text-center transition-colors ${qr?",
+    "replace": "children:or?\"Ready for counter arguments\":\"Confirm your position\"})]}),se&&i.jsxs(\"div\",{className:`p-3 rounded-lg border text-center transition-colors ${qr?"
+  },
+  {
+    "id": "chat-input-requires-participant-session",
+    "find": "i.jsx(Je,{value:o,onChange:m=>a(m.target.value),placeholder:\"Type your message...\",onKeyPress:f,className:\"flex-1\"})",
+    "replace": "i.jsx(Je,{value:o,onChange:m=>a(m.target.value),placeholder:\"Type your message...\",onKeyPress:f,className:\"flex-1\",disabled:!e||!n})"
+  },
+  {
+    "id": "chat-send-requires-participant-session",
+    "find": "onClick:h,disabled:!o.trim(),children:i.jsx(Sm,{className:\"w-4 h-4\"})",
+    "replace": "onClick:h,disabled:!o.trim()||!e||!n,children:i.jsx(Sm,{className:\"w-4 h-4\"})"
+  },
+  {
+    "id": "chat-error-preserves-newer-draft",
+    "find": "console.error(\"❌ PersistentChat: Error sending message:\",y),o===\"\"&&a(m)",
+    "replace": "console.error(\"❌ PersistentChat: Error sending message:\",y),a(g=>g||m)"
+  },
+  {
+    "id": "chat-update-error-uses-common-draft-restoration",
+    "find": "if(N)throw console.error(\"❌ Error updating session:\",N),a(m),N;",
+    "replace": "if(N)throw console.error(\"❌ Error updating session:\",N),N;"
+  },
+  {
+    "id": "ai-setup-accurate-research-opponent",
+    "find": "s===\"ai\"&&i.jsx(i.Fragment,{children:b?i.jsxs(\"div\",{className:\"space-y-6\",children:[i.jsx(\"div\",{className:\"flex items-center justify-between\",children:i.jsx(G,{variant:\"ghost\",onClick:()=>v(!1),className:\"text-muted-foreground hover:text-foreground\",children:\"← Back\"})}),i.jsx(tD,{onSelectOpponent:N,selectedPersonality:w})]}):i.jsxs(ce,{children:[i.jsxs(Pe,{className:\"text-center\",children:[i.jsxs(Ae,{className:\"flex items-center justify-center space-x-2\",children:[i.jsx(Sn,{className:\"w-5 h-5\"}),i.jsx(\"span\",{children:\"AI Debate Challenge\"})]}),i.jsx(qe,{children:\"Challenge our advanced AI personalities in structured debate\"})]}),i.jsx(de,{className:\"space-y-6\",children:w?i.jsxs(\"div\",{className:\"text-center space-y-4\",children:[i.jsx(\"div\",{className:\"w-24 h-24 bg-primary rounded-full flex items-center justify-center mx-auto\",children:i.jsx(Sn,{className:\"w-12 h-12 text-white\"})}),i.jsxs(\"div\",{children:[i.jsx(\"h4\",{className:\"font-semibold mb-2\",children:w.name}),i.jsx(\"p\",{className:\"text-sm text-muted-foreground mb-2\",children:w.expertise}),i.jsx(\"p\",{className:\"text-sm text-muted-foreground\",children:w.debatingStyle})]}),i.jsxs(\"div\",{className:\"flex gap-2 justify-center\",children:[i.jsx(G,{variant:\"outline\",onClick:()=>v(!0),children:\"Change Opponent\"}),i.jsx(G,{size:\"lg\",onClick:S,disabled:c,children:c?i.jsxs(i.Fragment,{children:[i.jsx(Dn,{className:\"mr-2 h-4 w-4 animate-spin\"}),\"Connecting...\"]}):i.jsxs(i.Fragment,{children:[i.jsx(Sn,{className:\"mr-2 h-4 w-4\"}),\"Start Debate\"]})})]})]}):i.jsxs(\"div\",{className:\"text-center space-y-4\",children:[i.jsx(\"div\",{className:\"w-24 h-24 bg-primary rounded-full flex items-center justify-center mx-auto\",children:i.jsx(Sn,{className:\"w-12 h-12 text-white\"})}),i.jsxs(\"div\",{children:[i.jsx(\"h4\",{className:\"font-semibold mb-2\",children:\"Choose Your AI Opponent\"}),i.jsx(\"p\",{className:\"text-muted-foreground\",children:\"Select an AI personality to debate against\"})]}),i.jsxs(G,{size:\"lg\",onClick:()=>v(!0),className:\"w-full\",children:[i.jsx(Sn,{className:\"mr-2 h-4 w-4\"}),\"Choose AI Opponent\"]})]})})]})})",
+    "replace": "s===\"ai\"&&i.jsxs(ce,{children:[i.jsxs(Pe,{className:\"text-center\",children:[i.jsxs(Ae,{className:\"flex items-center justify-center space-x-2\",children:[i.jsx(Sn,{className:\"w-5 h-5\"}),i.jsx(\"span\",{children:\"AI research opponent\"})]}),i.jsx(qe,{children:\"Build your case and explore the strongest opposing arguments.\"})]}),i.jsxs(de,{className:\"space-y-6\",children:[i.jsx(\"div\",{className:\"w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto\",children:i.jsx(Sn,{className:\"w-10 h-10 text-white\"})}),i.jsxs(\"div\",{className:\"space-y-3 text-sm\",children:[i.jsx(\"p\",{children:\"1. Choose a topic and define both positions.\"}),i.jsx(\"p\",{children:\"2. Submit your ten arguments. AI researches ten counterarguments.\"}),i.jsx(\"p\",{children:\"3. Review the ranked comparison and your debate infographic.\"})]}),i.jsxs(G,{size:\"lg\",onClick:()=>t(\"/debate/topic?mode=ai\"),className:\"w-full\",children:[i.jsx(Sn,{className:\"mr-2 h-4 w-4\"}),\"Choose a topic\"]})]})]})"
+  }
+]
