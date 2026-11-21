@@ -12,6 +12,11 @@ export function afterLogin(search) {
   if (!/^\/(?:home|profile|settings|debate\/(?:start|topic|active))(?:\?[^#\\]*)?$/.test(next)) return home;
   return next;
 }
+function isWelcomeLocation(location) {
+  const params=new URLSearchParams(location.search);
+  return ['/','/home','/home/'].includes(location.pathname) &&
+    params.get('view')!=='feed' && !params.has('sort') && !params.has('question');
+}
 function login(next) { return '/login?next='+encodeURIComponent(next); }
 function topicRoute(title) { return '/debate/active?mode=ai&topic='+encodeURIComponent(title); }
 function profileRoute(tab) { return tab==='Table'?profile:profile+'?tab='+tab.toLowerCase(); }
@@ -98,7 +103,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       h('div',{className:'dk-bar'},
         h(Link,{to:home,className:'dk-brand','aria-label':'Differ Kindly home',onClick:scrollToStart},
           h('span',{className:'dk-mark','aria-hidden':true},h('i'),h('i')),
-          h('span',{className:'dk-wordmark'},'Differ Kindly',h('small',null,'Two views. One table.'))),
+          h('span',{className:'dk-wordmark'},'Differ Kindly',!isWelcomeLocation(loc)&&h('small',null,'Two views. One table.'))),
         h('nav',{'aria-label':'Primary',className:'dk-nav'},...destinations.map(([to,name,g])=>
           h(Link,{key:name,to,onClick:scrollToStart,'aria-current':active===name?'page':undefined},icon(g),name))),
         h('div',{className:'dk-account'},user?[
@@ -146,13 +151,26 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('button',{className:'dk-primary',disabled:loading||!question.trim()},'Continue with AI')),
       link(feed,'Pick a question from the feed','dk-secondary'));
   }
-  function Start() {
-    const loc=useLocation();
-    const onFeed=new URLSearchParams(loc.search).get('view')==='feed';
-    return h('main',{className:'dk-main',id:'dk-main'},
-      h('div',{className:'dk-grid'},h(Feed,{full:onFeed}),h(Activity,{compact:true})));
+  function Welcome() {
+    const imageRoot='/counter-argument-v2/assets/welcome-table-';
+    return h('section',{className:'dk-welcome','aria-labelledby':'dk-welcome-title'},
+      h('div',{className:'dk-welcome-copy'},
+        h('p',{className:'dk-welcome-tagline'},'Two views. One table.'),
+        h('h1',{id:'dk-welcome-title'},'Pull up a ',h('em',null,'chair.')),
+        h('p',{className:'dk-welcome-mission'},'Bring a question you care about. Explore it with someone who sees it differently.')),
+      h('img',{className:'dk-welcome-photo',src:imageRoot+'wide.webp',
+        srcSet:imageRoot+'small.webp 640w, '+imageRoot+'wide.webp 1280w',
+        sizes:'(max-width: 600px) 100vw, (max-width: 1300px) 53vw, 650px',
+        width:1280,height:853,alt:'',decoding:'async',fetchPriority:'high'}));
   }
-  function Feed({full}) {
+  function Start() {
+    const loc=useLocation(), landing=isWelcomeLocation(loc);
+    const onFeed=new URLSearchParams(loc.search).get('view')==='feed';
+    return h('main',{className:landing?'dk-main dk-home':'dk-main',id:'dk-main'},
+      landing&&h(Welcome),
+      h('div',{className:'dk-grid'},h(Feed,{full:onFeed,landing}),h(Activity,{compact:true})));
+  }
+  function Feed({full,landing}) {
     const loc=useLocation(), navigate=useNavigate(), {user}=useAuth(), c=useContext(Collection);
     const params=new URLSearchParams(loc.search), chosen=params.get('question'), order=['latest','people'].includes(params.get('sort'))?params.get('sort'):'trending';
     const people=c.items.filter(row=>row.kind==='person').map(row=>row.target);
@@ -170,14 +188,22 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const urlFor=key=>feed+(key==='trending'?'':'&sort='+key);
     if(chosen)return h('section',{className:'dk-feed'},link(feed,'Back to feed'),query.loading&&!query.data?status('Loading discussion…'):query.error?status('Could not load this discussion.',true):rows[0]?h(Thread,{key:rows[0].id,thread:rows[0],refresh:query.refresh}):status('This discussion is unavailable.'));
     return h('section',{className:'dk-feed','aria-label':'Community feed'},
-      h('div',{className:'dk-sectionline'},h('h1',null,'Community feed'),user?h('button',{className:'dk-secondary',onClick:()=>setCompose(!compose),'aria-expanded':compose},'Post a question'):link(login(feed),'Sign in to post','dk-small')),
+      h('div',{className:'dk-sectionline'},h(landing?'h2':'h1',null,'Community feed'),user?h('button',{className:'dk-secondary',onClick:()=>setCompose(!compose),'aria-expanded':compose},'Post a question'):link(login(feed),'Sign in to post','dk-small')),
       compose&&h('form',{onSubmit:publish,className:'dk-form dk-panel'},h('label',null,'Ask the community',h('textarea',{required:true,minLength:5,maxLength:320,value:question,onChange:e=>setQuestion(e.target.value),placeholder:'What would you like another perspective on?'})),h('small',null,'Your question and its replies will be public.'),h('button',{className:'dk-primary',disabled:busy||question.trim().length<5},busy?'Publishing…':'Publish question'),err&&status(err,true)),
       h('nav',{className:'dk-filters','aria-label':'Feed order'},...[[urlFor('trending'),'Trending','trending'],[urlFor('latest'),'Latest','latest'],...(user?[[urlFor('people'),'Your people','people']]:[])].map(([to,label,key])=>h(Link,{key,to,'aria-current':key===order?'page':undefined},label))),
       query.error?h('div',{className:'dk-panel'},status('The feed could not be loaded.',true),h('button',{className:'dk-secondary',onClick:query.refresh},'Try again')):query.loading&&!query.data?status('Loading discussions…'):
-      h(React.Fragment,null,h('p',{className:'dk-note'},order==='trending'?(trendingKnown?'Ranked by distinct contributors in the past 24 hours.':'No contributions in the past 24 hours. Pick a question to start.'):(order==='latest'?'Most recent activity first.':'Public questions from people you’ve saved.')),
+      h(React.Fragment,null,
+        !landing&&h('p',{className:'dk-note'},order==='trending'?(trendingKnown?'Ranked by distinct contributors in the past 24 hours.':'No contributions in the past 24 hours. Pick a question to start.'):(order==='latest'?'Most recent activity first.':'Public questions from people you’ve saved.')),
         !rows.length&&h('p',null,order==='people'?'Save a person to see their public questions here.':'Be the first to post a question.'),
-        ...rows.slice(0,full?50:4).map(row=>h('article',{key:row.id,className:'dk-card'},h('div',{className:'dk-sectionline'},h('small',null,row.is_starter?'Starter question · '+row.category:'Community question · Public'),h(Save,{kind:'question',target:row.id,label:row.question})),
-          h('h3',null,link(feed+'&question='+row.id,row.question,'dk-titlelink')),h('div',{className:'dk-cardfoot'},link(feed+'&question='+row.id,'Open discussion'),h('small',null,row.replies+' '+(Number(row.replies)===1?'reply':'replies')+(Number(row.contributors)>0?' · '+row.contributors+' active in 24h':''))))),
+        ...rows.slice(0,full?50:4).map(row=>{
+          const url=feed+'&question='+row.id;
+          const replies=row.replies+' '+(Number(row.replies)===1?'reply':'replies');
+          return h('article',{key:row.id,className:landing?'dk-card dk-home-question':'dk-card'},
+            h('div',{className:'dk-sectionline'},h('small',null,row.is_starter?'Starter question · '+row.category:'Community question · Public'),h(Save,{kind:'question',target:row.id,label:row.question})),
+            h('h3',null,h(Link,{to:url,className:'dk-titlelink'},row.question,landing&&icon('enter'))),
+            landing?(Number(row.replies)>0&&h('small',null,replies)):
+              h('div',{className:'dk-cardfoot'},link(url,'Open discussion'),h('small',null,replies+(Number(row.contributors)>0?' · '+row.contributors+' active in 24h':''))));
+        }),
         !full&&link(feed,'See the full feed','dk-secondary')));
   }
   function Thread({thread,refresh}) {
