@@ -17,7 +17,10 @@ test('Firefox and WebKit render all V2 poster layout fixtures on desktop and mob
       for(const width of [390,1280]){
         const page=await browser.newPage({viewport:{width,height:844}});
         await page.goto('https://anthonyminindu-cmd.github.io/counter-argument-v2/demo/v2-regression-fixture.html');
-        await page.getByText('All four browser text-layout fixtures passed',{exact:true}).waitFor({timeout:20000});
+        await page.locator('[data-pass]').first().waitFor();
+        const results=await page.locator('[data-pass]').evaluateAll(nodes=>nodes.map(node=>[node.dataset.pass,node.innerText.slice(0,2300)]));
+        console.log('QA fixture '+engine+' '+width+' '+JSON.stringify(results));
+        assert.equal(results.filter(([ok])=>ok==='true').length,4);
         assert.equal(await page.locator('svg [data-label]').count(),80);
         await page.getByText('Full debate question',{exact:true}).last().click();
         console.log('QA PASS '+engine+' width '+width+': four rendered posters, eighty verified labels, expanded full proposition');
