@@ -35,10 +35,10 @@ test('art resolves the revised summary receipt first and can still read an earli
   const path = require('node:path');
   const vm = require('node:vm');
   const { stripTypeScriptTypes } = require('node:module');
-  const { LABEL_VERSION, SCENE_VERSION } = await import('../scene-quality/_shared/illustratedScene.mjs');
+  const { LABEL_VERSION, PREVIOUS_LABEL_VERSION, SCENE_VERSION } = await import('../scene-quality/_shared/illustratedScene.mjs');
   const file = fs.readFileSync(path.join(__dirname,'../scene-quality/debate-scene-labels/debateArt.ts'),'utf8');
   const body = stripTypeScriptTypes(file.replace(/^import .*;$/gm,'').replace(/export (const|async function)/g,'$1'));
-  for (const rows of [[SCENE_VERSION,LABEL_VERSION],[SCENE_VERSION],[]]) {
+  for (const rows of [[SCENE_VERSION,LABEL_VERSION],[PREVIOUS_LABEL_VERSION],[SCENE_VERSION],[]]) {
     let selected, lookedUp;
     const query = {
       select() { return this; }, eq() { return this; },
@@ -48,12 +48,22 @@ test('art resolves the revised summary receipt first and can still read an earli
       },
     };
     const admin = {from:()=>query, storage:{from:()=>({download:async value=>{selected=value;return {error:true};}})}};
-    const ctx = vm.createContext({Response, corsHeaders:{}, LABEL_VERSION, SCENE_VERSION,
+    const ctx = vm.createContext({Response, corsHeaders:{}, LABEL_VERSION, PREVIOUS_LABEL_VERSION, SCENE_VERSION,
       aiInputHash:async (_stage,_input,version)=>version, Deno:{env:{get:()=> 'test-key'}}});
     vm.runInContext(body,ctx);
     const response = await ctx.generateDebateArt({json:async()=>({})},{admin,receiptOwner:'test-owner'});
-    assert.deepEqual(lookedUp,[LABEL_VERSION,SCENE_VERSION]);
+    assert.deepEqual(lookedUp,[LABEL_VERSION,PREVIOUS_LABEL_VERSION,SCENE_VERSION]);
     assert.equal(selected, rows.includes(LABEL_VERSION)?LABEL_VERSION:rows[0]);
     assert.equal(response.status, rows.length ? 503 : 409);
   }
+});
+
+test('whole-phrase alternatives replace cropped predicates and unfinished modifiers in provider output', async () => {
+  const { chooseSceneLabels } = await import('../scene-quality/debate-scene-labels/sceneSubjects.mjs');
+  const entries = [
+    { id:'1',primary:'Plug-in meters miss major',alternate:'Meters might miss major',fallback:'Unmeasured high-power appliances' },
+    { id:'2',primary:'Utilities already offer',alternate:'Existing utility assistance' },
+    { id:'3',primary:'Renters can inspect',alternate:'Renter appliance testing' },
+  ];
+  assert.deepEqual(chooseSceneLabels(entries).map(row=>row.statement), ['Unmeasured high-power appliances','Existing utility assistance','Renter appliance testing']);
 });

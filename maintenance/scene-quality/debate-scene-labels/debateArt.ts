@@ -1,6 +1,6 @@
 import {aiInputHash,type ReceiptContext} from '../_shared/aiRequestLedger.ts';
 import {corsHeaders} from 'npm:@supabase/supabase-js@2/cors';
-import {LABEL_VERSION,SCENE_VERSION,validateScene} from '../_shared/illustratedScene.mjs';
+import {LABEL_VERSION,PREVIOUS_LABEL_VERSION,SCENE_VERSION,validateScene} from '../_shared/illustratedScene.mjs';
 import {requestDeadline} from '../_shared/rankingRequest.ts';
 
 export const ART_VERSION='split-editorial-art-v2';
@@ -11,7 +11,7 @@ export async function generateDebateArt(req:Request,{admin,receiptOwner}:Receipt
   const key=Deno.env.get('OPENAI_API_KEY');
   if(!key)return reply({error:'Illustration generation is not configured.'},503);
   const input=await req.json();
-  const hashes = await Promise.all([LABEL_VERSION, SCENE_VERSION].map(version => aiInputHash('summary',input,version)));
+  const hashes = await Promise.all([LABEL_VERSION, PREVIOUS_LABEL_VERSION, SCENE_VERSION].map(version => aiInputHash('summary',input,version)));
   const receipts = await admin.from('ai_request_ledger').select('input_hash,response_path')
     .eq('user_id',receiptOwner).eq('stage','summary').eq('status','complete').in('input_hash',hashes);
   if(receipts.error)return reply({error:'Unable to read the saved art brief.'},503);

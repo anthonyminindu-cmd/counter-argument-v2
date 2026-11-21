@@ -20,10 +20,9 @@ async function generateScene(req: Request) {
   try { input = inputSchema.parse(await req.json()); } catch { return reply({ error: 'Exactly 20 original arguments and the debate proposition are required.' }, 400); }
   if (new Set(input.rows.map(r => r.id)).size !== 20) return reply({ error: 'Duplicate argument IDs.' }, 400);
   const aliases = input.rows.map((row, index) => ({ key: 'item' + (index + 1), row }));
-  const word = z.string().regex(/^\S+$/);
+  const phrase = z.string().min(3).max(90);
   const label = z.object({
-    first: word, second: word, third: word, fourth: z.string().regex(/^\S*$/),
-    alternate:z.string().min(3).max(90),
+    primary:phrase, alternate:phrase, fallback:phrase,
     position: z.enum(['supporting', 'challenging', 'qualifying', 'unclear']),
   }).strict();
   const summaries = z.object(Object.fromEntries(aliases.map(({ key }) => [key, label]))).strict();
@@ -41,14 +40,14 @@ async function generateScene(req: Request) {
   }).strict();
   const deadline = requestDeadline(req.signal, 85_000);
   try {
-    const raw = await presentationJson(key, sceneInstructions + ' The topic must determine the main physical subject. Prefer a specific action or object over a generic building, and never add props from related topics. Every label must stand alone as a complete headline or specific noun phrase. Preserve what changes and for whom; do not end on a connector or a verb that needs its object. For example, use “Pilot measures evening demand” or “Alternatives already exist” instead of “Pilot can measure” or “Digital access already”. Put one word in each label field. Use an empty fourth field for a three-word label. Make the alternate a concrete noun phrase naming the actual benefit, risk, cost or tradeoff. Comparisons must name what is compared. For example, use “Direct upgrade savings” or “Pilot policy overhead”; never leave the reader to guess what a policy adds or an alternative beats. Write one different complete 3–4 word alternate for each argument, using an original detail to distinguish similar claims.', {
+    const raw = await presentationJson(key, sceneInstructions + ' The topic must determine the main physical subject. Prefer a specific action or object over a generic building, and never add props from related topics. Every label must stand alone as a complete headline or specific noun phrase. Preserve what changes and for whom; do not end on a connector or a verb that needs its object. For example, use “Pilot measures evening demand” or “Alternatives already exist” instead of “Pilot can measure” or “Digital access already”. Compose each phrase as a whole. For the primary field, name the concrete finding in 3–4 words; never cut a longer sentence to fit. For example, “Missed high-power appliances” names the limitation. Read the finished label by itself before returning it. Make the alternate a concrete noun phrase naming the actual benefit, risk, cost or tradeoff. Comparisons must name what is compared. For example, use “Direct upgrade savings” or “Pilot policy overhead”; never leave the reader to guess what a policy adds or an alternative beats. Write one different complete 3–4 word alternate for each argument, using an original detail to distinguish similar claims. Supply a third 3–4 word fallback naming a specific concrete concept in the argument, such as “Renter appliance testing” or “Utility assistance programs”.', {
       exactDebateProposition: input.topic, assignedPositionsForContextOnly: input.positions,
       arguments: aliases.map(({key,row}) => ({ id:key, rank:row.rank, score:row.score, title:row.title, description:row.description })),
     }, 'illustrated_debate', z.toJSONSchema(schema), deadline.signal);
     const parsed = schema.parse(raw);
     const labels = chooseSceneLabels(aliases.map(({key,row}) => {
       const entry = label.parse(parsed.summaries[key]);
-      return { id:row.id, title:row.title, position:entry.position, alternate:entry.alternate, primary:[entry.first,entry.second,entry.third,entry.fourth].filter(Boolean).join(' ') };
+      return { id:row.id, title:row.title, position:entry.position, primary:entry.primary, alternate:entry.alternate, fallback:entry.fallback };
     }));
     return reply(validateScene(input.rows,{title:parsed.title,profile:'custom',objects:illustratedSubjects(parsed.subjects),
       sideTitles:[parsed.leftCaption,parsed.rightCaption].map((caption,index)=>{

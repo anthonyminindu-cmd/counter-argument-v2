@@ -1,7 +1,8 @@
 // Shared by the authenticated presentation function, browser and offline renderer.
 export const LEGACY_SCENE_VERSION = 'illustrated-debate-openai-v1';
 export const SCENE_VERSION = 'illustrated-debate-split-v4';
-export const LABEL_VERSION = SCENE_VERSION + '-headlines-v2';
+export const PREVIOUS_LABEL_VERSION = SCENE_VERSION + '-headlines-v2';
+export const LABEL_VERSION = SCENE_VERSION + '-headlines-v3';
 export const LABEL_PATTERN = /^\S+(?: \S+){2,3}$/;
 export const positions = ['supporting', 'challenging', 'qualifying', 'unclear'];
 export const profiles = ['campus','library','civic','space','custom'];

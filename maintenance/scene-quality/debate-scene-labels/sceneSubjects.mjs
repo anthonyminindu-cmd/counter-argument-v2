@@ -36,10 +36,10 @@ export function illustratedSubjects(subjects) {
 export function chooseSceneLabels(entries) {
   const clean = text => typeof text==='string' ? text.trim().replace(/\s+/g,' ') : '';
   const fragment = /\b(?:a|an|the|and|or|for|to|with|from|if|than|of|in|on|by|can|could|would|should|may|might|must|already|gets|leave|leaves)\s*[.!?]?$/i;
-  const unfinishedPredicate = /\b(?:can|could|will|would|may|might|must|should|still|already|often)\s+(?:add|beat|outweigh|require|cause|provide|reduce|improve|affect|depend|compare|need|increase)s?\s*[.!?]?$/i;
-  const options = entries.map(entry=>[...new Set([entry.title,entry.primary,entry.alternate].map(clean))]
+  const unfinishedPredicate = /\b(?:can|could|will|would|may|might|must|should|still|already|often)\s+(?:add|beat|outweigh|require|cause|provide|reduce|improve|affect|depend|compare|need|increase|offer|inspect|outperform)s?\s*[.!?]?$/i;
+  const options = entries.map(entry=>[...new Set([entry.title,entry.primary,entry.alternate,entry.fallback].map(clean))]
     .filter(text=>/^\S+(?: \S+){2,3}$/.test(text) && text.length<=90 && !/…|\.\.\./.test(text))
-    .filter(text=>!fragment.test(text) && !unfinishedPredicate.test(text)));
+    .filter(text=>!fragment.test(text) && !unfinishedPredicate.test(text) && !/\b(?:major|significant|such|various|several|multiple)\s*[.!?]?$/i.test(text)));
   const taken = new Map(), chosen = new Array(entries.length);
   function assign(index,seen) {
     for(const phrase of options[index]){
