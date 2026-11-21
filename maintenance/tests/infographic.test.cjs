@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
-let source, baseline, render, header, check;
+let source, baseline, render, header, check, palette;
 test.before(async()=>{
   const {compile,root}=await import('../build.mjs');
   source=compile().output;
@@ -11,8 +11,8 @@ test.before(async()=>{
   const start=source.indexOf('const gi=1600,'),end=source.indexOf('async function z5(',start);
   assert.ok(start>0&&end>start);
   const context={getComputedStyle:node=>node.style};vm.createContext(context);
-  vm.runInContext(source.slice(start,end)+';globalThis.api={render:F5,header:V2SceneHeader,check:x_};',context);
-  ({render,header,check}=context.api);
+  vm.runInContext(source.slice(start,end)+';globalThis.api={render:F5,header:V2SceneHeader,check:x_,palette:posterPalette};',context);
+  ({render,header,check,palette}=context.api);
 });
 const measure=text=>text.length*13;
 const wideMeasure=text=>Array.from(text).reduce((sum,letter)=>sum+(letter==='W'?24:13),0);
@@ -36,6 +36,17 @@ test('normal current V2 custom renderer preserves twenty arguments and checks al
   assert.equal((result.svg.match(/data-label=""/g)||[]).length,20);
   assert.match(result.svg,/font-size="42"/);
   assert.match(result.svg,/Exact proposition/);
+});
+test('poster label inks remain readable across every rank and background tint',()=>{
+  const luminance=color=>{
+    const channels=color.match(/[0-9a-f]{2}/gi).map(hex=>parseInt(hex,16)/255)
+      .map(c=>c<=.04045?c/12.92:((c+.055)/1.055)**2.4);
+    return channels[0]*.2126+channels[1]*.7152+channels[2]*.0722;
+  };
+  const contrast=(a,b)=>(Math.max(luminance(a),luminance(b))+.05)/(Math.min(luminance(a),luminance(b))+.05);
+  for(const [fills,ink] of [[palette.left.face,'#ffffff'],[palette.left.surround,'#081e42'],[palette.right.face,'#261902'],[palette.right.surround,'#261902']]){
+    for(const fill of fills) assert.ok(contrast(fill,ink)>=4.5,ink+' on '+fill);
+  }
 });
 test('long valid title wraps at the original 42px instead of overflowing or dropping words',()=>{
   const title='WWWWWWWWW WWWWWWWWW WWWWWWWWW WWWWWWWWW WWWWWWWWW WWWWWWWWW WWWWWWWWW';

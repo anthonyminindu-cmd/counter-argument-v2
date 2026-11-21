@@ -209,6 +209,23 @@ function silhouetteLayout(rows, scene, ownership, measure, top, bottom) {
   return {main,pieces:D5(rows,labels,ownership,measure)};
 }
 
+// A dark blue subject and a saturated gold subject stay distinct from the lighter
+// pieces that extend into the background. Each hue is shared across all topics.
+const posterPalette = {
+  left: {
+    face:['#082F84','#0B439F','#004493','#15358C','#005390','#103D9E','#134CAC',
+      '#104A98','#17459B','#09559F','#1D479E','#1156A8','#154CA4',
+      '#1955A9','#1758AA','#1C50A1','#1358A5','#1D53A9','#205C9E','#2156A6'],
+    surround:['#82BAEB','#A4CFF1','#C3DFF5'], seam:'#638DB5'
+  },
+  right: {
+    face:['#F49A07','#FFAE0D','#F3A000','#FFB51C','#EA9207','#FFBA23','#F8A608',
+      '#F3AA13','#FFB223','#F3A711','#FFB92A','#F7AB1A','#FFB829',
+      '#F3AE20','#FFBB31','#F9AB19','#FFBC39','#F2AE23','#FFBA2D','#F6B12C'],
+    surround:['#FFD078','#FFDA91','#FFE5B2'], seam:'#BD8C40'
+  }
+};
+
 function renderSilhouettePuzzle(rows, scene, question, measure, ownership) {
   const header=V2SceneHeader(scene.title,question,scene.sideTitles||['First position','Second position'],measure);
   const captionBottom=Math.max(...Array.from(header.captions.matchAll(/<rect[^>]*y="([\d.]+)"[^>]*height="([\d.]+)"/g),m=>Number(m[1])+Number(m[2])));
@@ -218,21 +235,111 @@ function renderSilhouettePuzzle(rows, scene, question, measure, ownership) {
   const cue=scene.objects[1] && projectSubject(scene.objects[1],800,top+18,1510,bottom-top-38);
   const paths=(shape)=>shape.details.map(line=>'<path d="'+silhouettePath(line,false)+'"/>').join('');
   const background=cue?'<g fill="none" stroke="#687b81" stroke-width="4" opacity=".16"><path d="'+silhouettePath(cue.outline)+'"/>'+paths(cue)+'</g>':'';
-  const base=[],face=[],ink=[],featureClearance=[];
+  const base=[],face=[],ink=[],whiteInk=[],featureClearance=[];
   for (const p of pieces) {
     const left=p.side==='left', label=left?'A':'B', rank=String(p.rank).padStart(2,'0');
-    const light=left?['#e5edf0','#eaf0f1','#eff3f2']:['#f8e9c9','#faeed5','#fbf3df'];
+    const palette=posterPalette[p.side];
     const band=p.rank<=7?0:p.rank<=13?1:2;
-    base.push('<path d="'+p.d+'" fill="'+light[band]+'" stroke="'+(left?'#c4d0d2':'#decfb0')+'" stroke-width="1.4"/>');
-    face.push('<path d="'+p.d+'" fill="'+(left?ux:dx)[p.rank-1]+'" stroke="#fff7e4" stroke-width="2.5" stroke-linejoin="round"/>');
+    base.push('<path d="'+p.d+'" fill="'+palette.surround[band]+'" stroke="'+palette.seam+'" stroke-width="1.8" stroke-linejoin="round"/>');
+    face.push('<path d="'+p.d+'" fill="'+palette.face[p.rank-1]+'" stroke="#fff6da" stroke-width="2.8" stroke-linejoin="round"/>');
+    if(left) whiteInk.push('<use href="#poster-label-'+p.rank+'" xlink:href="#poster-label-'+p.rank+'"/>');
     const b=p.bounds, y=p.y+27;
     const lineWidths=[measure(label+' · '+rank+' '+fx[p.position])*.75,...p.lines.map(measure)];
     lineWidths.forEach((w,i)=>{
       const baseline=i?y+(i-1)*p.lineHeight:p.y;
       featureClearance.push('<rect x="'+Yn(p.x-w/2-4)+'" y="'+Yn(baseline-(i?23:17))+'" width="'+Yn(w+8)+'" height="'+(i?29:22)+'" rx="3"/>');
     });
-    ink.push('<g data-argument-id="'+wt(p.id)+'" data-rank="'+p.rank+'" data-score="'+Number(p.score)+'" data-side="'+p.side+'" data-stance="'+p.position+'" data-band="'+p.level+'" text-anchor="middle" fill="'+(left?'url(#silhouette-ink)':'#352811')+'"><title>'+wt(p.title)+'</title><path data-puzzle-piece="" d="'+p.d+'" fill="none"/><text x="'+Yn(p.x)+'" y="'+Yn(p.y)+'" font-size="18" font-weight="700">'+label+' · '+rank+' '+fx[p.position]+'</text><text data-label="" data-left="'+b.left+'" data-right="'+b.right+'" data-top="'+b.top+'" data-bottom="'+b.bottom+'" x="'+Yn(p.x)+'" y="'+Yn(y)+'" font-size="24" font-weight="700">'+p.lines.map((l,i)=>'<tspan x="'+Yn(p.x)+'" dy="'+(i?p.lineHeight:0)+'">'+wt(l)+'</tspan>').join('')+'</text></g>');
+    ink.push('<g data-argument-id="'+wt(p.id)+'" data-rank="'+p.rank+'" data-score="'+Number(p.score)+'" data-side="'+p.side+'" data-stance="'+p.position+'" data-band="'+p.level+'" text-anchor="middle" fill="'+(left?'#081E42':'#261902')+'"><title>'+wt(p.title)+'</title><path data-puzzle-piece="" d="'+p.d+'" fill="none"/><g id="poster-label-'+p.rank+'"><text x="'+Yn(p.x)+'" y="'+Yn(p.y)+'" font-size="18" font-weight="700">'+label+' · '+rank+' '+fx[p.position]+'</text><text data-label="" data-left="'+b.left+'" data-right="'+b.right+'" data-top="'+b.top+'" data-bottom="'+b.bottom+'" x="'+Yn(p.x)+'" y="'+Yn(y)+'" font-size="24" font-weight="700">'+p.lines.map((l,i)=>'<tspan x="'+Yn(p.x)+'" dy="'+(i?p.lineHeight:0)+'">'+wt(l)+'</tspan>').join('')+'</text></g></g>');
   }
-  const svg='<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" font-family="'+pl+'" fill="#10283c"><title>'+wt(question)+'</title><desc>Exact debate question: '+wt(question)+'. '+wt(scene.objects[0].name)+' with twenty ranked puzzle pieces.</desc><defs><clipPath id="subject-outline"><path d="'+profile+'"/></clipPath><pattern id="silhouette-ink" x="0" y="0" width="1600" height="900" patternUnits="userSpaceOnUse"><rect width="1600" height="900" fill="#173549"/><path d="'+profile+'" fill="#fffdf6"/></pattern><mask id="feature-safe" maskUnits="userSpaceOnUse" x="0" y="0" width="1600" height="900"><rect width="1600" height="900" fill="white"/><g fill="black">'+featureClearance.join('')+'</g></mask></defs><rect width="1600" height="900" fill="#fffcf4"/>'+base.join('')+background+'<g clip-path="url(#subject-outline)">'+face.join('')+'<g mask="url(#feature-safe)" fill="none" stroke="#162a3b" stroke-width="4" opacity=".52" stroke-linejoin="round" stroke-linecap="round">'+paths(main)+'</g></g><path data-main-subject="" d="'+profile+'" fill="none" stroke="#263848" stroke-width="3.5" stroke-linejoin="round"/>'+ink.join('')+header.title+header.question+header.captions+'<text x="800" y="883" text-anchor="middle" font-size="18">A/B = submitted side · 01 = highest rank · + supports · − challenges · ◇ qualifies · ? unclear</text></svg>';
+  const defs='<defs><clipPath id="subject-outline"><path d="'+profile+'"/></clipPath>'+
+    '<linearGradient id="poster-masthead" x2="1" y2=".2" gradientUnits="objectBoundingBox"><stop stop-color="#071B3E"/><stop offset="1" stop-color="#144481"/></linearGradient>'+
+    '<linearGradient id="subject-light" x2="1" y2="1"><stop stop-color="#fff" stop-opacity=".075"/><stop offset=".48" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#341b08" stop-opacity=".07"/></linearGradient>'+
+    '<mask id="feature-safe" maskUnits="userSpaceOnUse" x="0" y="0" width="1600" height="900"><rect width="1600" height="900" fill="white"/><g fill="black">'+featureClearance.join('')+'</g></mask></defs>';
+  const faceArt='<g clip-path="url(#subject-outline)">'+face.join('')+
+    '<path d="'+profile+'" fill="url(#subject-light)"/><g mask="url(#feature-safe)" fill="none" stroke="#071D3C" stroke-width="3.4" stroke-opacity=".85" stroke-linejoin="round" stroke-linecap="round">'+paths(main)+'</g></g>'+
+    '<path data-main-subject="" d="'+profile+'" fill="none" stroke="#102744" stroke-width="4.2" stroke-linejoin="round"/>';
+  const svg='<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="900" viewBox="0 0 1600 900" role="img" font-family="'+pl+'" fill="#10283c"><title>'+wt(question)+'</title><desc>Exact debate question: '+wt(question)+'. '+wt(scene.objects[0].name)+' with twenty ranked puzzle pieces.</desc>'+
+    defs+'<rect width="1600" height="900" fill="#FFFBF3"/>'+base.join('')+background+faceArt+ink.join('')+
+    '<g aria-hidden="true" pointer-events="none" text-anchor="middle" fill="white" clip-path="url(#subject-outline)">'+whiteInk.join('')+'</g>'+
+    '<rect width="1600" height="'+header.height+'" fill="url(#poster-masthead)"/>'+header.title+header.question+header.captions+
+    '<text x="800" y="883" text-anchor="middle" font-size="18">A/B = submitted side · 01 = highest rank · + supports · − challenges · ◇ qualifies · ? unclear</text></svg>';
   return {svg,pieces};
+}
+
+function posterSvgBlob(svg, width = 1600, height = 900) {
+  const copy=svg.cloneNode(true);
+  copy.removeAttribute('style');
+  copy.setAttribute('width',String(width));
+  copy.setAttribute('height',String(height));
+  return new Blob([new XMLSerializer().serializeToString(copy)],{type:'image/svg+xml;charset=utf-8'});
+}
+
+function offerPosterFile(blob, filename) {
+  const url=URL.createObjectURL(blob);
+  try {
+    const link=document.createElement('a');
+    link.href=url;
+    link.download=filename;
+    link.click();
+  } finally { setTimeout(()=>URL.revokeObjectURL(url),60000); }
+}
+
+async function downloadPoster(svg, filename, format) {
+  if (!x_(svg)) throw Error('Label fit must be confirmed before export.');
+  if (format==='svg') {
+    offerPosterFile(posterSvgBlob(svg),filename);
+    return;
+  }
+  // Decode the vector at the final pixel dimensions and draw at 1:1. Some
+  // mobile browsers cannot allocate a 23 MP canvas; retain the previous size there.
+  for (const [width,height] of [[6400,3600],[4480,2520]]) {
+    const source=URL.createObjectURL(posterSvgBlob(svg,width,height));
+    const canvas=document.createElement('canvas');
+    let blob;
+    try {
+      const picture=new Image();
+      picture.src=source;
+      await picture.decode();
+      canvas.width=width;
+      canvas.height=height;
+      const context=canvas.getContext('2d');
+      if (!context) throw Error('Canvas export is unavailable.');
+      context.drawImage(picture,0,0);
+      blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+    } catch (error) {
+      if (width===4480) throw error;
+    } finally {
+      URL.revokeObjectURL(source);
+      canvas.width=canvas.height=1;
+    }
+    if (blob) { offerPosterFile(blob,filename); return; }
+  }
+  throw Error('PNG export is unavailable on this device. Download the SVG for full detail.');
+}
+
+function openPosterDetail(svg) {
+  if (!svg || typeof HTMLDialogElement==='undefined' || !HTMLDialogElement.prototype.showModal) return false;
+  const dialog=document.createElement('dialog');
+  dialog.setAttribute('aria-label','Full-size debate poster');
+  dialog.style.cssText='box-sizing:border-box;margin:auto;border:1px solid #233d67;border-radius:8px;padding:0;width:96vw;max-width:96vw;max-height:94vh;background:#fffbf3;color:#081e42';
+  const toolbar=document.createElement('div');
+  toolbar.style.cssText='display:flex;justify-content:flex-end;padding:6px 12px;border-bottom:1px solid #adbfcc';
+  const close=document.createElement('button');
+  close.type='button';close.textContent='Close';
+  close.style.cssText='padding:6px 14px;border:1px solid #62778e;border-radius:4px;background:white;color:#081e42;font:600 16px system-ui;cursor:pointer';
+  close.onclick=()=>dialog.close();
+  const viewport=document.createElement('div');
+  viewport.tabIndex=0;
+  viewport.setAttribute('aria-label','Scrollable poster');
+  viewport.style.cssText='overflow:auto;max-height:calc(94vh - 58px);overscroll-behavior:contain';
+  const img=document.createElement('img');
+  img.alt=svg.querySelector('title')?.textContent || 'Debate poster';
+  img.style.cssText='display:block;width:100%;min-width:1600px;max-width:none;height:auto';
+  const url=URL.createObjectURL(posterSvgBlob(svg));
+  img.src=url;
+  toolbar.append(close);viewport.append(img);dialog.append(toolbar,viewport);
+  const cleanup=()=>{dialog.remove();URL.revokeObjectURL(url);};
+  dialog.addEventListener('close',cleanup,{once:true});
+  document.body.append(dialog);
+  try {dialog.showModal();return true;} catch {cleanup();return false;}
 }

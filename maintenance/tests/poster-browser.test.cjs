@@ -9,7 +9,7 @@ const {once} = require('node:events');
 
 const chrome = process.env.V2_CHROME || (process.env.GITHUB_ACTIONS === 'true' && 'google-chrome');
 
-test('Chromium validates and exports both subject shapes through the production PNG function',
+test('Chromium verifies both poster subjects, full-size viewing and native PNG and SVG downloads',
   {skip: !chrome && 'Set V2_CHROME to a Chromium executable'}, async () => {
   const {compile} = await import('../build.mjs');
   const {output} = compile();
@@ -28,8 +28,13 @@ test('Chromium validates and exports both subject shapes through the production 
           const measure=document.createElement('canvas').getContext('2d');
           measure.font='700 24px Arial';
           const realBlob=URL.createObjectURL.bind(URL);
-          let png;
-          URL.createObjectURL=blob=>{if(blob.type==='image/png') png=blob; return realBlob(blob)};
+          let png,vector;
+          URL.createObjectURL=blob=>{
+            if(blob.type==='image/png') png=blob;
+            if(blob.type.startsWith('image/svg+xml')) vector=blob;
+            return realBlob(blob);
+          };
+          const readVector=async()=>new DOMParser().parseFromString(await vector.text(),'image/svg+xml').documentElement;
           HTMLAnchorElement.prototype.click=function(){};
           const paths=[];
           for(const drawing of ['open_laptop','plug_in_energy_meter']){
@@ -42,8 +47,38 @@ test('Chromium validates and exports both subject shapes through the production 
             paths.push(poster.pieces.map(p=>p.d).join(''));
             await z5(svg);
             const image=await createImageBitmap(png);
-            if(image.width!==4480||image.height!==2520) throw Error('Incorrect export dimensions');
+            const rasterSource=await readVector();
+            if(image.width!==6400||image.height!==3600||rasterSource.getAttribute('width')!=='6400'||rasterSource.getAttribute('height')!=='3600') throw Error('Incorrect native PNG dimensions');
+            const sample=document.createElement('canvas').getContext('2d');
+            sample.drawImage(image,4,4,1,1,0,0,1,1);
+            const [r,g,b,alpha]=sample.getImageData(0,0,1,1).data;
+            if(r>35||g>65||b<50||alpha!==255) throw Error('Navy masthead missing from export');
             image.close();
+            await downloadPoster(svg,'debate-scene.svg','svg');
+            const exported=await readVector();
+            if(exported.localName!=='svg'||exported.getAttribute('viewBox')!=='0 0 1600 900'||exported.querySelectorAll('[data-argument-id]').length!==20||exported.querySelectorAll('use').length!==10||exported.querySelector('image')) throw Error('Vector poster lost scalable artwork or argument labels');
+            if(!openPosterDetail(svg)) throw Error('Full-size viewer failed');
+            const dialog=document.querySelector('dialog[open]');
+            const detail=dialog.querySelector('img');
+            await detail.decode();
+            if(detail.clientWidth<1600) throw Error('Full-size viewer shrank the poster');
+            const dismissed=new Promise(resolve=>dialog.addEventListener('close',resolve,{once:true}));
+            dialog.querySelector('button').click();
+            await dismissed;
+            if(dialog.isConnected) throw Error('Full-size viewer did not close');
+            if(drawing==='plug_in_energy_meter'){
+              const encode=HTMLCanvasElement.prototype.toBlob;
+              HTMLCanvasElement.prototype.toBlob=function(callback,...args){
+                if(this.width===6400) callback(null); else encode.call(this,callback,...args);
+              };
+              try{
+                png=undefined;
+                await z5(svg);
+                const fallback=await createImageBitmap(png);
+                if(fallback.width!==4480||fallback.height!==2520) throw Error('Reduced-memory export size is wrong');
+                fallback.close();
+              }finally{HTMLCanvasElement.prototype.toBlob=encode;}
+            }
           }
           if(paths[0]===paths[1]) throw Error('Changing subject did not move the pieces');
           output.textContent='PNG and label checks passed';

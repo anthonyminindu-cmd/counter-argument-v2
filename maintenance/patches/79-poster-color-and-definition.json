@@ -1,0 +1,52 @@
+[
+  {
+    "id": "use-bright-ink-on-navy-poster-heading",
+    "find": "'start', '#10283c', 46",
+    "replace": "'start', '#ffffff', 46"
+  },
+  {
+    "id": "use-light-ink-on-navy-poster-question",
+    "find": "'start', '#10283c', 22",
+    "replace": "'start', '#deedff', 22"
+  },
+  {
+    "id": "match-side-captions-to-poster-colors",
+    "find": "rx=\"7\" fill=\"#fff8e8\" opacity=\".95\"/>",
+    "replace": "rx=\"7\" fill=\"'+(index ? '#ffd47d' : '#c0ddf7')+'\"/>"
+  },
+  {
+    "id": "rasterize-the-poster-at-export-size",
+    "find": "async function z5(e,t=\"debate-scene.png\"){if(!x_(e))throw Error(\"Label fit must be confirmed before export.\");const n=e.cloneNode(!0);n.setAttribute(\"width\",String(gi)),n.setAttribute(\"height\",String($a)),n.removeAttribute(\"style\");const r=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(n)],{type:\"image/svg+xml;charset=utf-8\"}));try{const s=new Image;s.src=r,await s.decode();const o=document.createElement(\"canvas\");o.width=4480,o.height=2520;const a=o.getContext(\"2d\");if(!a)throw Error(\"Canvas export is unavailable.\");a.drawImage(s,0,0,4480,2520);const l=await new Promise(d=>o.toBlob(d,\"image/png\"));if(!l)throw Error(\"PNG export failed.\");const c=URL.createObjectURL(l),u=document.createElement(\"a\");u.href=c,u.download=t,u.click(),setTimeout(()=>URL.revokeObjectURL(c),6e4)}finally{URL.revokeObjectURL(r)}}",
+    "replace": "async function z5(e,t=\"debate-scene.png\"){return downloadPoster(e,t,\"png\")}"
+  },
+  {
+    "id": "select-poster-download-format",
+    "find": "const k=async()=>{var A;const P=(A=_.current)",
+    "replace": "const k=async(format=\"png\")=>{var A;const P=(A=_.current)"
+  },
+  {
+    "id": "use-the-selected-export-format",
+    "find": "try{await z5(P)}catch(O)",
+    "replace": "try{if(format===\"svg\")await downloadPoster(P,\"debate-scene.svg\",\"svg\");else await z5(P)}catch(O)"
+  },
+  {
+    "id": "report-export-errors-for-either-format",
+    "find": "O instanceof Error?O.message:\"PNG export failed.\"",
+    "replace": "O instanceof Error?O.message:\"Poster export failed.\""
+  },
+  {
+    "id": "wrap-poster-export-buttons",
+    "find": "i.jsxs(\"div\",{className:\"flex gap-2\",children:[i.jsx(G,{variant:\"outline\",disabled:!C,onClick:()=>x(P=>!P),children:w?\"Fit to width\":\"Zoom in\"})",
+    "replace": "i.jsxs(\"div\",{className:\"flex flex-wrap gap-2\",children:[i.jsx(G,{variant:\"outline\",disabled:!C,onClick:()=>{if(w||!openPosterDetail(_.current?.querySelector(\"svg\")))x(P=>!P)},children:w?\"Fit to width\":\"View full size\"})"
+  },
+  {
+    "id": "announce-export-progress",
+    "find": "role:\"status\",children:R?\"20 of 20 labels fit\"",
+    "replace": "role:\"status\",children:j?\"Preparing download…\":R?\"20 of 20 labels fit\""
+  },
+  {
+    "id": "offer-the-vector-poster-download",
+    "find": "onClick:()=>void k(),children:j?\"Exporting…\":\"Download PNG\"})",
+    "replace": "onClick:()=>void k(),children:\"Download PNG\"}),i.jsx(G,{variant:\"outline\",disabled:!R||j,onClick:()=>void k(\"svg\"),children:\"Download SVG\"})"
+  }
+]
