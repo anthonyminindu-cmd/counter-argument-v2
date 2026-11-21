@@ -1,0 +1,22 @@
+[
+  {
+    "id": "restore-friend-session-route-and-agreed-topic",
+    "find": "m.ai=\"AI\";let y,g=null,b,v=[],w=((x=l.data)==null?void 0:x.title)||\"Untitled debate\";",
+    "replace": "m.ai=\"AI\";let y,g=null,b,v=[],w=((x=l.data)==null?void 0:x.title)||\"Untitled debate\";\nlet friendResume;\nif(h?.id&&h.user_a&&h.user_b&&[h.user_a,h.user_b].includes(v2HistoryOwner)&&![\"completed\",\"complete\",\"cancelled\",\"ended\"].includes(o.status)){\n  const proposal=f.topic_proposal;\n  const agreed=typeof proposal?.topic===\"string\"&&proposal.topic.trim()&&Array.isArray(proposal.agreed_by)&&[h.user_a,h.user_b].every(owner=>proposal.agreed_by.includes(owner));\n  if(agreed)w=proposal.topic.trim();\n  const session=encodeURIComponent(h.id);\n  if([\"matching\",\"topic_selection\"].includes(h.current_phase))friendResume=\"/debate/topic?session=\"+session;\n  else if([\"position_selection\",\"active_debate\",\"voting\",\"results\",\"infographic\"].includes(h.current_phase)&&(agreed||w!==\"Friend Debate Session\"&&w!==\"Untitled debate\"))friendResume=\"/debate/active?topic=\"+encodeURIComponent(w)+\"&session=\"+session;\n}"
+  },
+  {
+    "id": "include-resume-route-for-unfinished-friend-session",
+    "find": "data:{debate:historyDebate,friendInvitation,topic:w",
+    "replace": "data:{debate:historyDebate,friendInvitation,friendResume:g?.status===\"ready\"?undefined:friendResume,topic:w"
+  },
+  {
+    "id": "show-return-to-unfinished-friend-session",
+    "find": "r.workflow&&(!u||r.workflow.stage!==\"complete\")",
+    "replace": "r.friendResume&&i.jsx(Qe,{to:r.friendResume,className:\"inline-flex items-center rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground focus-visible:outline focus-visible:outline-2\",children:\"Resume friend debate\"}),r.workflow&&(!u||r.workflow.stage!==\"complete\")"
+  },
+  {
+    "id": "explain-how-to-continue-accepted-friend-debates",
+    "find": "r.friendInvitation?\"Your friend has not joined this debate.\":\"No completed ranking is saved for this debate.\"",
+    "replace": "r.friendInvitation?\"Your friend has not joined this debate.\":r.friendResume?\"This debate is still in progress. Resume it to see the current step.\":\"No completed ranking is saved for this debate.\""
+  }
+]

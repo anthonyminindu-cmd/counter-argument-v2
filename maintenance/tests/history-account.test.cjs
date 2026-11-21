@@ -55,7 +55,8 @@ function environment(source, options = {}) {
         const respond = async () => {
           if (table === 'debates' && options.pauseDebate && requestOwner === ownerA) await options.pauseDebate;
           if (table === 'debates') return { data: requestOwner === ownerA ? { id: filters.id, topic_id: 'topic-a', participant_a: ownerA, participant_b: null } : null, error: null };
-          if (table === 'topics') return { data: { title: 'Private topic for owner A', category: 'General' }, error: null };
+          if (table === 'topics') return { data: { title: options.session ? 'Friend Debate Session' : 'Private topic for owner A', category: 'General' }, error: null };
+          if (table === 'debate_sessions' && options.session) return {data:options.session,error:null};
           if (table === 'debate_sessions' && options.invitation) return {data:{id:'pending-invite',user_a:ownerA,user_b:null,current_phase:'invitation_pending'},error:null};
           if (table === 'debate_sessions' && options.friend) return {data:{id:'friend-session',user_a:ownerA,user_b:ownerB},error:null};
           if (table === 'automatic_debate_results' && options.friend) return {data:{snapshot:{topic:'Weekend library hours',stances:{[ownerA]:'For',[ownerB]:'Against'}},ranking:[],image_url:'test-image'},error:null};
@@ -184,4 +185,41 @@ test('a friend invitation awaiting a partner stays out of the AI workflow and ra
   assert.ok(text.includes('Invited friend'));
   assert.ok(text.includes('Your friend has not joined this debate.'));
   assert.ok(!text.includes('AI'));
+});
+
+async function loadInProgress(phase, agreedBy = [ownerA, ownerB]) {
+  const page = environment(output, { session: {
+    id: 'shared-id', user_a: ownerA, user_b: ownerB, current_phase: phase,
+    shared_data: { topic_proposal: { topic: 'Weekend hours & budget?', agreed_by: agreedBy } },
+  } });
+  page.render(ownerA);
+  await page.settle();
+  assert.equal(page.value.error, '');
+  return page.value.data;
+}
+
+test('accepted invitations resume topic selection without treating a proposal as an agreed title', async () => {
+  const data = await loadInProgress('topic_selection', [ownerA]);
+  assert.equal(data.topic, 'Friend Debate Session');
+  assert.equal(data.friendResume, '/debate/topic?session=shared-id');
+});
+
+test('in-progress friend history restores the agreed question and links to the shared active debate', async () => {
+  for (const phase of ['position_selection', 'active_debate', 'voting', 'results']) {
+    const data = await loadInProgress(phase);
+    assert.equal(data.topic, 'Weekend hours & budget?');
+    const url = new URL(data.friendResume, 'https://example.org');
+    assert.equal(url.pathname, '/debate/active');
+    assert.equal(url.searchParams.get('session'), 'shared-id');
+    assert.equal(url.searchParams.get('topic'), data.topic);
+  }
+});
+
+test('history never resumes a progressed debate with an unagreed placeholder or unsupported phase', async () => {
+  assert.equal((await loadInProgress('active_debate', [ownerA])).friendResume, undefined);
+  assert.equal((await loadInProgress('closed')).friendResume, undefined);
+  const page = environment(output, { invitation: true });
+  page.render(ownerA);
+  await page.settle();
+  assert.equal(page.value.data.friendResume, undefined);
 });
