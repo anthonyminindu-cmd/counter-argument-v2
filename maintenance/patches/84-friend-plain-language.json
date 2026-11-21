@@ -1,0 +1,102 @@
+[
+  {
+    "id": "friend-search-heading",
+    "find": "\"Find a Friend to Debate\"",
+    "replace": "\"Who would you like to debate?\""
+  },
+  {
+    "id": "friend-search-next-step",
+    "find": "\"Search for users by display name or username to send them a debate invitation\"",
+    "replace": "\"Find your friend by name or username, then send an invitation.\""
+  },
+  {
+    "id": "friend-search-empty",
+    "find": "\"Start typing to search for users you'd like to debate with\"",
+    "replace": "\"Search for your friend by name or username.\""
+  },
+  {
+    "id": "friend-search-status",
+    "find": "a.length>0?`Found ${a.length} user${a.length===1?\"\":\"s\"}`:\"No users found\"",
+    "replace": "c?\"Looking for matches…\":s.trim().length<2?\"Keep typing to find your friend\":a.length>0?`${a.length} ${a.length===1?\"match\":\"matches\"}`:\"No matches. Try another name.\""
+  },
+  {
+    "id": "friend-send-invitation-label",
+    "find": "i.jsx(\"span\",{className:\"text-xs\",children:\"Invite\"})",
+    "replace": "i.jsx(\"span\",{className:\"text-xs\",children:\"Send invitation\"})"
+  },
+  {
+    "id": "remove-duplicate-room-heading",
+    "find": "i.jsx(\"div\",{className:\"border-b bg-card/80 backdrop-blur-sm\",children:i.jsx(\"div\",{className:\"container mx-auto px-4 py-4\",children:i.jsxs(\"div\",{className:\"flex items-center justify-between\",children:[i.jsxs(\"div\",{className:\"flex items-center space-x-3\",children:[i.jsx(\"div\",{className:\"w-8 h-8 bg-primary rounded-lg flex items-center justify-center\",children:i.jsx(gr,{className:\"w-4 h-4 text-primary-foreground\"})}),i.jsxs(\"div\",{children:[i.jsx(\"h1\",{className:\"text-xl font-semibold\",children:\"Collaborative Topic Selection\"}),i.jsx(\"p\",{className:\"text-sm text-muted-foreground\",children:\"Work together to choose your debate topic\"})]})]}),i.jsxs(\"div\",{className:\"flex items-center space-x-4\",children:[i.jsxs(\"div\",{className:\"flex items-center space-x-2\",children:[i.jsx(Or,{className:\"w-4 h-4 text-muted-foreground\"}),i.jsxs(\"span\",{className:\"text-sm text-muted-foreground\",children:[\"Participants: \",c.length]})]}),f&&i.jsxs(Te,{variant:\"outline\",className:\"border-primary/20 bg-primary/5\",children:[\"Current Proposal: \",f.agreed_by.length,\"/\",c.length,\" agreed\"]})]})]})})}),",
+    "replace": ""
+  },
+  {
+    "id": "name-shared-topic-step",
+    "find": "\"Collaborative Topic Selection\"",
+    "replace": "\"Choose a topic together\""
+  },
+  {
+    "id": "explain-shared-topic-step",
+    "find": "\"Work together to choose your debate topic\"",
+    "replace": "\"One person suggests a question. The other can accept it or try a different one.\""
+  },
+  {
+    "id": "shared-topic-outer-spacing",
+    "find": "className:\"container mx-auto px-4 py-8\",children:i.jsx(L_",
+    "replace": "className:\"container mx-auto px-3 sm:px-4 py-4 sm:py-6\",children:i.jsx(L_"
+  },
+  {
+    "id": "shared-topic-content-spacing",
+    "find": "i.jsx(\"div\",{className:\"container mx-auto p-6\",children:i.jsxs(\"div\",{className:\"grid lg:grid-cols-3 gap-6 max-w-7xl mx-auto\"",
+    "replace": "i.jsx(\"div\",{className:\"container mx-auto\",children:i.jsxs(\"div\",{className:\"grid lg:grid-cols-3 gap-4 max-w-7xl mx-auto\""
+  },
+  {
+    "id": "shared-topic-card-heading",
+    "find": "children:\"🎯 Topic Selection\"",
+    "replace": "children:f?\"Review the suggestion\":\"Suggest a topic\""
+  },
+  {
+    "id": "shared-topic-card-next-step",
+    "find": "children:\"Propose a topic and get agreement from your debate partner\"",
+    "replace": "children:f?\"You’ll both move on as soon as you agree.\":\"Ask a question you can both answer.\""
+  },
+  {
+    "id": "shared-topic-field-label",
+    "find": "i.jsx(\"label\",{className:\"text-lg font-semibold mb-4 block\",children:\"🚀 Propose a Debate Topic\"}),i.jsxs(\"div\",{className:\"flex space-x-3\",children:[i.jsx(Je,{value:d,onChange:k=>h(k.target.value),placeholder:\"Enter your debate topic...\"",
+    "replace": "i.jsx(\"label\",{htmlFor:\"dk-topic-suggestion\",className:\"mb-2 block font-semibold\",children:\"Topic to suggest\"}),i.jsxs(\"div\",{className:\"dk-topic-suggestion\",children:[i.jsx(Je,{id:\"dk-topic-suggestion\",value:d,onChange:k=>h(k.target.value),placeholder:\"Enter a question to debate…\""
+  },
+  {
+    "id": "shared-topic-suggest-button",
+    "find": "className:\"px-8\",children:\"Propose\"",
+    "replace": "className:\"px-5\",children:\"Suggest topic\""
+  },
+  {
+    "id": "shared-topic-proposal-layout",
+    "find": "className:\"flex space-x-3 pt-2\",children:[i.jsxs(G,{onClick:_",
+    "replace": "className:\"dk-topic-review pt-2\",children:[i.jsxs(G,{onClick:_"
+  },
+  {
+    "id": "shared-topic-accept-button",
+    "find": "\"Accept Topic\"]}),i.jsxs(G,{onClick:C",
+    "replace": "\"Accept topic\"]}),i.jsxs(G,{onClick:C"
+  },
+  {
+    "id": "shared-topic-decline-button",
+    "find": "onClick:C,variant:\"outline\",className:\"flex-1\",size:\"lg\",children:[i.jsx(Co,{className:\"w-4 h-4 mr-2\"}),\"Decline\"]",
+    "replace": "onClick:C,variant:\"outline\",className:\"flex-1\",size:\"lg\",children:[i.jsx(Co,{className:\"w-4 h-4 mr-2\"}),\"Suggest another topic\"]"
+  },
+  {
+    "id": "label-static-topic-ideas",
+    "find": "i.jsxs(\"div\",{className:\"space-y-4\",children:[i.jsxs(\"div\",{className:\"flex items-center justify-between\",children:[i.jsxs(\"h3\",{className:\"text-lg font-semibold flex items-center space-x-2\",children:[i.jsx(bo,{className:\"w-5 h-5 text-orange-500\"}),i.jsx(\"span\",{children:\"Trending Topics\"})]}),i.jsxs(Te,{variant:\"outline\",className:\"bg-orange-50 text-orange-600 border-orange-200\",children:[bx.length,\" hot topics\"]})]}),i.jsx(\"div\",{className:\"grid gap-3 md:grid-cols-2\",children:bx.slice(0,4).map(k=>i.jsx(ce,{className:\"cursor-pointer hover:shadow-lg bg-card transition-all duration-200 hover:scale-[1.02] border-orange-200 hover:border-orange-300\",onClick:()=>E(k.title),children:i.jsxs(de,{className:\"p-4 space-y-3\",children:[i.jsxs(\"div\",{className:\"flex items-start justify-between\",children:[i.jsxs(\"div\",{className:\"flex-1 space-y-2\",children:[i.jsxs(\"div\",{className:\"flex items-center space-x-2\",children:[i.jsx(Te,{variant:\"outline\",className:\"text-xs bg-orange-50\",children:k.category}),i.jsxs(\"div\",{className:\"flex items-center space-x-1 text-xs text-muted-foreground\",children:[i.jsx(Or,{className:\"w-3 h-3\"}),i.jsx(\"span\",{children:k.participants.toLocaleString()})]})]}),i.jsx(\"h4\",{className:\"font-semibold text-sm leading-tight\",children:k.title})]}),i.jsxs(\"div\",{className:\"flex items-center space-x-1 text-orange-500\",children:[i.jsx(bo,{className:\"w-4 h-4\"}),i.jsxs(\"span\",{className:\"text-sm font-medium\",children:[k.popularity,\"%\"]})]})]}),i.jsxs(G,{size:\"sm\",onClick:P=>{P.stopPropagation(),E(k.title)},variant:\"outline\",className:\"w-full text-xs h-8\",children:[i.jsx(Wh,{className:\"w-3 h-3 mr-1\"}),\"Propose This Topic\"]})]})},k.id))})]})",
+    "replace": "i.jsxs(\"section\",{className:\"space-y-3\",\"aria-label\":\"Sample topics\",children:[i.jsx(\"h3\",{className:\"text-base font-semibold\",children:\"Sample topics\"}),i.jsx(\"div\",{className:\"grid gap-2 sm:grid-cols-2\",children:bx.slice(0,4).map(k=>i.jsx(G,{type:\"button\",variant:\"outline\",className:\"dk-topic-example\",onClick:()=>E(k.title),children:k.title},k.id))})]})"
+  },
+  {
+    "id": "position-plain-instruction",
+    "find": "\"Define your specific stance (max 60 characters)\"",
+    "replace": "\"Say what you think in one short sentence.\""
+  },
+  {
+    "id": "writing-points-plain-instructions",
+    "find": "\"Give each argument a title and description. You can add a source URL.\"",
+    "replace": "\"Give each point a short title and explain it. Add a source link if you have one.\""
+  }
+]

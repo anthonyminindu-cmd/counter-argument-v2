@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "8a53cd9a03af860e68b6b365d04eb7b5205ccd6d367391fa3cba8af32302af3f",
-  "generatedAsset": "assets/index-v2-8a53cd9a03af860e.js",
+  "generatedSha256": "8ee17316b4add8ab60f5f7015568496e8e55134b35d24b1fd47d3dcd27de5073",
+  "generatedAsset": "assets/index-v2-8ee17316b4add8ab.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -160,6 +160,26 @@
     "show-turn-for-topic-agreement",
     "remove-topic-debug-banner",
     "remove-active-debug-banner",
-    "single-topic-phase-navigation"
+    "single-topic-phase-navigation",
+    "friend-search-heading",
+    "friend-search-next-step",
+    "friend-search-empty",
+    "friend-search-status",
+    "friend-send-invitation-label",
+    "remove-duplicate-room-heading",
+    "name-shared-topic-step",
+    "explain-shared-topic-step",
+    "shared-topic-outer-spacing",
+    "shared-topic-content-spacing",
+    "shared-topic-card-heading",
+    "shared-topic-card-next-step",
+    "shared-topic-field-label",
+    "shared-topic-suggest-button",
+    "shared-topic-proposal-layout",
+    "shared-topic-accept-button",
+    "shared-topic-decline-button",
+    "label-static-topic-ideas",
+    "position-plain-instruction",
+    "writing-points-plain-instructions"
   ]
 }
