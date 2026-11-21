@@ -166,7 +166,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const imageRoot='/counter-argument-v2/assets/neighborhood-table-';
     return h('section',{className:'dk-welcome','aria-labelledby':'dk-welcome-title'},
       h('div',{className:'dk-welcome-copy'},
-        h('p',{className:'dk-welcome-tagline'},'Welcome to Differ Kindly'),
+        h('p',{className:'dk-welcome-tagline'},'Welcome'),
         h('h1',{id:'dk-welcome-title'},'Pull up a ',h('em',null,'chair.')),
         h('p',{className:'dk-welcome-purpose'},'A community for people who want to understand each other.'),
         h('p',{className:'dk-welcome-mission'},'Start with a question you both care about. Explore it together, then use a shared infographic to see where your ideas overlap. When a point surprises you, ask, “What led you to see it that way?”')),

@@ -53,7 +53,7 @@ test('a fresh landing shows the welcome before the feed and keeps focused destin
     assert.equal(grid.children[1].props.compact,true);
     if(welcome){
       const [copy,photo]=welcome.type().children;
-      assert.equal(copy.children[0].children[0],'Welcome to Differ Kindly');
+      assert.equal(copy.children[0].children[0],'Welcome');
       assert.equal(copy.children[1].type,'h1');
       assert.equal(photo.type,'img');
       assert.ok(photo.props.srcSet.includes('640w') && photo.props.srcSet.includes('1280w'));
