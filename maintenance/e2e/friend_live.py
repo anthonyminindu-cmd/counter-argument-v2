@@ -178,6 +178,14 @@ def check_positions_and_arguments(sender, receiver, room, topic):
             capture(page, "09-" + side + "-waiting-for-points")
             print(side, "headings:", page.get_by_role("heading").all_text_contents(), flush=True)
             raise
+    receiver.evaluate("window.scrollTo(0, 0)")
+    expect(receiver.get_by_role("link", name="Debate with a friend", exact=True)).to_be_in_viewport()
+    if not receiver.evaluate("document.documentElement.scrollWidth <= window.innerWidth"):
+        print("Mobile debate page has overflow", receiver.evaluate(
+            "() => [...document.querySelectorAll('main *,header *,#argument-title-0')].filter(e=>"
+            "e.getBoundingClientRect().right>innerWidth+1).slice(0,8).map(e=>e.className)"
+        ), flush=True)
+    capture(receiver, "09-mobile-writing-points")
     capture(sender, "09-desktop-write-points")
     subjects = (
         ("Lower repair costs", "Keep bicycles usable", "Support library workshops", "Offer short loans",

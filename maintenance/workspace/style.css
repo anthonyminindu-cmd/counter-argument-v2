@@ -164,3 +164,16 @@ html{scroll-padding-top:155px}
 }
 .dk-friend-status { min-width:0; overflow-wrap:anywhere; }
 .dk-friend-status svg { flex-shrink:0; }
+.dk-active-heading {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:8px 14px;
+}
+.dk-active-heading > div { min-width:0; }
+.dk-active-heading .dk-active-partner {
+  max-width:100%;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}

@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "c1eca02f8c5bc6056b9a78bcd3c499d1b6cf73e62a01815f230ade54279c5e08",
-  "generatedAsset": "assets/index-v2-c1eca02f8c5bc605.js",
+  "generatedSha256": "a64968788ead96abe9dd03ee63e027cd7e017108b876097e6d9f8358c43a169f",
+  "generatedAsset": "assets/index-v2-a64968788ead96ab.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -188,6 +188,9 @@
     "name-friend-readiness-action",
     "name-friend-points-step",
     "clean-friend-progress-heading",
-    "wrap-friend-status-card"
+    "wrap-friend-status-card",
+    "let-main-navigation-stay-above-active-header",
+    "active-heading-and-progress-language",
+    "let-partner-name-wrap"
   ]
 }

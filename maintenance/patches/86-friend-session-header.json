@@ -1,0 +1,17 @@
+[
+  {
+    "id": "let-main-navigation-stay-above-active-header",
+    "find": "i.jsx(\"header\",{className:\"border-b bg-card sticky top-0 z-50\",children:i.jsxs(\"div\",{className:\"container mx-auto px-4 py-4\",children:[i.jsxs(\"div\",{className:\"flex items-center justify-between\",children:[i.jsxs(\"div\",{className:\"flex items-center space-x-4\",children:[i.jsx(Qe,{to:\"/debate/topic\"",
+    "replace": "i.jsx(\"header\",{className:\"border-b bg-card dk-active-header\",children:i.jsxs(\"div\",{className:\"container mx-auto px-4 py-4\",children:[i.jsxs(\"div\",{className:\"dk-active-heading\",children:[i.jsxs(\"div\",{className:\"flex items-center space-x-4\",children:[i.jsx(Qe,{to:\"/debate/topic\""
+  },
+  {
+    "id": "active-heading-and-progress-language",
+    "find": "children:\"Live Debate\"}),i.jsx(\"p\",{className:\"text-xs text-muted-foreground capitalize\",children:Tg})",
+    "replace": "children:se?\"Friend debate\":\"Debate with AI\"}),i.jsx(\"p\",{className:\"text-xs text-muted-foreground\",children:se?({preparation:\"Share your view\",arguments:\"Write your points\",results:\"See your results\",infographic:\"Debate poster\"}[h]||Tg):Tg})"
+  },
+  {
+    "id": "let-partner-name-wrap",
+    "find": "className:\"bg-primary/10 text-primary border-primary/20\",children:se?`vs ${(Le==null?void 0:Le.name)||\"Human\"}`:\"vs AI\"",
+    "replace": "className:\"bg-primary/10 text-primary border-primary/20 dk-active-partner\",children:se?`With ${Le?.name||\"your friend\"}`:\"With AI\""
+  }
+]
