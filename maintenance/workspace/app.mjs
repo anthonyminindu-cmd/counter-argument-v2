@@ -168,11 +168,11 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       h('div',{className:'dk-welcome-copy'},
         h('p',{className:'dk-welcome-tagline'},'Welcome to Differ Kindly'),
         h('h1',{id:'dk-welcome-title'},'Pull up a ',h('em',null,'chair.')),
-        h('p',{className:'dk-welcome-views'},h('span',null,'“Build homes here.”'),' ',h('span',null,'“Keep it a park.”')),
-        h('p',{className:'dk-welcome-mission'},'Explore a question with someone who sees it differently.')),
+        h('p',{className:'dk-welcome-question'},'What can we see together that we’d miss on our own?'),
+        h('p',{className:'dk-welcome-mission'},'We bring people together to explore problems with no easy answer. Give each side’s strongest argument a fair hearing. Then ask who benefits, who bears the cost, and what other choices are possible.')),
       h('img',{className:'dk-welcome-photo',src:imageRoot+'wide.webp',
         srcSet:imageRoot+'small.webp 640w, '+imageRoot+'wide.webp 1280w',
-        sizes:'(max-width: 600px) 100vw, (max-width: 1300px) 53vw, 650px',
+        sizes:'(max-width: 900px) 92vw, (max-width: 1300px) 51vw, 655px',
         width:1280,height:546,alt:'Two neighbors sit across a table. One gestures while the other points to a neighborhood plan.',decoding:'async',fetchPriority:'high'}));
   }
   function useNovemberEdition() {
