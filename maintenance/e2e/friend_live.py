@@ -34,7 +34,7 @@ def create_member(role):
     with urlopen(request, timeout=30) as response:
         result = json.load(response)
     if not result.get("access_token"):
-        raise RuntimeError("QA signup requires verification. Supply two verified test accounts before running.")
+        raise RuntimeError("QA signup did not produce a verified session.")
     return {"id": result["user"]["id"], "name": display, "email": email, "password": password}
 
 
@@ -71,6 +71,7 @@ def check(label):
 
 
 if __name__ == "__main__":
+    expect.set_options(timeout=15000)
     with ExitStack() as stack:
         if os.getenv("DK_TEST_SERVE_CHECKOUT"):
             # Match the published Pages base path, including static deep-link shells.
@@ -94,6 +95,11 @@ if __name__ == "__main__":
             stack.callback(browser.close)
             page = browser.new_page()
             page.set_default_timeout(20000)
+            def report_rpc_failure(response):
+                if "/rest/v1/rpc/" in response.url and response.status >= 400:
+                    body=response.json()
+                    print("RPC failure",urlparse(response.url).path,body.get("code"),body.get("message"),flush=True)
+            page.on("response",report_rpc_failure)
             return page
         sender, receiver = browser_page(), browser_page()
         login(sender,a)
