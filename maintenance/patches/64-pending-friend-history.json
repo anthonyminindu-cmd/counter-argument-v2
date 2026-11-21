@@ -1,0 +1,32 @@
+[
+  {
+    "id": "identify-unjoined-friend-in-history",
+    "find": "m.ai=\"AI\";let y,g=null,b,v=[]",
+    "replace": "const friendInvitation=!!h&&!h.user_b&&!historyDebate.participant_b&&h.current_phase===\"invitation_pending\";m.ai=\"AI\";let y,g=null,b,v=[]"
+  },
+  {
+    "id": "skip-solo-queries-for-friend-invitation",
+    "find": "if(historyDebate.participant_b===null){const N=await $.from(\"debate_workflows\")",
+    "replace": "if(!friendInvitation&&historyDebate.participant_b===null){const N=await $.from(\"debate_workflows\")"
+  },
+  {
+    "id": "skip-result-query-until-a-friend-joins",
+    "find": "else if(h){const N=await $.from(\"automatic_debate_results\")",
+    "replace": "else if(h&&!friendInvitation){const N=await $.from(\"automatic_debate_results\")"
+  },
+  {
+    "id": "expose-unjoined-friend-to-history-view",
+    "find": "data:{debate:historyDebate,topic:w",
+    "replace": "data:{debate:historyDebate,friendInvitation,topic:w"
+  },
+  {
+    "id": "label-invited-opponent-in-history",
+    "find": "a.participant_b?c[a.participant_b]||\"Participant\":\"AI\"",
+    "replace": "a.participant_b?c[a.participant_b]||\"Participant\":r.friendInvitation?\"Invited friend\":\"AI\""
+  },
+  {
+    "id": "explain-unjoined-friend-status",
+    "find": "children:\"No completed ranking is saved for this debate.\"",
+    "replace": "children:r.friendInvitation?\"Your friend has not joined this debate.\":\"No completed ranking is saved for this debate.\""
+  }
+]

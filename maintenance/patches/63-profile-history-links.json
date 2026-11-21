@@ -1,0 +1,12 @@
+[
+  {
+    "id": "keyboard-accessible-profile-history-cards",
+    "find": "children:c.map(_=>i.jsxs(\"div\",{className:\"p-4 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer group\",onClick:()=>y(`/debate/view/${_.id}`),children:",
+    "replace": "children:c.map(_=>i.jsxs(Qe,{to:`/debate/view/${_.id}`,className:\"block p-4 border rounded-lg hover:bg-accent/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 transition-colors group\",children:"
+  },
+  {
+    "id": "remove-unused-profile-history-click-navigation",
+    "find": "{toast:m}=_t(),y=Mn(),[g,b]=p.useState({display_name:",
+    "replace": "{toast:m}=_t(),[g,b]=p.useState({display_name:"
+  }
+]

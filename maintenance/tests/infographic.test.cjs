@@ -231,3 +231,45 @@ test('legacy ballot history does not call the automatic-only shared resolver',()
   const data=record(fixtureRows(['human','friend']),true);data.result.scoringVersion='legacy-vote';
   assert.equal(historyProps(source,data).sessionId,undefined);
 });
+
+function puzzleArea(pathData) {
+  // Include the actual tabs and sockets when comparing the visible SVG pieces.
+  const parts = pathData.match(/[MLCZ]|-?\d+(?:\.\d+)?/g);
+  const vertices = [];
+  let i = 0;
+  const point = () => [Number(parts[i++]), Number(parts[i++])];
+  while (i < parts.length) {
+    const command = parts[i++];
+    if (command === 'Z') break;
+    if (command === 'C') {
+      const start = vertices.at(-1), first = point(), second = point(), end = point();
+      for (let step = 1; step <= 12; step++) {
+        const t = step / 12, u = 1 - t;
+        vertices.push([0,1].map(axis => u**3*start[axis] + 3*u*u*t*first[axis] + 3*u*t*t*second[axis] + t**3*end[axis]));
+      }
+    } else {
+      assert.ok(command === 'M' || command === 'L');
+      vertices.push(point());
+    }
+  }
+  const twiceArea = vertices.reduce((sum, p, index) => {
+    const q = vertices[(index+1) % vertices.length];
+    return sum + p[0]*q[1] - q[0]*p[1];
+  }, 0);
+  return Math.abs(twiceArea)/2;
+}
+
+test('actual puzzle-piece areas respect all three rank tiers for both balanced and skewed debates', () => {
+  for (const pattern of ['ABBBBBAAABAABAAABBBA', 'AB'.repeat(10), 'A'.repeat(10)+'B'.repeat(10), 'B'.repeat(10)+'A'.repeat(10)]) {
+    const owners = new Map(rows.map((r,i)=>[r.id,pattern[i]==='A'?'left':'right']));
+    const poster = render(rows,plan,'The complete question?',measure,owners);
+    const areas = Array.from(poster.pieces, piece=>puzzleArea(piece.d));
+    assert.equal(areas.length, 20);
+    assert.ok(Math.min(...areas.slice(0,7)) > Math.max(...areas.slice(7,13)), pattern);
+    assert.ok(Math.min(...areas.slice(7,13)) > Math.max(...areas.slice(13)), pattern);
+    for(const p of poster.pieces) {
+      assert.equal(p.side,owners.get(p.id));
+      assert.ok(p.lines.every(line=>measure(line)<=p.bounds.right-p.bounds.left));
+    }
+  }
+});

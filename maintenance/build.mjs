@@ -52,6 +52,20 @@ export function build(check = false) {
     if (check && updated !== html) throw new Error(`Stale runtime reference in ${shell}`);
     if (!check) fs.writeFileSync(target, updated);
   }
+  const fixturePath = path.join(root, 'demo/v2-regression-fixture.html');
+  const fixture = fs.readFileSync(fixturePath, 'utf8');
+  const rendererStart = result.output.indexOf('const gi=1600,');
+  const rendererEnd = result.output.indexOf('async function z5(', rendererStart);
+  const fixtureStart = fixture.indexOf('<script>') + '<script>'.length;
+  const fixtureEnd = fixture.indexOf('\nconst rows=Array.from', fixtureStart);
+  if (rendererStart < 0 || rendererEnd <= rendererStart || fixtureStart < '<script>'.length || fixtureEnd <= fixtureStart) {
+    throw new Error('Browser layout fixture renderer boundaries changed');
+  }
+  const currentFixture = fixture.slice(0, fixtureStart) + result.output.slice(rendererStart, rendererEnd).trimEnd() + fixture.slice(fixtureEnd);
+  if (fixture !== currentFixture) {
+    if (check) throw new Error('Browser layout fixture does not use the deployed renderer');
+    fs.writeFileSync(fixturePath, currentFixture);
+  }
   return result.manifest;
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) console.log(JSON.stringify(build(process.argv.includes('--check')), null, 2));

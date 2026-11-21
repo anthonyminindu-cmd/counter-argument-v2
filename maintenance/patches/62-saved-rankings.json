@@ -1,0 +1,22 @@
+[
+  {
+    "id": "ai-history-validate-saved-rankings-at-every-stage",
+    "find": "y.stage===\"complete\"&&(g=Bf(e,{...E,points:[...E.points,...y.counters||[]]},y.ranking,",
+    "replace": "cg(y).resultsAvailable&&(g=Bf(e,{...E,points:[...E.points,...y.counters||[]]},y.ranking,"
+  },
+  {
+    "id": "ai-history-reset-poster-choice-on-navigation",
+    "find": "[s,o]=p.useState(!0);if(p.useEffect(()=>{o(!0)},[e]),t)return",
+    "replace": "[s,o]=p.useState(null);if(p.useEffect(()=>{o(null)},[e]),t)return"
+  },
+  {
+    "id": "ai-history-open-ready-rankings-while-artwork-is-pending",
+    "find": "u?s&&u.status===\"ready\"&&(!d||r.imageUrl)?",
+    "replace": "u?(s??(!r.workflow||r.workflow.stage===\"complete\"))&&u.status===\"ready\"&&(!d||r.imageUrl)?"
+  },
+  {
+    "id": "ai-history-keep-incomplete-workflow-resumable",
+    "find": "r.workflow&&!u&&i.jsxs(",
+    "replace": "r.workflow&&(!u||r.workflow.stage!==\"complete\")&&i.jsxs("
+  }
+]

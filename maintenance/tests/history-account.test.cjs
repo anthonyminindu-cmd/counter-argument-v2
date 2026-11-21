@@ -56,6 +56,7 @@ function environment(source, options = {}) {
           if (table === 'debates' && options.pauseDebate && requestOwner === ownerA) await options.pauseDebate;
           if (table === 'debates') return { data: requestOwner === ownerA ? { id: filters.id, topic_id: 'topic-a', participant_a: ownerA, participant_b: null } : null, error: null };
           if (table === 'topics') return { data: { title: 'Private topic for owner A', category: 'General' }, error: null };
+          if (table === 'debate_sessions' && options.invitation) return {data:{id:'pending-invite',user_a:ownerA,user_b:null,current_phase:'invitation_pending'},error:null};
           if (table === 'debate_sessions' && options.friend) return {data:{id:'friend-session',user_a:ownerA,user_b:ownerB},error:null};
           if (table === 'automatic_debate_results' && options.friend) return {data:{snapshot:{topic:'Weekend library hours',stances:{[ownerA]:'For',[ownerB]:'Against'}},ranking:[],image_url:'test-image'},error:null};
           if (table === 'profiles' && filters.user_id === ownerB) return {data:{display_name:'Owner B'},error:null};
@@ -157,4 +158,30 @@ test('a linked friend session supplies the missing opponent and loads saved rank
   assert.equal(page.value.data.result.status, 'ready');
   assert.equal(page.value.data.sessionId, 'friend-session');
   assert.ok(!page.calls.some(call => call.table === 'debate_workflows'));
+});
+
+test('a friend invitation awaiting a partner stays out of the AI workflow and ranking loaders', async () => {
+  const page = environment(output, { invitation: true });
+  page.render(ownerA); await page.settle();
+  assert.equal(page.value.error, '');
+  assert.equal(page.value.data.friendInvitation, true);
+  assert.equal(page.value.data.debate.participant_b, null);
+  assert.equal(page.value.data.result, null);
+  const resultTables = ['debate_workflows', 'combined_debate_rankings', 'automatic_debate_results'];
+  assert.ok(!page.calls.some(call => resultTables.includes(call.table)));
+  const text = [];
+  const jsx = (type, props) => {
+    for (const child of [props.children].flat()) if (typeof child === 'string') text.push(child);
+    return null;
+  };
+  const context = vm.createContext({
+    OA: () => ({ debateId }), c5: () => page.value, i: { jsx, jsxs: jsx },
+    p: { useState: () => [null, () => {}], useEffect() {} },
+    ...Object.fromEntries('Qe G Ts ce Pe Te Ae de Tb'.split(' ').map(name => [name, name])),
+  });
+  vm.runInContext(output.slice(output.indexOf('function H5()'), output.indexOf('const V5=')), context);
+  context.H5();
+  assert.ok(text.includes('Invited friend'));
+  assert.ok(text.includes('Your friend has not joined this debate.'));
+  assert.ok(!text.includes('AI'));
 });

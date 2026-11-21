@@ -1,0 +1,12 @@
+[
+  {
+    "id": "profile-history-load-saved-question",
+    "find": "const{data:C,error:R}=await $.from(\"debates\").select(`\n          id,\n          status,\n          created_at,\n          participant_b,\n          winner_id,\n          topics!inner(title)\n        `).or(`participant_a.eq.${_.id},participant_b.eq.${_.id}`).order(\"created_at\",{ascending:!1});if(R)throw R;const I=(C==null?void 0:C.map(k=>{var P;return{id:k.id,topic:((P=k.topics)==null?void 0:P.title)||\"Unknown Topic\",",
+    "replace": "const{data:C,error:R}=await $.from(\"debates\").select(`\n          id,\n          status,\n          created_at,\n          participant_b,\n          winner_id,\n          topics!inner(title)\n        `).or(`participant_a.eq.${_.id},participant_b.eq.${_.id}`).order(\"created_at\",{ascending:!1});if(R)throw R;const names=new Map(),candidates=(C||[]).filter(row=>row.participant_b&&(!row.topics?.title||row.topics.title===\"Friend Debate Session\"));\nfor(let start=0;start<candidates.length;start+=50){\n  const ids=candidates.slice(start,start+50).map(row=>row.id);\n  const sessions=await $.from(\"debate_sessions\").select(\"id,debate_id,user_a,user_b,created_at,proposal:shared_data->topic_proposal->>topic,agreed:shared_data->topic_proposal->agreed_by\").in(\"debate_id\",ids).order(\"created_at\",{ascending:false});\n  if(sessions.error||!sessions.data?.length)continue;\n  const byDebate=new Map();\n  for(const row of sessions.data)if(!byDebate.has(row.debate_id))byDebate.set(row.debate_id,row);\n  const saved=await $.from(\"automatic_debate_results\").select(\"session_id,topic:snapshot->>topic\").in(\"session_id\",[...byDebate.values()].map(row=>row.id));\n  const results=new Map((saved.data||[]).map(row=>[row.session_id,row.topic]));\n  for(const [id,row] of byDebate){\n    const topic=results.get(row.id),agreed=row.user_a&&row.user_b&&Array.isArray(row.agreed)&&[row.user_a,row.user_b].every(owner=>row.agreed.includes(owner));\n    if(typeof topic===\"string\"&&topic.trim())names.set(id,topic.trim());\n    else if(agreed&&typeof row.proposal===\"string\"&&row.proposal.trim())names.set(id,row.proposal.trim());\n  }\n}\nconst I=(C||[]).map(k=>{return{id:k.id,topic:names.get(k.id)||k.topics?.title||\"Unknown Topic\","
+  },
+  {
+    "id": "profile-history-finish-topic-mapping",
+    "find": "winner_id:k.winner_id}}))||[];u(I)",
+    "replace": "winner_id:k.winner_id}});u(I)"
+  }
+]

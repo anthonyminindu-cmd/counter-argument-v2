@@ -1,0 +1,27 @@
+[
+  {
+    "id": "restore-custom-written-friend-stances",
+    "find": "if(o.some(a=>![\"for\",\"against\"].includes(r[a]))||r[o[0]]===r[o[1]])throw new Error(\"Saved opposing participant positions are missing.\");",
+    "replace": "const explicit=o.every(owner=>[\"for\",\"against\"].includes(r[owner]))&&r[o[0]]!==r[o[1]],written=!o.includes(\"ai\")&&o.every(owner=>typeof t.stances?.[owner]===\"string\"&&t.stances[owner].trim());if(!explicit&&!written)throw new Error(\"Saved opposing participant positions are missing.\");"
+  },
+  {
+    "id": "keep-written-stances-separate-from-ownership",
+    "find": "position:r[a.owner],side:r[a.owner]===\"for\"?\"support\":\"oppose\",sources:",
+    "replace": "position:explicit?r[a.owner]:null,side:explicit?(r[a.owner]===\"for\"?\"support\":\"oppose\"):null,...(!explicit&&written?{positionLabel:t.stances[a.owner],submissionSide:a.owner===o[0]?\"left\":\"right\"}:{}),sources:"
+  },
+  {
+    "id": "render-written-stance-in-rank-list",
+    "find": "positionLabel:m.side===\"support\"?\"For\":\"Against\"",
+    "replace": "positionLabel:m.positionLabel??(m.side===\"support\"?\"For\":\"Against\")"
+  },
+  {
+    "id": "render-written-stance-in-poster-transcript",
+    "find": "positionLabel:P.side===\"support\"?\"For\":\"Against\"",
+    "replace": "positionLabel:P.positionLabel??(P.side===\"support\"?\"For\":\"Against\")"
+  },
+  {
+    "id": "keep-written-stance-poster-ownership",
+    "find": "submissionSide:h?m.owner===\"ai\"?\"right\":\"left\":m.side===\"support\"?\"left\":\"right\"",
+    "replace": "submissionSide:m.submissionSide??(h?m.owner===\"ai\"?\"right\":\"left\":m.side===\"support\"?\"left\":\"right\")"
+  }
+]
