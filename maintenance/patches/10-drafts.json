@@ -7,7 +7,7 @@
   {
     "id": "create-ai-draft-during-preparation",
     "find": "p.useEffect(()=>{h===\"arguments\"&&!xe&&bg()},[h])",
-    "replace": "p.useEffect(()=>{!o&&(h===\"arguments\"||c&&h===\"preparation\")&&(r==null?void 0:r.id)&&!xe&&bg()},[h,o,c,r==null?void 0:r.id,xe])"
+    "replace": "p.useEffect(()=>{!o&&(h===\"arguments\"||c&&h===\"preparation\")&&(r==null?void 0:r.id)&&!xe&&bg()},[h,o,c,r==null?void 0:r.id])"
   },
   {
     "id": "persist-created-ai-draft-before-routing",
