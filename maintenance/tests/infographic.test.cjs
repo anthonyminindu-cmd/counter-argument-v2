@@ -119,7 +119,7 @@ test('the infographic interface exposes the exact full topic in native accessibl
   const tree=vm.runInContext(source.slice(start,end)+';lg({args:'+JSON.stringify(rows)+',topicTitle:'+JSON.stringify(question)+'})',context);
   const find=(node,type)=>{if(node?.type===type)return node;for(const child of [node?.props?.children].flat(Infinity)){if(child&&typeof child==='object'){const result=find(child,type);if(result)return result;}}return null;};
   const details=find(tree,'details');assert.ok(details);
-  assert.equal(find(details,'summary').props.children,'Full debate question');
+  assert.equal(find(details,'summary').props.children,'Original debate question');
   assert.equal(find(details,'p').props.children,question);
 });
 test('rendered actual header ink, font, and presence participate in export acceptance',()=>{
@@ -339,4 +339,17 @@ test('the main subject changes visible geometry with either ownership distributi
       }
     }
   }
+});
+
+test('reader poster frames the completed discussion and links all twenty pieces by rank',()=>{
+  const scene={...plan,objects:plan.objects.slice(0,1),title:'Which platform fits the business?',overview:'Existing apps favor one platform. Teams need different tools.',
+    summaries:plan.summaries.map((row,i)=>i===0?{...row,statement:'Some business apps run only on Windows'}:row)};
+  const result=render(rows,scene,'raw opening shorthand',measure,mapping);
+  const visible=result.svg.replace(/<(?:title|desc)>[\s\S]*?<\/(?:title|desc)>/g,'');
+  assert.match(visible,/Which platform fits the business/);
+  assert.match(visible,/Existing apps favor one platform/);
+  assert.doesNotMatch(visible,/raw opening shorthand|qualifies ·|unclear<\/text>/);
+  assert.match(result.svg,/<desc>Exact debate question: raw opening shorthand/);
+  for(const row of rows) assert.match(visible,new RegExp(' · #'+row.rank+'<'));
+  assert.equal(result.pieces[0].statement,scene.summaries[0].statement);
 });

@@ -1,0 +1,57 @@
+[
+  {
+    "id": "version-reader-poster",
+    "find": "const Wf=\"illustrated-debate-silhouette-v6\"",
+    "replace": "const Wf=\"illustrated-debate-silhouette-v7\""
+  },
+  {
+    "id": "request-reader-poster",
+    "find": "T(\"debate-scene-labels/silhouette\")",
+    "replace": "T(\"debate-scene-labels/silhouette/reader\")"
+  },
+  {
+    "id": "validate-reader-overview",
+    "find": "const o=new Set,a=e.map(c=>{const u=s.find",
+    "replace": "const overview=t.overview;if(overview!==undefined&&(typeof overview!==\"string\"||!overview.trim()||overview.length>145||/[\\r\\n]/.test(overview)))throw Error(\"Illustration plan is missing a readable overview.\");const o=new Set,a=e.map(c=>{const u=s.find"
+  },
+  {
+    "id": "accept-reader-headlines",
+    "find": "t.profile===\"custom\"&&t.objects.length<=2?/^\\S+(?: \\S+){1,3}$/:L5",
+    "replace": "overview?/^\\S+(?: \\S+){1,6}$/:t.profile===\"custom\"&&t.objects.length<=2?/^\\S+(?: \\S+){1,3}$/:L5"
+  },
+  {
+    "id": "retain-reader-overview",
+    "find": "return{title:t.title.trim(),profile:t.profile,objects:t.objects,summaries:a",
+    "replace": "return{title:t.title.trim(),...(overview?{overview:overview.trim()}:{}),profile:t.profile,objects:t.objects,summaries:a"
+  },
+  {
+    "id": "pair-ranked-list-with-poster",
+    "find": "const{svg:Z}=F5(O.rows,M,t",
+    "replace": "const{svg:Z,pieces:printed}=F5(O.rows,M,t"
+  },
+  {
+    "id": "retain-final-visible-headlines",
+    "find": "P&&h({scope:u,svg:Z})",
+    "replace": "P&&h({scope:u,svg:Z,labels:new Map(printed.map(piece=>[piece.id,piece.statement]))})"
+  },
+  {
+    "id": "read-original-question",
+    "find": "children:\"Full debate question\"",
+    "replace": "children:\"Original debate question\""
+  },
+  {
+    "id": "show-poster-label-on-corresponding-row",
+    "find": "...P,id:P.id||String(A),positionLabel:P.positionLabel",
+    "replace": "...P,posterLabel:C?d.labels?.get(P.id):undefined,id:P.id||String(A),positionLabel:P.positionLabel"
+  },
+  {
+    "id": "print-matching-headline-on-detail-card",
+    "find": "children:[\"#\",n.rank]}),n.title]",
+    "replace": "children:[\"#\",n.rank]}),n.posterLabel||n.title]"
+  },
+  {
+    "id": "retain-submitted-argument-title",
+    "find": "i.jsx(\"p\",{className:\"mt-3 whitespace-pre-wrap break-words text-lg leading-relaxed\",children:n.description})",
+    "replace": "n.posterLabel&&n.posterLabel!==n.title&&i.jsx(\"p\",{className:\"mt-3 font-semibold\",children:n.title}),i.jsx(\"p\",{className:\"mt-3 whitespace-pre-wrap break-words text-lg leading-relaxed\",children:n.description})"
+  }
+]

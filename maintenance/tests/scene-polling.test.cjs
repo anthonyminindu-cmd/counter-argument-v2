@@ -18,8 +18,8 @@ function ledger(message) {
   const source=fs.readFileSync(path.join(root,'debate-scene-labels/index.ts'),'utf8');
   const start=source.indexOf('const posterOptions'), end=source.indexOf('Deno.serve(',start);
   const handler=()=>{providerCalls++;throw Error('Unexpected second paid call')};
-  const opts={withAiRequest:env.wrap,resolveFriendScene:async()=>null,generateScene:handler,generateDebateArt:handler,SILHOUETTE_VERSION:'silhouette',LABEL_VERSION:'labels',ART_VERSION:'art'};
-  vm.runInNewContext(source.slice(start,end)+';globalThis.routes=[forParticipant,forArtwork,forSilhouette]',opts);
+  const opts={withAiRequest:env.wrap,resolveFriendScene:async()=>null,generateScene:handler,generateDebateArt:handler,PREVIOUS_SILHOUETTE_VERSION:'old-silhouette',SILHOUETTE_VERSION:'silhouette',LABEL_VERSION:'labels',ART_VERSION:'art'};
+  vm.runInNewContext(source.slice(start,end)+';globalThis.routes=[forParticipant,forArtwork,forSilhouette,forReader]',opts);
   return {routes:opts.routes,providerCalls:()=>providerCalls};
 }
 for(const [message,expected] of [

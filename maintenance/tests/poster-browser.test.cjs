@@ -23,7 +23,7 @@ test('Chromium verifies both poster subjects, full-size viewing and native PNG a
         try {
           const rows=Array.from({length:20},(_,i)=>({id:'row'+i,rank:i+1,score:100-i,title:'Submitted argument '+i,description:'Full argument'}));
           const outline=[[8,4],[92,4],[98,10],[98,90],[92,96],[8,96],[2,90],[2,10]].map(([x,y])=>({x,y}));
-          const labels=['Windows apps create lock-in','Roles need different platforms','Energy audits cover more','Short tests can mislead'];
+          const labels=['Some business apps run only on Windows','Different roles may need different platforms','Energy audits cover more','Short tests can mislead'];
           const summaries=rows.map((r,i)=>({id:r.id,statement:labels[i]||'Measure peak demand '+i,position:i%3?'qualifying':'supporting'}));
           const measure=document.createElement('canvas').getContext('2d');
           measure.font='700 24px Arial';
@@ -38,7 +38,7 @@ test('Chromium verifies both poster subjects, full-size viewing and native PNG a
           HTMLAnchorElement.prototype.click=function(){};
           const paths=[];
           for(const drawing of ['open_laptop','plug_in_energy_meter']){
-            const scene={title:'A decision at work',profile:'custom',objects:[{name:drawing,drawing,outline,details:[[outline[0],outline[1]]]}],summaries,sideTitles:['First position','Second position']};
+            const scene={title:'Which platform best fits the business?',overview:'Existing app requirements and different job needs shape the choice.',profile:'custom',objects:[{name:drawing,drawing,outline,details:[[outline[0],outline[1]]]}],summaries,sideTitles:['First position','Second position']};
             const owners=new Map(rows.map((r,i)=>[r.id,i<10?'right':'left']));
             const poster=F5(rows,scene,'Which option fits this use?',text=>measure.measureText(text).width,owners);
             main.innerHTML=poster.svg;

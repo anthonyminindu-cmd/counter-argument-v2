@@ -25,7 +25,12 @@ export function validateScene(rows, value) {
   } else if(value.objects.length) throw Error('Unexpected illustration objects.');
   const list = Array.isArray(value.summaries) ? value.summaries : Object.entries(value.summaries || {}).map(([id,s])=>({...s,id}));
   if (list.length !== 20 || new Set(list.map(s=>s?.id)).size !== 20) throw Error('Expected one label for each of the twenty arguments.');
-  const pattern = value.profile==='custom' && value.objects.length<=2 ? /^\S+(?: \S+){1,3}$/ : LABEL_PATTERN;
+  let overview;
+  if (value.overview !== undefined) {
+    if (typeof value.overview!=='string' || !value.overview.trim() || value.overview.length>145 || /[\r\n]/.test(value.overview)) throw Error('Illustration plan is missing a readable overview.');
+    overview=value.overview.trim();
+  }
+  const pattern = overview ? /^\S+(?: \S+){1,6}$/ : value.profile==='custom' && value.objects.length<=2 ? /^\S+(?: \S+){1,3}$/ : LABEL_PATTERN;
   const used=new Set();
   const summaries=rows.map(r=>{
     const s=list.find(item=>item?.id===r.id);
@@ -33,5 +38,5 @@ export function validateScene(rows, value) {
     used.add(s.statement.toLowerCase());return {id:r.id,statement:s.statement,position:s.position};
   });
   const sideTitles = Array.isArray(value.sideTitles) && value.sideTitles.length===2 && value.sideTitles.every(s=>typeof s==='string' && s.trim() && s.length<=46) ? value.sideTitles.map(s=>s.trim()) : undefined;
-  return {title:value.title.trim(),profile:value.profile,objects:value.objects,summaries,...(sideTitles?{sideTitles}:{})};
+  return {title:value.title.trim(),...(overview?{overview}:{}),profile:value.profile,objects:value.objects,summaries,...(sideTitles?{sideTitles}:{})};
 }

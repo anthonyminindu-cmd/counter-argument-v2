@@ -227,7 +227,7 @@ const posterPalette = {
 };
 
 function renderSilhouettePuzzle(rows, scene, question, measure, ownership) {
-  const header=V2SceneHeader(scene.title,question,scene.sideTitles||['First position','Second position'],measure);
+  const header=V2SceneHeader(scene.title,scene.overview || question,scene.sideTitles||['First position','Second position'],measure);
   const captionBottom=Math.max(...Array.from(header.captions.matchAll(/<rect[^>]*y="([\d.]+)"[^>]*height="([\d.]+)"/g),m=>Number(m[1])+Number(m[2])));
   const top=Math.ceil(captionBottom+10), bottom=853;
   const {main,pieces}=silhouetteLayout(rows,scene,ownership,measure,top,bottom);
@@ -237,19 +237,20 @@ function renderSilhouettePuzzle(rows, scene, question, measure, ownership) {
   const background=cue?'<g fill="none" stroke="#687b81" stroke-width="4" opacity=".16"><path d="'+silhouettePath(cue.outline)+'"/>'+paths(cue)+'</g>':'';
   const base=[],face=[],ink=[],whiteInk=[],featureClearance=[];
   for (const p of pieces) {
-    const left=p.side==='left', label=left?'A':'B', rank=String(p.rank).padStart(2,'0');
+    const left=p.side==='left', label=left?'A':'B';
     const palette=posterPalette[p.side];
     const band=p.rank<=7?0:p.rank<=13?1:2;
     base.push('<path d="'+p.d+'" fill="'+palette.surround[band]+'" stroke="'+palette.seam+'" stroke-width="1.8" stroke-linejoin="round"/>');
     face.push('<path d="'+p.d+'" fill="'+palette.face[p.rank-1]+'" stroke="#fff6da" stroke-width="2.8" stroke-linejoin="round"/>');
     if(left) whiteInk.push('<use href="#poster-label-'+p.rank+'" xlink:href="#poster-label-'+p.rank+'"/>');
     const b=p.bounds, y=p.y+27;
-    const lineWidths=[measure(label+' · '+rank+' '+fx[p.position])*.75,...p.lines.map(measure)];
+    const pieceNumber=label+' · #'+p.rank;
+    const lineWidths=[measure(pieceNumber)*.75,...p.lines.map(measure)];
     lineWidths.forEach((w,i)=>{
       const baseline=i?y+(i-1)*p.lineHeight:p.y;
       featureClearance.push('<rect x="'+Yn(p.x-w/2-4)+'" y="'+Yn(baseline-(i?23:17))+'" width="'+Yn(w+8)+'" height="'+(i?29:22)+'" rx="3"/>');
     });
-    ink.push('<g data-argument-id="'+wt(p.id)+'" data-rank="'+p.rank+'" data-score="'+Number(p.score)+'" data-side="'+p.side+'" data-stance="'+p.position+'" data-band="'+p.level+'" text-anchor="middle" fill="'+(left?'#081E42':'#261902')+'"><title>'+wt(p.title)+'</title><path data-puzzle-piece="" d="'+p.d+'" fill="none"/><g id="poster-label-'+p.rank+'"><text x="'+Yn(p.x)+'" y="'+Yn(p.y)+'" font-size="18" font-weight="700">'+label+' · '+rank+' '+fx[p.position]+'</text><text data-label="" data-left="'+b.left+'" data-right="'+b.right+'" data-top="'+b.top+'" data-bottom="'+b.bottom+'" x="'+Yn(p.x)+'" y="'+Yn(y)+'" font-size="24" font-weight="700">'+p.lines.map((l,i)=>'<tspan x="'+Yn(p.x)+'" dy="'+(i?p.lineHeight:0)+'">'+wt(l)+'</tspan>').join('')+'</text></g></g>');
+    ink.push('<g data-argument-id="'+wt(p.id)+'" data-rank="'+p.rank+'" data-score="'+Number(p.score)+'" data-side="'+p.side+'" data-stance="'+p.position+'" data-band="'+p.level+'" text-anchor="middle" fill="'+(left?'#081E42':'#261902')+'"><title>'+wt(p.title)+'</title><path data-puzzle-piece="" d="'+p.d+'" fill="none"/><g id="poster-label-'+p.rank+'"><text x="'+Yn(p.x)+'" y="'+Yn(p.y)+'" font-size="18" font-weight="700">'+pieceNumber+'</text><text data-label="" data-left="'+b.left+'" data-right="'+b.right+'" data-top="'+b.top+'" data-bottom="'+b.bottom+'" x="'+Yn(p.x)+'" y="'+Yn(y)+'" font-size="24" font-weight="700">'+p.lines.map((l,i)=>'<tspan x="'+Yn(p.x)+'" dy="'+(i?p.lineHeight:0)+'">'+wt(l)+'</tspan>').join('')+'</text></g></g>');
   }
   const defs='<defs><clipPath id="subject-outline"><path d="'+profile+'"/></clipPath>'+
     '<linearGradient id="poster-masthead" x2="1" y2=".2" gradientUnits="objectBoundingBox"><stop stop-color="#071B3E"/><stop offset="1" stop-color="#144481"/></linearGradient>'+
@@ -258,11 +259,11 @@ function renderSilhouettePuzzle(rows, scene, question, measure, ownership) {
   const faceArt='<g clip-path="url(#subject-outline)">'+face.join('')+
     '<path d="'+profile+'" fill="url(#subject-light)"/><g mask="url(#feature-safe)" fill="none" stroke="#071D3C" stroke-width="3.4" stroke-opacity=".85" stroke-linejoin="round" stroke-linecap="round">'+paths(main)+'</g></g>'+
     '<path data-main-subject="" d="'+profile+'" fill="none" stroke="#102744" stroke-width="4.2" stroke-linejoin="round"/>';
-  const svg='<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="900" viewBox="0 0 1600 900" role="img" font-family="'+pl+'" fill="#10283c"><title>'+wt(question)+'</title><desc>Exact debate question: '+wt(question)+'. '+wt(scene.objects[0].name)+' with twenty ranked puzzle pieces.</desc>'+
+  const svg='<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="900" viewBox="0 0 1600 900" role="img" font-family="'+pl+'" fill="#10283c"><title>'+wt(scene.overview ? scene.title : question)+'</title><desc>Exact debate question: '+wt(question)+'. '+wt(scene.objects[0].name)+' with twenty ranked puzzle pieces.</desc>'+
     defs+'<rect width="1600" height="900" fill="#FFFBF3"/>'+base.join('')+background+faceArt+ink.join('')+
     '<g aria-hidden="true" pointer-events="none" text-anchor="middle" fill="white" clip-path="url(#subject-outline)">'+whiteInk.join('')+'</g>'+
     '<rect width="1600" height="'+header.height+'" fill="url(#poster-masthead)"/>'+header.title+header.question+header.captions+
-    '<text x="800" y="883" text-anchor="middle" font-size="18">A/B = submitted side · 01 = highest rank · + supports · − challenges · ◇ qualifies · ? unclear</text></svg>';
+    '<text x="800" y="883" text-anchor="middle" font-size="18">A and B show the two positions. Each number matches a full argument. #1 is the highest rank.</text></svg>';
   return {svg,pieces};
 }
 

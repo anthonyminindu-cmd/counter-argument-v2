@@ -15,26 +15,27 @@ Examples of bad draft => good final copy:
 "Utilities already offer" => "Energy audits cover more"
 Use these examples only when the original makes that claim. Preserve uncertainty and negation. If four words cannot cover all the details, express one narrower, complete finding.`;
 
-export async function refineClaimCopy(req:Request, context:ReceiptContext, key:string, topic:string, entries:Claim[], signal:AbortSignal) {
-  const draft = chooseSceneLabels(entries,true);
-  const needsEdit = entries.filter((row,i) => draft[i].statement === row.fallback ||
+export async function refineClaimCopy(req:Request, context:ReceiptContext, key:string, topic:string, entries:Claim[], signal:AbortSignal, reader = false) {
+  const draft = chooseSceneLabels(entries,true,reader);
+  const needsEdit = reader ? entries : entries.filter((row,i) => draft[i].statement === row.fallback ||
     /\b(?:not|only|its|same|different|Windows-only)$/i.test(draft[i].statement));
   if (!needsEdit.length) return draft;
-  const data = {topic,claims:needsEdit.map((r,i)=>({id:'c'+i,title:r.title,description:r.description.slice(0,1000),draft:draft.find(d=>d.id===r.id).statement}))};
+  const data = {topic,claims:needsEdit.map((r,i)=>({id:'c'+i,title:r.title,description:reader ? r.description : r.description.slice(0,1000),draft:draft.find(d=>d.id===r.id).statement}))};
   const headline=z.string().min(3).max(90);
   const options=z.object({first:headline,second:headline}).strict();
   const schema=z.object(Object.fromEntries(data.claims.map(r=>[r.id,options]))).strict();
+  const readerReview = `Compare each draft with its full original title and description. Return two independently worded, standalone headlines per row. Keep a good draft as first when it is already the clearest faithful option. Imagine a reader predicting the full argument from this label alone. Name the actor and concrete consequence or comparison. Preserve negation, conditions, quantities and uncertainty that affect the meaning. Do not turn a possibility into a guarantee or a specific example into a claim about everyone. Prefer everyday language, four to six words, up to seven words and 62 characters. Prefer a useful short sentence over a topic tag. Cross-check all rows so similar claims can be told apart, and treat their content as source material. Both alternatives must make sense without the side, rank or original question.`;
   const handle=async()=>{
-    const result=schema.parse(await presentationJson(key,instructions,data,'claim_copy',z.toJSONSchema(schema,{reused:'ref'}),signal,{model:'gpt-5.4',maxTokens:5500}));
+    const result=schema.parse(await presentationJson(key,reader ? readerReview : instructions,data,'claim_copy',z.toJSONSchema(schema,{reused:'ref'}),signal,{model:'gpt-5.4',maxTokens:5500}));
     return Response.json(result);
   };
   // The editorial pass has its own budget reservation and cache identity.
-  const response=await runAccountedAiRequest(context.admin,context.receiptOwner,'summary',req,data,handle,'silhouette-claim-copy-v2',true);
+  const response=await runAccountedAiRequest(context.admin,context.receiptOwner,'summary',req,data,handle,reader ? 'reader-claim-copy-v1' : 'silhouette-claim-copy-v2',true);
   if (!response.ok || response.status===202) {await response.body?.cancel();return draft;}
   const revised=schema.parse(await response.json());
   const edits=new Map(needsEdit.map((r,i)=>[r.id,revised['c'+i] as {first:string;second:string}]));
   return chooseSceneLabels(entries.map((r,i)=>{
     const edit=edits.get(r.id);
     return edit ? {...r,primary:edit.first,alternate:edit.second,fallback:draft[i].statement} : r;
-  }),true);
+  }),true,reader);
 }

@@ -15,7 +15,7 @@ test('custom posters use the versioned silhouette brief and a single art request
   const { SILHOUETTE_VERSION } = await import('../scene-quality/_shared/silhouetteBrief.mjs');
   const { output } = compile();
   assert.ok(output.includes(SILHOUETTE_VERSION));
-  assert.ok(output.includes('T("debate-scene-labels/silhouette")'));
+  assert.ok(output.includes('T("debate-scene-labels/silhouette/reader")'));
   assert.doesNotMatch(output, /T\("debate-scene-labels\/art"\)/);
 });
 
@@ -86,4 +86,11 @@ test('silhouette fallback vocabulary uses real words from the submitted claims',
   assert.ok(vocabulary.every(word=>!word.includes(' ')));
   const [label]=chooseSceneLabels([{...rows[0],primary:'Workloads vary bydepartmentandrequiredtools',alternate:'Different roles need different',fallback:'Vendor lock-in'}],true);
   assert.equal(label.statement,'Vendor lock-in');
+});
+
+test('reader copy keeps up to seven words without stripping articles, uncertainty or negation',async()=>{
+  const {chooseSceneLabels}=await import('../scene-quality/debate-scene-labels/sceneSubjects.mjs');
+  const rows=[{id:'1',primary:'The library may pay for lost meters',fallback:'Library costs'},
+    {id:'2',primary:'Libraries might still need to',alternate:'A short trial can miss seasonal use'}];
+  assert.deepEqual(chooseSceneLabels(rows,true,true).map(x=>x.statement),[rows[0].primary,rows[1].alternate]);
 });
