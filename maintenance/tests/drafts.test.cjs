@@ -123,3 +123,15 @@ test('compiled V2 retains a manual ten-argument submit action and a guarded reco
   assert.ok(output.includes('loading:vn.loading||v2Draft.loading'));
   assert.ok(output.includes('draftIdentity:xe||`topic:${u}`'),'existing owner/debate-scoped ten unsent slots remain in use');
 });
+
+test('older solo drafts keep every submitted argument when their confirmed AI stance is blank',()=>{
+  const {api}=environment();
+  const draft=makeDraft(ownerA,10);
+  draft.positions[1]='   ';
+  const recovered=api.v2ValidateSoloDraft(draft,ownerA,debate);
+  assert.equal(recovered.aiPositionSet,false);
+  assert.equal(recovered.ready,false);
+  assert.equal(recovered.positionSubmitted,true);
+  assert.equal(recovered.submitted.length,10);
+  assert.equal(recovered.phase,'arguments');
+});

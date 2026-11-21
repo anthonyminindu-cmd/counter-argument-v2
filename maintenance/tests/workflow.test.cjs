@@ -38,8 +38,8 @@ function slice(start,end) {
   const b=bundle.indexOf(end,a+start.length);assert.ok(b>a,`Missing ${end}`);
   return bundle.slice(a+start.length,b);
 }
-function renderPreparation(friend) {
-  const c=context(prep,{h:'preparation',se:friend,o:friend?'session-1':null,I:'A submitted position',u:'A custom debate',Oo:false,Td:'Other position',P:'AI opposing position',Le:{name:'Friend'},$l:false,_r:false,or:false,qr:false,Dl:noop,Md:noop});
+function renderPreparation(friend, overrides={}) {
+  const c=context(prep,{h:'preparation',se:friend,o:friend?'session-1':null,I:'A submitted position',u:'A custom debate',Oo:false,Td:'Other position',P:'AI opposing position',Le:{name:'Friend'},$l:false,_r:false,or:false,qr:false,Dl:noop,Md:noop,...overrides});
   return c.run();
 }
 
@@ -134,4 +134,60 @@ test('AI setup exposes one accurate research opponent and a working topic next s
   const next=nodes.find(n=>n.type==='G'&&text(n).includes('Choose a topic'));
   assert.ok(next);next.props.onClick();
   assert.deepEqual(navigations,['/debate/topic?mode=ai']);
+});
+
+test('editing a confirmed solo stance requires confirmation of the new text before leaving preparation',async()=>{
+  const state={Oo:true,_r:true,or:true,P:'Original opposing stance'};
+  const actions={
+    A:value=>{state.P=value},xg:value=>{state._r=value},en:value=>{state.or=value},
+    Ol:async()=>{},Ke:noop,
+  };
+  const nodes=()=>walk(renderPreparation(false,{...state,...actions}));
+  const aiField=()=>nodes().find(n=>n.props['aria-label']==='AI position');
+  assert.ok(nodes().some(n=>n.props['aria-label']==='Your position'));
+  assert.equal(aiField().props.value,'Original opposing stance');
+  aiField().props.onChange({target:{value:''}});
+  assert.deepEqual([state.P,state._r,state.or],['',false,false]);
+  assert.equal(nodes().find(n=>n.type==='G'&&text(n)==='Complete Position Setup First').props.disabled,true);
+  aiField().props.onChange({target:{value:'Updated opposing stance'}});
+  const confirm=nodes().find(n=>n.type==='G'&&text(n)==='Set AI Position');
+  assert.equal(confirm.props.disabled,false);
+  await confirm.props.onClick();
+  assert.equal(nodes().find(n=>n.type==='G'&&text(n)==='Ready for Counter Arguments').props.disabled,false);
+  const friendField=walk(renderPreparation(true)).find(n=>n.props['aria-label']==='Friend position');
+  assert.equal(friendField.props.disabled,true);
+});
+
+test('the argument-stage editor invalidates the previous stance and research waits for reconfirmation',async()=>{
+  const placeholder=bundle.indexOf('placeholder:"AI\'s stance on this topic..."');
+  const start=bundle.lastIndexOf('i.jsx(Je,',placeholder);
+  const end=bundle.indexOf(',i.jsxs("div"',placeholder);
+  assert.ok(start>=0&&placeholder>start&&end>placeholder);
+  const state={P:'Confirmed stance',_r:true};
+  const editor=context(bundle.slice(start,end),{
+    ...state,A:value=>{state.P=value},xg:value=>{state._r=value},
+  }).run();
+  editor.props.onChange({target:{value:'Unconfirmed newer stance'}});
+  assert.equal(state._r,false);
+  const research=slice('$d=async','},kg=()=>')+'}';
+  const argumentsList=Array.from({length:10},(_,n)=>({title:'Argument '+(n+1)}));
+  const calls=[],errors=[];
+  const run=(flags)=>vm.runInNewContext('(async'+research+')',{
+    ...flags,S:argumentsList,Eg:value=>errors.push(value),vn:{run:(...args)=>calls.push(args)},
+  })();
+  await run(state);
+  assert.equal(calls.length,0);
+  assert.match(errors.at(-1),/confirm the AI position/i);
+  await run({...state,_r:true});
+  assert.equal(calls.length,1);
+  assert.equal(calls[0][0],argumentsList);
+});
+
+test('account entry identifies V2, both debate modes and the supported sign-in method',()=>{
+  const header=slice('const xj=',',Je=p.forwardRef');
+  const accountHeader=text(context(header).run()());
+  assert.match(accountHeader,/Counter Argument V2/);
+  assert.match(accountHeader,/a friend or an AI research opponent/);
+  // Both tabs share this instruction, including when the user selects Sign Up.
+  assert.ok(bundle.includes('Use your email and password to sign in or create an account.'));
 });

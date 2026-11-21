@@ -1,0 +1,47 @@
+[
+  {
+    "id": "label-the-human-stance-field",
+    "find": "i.jsx(Je,{value:I,onChange:U=>{k(U.target.value)},placeholder:",
+    "replace": "i.jsx(Je,{\"aria-label\":\"Your position\",value:I,onChange:U=>{k(U.target.value)},placeholder:"
+  },
+  {
+    "id": "reconfirm-edited-ai-stance-in-preparation",
+    "find": "i.jsx(Je,{value:se?Td:P,onChange:U=>{se||A(U.target.value)},disabled:se,placeholder:",
+    "replace": "i.jsx(Je,{\"aria-label\":se?`${(Le==null?void 0:Le.name)||\"Opponent\"} position`:\"AI position\",value:se?Td:P,onChange:U=>{if(!se){A(U.target.value);xg(!1);en(!1)}},disabled:se,placeholder:"
+  },
+  {
+    "id": "reconfirm-edited-ai-stance-in-arguments",
+    "find": "i.jsx(Je,{value:P,onChange:U=>A(U.target.value),placeholder:",
+    "replace": "i.jsx(Je,{\"aria-label\":\"AI position\",value:P,onChange:U=>{A(U.target.value);xg(!1)},placeholder:"
+  },
+  {
+    "id": "recover-blank-solo-stance-without-discarding-arguments",
+    "find": "positionSubmitted: value.positionSubmitted, aiPositionSet: value.aiPositionSet, ready: value.ready,",
+    "replace": "positionSubmitted: value.positionSubmitted,\n    aiPositionSet: value.aiPositionSet && !!value.positions[1].trim(),\n    ready: value.ready && value.aiPositionSet && !!value.positions[1].trim(),"
+  },
+  {
+    "id": "require-confirmed-ai-stance-before-starting-research",
+    "find": "if(U.length!==10||!P.trim()){Eg(\"Submit ten final arguments and both positions.\");return}",
+    "replace": "if(U.length!==10||!P.trim()||!_r){Eg(\"Submit ten arguments and confirm the AI position before starting research.\");return}"
+  },
+  {
+    "id": "explain-argument-source-requirements",
+    "find": "Present structured arguments with title, description, and source for each point",
+    "replace": "Give each argument a title and description. You can add a source URL."
+  },
+  {
+    "id": "clarify-sequential-submission",
+    "find": "Present a structured argument with title, description, and source",
+    "replace": "You can draft all ten arguments now. Submit them in order."
+  },
+  {
+    "id": "explain-solo-preparation-actions",
+    "find": "children:\"This is the first thing to do - define your specific stance on the debate topic\"",
+    "replace": "children:se?\"Submit your position, then confirm when both participants are ready to proceed.\":\"Submit your position and set the opposing position you want the AI to argue.\""
+  },
+  {
+    "id": "confirm-a-solo-position-with-accurate-copy",
+    "find": "description:\"Your position has been shared with your debate partner.\"",
+    "replace": "description:se?\"Your position has been shared with your debate partner.\":\"Your position is set for this debate.\""
+  }
+]

@@ -1,0 +1,17 @@
+[
+  {
+    "id": "identify-v2-on-account-entry",
+    "find": "children:\"DEBATE AI\"",
+    "replace": "children:\"Counter Argument V2\""
+  },
+  {
+    "id": "describe-supported-debate-modes-on-account-entry",
+    "find": "children:\"Engage in structured debates with friends, strangers, or AI\"",
+    "replace": "children:\"Debate a friend or an AI research opponent.\""
+  },
+  {
+    "id": "identify-the-account-tabs",
+    "find": "children:\"Welcome back\"}),i.jsx(qe,{children:\"Choose your preferred sign-in method\"",
+    "replace": "children:\"Your account\"}),i.jsx(qe,{children:\"Use your email and password to sign in or create an account.\""
+  }
+]

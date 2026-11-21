@@ -1,0 +1,32 @@
+[
+  {
+    "id": "offer-session-poster-when-friend-ranks-are-ready",
+    "find": "disabled:!(o!=null&&o.image_url),\"aria-expanded\":d",
+    "replace": "disabled:!o.session_id,\"aria-expanded\":!!o.session_id&&d"
+  },
+  {
+    "id": "explain-missing-shared-poster-session",
+    "find": "!(o!=null&&o.image_url)&&i.jsx(\"p\",{className:\"text-base\",children:[\"image_pending\",\"image_dispatching\"].includes(y)?\"The optional illustration is being prepared. Your rankings are ready below.\":\"The illustration is unavailable. Your rankings remain readable and downloadable.\"}),",
+    "replace": "!o.session_id&&i.jsx(\"p\",{role:\"status\",children:\"The saved debate session could not be loaded. Reopen the debate from your profile to see the infographic.\"}),"
+  },
+  {
+    "id": "render-active-poster-from-ranked-friend-session",
+    "find": "d&&(o==null?void 0:o.image_url)&&i.jsx(lg,{sessionId:o.session_id,topicTitle:v,positions:x,imageUrl:o.image_url,args:j.map(S=>({...S,side:S.owner===w[0]?\"support\":\"oppose\"}))}),",
+    "replace": "d&&o.session_id&&i.jsx(lg,{sessionId:o.session_id,topicTitle:v,positions:x,args:j.map(S=>({...S,positionLabel:S.positionLabel||x[w.indexOf(S.owner)],submissionSide:S.owner===w[0]?\"left\":\"right\"}))}),"
+  },
+  {
+    "id": "offer-saved-poster-with-shared-session",
+    "find": "u.status===\"ready\"&&(!d||r.imageUrl)?",
+    "replace": "u.status===\"ready\"&&(!d||r.sessionId)?"
+  },
+  {
+    "id": "guard-saved-friend-control-by-shared-session",
+    "find": "imageUrl:r.imageUrl,artworkManaged:d,infographic:!1",
+    "replace": "imageUrl:d?undefined:r.imageUrl,artworkManaged:d&&!r.sessionId,infographic:!1"
+  },
+  {
+    "id": "give-missing-session-recovery-guidance",
+    "find": "The saved illustration is not ready. Your rankings are available below; refresh later to check its progress.",
+    "replace": "The saved debate session could not be loaded. Reopen the debate from your profile to see the infographic."
+  }
+]

@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "9006f95d324a4f0ed1191981889df64173a5d8e2758be5a67aab32f200a16141",
-  "generatedAsset": "assets/index-v2-9006f95d324a4f0e.js",
+  "generatedSha256": "3c0ddd3a069ede2a534eb66845d615a68aab99734ec6848a4953533024a8b911",
+  "generatedAsset": "assets/index-v2-3c0ddd3a069ede2a.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -72,6 +72,24 @@
     "rank-sized-puzzle-geometry",
     "rank-sized-seam",
     "rank-sized-subject-clips",
-    "refresh-only-local-summary-after-headline-repair"
+    "refresh-only-local-summary-after-headline-repair",
+    "label-the-human-stance-field",
+    "reconfirm-edited-ai-stance-in-preparation",
+    "reconfirm-edited-ai-stance-in-arguments",
+    "recover-blank-solo-stance-without-discarding-arguments",
+    "require-confirmed-ai-stance-before-starting-research",
+    "explain-argument-source-requirements",
+    "clarify-sequential-submission",
+    "explain-solo-preparation-actions",
+    "confirm-a-solo-position-with-accurate-copy",
+    "identify-v2-on-account-entry",
+    "describe-supported-debate-modes-on-account-entry",
+    "identify-the-account-tabs",
+    "offer-session-poster-when-friend-ranks-are-ready",
+    "explain-missing-shared-poster-session",
+    "render-active-poster-from-ranked-friend-session",
+    "offer-saved-poster-with-shared-session",
+    "guard-saved-friend-control-by-shared-session",
+    "give-missing-session-recovery-guidance"
   ]
 }
