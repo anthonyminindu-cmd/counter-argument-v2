@@ -1,0 +1,17 @@
+[
+  {
+    "id": "use-new-topic-specific-scene-cache",
+    "find": "illustrated-debate-split-v3",
+    "replace": "illustrated-debate-split-v4"
+  },
+  {
+    "id": "preserve-artwork-native-proportions",
+    "find": "'<defs><image id=\"full-scene-plate\" data-original-art=\"\" width=\"1536\" height=\"1024\" href=\"'+o+'\"/></defs>'+[[0,0,384,516],[516,384,768,568],[1084,1152,384,516]].map(([_,C,R,I])=>'<svg x=\"'+_+'\" y=\"95\" width=\"'+I+'\" height=\"757\" viewBox=\"'+C+\" 0 \"+R+' 1024\" preserveAspectRatio=\"none\" overflow=\"hidden\"><use href=\"#full-scene-plate\"/></svg>').join(\"\")",
+    "replace": "'<image data-original-art=\"\" x=\"0\" y=\"95\" width=\"1600\" height=\"757\" preserveAspectRatio=\"xMidYMid slice\" href=\"'+o+'\"/>'"
+  },
+  {
+    "id": "recede-puzzle-seams-behind-copy",
+    "find": "S=w?j+'<g opacity=\".21\">'+y(!0)+\"</g>\"+x",
+    "replace": "S=w?j+'<g opacity=\".09\">'+y(!0)+\"</g>\"+x"
+  }
+]
