@@ -4,7 +4,8 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const {pathToFileURL} = require('node:url');
-const {execFileSync} = require('node:child_process');
+const {spawn} = require('node:child_process');
+const {once} = require('node:events');
 
 const chrome = process.env.V2_CHROME || (process.env.GITHUB_ACTIONS === 'true' && 'google-chrome');
 
@@ -48,9 +49,39 @@ test('Chromium validates and exports both subject shapes through the production 
           output.textContent='PNG and label checks passed';
         } catch(e){output.textContent='Failed: '+e.message}
       })();</script>`);
-    const result=execFileSync(chrome,['--headless','--no-sandbox','--disable-gpu',
-      '--disable-dev-shm-usage','--user-data-dir='+path.join(dir,'profile'),'--virtual-time-budget=20000',
-      '--dump-dom',pathToFileURL(file).href],{timeout:65000,maxBuffer:2_000_000,encoding:'utf8',stdio:['ignore','pipe','pipe']});
-    assert.equal(result.match(/<output>([^<]*)<\/output>/)?.[1],'PNG and label checks passed');
+    const proc=spawn(chrome,['--headless','--no-sandbox','--disable-gpu','--disable-dev-shm-usage',
+      '--user-data-dir='+path.join(dir,'profile'),'--remote-debugging-pipe'],{stdio:['ignore','ignore','ignore','pipe','pipe']});
+    const closed=once(proc,'exit'), pending=new Map();
+    let id=0, buffer='';
+    proc.stdio[4].setEncoding('utf8').on('data',chunk=>{
+      buffer+=chunk;
+      let end;
+      while((end=buffer.indexOf('\0'))>=0){
+        const response=JSON.parse(buffer.slice(0,end)); buffer=buffer.slice(end+1);
+        const callback=pending.get(response.id);
+        if(callback){pending.delete(response.id);callback(response);}
+      }
+    });
+    function call(method,params={},sessionId){
+      const next=++id;
+      return new Promise((resolve,reject)=>{
+        const timer=setTimeout(()=>{pending.delete(next);reject(Error('Browser timeout: '+method));},55000);
+        pending.set(next,message=>{clearTimeout(timer);message.error?reject(Error(message.error.message)):resolve(message.result);});
+        proc.stdio[3].write(JSON.stringify({id:next,method,params,sessionId})+'\0');
+      });
+    }
+    try{
+      const target=await call('Target.createTarget',{url:'about:blank'});
+      const {sessionId}=await call('Target.attachToTarget',{targetId:target.targetId,flatten:true});
+      await call('Page.navigate',{url:pathToFileURL(file).href},sessionId);
+      let status='';
+      for(let i=0;i<200 && !status;i++){
+        await new Promise(resolve=>setTimeout(resolve,150));
+        const state=await call('Runtime.evaluate',{expression:"document.querySelector('output')?.textContent",returnByValue:true},sessionId);
+        status=state.result.value;
+      }
+      assert.equal(status,'PNG and label checks passed');
+    }finally{proc.kill();await closed;}
+
   } finally { fs.rmSync(dir,{recursive:true,force:true}); }
 });
