@@ -3,19 +3,32 @@ function silhouettePath(points, closed = true) {
   return points.map(([x,y], i) => (i ? 'L' : 'M') + Yn(x) + ' ' + Yn(y)).join('') + (closed ? 'Z' : '');
 }
 
-// Identifying features on these two standard objects are too small to specify
+// Identifying features on these standard objects are too small to specify
 // reliably with a short AI polygon. Other subjects use the planner's own drawing.
-function posterDrawing(subject) {
+function posterDrawing(subject, topic = "") {
   const shape=(aspectRatio,outline,details)=>({aspectRatio,outline:outline.map(([x,y])=>({x,y})),
     details:details.map(line=>line.map(([x,y])=>({x,y})))});
-  if (subject.drawing==='open_laptop') return shape(1.64,
+  // Older scene plans can describe a globe or a warning symbol for this same AI question.
+  // Use a recognizable machine portrait for a discussion specifically about existential AI risk.
+  const aiRisk=/\b(?:ai|artificial intelligence|superintelligence)\b/i.test(topic) &&
+    /\b(?:humanity|extinction|existential|human extinction|human race)\b/i.test(topic);
+  if (subject.drawing==='robot_bust' || aiRisk) {
+    const robot=shape(1.30,
+      [[0,99],[2,83],[6,72],[12,67],[32,58],[35,55],[35,49],[25,46],[20,39],[17,39],[14,36],[14,23],[17,20],[20,20],[21,14],[26,9],[39,7],[49,7],[49,3],[47,2],[48,0],[52,0],[54,2],[52,4],[52,7],[64,7],[76,10],[81,16],[82,20],[85,20],[88,23],[88,36],[85,39],[82,39],[77,46],[66,49],[66,55],[69,58],[88,67],[94,72],[98,83],[100,99],[97,100],[3,100]],
+      [[[20,22],[20,37]],[[82,22],[82,37]],[[35,49],[43,51],[60,51],[66,49]]]);
+    robot.kind='robot';
+    robot.visor=[[27,18],[73,18],[77,22],[77,33],[73,37],[27,37],[24,33],[24,22]];
+    return robot;
+  }
+  if (subject.drawing==='open_laptop') return Object.assign(shape(1.64,
     [[9,1],[91,1],[93,3],[93,67],[99,89],[100,94],[96,98],[4,98],[0,94],[1,89],[7,67],[7,3]],
-    [[[12,7],[88,7],[88,60],[12,60],[12,7]],[[7,67],[93,67]],[[16,74],[84,74],[87,84],[13,84],[16,74]],[[40,87],[60,87],[61,92],[39,92],[40,87]],[[2,94],[98,94]]]);
+    [[[12,7],[88,7],[88,60],[12,60],[12,7]],[[7,67],[93,67]],[[16,74],[84,74],[87,84],[13,84],[16,74]],[[40,87],[60,87],[61,92],[39,92],[40,87]],[[2,94],[98,94]]]),{kind:"laptop"});
   if (subject.drawing==='plug_in_energy_meter') {
-    const ring=Array.from({length:33},(_,i)=>[50+29*Math.cos(i*Math.PI/16),68+20*Math.sin(i*Math.PI/16)]);
-    return shape(.77,[[19,1],[78,1],[84,4],[88,11],[88,39],[83,46],[78,49],[78,78],[74,86],[66,91],[61,93],[61,99],[54,99],[54,94],[43,94],[43,100],[36,100],[36,92],[25,89],[16,82],[11,73],[11,53],[14,47],[8,41],[8,11],[12,4]],
-      [[[19,9],[77,9],[77,29],[19,29],[19,9]],[[24,34],[32,34],[32,38],[24,38],[24,34]],[[41,34],[49,34],[49,38],[41,38],[41,34]],[[59,34],[68,34],[68,38],[59,38],[59,34]],ring,
-       [[37,60],[40,60],[40,69],[37,69],[37,60]],[[60,60],[63,60],[63,69],[60,69],[60,60]],[[46,78],[46,75],[48,73],[52,73],[54,75],[54,78],[46,78]]]);
+    // Keep the socket and LCD together on the instrument panel; the lower casing
+    // forms a continuous label surface and the two plug pins stay visible.
+    return Object.assign(shape(1.04,
+      [[15,0],[83,0],[91,4],[95,12],[95,26],[92,35],[89,40],[89,78],[86,86],[79,91],[65,93],[65,99],[59,99],[59,93],[41,93],[41,100],[35,100],[35,93],[21,91],[13,87],[9,81],[8,41],[5,33],[3,26],[3,12],[7,5]],
+      [[[14,8],[61,8],[61,23],[14,23],[14,8]],[[9,29],[89,29]]]),{kind:"meter"});
   }
   return subject;
 }
@@ -41,231 +54,304 @@ function projectSubject(subject, center, top, maxWidth, maxHeight) {
   const aspect = Number.isFinite(subject.aspectRatio) ? Math.max(.4, Math.min(3, subject.aspectRatio)) : 1.5 * dx / dy;
   const width = Math.min(maxWidth, maxHeight * aspect), height = width / aspect;
   const point = p => [center + width * ((p.x-x0)/dx - .5), top + (maxHeight-height)/2 + height*(p.y-y0)/dy];
-  return {outline:subject.outline.map(point), details:subject.details.map(line => line.map(point))};
+  return {outline:subject.outline.map(point), details:subject.details.map(line => line.map(point)), local:(x,y)=>point({x,y}),kind:subject.kind,visor:subject.visor?.map(([x,y])=>point({x,y}))};
 }
 
-// Allocate each rank tier across the midpoint before considering participant
-// ownership. Even a single participant can occupy all seven central pieces.
-function rankHalves(ranked) {
-  const bands=[ranked.slice(0,7),ranked.slice(7,13),ranked.slice(13)];
-  const total=ranked.reduce((sum,item)=>sum+rankAreaWeight(item.rank),0);
-  const startsLeft=ranked[0].side==='left';
-  // With a fixed 50/50 divider, both halves must account for the same total
-  // area. Enumerate the small number of allocations within each tier, keeping
-  // as many pieces on their participant's side as the centered layout allows.
-  function choices(band, quota) {
-    const results=[];
-    for(let mask=0;mask<2**band.length;mask++){
-      const left=band.filter((_,i)=>mask & (1<<i));
-      if(left.length!==quota) continue;
-      let wrong=0,alternating=0,weight=0;
-      band.forEach((item,i)=>{
-        const onLeft=Boolean(mask & (1<<i));
-        if(onLeft) weight+=rankAreaWeight(item.rank);
-        if(onLeft!==(item.side==='left')) wrong++;
-        if(onLeft!==(item.rank%2===1?startsLeft:!startsLeft)) alternating++;
-      });
-      results.push({left,weight,preference:100*wrong+3*alternating});
-    }
-    return results;
-  }
-  let selected,best=Infinity;
-  for(const quotas of [[4,2,4],[3,4,3]]){
-    const [cores,middles,outers]=bands.map((band,i)=>choices(band,quotas[i]));
-    for(const c of cores) for(const m of middles) for(const o of outers){
-      const difference=Math.abs(total-2*(c.weight+m.weight+o.weight));
-      const cost=1000*Math.max(0,difference-4)+difference+c.preference+m.preference+o.preference;
-      if(cost<best){best=cost;selected=[c,m,o];}
-    }
-  }
-  return [selected.map(p=>p.left),bands.map((band,i)=>band.filter(item=>!selected[i].left.includes(item)))];
+// Cut the illustrated surface itself. A piece keeps every contour vertex it intersects.
+function polyArea(poly) {
+  return Math.abs(poly.reduce((sum,p,i)=>{const q=poly[(i+1)%poly.length];return sum+p[0]*q[1]-p[1]*q[0];},0))/2;
 }
-
-function rankAreaWeight(rank) {
-  if (rank<=7) return 195-6*(rank-1);
-  if (rank<=13) return 126-4*(rank-8);
-  return 83-3*(rank-14);
-}
-
-// Put the strongest claim in the vertical middle of its column. Alternate
-// above and below it, with the secondary end pieces outside the top seven.
-function fromMiddle(items, reversed) {
-  const slots=Array.from({length:items.length},(_,i)=>i);
-  slots.sort((a,b)=>Math.abs(2*a-items.length+1)-Math.abs(2*b-items.length+1) || (reversed?b-a:a-b));
+function clipped(poly, axis, at, keepLow) {
   const result=[];
-  slots.forEach((slot,i)=>{result[slot]=items[i];});
+  for(let i=0;i<poly.length;i++){
+    const p=poly[i],q=poly[(i+1)%poly.length];
+    const inside=keepLow?p[axis]<=at:p[axis]>=at, next=keepLow?q[axis]<=at:q[axis]>=at;
+    if(inside)result.push(p);
+    if(inside!==next){
+      const t=(at-p[axis])/(q[axis]-p[axis]);
+      result.push(axis===0?[at,p[1]+t*(q[1]-p[1])]:[p[0]+t*(q[0]-p[0]),at]);
+    }
+  }
   return result;
 }
-
-function rankedHalfCells(bands, sign, top, bottom, aspect) {
-  const [core,middle,outer]=bands, seam=800, span=788, height=bottom-top;
-  const inner=[middle[0],...fromMiddle(core,sign>0),middle[1]];
-  const edge=fromMiddle([...middle.slice(2),...outer],sign<0);
-  const weight=items=>items.reduce((sum,item)=>sum+rankAreaWeight(item.rank),0);
-  const innerWeight=weight(inner),outerWeight=weight(edge);
-  const mean=span*innerWeight/(innerWeight+outerWeight);
-  // A shallow slant follows the proportions of the subject. The integral
-  // preserves the target areas on both sides of the shared boundary.
-  const tilt=Math.max(-25,Math.min(25,12*(aspect-.9)))+9;
-  const divider=t=>seam+sign*(mean+tilt*(2*t-1));
-  function column(items,isInner) {
-    const avg=isInner?mean:span-mean, slope=isInner?tilt:-tilt, total=weight(items);
-    let sum=0;
-    return [0,...items.map(item=>{
-      sum+=rankAreaWeight(item.rank);
-      const area=avg*sum/total;
-      return Math.min(1,2*area/(avg-slope+Math.sqrt((avg-slope)**2+4*slope*area)));
-    })];
+function boundsOf(poly) {
+  const xs=poly.map(p=>p[0]),ys=poly.map(p=>p[1]);
+  return {left:Math.min(...xs),right:Math.max(...xs),top:Math.min(...ys),bottom:Math.max(...ys)};
+}
+function fractionCut(poly,axis,frac) {
+  const v=poly.map(p=>p[axis]), target=polyArea(poly)*frac;
+  let lo=Math.min(...v),hi=Math.max(...v);
+  for(let i=0;i<23;i++){
+    const mid=(lo+hi)/2;
+    if(polyArea(clipped(poly,axis,mid,true))<target)lo=mid;else hi=mid;
   }
-  const innerCuts=column(inner,true),outerCuts=column(edge,false);
-  const cuts=[...new Set([...innerCuts,...outerCuts])].sort((a,b)=>a-b);
-  function piece(item,a,b,isInner) {
-    const fixed=isInner?seam:seam+sign*span;
-    const y=t=>top+height*t;
-    const stops=[a,...cuts.filter(t=>t>a+.00001 && t<b-.00001),b];
-    const points=[[fixed,y(a)],...stops.map(t=>[divider(t),y(t)]),[fixed,y(b)]];
-    let d='M'+points[0].map(Yn).join(' ');
-    for(let i=0;i<points.length;i++) {
-      const p=points[i],q=points[(i+1)%points.length];
-      if(Math.hypot(p[0]-q[0],p[1]-q[1])<.01) continue;
-      const border=i===points.length-1 || (i===0 && a===0) || (i===points.length-2 && b>.99999);
-      // Give coincident edges complementary tabs, including T-junctions.
-      const forward=Math.abs(p[1]-q[1])>.01?p[1]<q[1]:p[0]<q[0];
-      d+=Ua(p,q,!border,forward?1:-1);
+  return (lo+hi)/2;
+}
+function partitionSurface(poly,counts) {
+  const cells=[],seams=[];
+  let rest=poly,remaining=8;
+  counts.forEach((count,row)=>{
+    const end=row===counts.length-1;
+    const cut=end?0:fractionCut(rest,1,count/remaining);
+    const strip=end?rest:clipped(rest,1,cut,true);
+    if(!end){seams.push([1,cut]);rest=clipped(rest,1,cut,false);}
+    remaining-=count;
+    let band=strip;
+    for(let i=0;i<count;i++){
+      const last=i===count-1;
+      const fraction=(1+(row%2?.10:-.08))/(count-i);
+      const x=last?0:fractionCut(band,0,fraction);
+      cells.push(last?band:clipped(band,0,x,true));
+      if(!last){seams.push([0,x]);band=clipped(band,0,x,false);}
     }
-    const far=Math.min(Math.abs(divider(a)-fixed),Math.abs(divider(b)-fixed));
-    const other=fixed+(isInner?sign:-sign)*far;
-    return {...item,d:d+'Z',level:item.rank<=7?'core':item.rank<=13?'middle':'outer',
-      rect:{left:Math.min(fixed,other),right:Math.max(fixed,other),top:y(a),bottom:y(b)}};
+  });
+  return {cells,seams};
+}
+function cellPath(poly,vertices,seams) {
+  let d='M'+poly[0].map(Yn).join(' ');
+  for(let i=0;i<poly.length;i++){
+    const p=poly[i],q=poly[(i+1)%poly.length],dx=q[0]-p[0],dy=q[1]-p[1];
+    const axis=Math.abs(dx)<.0001?0:Math.abs(dy)<.0001?1:-1;
+    if(Math.hypot(dx,dy)<.01)continue;
+    if(!seams.some(([a,k])=>a===axis&&Math.abs(k-p[axis])<.0001)){d+='L'+q.map(Yn).join(' ');continue;}
+    const along=1-axis,forward=p[along]<q[along];
+    const middle=vertices.filter(v=>Math.abs(v[axis]-p[axis])<.0001&&
+      v[along]>Math.min(p[along],q[along])+.01&&v[along]<Math.max(p[along],q[along])-.01)
+      .sort((a,b)=>(forward?1:-1)*(a[along]-b[along]));
+    let start=p;
+    for(const stop of [...middle,q]){
+      if(Math.abs(start[along]-stop[along])<.01)continue;
+      d+=Ua(start,stop,true,forward?1:-1);start=stop;
+    }
   }
-  return [...inner.map((item,i)=>piece(item,innerCuts[i],innerCuts[i+1],true)),
-    ...edge.map((item,i)=>piece(item,outerCuts[i],outerCuts[i+1],false))];
+  return d+'Z';
 }
 
-// The rank and the full headline share one measured box. Prefer the normal
-// 24px type, then try smaller sizes for unusually narrow pieces or long words.
-function fitRankedPiece(item,measure) {
-  const core=item.rank<=7, rect=item.rect;
-  const rankSize=core?(item.rank===1?38:32):(item.rank<=13?22:19);
-  const rankHeight=core?rankSize+8:rankSize+3;
-  const available=rect.right-rect.left-32, height=rect.bottom-rect.top-26;
-  // Shorter lines keep the central claims grouped near the spine.
-  const width=core ? Math.min(available,415) : available;
-  const words=item.statement.split(' '), widths=new Map();
-  function measured(s) {
-    if(!widths.has(s)) widths.set(s,measure(s));
-    return widths.get(s);
-  }
-  let best;
-  for(const fontSize of [24,23,22,21,20,19,18]) {
-    const lineHeight=fontSize+3;
-    for(let mask=0;mask<2**(words.length-1);mask++) {
-      const lines=[words[0]];
-      words.slice(1).forEach((word,i)=>{if(mask & (1<<i)) lines.push(word); else lines[lines.length-1]+=' '+word;});
-      if(rankHeight+4+lines.length*lineHeight>height) continue;
-      const lengths=lines.map(s=>measured(s)*fontSize/24);
-      if(Math.max(...lengths)>width-4) continue;
-      const cost=lines.length*10000+Math.max(...lengths)-Math.min(...lengths);
-      if(!best||cost<best.cost) best={cost,lines,fontSize,lineHeight};
-    }
-    if(best) break;
-  }
-  // A single unusually long word can need extra horizontal space. Preserve
-  // its spelling and all of the claim, fitting just the affected lines in SVG.
-  if(!best){
-    const fontSize=18,lineHeight=21,capacity=Math.max(1,Math.floor((height-rankHeight-4)/lineHeight));
-    const lines=[];
-    for(const word of words){
-      if(lines.length && (measured(lines.at(-1)+' '+word)*fontSize/24<=width-4 || lines.length>=capacity)) lines[lines.length-1]+=' '+word;
-      else lines.push(word);
-    }
-    best={lines,fontSize,lineHeight};
-  }
-  const {lines,fontSize,lineHeight}=best;
-  const block=rankHeight+4+lines.length*lineHeight, start=(rect.top+rect.bottom-block)/2;
-  const halfInk=Math.max(core?55:40,...lines.map(s=>Math.min(width-4,measured(s)*fontSize/24)/2));
-  const center=(rect.left+rect.right)/2;
-  const x=core ? Math.max(rect.left+16+halfInk,Math.min(rect.right-16-halfInk,800+(center-800)*.76)) : center;
-  return {...item,...best,rankSize,rankHeight,rankTop:start,x,
-    y:start+rankHeight+4+fontSize, bounds:{left:rect.left+14,right:rect.right-14,top:rect.top+5,bottom:rect.bottom-5},
-    lineLengths:lines.map(s=>Math.min(width-4,measured(s)*fontSize/24)),maxLine:width-4};
+// Intersect the horizontal runs throughout a block of type. This keeps labels in a
+// shoulder, tapered hood, or screen even if the polygon has a notch between corners.
+function runsAt(poly,y) {
+  const xs=[];
+  poly.forEach((p,i)=>{const q=poly[(i+1)%poly.length];
+    if((p[1]>y)!==(q[1]>y))xs.push(p[0]+(y-p[1])*(q[0]-p[0])/(q[1]-p[1]));
+  });
+  xs.sort((a,b)=>a-b);
+  return xs.filter((_,i)=>i%2===0).map((v,i)=>[v,xs[2*i+1]]);
 }
-
-function silhouetteLayout(rows, scene, ownership, measure, top, bottom) {
+function safeSpan(poly,y,height) {
+  const top=y-height/2,bottom=y+height/2;
+  const scans=[top,bottom,...poly.filter(p=>p[1]>top&&p[1]<bottom).flatMap(p=>[Math.max(top,p[1]-.001),Math.min(bottom,p[1]+.001)])];
+  let runs=[[-Infinity,Infinity]];
+  for(const scan of scans){
+    const next=runsAt(poly,scan);
+    runs=runs.flatMap(([l,r])=>next.map(([a,b])=>[Math.max(l,a),Math.min(r,b)]).filter(([a,b])=>b>a));
+    if(!runs.length)return null;
+  }
+  return runs.sort((a,b)=>(b[1]-b[0])-(a[1]-a[0]))[0];
+}
+function fitContour(poly,item,measure,core) {
+  const rect=boundsOf(poly),middle=(rect.bottom+rect.top)/2;
+  const rankSize=core?16:14,rankHeight=rankSize+4,margin=core?11:6;
+  const words=item.statement.split(/\s+/);
+  const options=[];
+  // Precompute balanced wraps once per candidate, using actual font metrics.
+  for(let mask=0;mask<2**(words.length-1);mask++){
+    const lines=[words[0]];
+    words.slice(1).forEach((w,i)=>{if(mask&(1<<i))lines.push(w);else lines[lines.length-1]+=' '+w;});
+    if(lines.length>4)continue;
+    const widths=lines.map(measure);
+    const max=Math.max(...widths);
+    const n=lines.length,old=options[n];
+    if(!old||max<old.max)options[n]={lines,widths,max};
+  }
+  let best=null;
+  for(const size of core?[24,22,20,18]:[20,19,18]){
+    for(const wrap of options.filter(Boolean)){
+      const lineHeight=size+2,height=rankHeight+4+wrap.lines.length*lineHeight;
+      const lo=rect.top+height/2+margin,hi=rect.bottom-height/2-margin;
+      if(hi<lo)continue;
+      for(const f of [.5,.38,.62,.25,.75,0,1]){
+        const y=lo+(hi-lo)*f, span=safeSpan(poly,y,height+4);
+        if(!span)continue;
+        const width=span[1]-span[0]-2*margin;
+        if(width<30)continue;
+        const scale=Math.min(1,width/(wrap.max*size/24+2));
+        const merit=150*scale+size-1.5*wrap.lines.length-.017*Math.abs(y-middle);
+        if(!best||merit>best.merit)best={merit,scale,lines:wrap.lines,fontSize:size,lineHeight,rankHeight,rankSize,
+          x:(span[0]+span[1])/2,rankTop:y-height/2,y:y-height/2+rankHeight+4+size,
+          lineLengths:wrap.widths.map(w=>Math.min(width,w*size/24)),maxLine:width,
+          bounds:{left:span[0]+margin-3,right:span[1]-margin+3,top:y-height/2-4,bottom:y+height/2+6},rect};
+      }
+    }
+  }
+  return best;
+}
+function perimeterSlots(main,top,bottom,coreArea) {
+  const box=boundsOf(main.outline),distance=Math.min(335,Math.max(224,box.left-45));
+  const mid=(top+bottom)/2;
+  return [-1,1].flatMap(sign=>{
+    const anchor=sign<0?42:1558;
+    const heights=[86,91,100,98,88,83],total=heights.reduce((a,b)=>a+b);
+    const scale=Math.min(1,(bottom-top-18)/total);
+    let y=mid-total*scale/2;
+    const cuts=heights.reduce((all,h)=>{y+=h*scale;return [...all,y]},[y]);
+    const widths=[.84,.91,.99,1,.97,.91,.83];
+    return heights.map((_,i)=>{
+      const outer=k=>anchor-sign*(1-widths[k])*36;
+      const breadth=Math.min(distance,Math.max(185,coreArea*.77/98));
+      const inner=k=>anchor-sign*breadth*widths[k];
+      return [[outer(i),cuts[i]],[inner(i),cuts[i]],[inner(i+1),cuts[i+1]],[outer(i+1),cuts[i+1]]];
+    });
+  });
+}
+function silhouetteLayout(rows,scene,ownership,measure,top,bottom) {
   const labels=new Map(scene.summaries.map(s=>[s.id,s]));
   const ranked=Array.from(rows,r=>({...r,...labels.get(r.id),side:ownership.get(r.id)})).sort((a,b)=>a.rank-b.rank);
-  if (['left','right'].some(side=>ranked.filter(r=>r.side===side).length!==10)) throw Error('Each submission side needs its ten original arguments.');
-  const main=projectSubject(posterDrawing(scene.objects[0]),800,top+6,1080,bottom-top-12);
-  const xs=main.outline.map(p=>p[0]),ys=main.outline.map(p=>p[1]);
-  const aspect=(Math.max(...xs)-Math.min(...xs))/(Math.max(...ys)-Math.min(...ys));
-  const pieces=rankHalves(ranked).flatMap((bands,i)=>rankedHalfCells(bands,i?1:-1,top,bottom,aspect))
-    .map(item=>fitRankedPiece(item,measure)).sort((a,b)=>a.rank-b.rank);
-  return {main,pieces};
+  if(['left','right'].some(side=>ranked.filter(r=>r.side===side).length!==10))throw Error('Each submission side needs its ten original arguments.');
+  const sketch=posterDrawing(scene.objects[0],scene.title+' '+(scene.overview||''));
+  const main=projectSubject(sketch,800,top+9,900,bottom-top-18), box=boundsOf(main.outline);
+  let surface=main.outline;
+  if(main.kind==='laptop'){
+    surface=[[12,7],[88,7],[88,60],[12,60]].map(([x,y])=>main.local(x,y));
+  }else if(main.kind==='robot'){
+    surface=clipped(surface,1,main.local(50,44)[1],false);
+  }else if(main.kind==='meter'){
+    surface=clipped(clipped(surface,1,main.local(50,29)[1],false),1,main.local(50,93)[1],true);
+  }
+  const widths=new Map();
+  function measured(s){if(!widths.has(s))widths.set(s,measure(s));return widths.get(s);}
+  const assign=(cells,items)=>{
+    const byX=cells.map((poly,i)=>{const r=boundsOf(poly);return {poly,i,x:(r.left+r.right)/2,y:(r.top+r.bottom)/2};}).sort((a,b)=>a.x-b.x||a.y-b.y);
+    const leftCount=items.filter(r=>r.side==='left').length;
+    return ['left','right'].flatMap((side,i)=>{
+      const locations=i?byX.slice(leftCount):byX.slice(0,leftCount);
+      locations.sort((a,b)=>Math.hypot(a.x-800,(a.y-(top+bottom)/2)*1.2)-Math.hypot(b.x-800,(b.y-(top+bottom)/2)*1.2));
+      return items.filter(r=>r.side===side).map((item,j)=>({...locations[j],item}));
+    });
+  };
+  let winner;
+  for(const counts of [[2,2,2,2],[2,3,3],[3,3,2],[1,2,2,2,1],[1,2,3,2],[2,3,2,1],[1,1,2,2,1,1],[1,1,1,1,1,1,1,1]]){
+    const partition=partitionSurface(surface,counts);
+    const entries=assign(partition.cells,ranked.slice(0,8)).map(cell=>({...cell,fit:fitContour(cell.poly,cell.item,measured,true)}));
+    const scores=entries.map(p=>p.fit?.merit??-200);
+    const merit=Math.min(...scores)*3+scores.reduce((a,b)=>a+b)/8-3*Math.max(0,counts.length-4);
+    if(!winner||merit>winner.merit)winner={entries,partition,merit};
+  }
+  const outer=perimeterSlots(main,top,bottom,Math.min(...winner.partition.cells.map(polyArea)));
+  const outerItems=ranked.slice(8).sort((a,b)=>Number(a.side==='right')-Number(b.side==='right')||a.rank-b.rank);
+  const field=outer.map((poly,i)=>({poly,item:outerItems[(i<6?0:6)+[4,2,0,1,3,5][i%6]]}));
+  const outerCuts=outer.filter((_,i)=>i%6!==0).map(poly=>[1,poly[0][1]]);
+  const coreVertices=winner.partition.cells.flat(),outerVertices=outer.flat();
+  const pieces=[...winner.entries,...field].map(({poly,item,fit},index)=>{
+    const core=index<8;
+    fit=fit||fitContour(poly,item,measured,core);
+    // Extremely narrow custom cutouts have a numbered piece with a nearby text key.
+    // Keep the entire headline legible in the open space beside the silhouette.
+    let leader;
+    if(core&&(!fit||fit.scale<.70)){
+      const b=boundsOf(poly),side=index%2===0?-1:1;
+      const y=top+(Math.floor(index/2)+.5)*(bottom-top)/4;
+      const l=side<0?340:Math.max(1000,box.right+12);
+      const r=side<0?Math.min(600,box.left-12):1260;
+      if(r-l>=115){
+        const callout=[[l,y-52],[r,y-52],[r,y+52],[l,y+52]];
+        const alternative=fitContour(callout,item,measured,false);
+        if(alternative&&(!fit||alternative.scale>fit.scale)){
+          leader=[[side<0?r:l,y],[(b.left+b.right)/2,(b.top+b.bottom)/2]];
+          fit=alternative;
+        }
+      }
+    }
+    if(!fit){
+      const b=boundsOf(poly),cx=(b.left+b.right)/2,cy=(b.top+b.bottom)/2;
+      const rectangle=[[cx-85,cy-42],[cx+85,cy-42],[cx+85,cy+42],[cx-85,cy+42]];
+      fit=fitContour(rectangle,item,measured,false);
+    }
+    return {...item,...fit,poly,leader,level:core?'core':'outer',d:cellPath(poly,core?coreVertices:outerVertices,core?winner.partition.seams:outerCuts)};
+  }).sort((a,b)=>a.rank-b.rank);
+  return {main,pieces,surface};
 }
-
-// A dark blue subject and a saturated gold subject stay distinct from the lighter
-// pieces that extend into the background. Each hue is shared across all topics.
-const posterPalette = {
-  left: {
-    face:['#082F84','#0B439F','#004493','#15358C','#005390','#103D9E','#134CAC',
-      '#104A98','#17459B','#09559F','#1D479E','#1156A8','#154CA4',
-      '#1955A9','#1758AA','#1C50A1','#1358A5','#1D53A9','#205C9E','#2156A6'],
-    surround:['#82BAEB','#A4CFF1','#C3DFF5'], seam:'#638DB5'
-  },
-  right: {
-    face:['#F49A07','#FFAE0D','#F3A000','#FFB51C','#EA9207','#FFBA23','#F8A608',
-      '#F3AA13','#FFB223','#F3A711','#FFB92A','#F7AB1A','#FFB829',
-      '#F3AE20','#FFBB31','#F9AB19','#FFBC39','#F2AE23','#FFBA2D','#F6B12C'],
-    surround:['#FFD078','#FFDA91','#FFE5B2'], seam:'#BD8C40'
-  }
+// Submitted sides stay identifiable even when all eight central claims come from one participant.
+const posterPalette={
+  left:{face:['#102E56','#153961','#193D66','#12335D'],surround:['#EFF3F5','#E6EDF1'],seam:'#9EAFBC'},
+  right:{face:['#EEB84F','#F2C463','#F4CC75','#EAB246'],surround:['#F7F2E8','#F4EDDF'],seam:'#B9AC96'}
 };
-
-function renderSilhouettePuzzle(rows, scene, question, measure, ownership) {
-  const header=V2SceneHeader(scene.title,scene.overview || question,scene.sideTitles||['First position','Second position'],measure);
+function renderSilhouettePuzzle(rows,scene,question,measure,ownership){
+  const header=V2SceneHeader(scene.title,scene.overview||question,scene.sideTitles||['First position','Second position'],measure);
   const captionBottom=Math.max(...Array.from(header.captions.matchAll(/<rect[^>]*y="([\d.]+)"[^>]*height="([\d.]+)"/g),m=>Number(m[1])+Number(m[2])));
-  const top=Math.ceil(captionBottom+10), bottom=853;
-  const {main,pieces}=silhouetteLayout(rows,scene,ownership,measure,top,bottom);
-  const profile=silhouettePath(main.outline);
-  const cue=scene.objects[1] && projectSubject(scene.objects[1],800,top+18,1510,bottom-top-38);
-  const paths=(shape)=>shape.details.map(line=>'<path d="'+silhouettePath(line,false)+'"/>').join('');
-  const background=cue?'<g fill="none" stroke="#687b81" stroke-width="4" opacity=".16"><path d="'+silhouettePath(cue.outline)+'"/>'+paths(cue)+'</g>':'';
-  const base=[],face=[],ink=[],whiteInk=[],featureClearance=[];
-  for (const p of pieces) {
-    const left=p.side==='left', label=left?'A':'B';
-    const palette=posterPalette[p.side];
-    const band=p.rank<=7?0:p.rank<=13?1:2;
-    base.push('<path d="'+p.d+'" fill="'+palette.surround[band]+'" stroke="'+palette.seam+'" stroke-width="1.8" stroke-linejoin="round"/>');
-    face.push('<path d="'+p.d+'" fill="'+palette.face[p.rank-1]+'" stroke="#fff6da" stroke-width="2.8" stroke-linejoin="round"/>');
-    if(left) whiteInk.push('<use href="#poster-label-'+p.rank+'" xlink:href="#poster-label-'+p.rank+'"/>');
-    const b=p.bounds,core=p.rank<=7;
-    const rankText='#'+p.rank, rankWidth=core?110:78;
-    const badgeFill=left?'#082A56':'#653700';
-    const rankMarkup='<g data-rank-marker="'+p.rank+'" aria-hidden="true">'+
-      (core?'<rect x="'+Yn(p.x-rankWidth/2)+'" y="'+Yn(p.rankTop)+'" width="'+rankWidth+'" height="'+p.rankHeight+'" rx="9" fill="'+badgeFill+'" stroke="#fff6da" stroke-width="2"/>':'')+
-      '<text x="'+Yn(p.x+(core?-13:0))+'" y="'+Yn(p.rankTop+p.rankSize)+'" font-size="'+p.rankSize+'" font-weight="800"'+(core?' fill="#fff"':'')+'>'+
-      (core?rankText:label+' · '+rankText)+'</text>'+
-      (core?'<text x="'+Yn(p.x+34)+'" y="'+Yn(p.rankTop+p.rankSize-3)+'" font-size="17" font-weight="700" fill="#fff">'+label+'</text>':'')+'</g>';
-    featureClearance.push('<rect x="'+Yn(p.x-rankWidth/2-4)+'" y="'+Yn(p.rankTop-2)+'" width="'+(rankWidth+8)+'" height="'+(p.rankHeight+5)+'" rx="4"/>');
-    const textLines=p.lines.map((line,i)=>{
-      const w=p.lineLengths[i],baseline=p.y+i*p.lineHeight;
-      featureClearance.push('<rect x="'+Yn(p.x-w/2-4)+'" y="'+Yn(baseline-p.fontSize)+'" width="'+Yn(w+8)+'" height="'+(p.lineHeight+2)+'" rx="3"/>');
-      const compress=measure(line)*p.fontSize/24>p.maxLine ? ' textLength="'+Yn(p.maxLine)+'" lengthAdjust="spacingAndGlyphs"' : '';
-      return '<tspan x="'+Yn(p.x)+'" dy="'+(i?p.lineHeight:0)+'"'+compress+'>'+wt(line)+'</tspan>';
-    }).join('');
-    ink.push('<g data-argument-id="'+wt(p.id)+'" data-rank="'+p.rank+'" data-score="'+Number(p.score)+'" data-side="'+p.side+'" data-stance="'+p.position+'" data-band="'+p.level+'" text-anchor="middle" fill="'+(left?'#081E42':'#261902')+'"><title>'+wt(p.title)+'</title><path data-puzzle-piece="" d="'+p.d+'" fill="none"/><g id="poster-label-'+p.rank+'">'+rankMarkup+'<text data-label="" data-label-size="'+p.fontSize+'" data-left="'+b.left+'" data-right="'+b.right+'" data-top="'+b.top+'" data-bottom="'+b.bottom+'" x="'+Yn(p.x)+'" y="'+Yn(p.y)+'" font-size="'+p.fontSize+'" font-weight="700">'+textLines+'</text></g></g>');
+  const top=Math.ceil(captionBottom+10),bottom=848;
+  const {main,pieces,surface}=silhouetteLayout(rows,scene,ownership,measure,top,bottom);
+  const profile=silhouettePath(main.outline),body=silhouettePath(surface);
+  const strokeLines=shape=>shape.details.map(line=>'<path d="'+silhouettePath(line,false)+'"/>').join('');
+  const center=(top+bottom)/2;
+  let context='';
+  if(main.kind==='robot'){
+    const rack=(x,y)=>'<g transform="translate('+x+' '+y+')"><rect width="116" height="258" rx="8"/>'+
+      Array.from({length:6},(_,i)=>'<rect x="9" y="'+(12+37*i)+'" width="98" height="26" rx="3"/><path d="M20 '+(25+37*i)+'h41m16 0h9"/>').join('')+'</g>';
+    context=rack(306,center-90)+rack(432,center-145)+rack(1048,center-145)+rack(1174,center-90);
+  }else if(scene.objects[1]){
+    const cue=projectSubject(scene.objects[1],800,top+44,1460,bottom-top-96);
+    context='<path d="'+silhouettePath(cue.outline)+'"/>'+strokeLines(cue);
   }
-  const defs='<defs><clipPath id="subject-outline"><path d="'+profile+'"/></clipPath>'+
-    '<linearGradient id="poster-masthead" x2="1" y2=".2" gradientUnits="objectBoundingBox"><stop stop-color="#071B3E"/><stop offset="1" stop-color="#144481"/></linearGradient>'+
-    '<linearGradient id="subject-light" x2="1" y2="1"><stop stop-color="#fff" stop-opacity=".075"/><stop offset=".48" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#341b08" stop-opacity=".07"/></linearGradient>'+
-    '<mask id="feature-safe" maskUnits="userSpaceOnUse" x="0" y="0" width="1600" height="900"><rect width="1600" height="900" fill="white"/><g fill="black">'+featureClearance.join('')+'</g></mask></defs>';
-  const faceArt='<g clip-path="url(#subject-outline)">'+face.join('')+
-    '<path d="'+profile+'" fill="url(#subject-light)"/><g mask="url(#feature-safe)" fill="none" stroke="#071D3C" stroke-width="3.4" stroke-opacity=".85" stroke-linejoin="round" stroke-linecap="round">'+paths(main)+'</g></g>'+
-    '<path data-main-subject="" mask="url(#feature-safe)" d="'+profile+'" fill="none" stroke="#102744" stroke-width="4.2" stroke-linejoin="round"/>';
-  const svg='<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="900" viewBox="0 0 1600 900" role="img" font-family="'+pl+'" fill="#10283c"><title>'+wt(scene.overview ? scene.title : question)+'</title><desc>Exact debate question: '+wt(question)+'. '+wt(scene.objects[0].name)+' with twenty ranked puzzle pieces.</desc>'+
-    defs+'<rect width="1600" height="900" fill="#FFFBF3"/>'+base.join('')+background+faceArt+'<path data-center-seam="" d="M800 '+top+'V'+bottom+'" stroke="#fff6da" stroke-width="5"/><path d="M800 '+top+'V'+bottom+'" stroke="#243750" stroke-width="1.6"/>'+ink.join('')+
-    '<g aria-hidden="true" pointer-events="none" text-anchor="middle" fill="white" clip-path="url(#subject-outline)">'+whiteInk.join('')+'</g>'+
+  if(!context && (main.kind==='laptop'||main.kind==='meter')){
+    const bookshelf='<path d="M0 0h228v239H0zM0 80h228M0 161h228"/>'+
+      [0,81,162].map(y=>'<g transform="translate(12 '+(y+12)+')"><path d="M0 55V6h13v49m7 0V0h18v55m8 0V7h11v48m18 0L61 10l13-4 15 45m11 4V7h17v48"/></g>').join('');
+    const windows='<path d="M0 220V0h235v220M0 85h235M86 0v220M164 0v220m-175 0h255"/>';
+    const detail=main.kind==='meter'?bookshelf:windows;
+    context=[314,1056].map(x=>'<g transform="translate('+x+' '+(center-105)+')">'+detail+'</g>').join('');
+  }
+  const fills=[],surround=[],annotation=[],safe=[];
+  for(const p of pieces){
+    const core=p.level==='core',palette=posterPalette[p.side],index=(p.rank-1)%(core?palette.face.length:palette.surround.length);
+    (core?fills:surround).push('<path data-piece-rank="'+p.rank+'" d="'+p.d+'" fill="'+(core?palette.face[index]:palette.surround[index])+'" stroke="'+(core?'#FFFAEC':palette.seam)+'" stroke-width="'+(core?3.2:1.35)+'" stroke-linejoin="round"/>');
+    const faceInk=p.side==='left'?'#FFFFFF':'#261902';
+    const ink=core&&!p.leader?faceInk:(p.side==='left'?'#203952':'#493C2C');
+    const rankY=p.rankTop+p.rankSize;
+    const marker='<text data-rank-marker="'+p.rank+'" x="'+Yn(p.x)+'" y="'+Yn(rankY)+'" font-size="'+p.rankSize+'" font-weight="700" opacity=".9">'+(p.side==='left'?'A':'B')+' · #'+p.rank+'</text>';
+    safe.push('<rect x="'+Yn(p.x-36)+'" y="'+Yn(p.rankTop-2)+'" width="72" height="'+(p.rankHeight+3)+'"/>');
+    const spans=p.lines.map((line,i)=>{
+      const w=p.lineLengths[i],y=p.y+i*p.lineHeight;
+      safe.push('<rect x="'+Yn(p.x-w/2-4)+'" y="'+Yn(y-p.fontSize)+'" height="'+(p.lineHeight+3)+'" width="'+Yn(w+8)+'"/>');
+      const shrink=measure(line)*p.fontSize/24>p.maxLine?' textLength="'+Yn(p.maxLine)+'" lengthAdjust="spacingAndGlyphs"':'';
+      return '<tspan x="'+Yn(p.x)+'" dy="'+(i?p.lineHeight:0)+'"'+shrink+'>'+wt(line)+'</tspan>';
+    }).join('');
+    const b=p.bounds;
+    annotation.push('<g data-argument-id="'+wt(p.id)+'" data-rank="'+p.rank+'" data-score="'+Number(p.score)+'" data-side="'+p.side+'" data-stance="'+p.position+'" data-band="'+p.level+'" fill="'+ink+'" text-anchor="middle"><title>'+wt(p.title)+'</title>'+
+      (p.leader?'<path d="'+silhouettePath(p.leader,false)+'" fill="none" stroke="#6A756F" stroke-width="1.3"/>':'')+
+      marker+'<text data-label="" data-label-size="'+p.fontSize+'" data-left="'+Yn(b.left)+'" data-right="'+Yn(b.right)+'" data-top="'+Yn(b.top)+'" data-bottom="'+Yn(b.bottom)+'" x="'+Yn(p.x)+'" y="'+Yn(p.y)+'" font-size="'+p.fontSize+'" font-weight="700">'+spans+'</text></g>');
+  }
+  const localPath=(points)=>silhouettePath(points.map(([x,y])=>main.local(x,y)));
+  const part=(points,fill)=>'<path d="'+localPath(points)+'" fill="'+fill+'"/>';
+  let hardware='';
+  if(main.kind==='robot'){
+    hardware='<path d="'+silhouettePath(main.visor)+'" fill="#0A192E" stroke="#89A7BA" stroke-width="3"/>'+
+      part([[31,24],[45,24],[45,29],[43,30],[31,30]],'#B5E5EC')+part([[57,24],[71,24],[71,30],[59,30],[57,29]],'#B5E5EC')+
+      part([[42,40],[60,40],[58,41],[44,41]],'#88A4B8');
+  }else if(main.kind==='laptop'){
+    hardware=part([[16,74],[84,74],[87,84],[13,84]],'#314862')+
+      Array.from({length:3},(_,r)=>Array.from({length:13},(_,c)=>{
+        const x=18+c*5,y=75+r*2.8;return part([[x,y],[x+3.9,y],[x+4.1,y+1.65],[x-.1,y+1.65]],'#A9B9C3');
+      }).join('')).join('')+part([[40,87],[60,87],[61,92],[39,92]],'#526B7B');
+  }else if(main.kind==='meter'){
+    hardware=part([[14,8],[61,8],[61,23],[14,23]],'#B2CFBD');
+    const socket=Array.from({length:37},(_,i)=>[76+10*Math.cos(i*Math.PI/18),16+9.8*Math.sin(i*Math.PI/18)]);
+    hardware+=part(socket,'#D5DFDC')+part([[71,12],[73,12],[73,17],[71,17]],'#263E4D')+
+      part([[79,12],[81,12],[81,17],[79,17]],'#263E4D')+part([[74,21],[74,19],[76,18],[78,19],[78,21]],'#263E4D');
+    const trace=[[18,18],[24,18],[27,13],[31,19],[35,15],[38,17],[42,17]];
+    hardware+='<path d="'+silhouettePath(trace.map(([x,y])=>main.local(x,y)),false)+'" fill="none" stroke="#547367" stroke-width="2.8"/>';
+    for(const y of [12,16,20])hardware+=part([[47,y],[56,y],[56,y+.65],[47,y+.65]],'#547367');
+  }
+  const defs='<defs><clipPath id="subject-outline"><path d="'+body+'"/></clipPath>'+
+    '<linearGradient id="poster-masthead" x2="1" y2=".2"><stop stop-color="#071B3E"/><stop offset="1" stop-color="#183B69"/></linearGradient>'+
+    '<linearGradient id="subject-base" x2=".85" y2="1"><stop stop-color="#315577"/><stop offset=".55" stop-color="#183655"/><stop offset="1" stop-color="#0B223E"/></linearGradient>'+
+    '<mask id="feature-safe" maskUnits="userSpaceOnUse" x="0" y="0" width="1600" height="900"><rect width="1600" height="900" fill="white"/><g fill="black">'+safe.join('')+'</g></mask></defs>';
+  const svg='<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" font-family="'+pl+'" fill="#10283c"><title>'+wt(scene.overview?scene.title:question)+'</title><desc>Exact debate question: '+wt(question)+'. '+(main.kind==='robot'?'Robot bust':wt(scene.objects[0].name))+' with twenty ranked puzzle pieces.</desc>'+
+    defs+'<rect width="1600" height="900" fill="#FFFBF3"/><g data-background-context="" fill="none" stroke="#ACAA9C" stroke-width="3.2" opacity=".35">'+context+'</g>'+
+    '<g data-peripheral-pieces="">'+surround.join('')+'</g><path data-main-subject="" d="'+profile+'" fill="url(#subject-base)" stroke="#172F49" stroke-width="3.5" stroke-linejoin="round"/>'+
+    '<g data-core-pieces="" clip-path="url(#subject-outline)">'+fills.join('')+'</g>'+
+    '<g mask="url(#feature-safe)" fill="none" stroke="'+(main.kind?'#8299A9':'#233D52')+'" stroke-width="2.7" stroke-opacity=".72" stroke-linejoin="round">'+strokeLines(main)+'</g>'+hardware+
+    '<path d="'+profile+'" fill="none" stroke="#192E45" stroke-width="3.2" stroke-linejoin="round"/>'+annotation.join('')+
     '<rect width="1600" height="'+header.height+'" fill="url(#poster-masthead)"/>'+header.title+header.question+header.captions+
-    '<text x="800" y="883" text-anchor="middle" font-size="18">Ranks 1–7 are largest and in the center. A and B identify the two positions. Each number matches a full argument.</text></svg>';
+    '<text x="800" y="883" text-anchor="middle" font-size="18">The eight central pieces carry the highest-ranked arguments. Match each number to the full argument below.</text></svg>';
   return {svg,pieces};
 }
 

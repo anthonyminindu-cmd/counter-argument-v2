@@ -44,7 +44,7 @@ test('poster label inks remain readable across every rank and background tint',(
     return channels[0]*.2126+channels[1]*.7152+channels[2]*.0722;
   };
   const contrast=(a,b)=>(Math.max(luminance(a),luminance(b))+.05)/(Math.min(luminance(a),luminance(b))+.05);
-  for(const [fills,ink] of [[palette.left.face,'#ffffff'],[palette.left.surround,'#081e42'],[palette.right.face,'#261902'],[palette.right.surround,'#261902']]){
+  for(const [fills,ink] of [[palette.left.face,'#ffffff'],[palette.left.surround,'#203952'],[palette.right.face,'#261902'],[palette.right.surround,'#493C2C']]){
     for(const fill of fills) assert.ok(contrast(fill,ink)>=4.5,ink+' on '+fill);
   }
 });
@@ -270,17 +270,21 @@ function puzzleArea(pathData) {
   return Math.abs(twiceArea)/2;
 }
 
-test('actual puzzle-piece areas respect all three rank tiers for both balanced and skewed debates', () => {
+test('the eight foreground pieces tile their actual silhouette surface for balanced and skewed debates', () => {
   for (const pattern of ['ABBBBBAAABAABAAABBBA', 'AB'.repeat(10), 'A'.repeat(10)+'B'.repeat(10), 'B'.repeat(10)+'A'.repeat(10)]) {
     const owners = new Map(rows.map((r,i)=>[r.id,pattern[i]==='A'?'left':'right']));
     const poster = render(rows,plan,'The complete question?',measure,owners);
     const areas = Array.from(poster.pieces, piece=>puzzleArea(piece.d));
     assert.equal(areas.length, 20);
-    assert.ok(Math.min(...areas.slice(0,7)) > Math.max(...areas.slice(7,13)), pattern);
-    assert.ok(Math.min(...areas.slice(7,13)) > Math.max(...areas.slice(13)), pattern);
+    const surface=poster.svg.match(/<clipPath id="subject-outline"><path d="([^"]+)"/)[1];
+    const silhouetteArea=puzzleArea(surface);
+    assert.ok(Math.abs(areas.slice(0,8).reduce((a,b)=>a+b)-silhouetteArea)<silhouetteArea*.001);
+    assert.ok(Math.min(...areas.slice(0,8))>Math.max(...areas.slice(8)),pattern);
     for(const p of poster.pieces) {
       assert.equal(p.side,owners.get(p.id));
-      assert.ok(p.lines.every(line=>measure(line)<=p.bounds.right-p.bounds.left));
+      assert.equal(p.level,p.rank<=8?'core':'outer');
+      assert.ok(p.lineLengths.every(width=>width<=p.bounds.right-p.bounds.left));
+      assert.equal(p.lines.join(' '),p.statement);
     }
   }
 });
@@ -354,37 +358,33 @@ test('reader poster frames the completed discussion and links all twenty pieces 
   assert.equal(result.pieces[0].statement,scene.summaries[0].statement);
 });
 
-test('the centered spine and seven largest core pieces survive every top-seven ownership split',()=>{
-  for(let count=0;count<=7;count++){
-    const ownerMap=new Map(rows.map((r,i)=>[r.id,(i<count || (i>=7 && i<17-count))?'left':'right']));
-    const {svg,pieces}=render(rows,plan,'A shared decision',measure,ownerMap);
-    assert.match(svg,/data-center-seam="" d="M800 [\d.]+V853"/);
+test('the shared silhouette stays centered across all nine ownership splits of the top eight',()=>{
+  for(let count=0;count<=8;count++){
+    const owners=new Map(rows.map((r,i)=>[r.id,(i<count || (i>=8 && i<18-count))?'left':'right']));
+    const {svg,pieces}=render(rows,plan,'A shared decision',measure,owners);
+    assert.doesNotMatch(svg,/data-center-seam/);
     const center=svg.match(/data-main-subject=""[^>]* d="([^"]+)"/)[1].match(/-?[\d.]+/g).map(Number).filter((_,i)=>i%2===0);
     assert.ok(Math.abs(Math.min(...center)+Math.max(...center)-1600)<.1);
-    const areas=pieces.map(p=>puzzleArea(p.d));
-    assert.ok(areas.every((area,i)=>i===0 || area<areas[i-1]),'strictly descending visible areas, split '+count);
-    assert.ok(areas[6]/areas[7]>1.20 && areas[12]/areas[13]>1.20);
-    const core=pieces.slice(0,7),spineEdge=p=>p.rect.left===800 || p.rect.right===800;
-    assert.ok(core.every(spineEdge));
-    assert.ok(core.some(p=>p.x<800) && core.some(p=>p.x>800));
-    assert.ok(Math.abs(pieces[0].x-800)<275);
-    assert.ok(pieces.slice(13).every(p=>!spineEdge(p)));
-    const coreTop=Math.min(...core.map(p=>p.rect.top)),coreBottom=Math.max(...core.map(p=>p.rect.bottom));
-    assert.ok(coreTop>pieces.reduce((min,p)=>Math.min(min,p.rect.top),Infinity)+36);
-    assert.ok(coreBottom<853-36);
+    const cores=pieces.filter(p=>p.level==='core');
+    assert.equal(cores.length,8);
+    assert.ok(cores.some(p=>p.x<800)&&cores.some(p=>p.x>800));
     for(const p of pieces){
-      assert.equal(p.side,ownerMap.get(p.id));
-      assert.equal(p.rankSize>=32,p.rank<=7);
+      assert.equal(p.side,owners.get(p.id));
+      assert.ok(p.rankSize<p.fontSize);
       assert.ok(p.x>=p.bounds.left && p.x<=p.bounds.right);
     }
   }
 });
 
-test('saved preset profiles get the same ranked center as generated silhouettes',()=>{
+test('saved presets and a cached AI extinction plan get the contour treatment on reopen',()=>{
   for(const profile of ['campus','library','civic','space']){
     const {svg,pieces}=render(rows,{...plan,profile,objects:[]},'An older question',measure,mapping);
-    assert.match(svg,/data-center-seam=/);
-    assert.equal(pieces.filter(p=>p.rankSize>=32).length,7);
+    assert.match(svg,/data-core-pieces="" clip-path="url\(#subject-outline\)"/);
+    assert.equal(pieces.filter(p=>p.level==='core').length,8);
     assert.ok(pieces.every(p=>p.lines.join(' ')===p.statement));
   }
+  const before={...plan,title:'Could AI destroy humanity within three years?',objects:plan.objects.slice(0,1)};
+  const {svg}=render(rows,before,'AI risk',measure,mapping);
+  assert.match(svg,/Robot bust with twenty ranked puzzle pieces/);
+  assert.match(svg,/<g data-background-context=""[^>]*><g transform=/);
 });

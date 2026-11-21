@@ -9,7 +9,7 @@ const {once} = require('node:events');
 
 const chrome = process.env.V2_CHROME || (process.env.GITHUB_ACTIONS === 'true' && 'google-chrome');
 
-test('Chromium verifies both poster subjects, full-size viewing and native PNG and SVG downloads',
+test('Chromium verifies three poster subjects, full-size viewing and native PNG and SVG downloads',
   {skip: !chrome && 'Set V2_CHROME to a Chromium executable'}, async () => {
   const {compile} = await import('../build.mjs');
   const {output} = compile();
@@ -37,7 +37,7 @@ test('Chromium verifies both poster subjects, full-size viewing and native PNG a
           const readVector=async()=>new DOMParser().parseFromString(await vector.text(),'image/svg+xml').documentElement;
           HTMLAnchorElement.prototype.click=function(){};
           const paths=[];
-          for(const drawing of ['open_laptop','plug_in_energy_meter']){
+          for(const drawing of ['open_laptop','plug_in_energy_meter','robot_bust']){
             const scene={title:'Which platform best fits the business?',overview:'Existing app requirements and different job needs shape the choice.',profile:'custom',objects:[{name:drawing,drawing,outline,details:[[outline[0],outline[1]]]}],summaries,sideTitles:['First position','Second position']};
             const owners=new Map(rows.map((r,i)=>[r.id,i<10?'right':'left']));
             const poster=F5(rows,scene,'Which option fits this use?',text=>measure.measureText(text).width,owners);
@@ -45,10 +45,10 @@ test('Chromium verifies both poster subjects, full-size viewing and native PNG a
             const svg=main.querySelector('svg');
             if(!x_(svg)) throw Error(drawing+' text exceeds its measured bounds');
             const markers=svg.querySelectorAll('[data-rank-marker]');
-            if(markers.length!==20 || svg.querySelectorAll('[data-rank-marker] rect').length!==7) throw Error('Rank markers missing');
+            if(markers.length!==20 || Array.from(markers).some(el=>el.localName!=='text')) throw Error('Rank markers missing');
             for(const marker of markers){
               const label=marker.parentNode.querySelector('[data-label]'),box=marker.getBBox(),type=label.getBBox();
-              if(box.y+box.height>type.y+1 || box.x<Number(label.dataset.left)-1 || box.x+box.width>Number(label.dataset.right)+1) throw Error('Rank marker overlaps its headline or a cell boundary');
+              if(Number(marker.getAttribute('font-size'))>=Number(label.getAttribute('font-size')) || box.y+box.height>type.y+1 || box.x<Number(label.dataset.left)-1 || box.x+box.width>Number(label.dataset.right)+1) throw Error('Rank marker overlaps its headline or a cell boundary');
             }
             paths.push(poster.pieces.map(p=>p.d).join(''));
             await z5(svg);
@@ -62,7 +62,7 @@ test('Chromium verifies both poster subjects, full-size viewing and native PNG a
             image.close();
             await downloadPoster(svg,'debate-scene.svg','svg');
             const exported=await readVector();
-            if(exported.localName!=='svg'||exported.getAttribute('viewBox')!=='0 0 1600 900'||exported.querySelectorAll('[data-argument-id]').length!==20||exported.querySelectorAll('use').length!==10||exported.querySelector('image')) throw Error('Vector poster lost scalable artwork or argument labels');
+            if(exported.localName!=='svg'||exported.getAttribute('viewBox')!=='0 0 1600 900'||exported.querySelectorAll('[data-argument-id]').length!==20||exported.querySelectorAll('[data-core-pieces][clip-path] [data-piece-rank]').length!==8||exported.querySelectorAll('[data-peripheral-pieces] [data-piece-rank]').length!==12||exported.querySelector('image')) throw Error('Vector poster lost scalable artwork or argument labels');
             if(!openPosterDetail(svg)) throw Error('Full-size viewer failed');
             const dialog=document.querySelector('dialog[open]');
             const detail=dialog.querySelector('img');
