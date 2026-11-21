@@ -1,0 +1,23 @@
+name: Verify concurrent friend export
+on:
+  push:
+    branches: [qa/nov21-concurrent-friend-export]
+    paths: [qa/friend-export.cjs]
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - run: node --test qa/friend-export.cjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: verified-friend-poster
+          path: qa-output/
+          retention-days: 1
+          if-no-files-found: error
