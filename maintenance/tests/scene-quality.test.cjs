@@ -105,3 +105,8 @@ test('banner selection keeps complete questions, sentences and side positions',a
   assert.deepEqual(banner.sideTitles,[fields.shortLeftCaption,fields.rightCaption]);
   assert.throws(()=>readerBanner({...fields,shortOverview:'Ends mid-thought'},[]),/complete banner/);
 });
+test('reader copy prefers a concrete candidate when a headline hides the benefit',async()=>{
+  const {chooseSceneLabels}=await import('../scene-quality/debate-scene-labels/sceneSubjects.mjs');
+  const [label]=chooseSceneLabels([{primary:'Microsoft plans may cover essentials',alternate:'Microsoft 365 may include device management'}],true,true);
+  assert.equal(label.statement,'Microsoft 365 may include device management');
+});

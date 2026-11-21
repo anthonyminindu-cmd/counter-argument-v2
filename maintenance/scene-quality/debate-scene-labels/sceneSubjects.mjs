@@ -51,7 +51,7 @@ export function chooseSceneLabels(entries, claimsOnly = false, reader = false) {
   const compact = text => clean(text).replace(/[.!]$/,'').replace(/\b(?:do not|does not|cannot|can not|is not|are not)\b/gi,m=>({
     'do not':"don't",'does not':"doesn't",'cannot':"can't",'can not':"can't",'is not':"isn't",'are not':"aren't"
   })[m.toLowerCase()]).replace(/^(?:the|an|a) /i,'').replace(/ (?:the|an|a) /gi,' ').replace(/\s+/g,' ');
-  const candidates = entry => reader ? [entry.primary,entry.alternate,entry.fallback,entry.title] : claimsOnly ? [entry.primary,compact(entry.primary),entry.alternate,compact(entry.alternate),entry.fallback] : [entry.title,entry.primary,entry.alternate,entry.fallback];
+  const candidates = entry => reader ? [entry.primary,entry.alternate,...(entry.drafts || []),entry.fallback,entry.title] : claimsOnly ? [entry.primary,compact(entry.primary),entry.alternate,compact(entry.alternate),entry.fallback] : [entry.title,entry.primary,entry.alternate,entry.fallback];
   const fluent = (phrase, entry) => {
     if (!claimsOnly) return true;
     if (/\b(?:different|stronger|weaker|broader|flexible|big|include|includes|offer|offers|settle)\s*[.!?]?$/i.test(phrase)) return false;
@@ -62,6 +62,12 @@ export function chooseSceneLabels(entries, claimsOnly = false, reader = false) {
   const options = entries.map(entry=>[...new Set(candidates(entry).map(clean))]
     .filter(text=>lengthPattern.test(text) && text.length<=(reader?62:90) && !/…|\.\.\./.test(text))
     .filter(text=>fluent(text,entry) && !fragment.test(text) && !unfinishedPredicate.test(text) && !/\b(?:major|significant|such|various|several|multiple)\s*[.!?]?$/i.test(text)));
+  if (reader) {
+    // Where an alternative names the actual tool, cost or outcome, prefer it
+    // over shorthand whose meaning depends on an unseen sentence.
+    const vague=/\b(?:essentials|both toolsets|mission (?:focus|discipline)|self-set up|(?:weakens|challenges|strengthens) (?:it|the case)|(?:exceeds?|beats?) (?:it|them)|[\w-]+(?:wide) costs)\b/i;
+    options.forEach(choices=>choices.sort((a,b)=>Number(vague.test(a))-Number(vague.test(b))));
+  }
   const taken = new Map(), chosen = new Array(entries.length);
   function assign(index,seen) {
     for(const phrase of options[index]){
@@ -90,7 +96,7 @@ export function readerBanner(input, positions) {
       && !/…|\.\.\./.test(value) && !unfinished.test(value));
   }
   const title=pick([input.title,input.shortTitle],72,/\?$/);
-  const overview=pick([input.overview,input.shortOverview],145,/\.$/);
+  const overview=pick([input.shortOverview,input.overview],145,/\.$/);
   const sideTitles=[
     pick([input.leftCaption,input.shortLeftCaption,positions[0]],46,/[\w.!?’)]$/u),
     pick([input.rightCaption,input.shortRightCaption,positions[1]],46,/[\w.!?’)]$/u),

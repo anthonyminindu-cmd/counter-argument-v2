@@ -118,7 +118,8 @@ function silhouetteSites(items, side, bounds, main, variant) {
   return sites.map((s,i) => ({...s,item:items[i]}));
 }
 
-function fitSilhouetteText(poly, item, subject, measure) {
+function fitSilhouetteText(poly, item, subject, measure, compact = false) {
+  const verticalMargin = compact ? 8 : 14, horizontalMargin = compact ? 10 : 15;
   const ys = poly.map(p => p[1]), ymin = Math.min(...ys), ymax = Math.max(...ys);
   const words = item.statement.split(' '), plans = [];
   for (let mask=0; mask<2**(words.length-1); mask++) {
@@ -129,7 +130,7 @@ function fitSilhouetteText(poly, item, subject, measure) {
   let best = null;
   for (const {lines,width,widths} of plans) {
     const blockHeight = 25+lines.length*27;
-    for (let cy=ymin+blockHeight/2+14; cy<=ymax-blockHeight/2-14; cy+=7) {
+    for (let cy=ymin+blockHeight/2+verticalMargin; cy<=ymax-blockHeight/2-verticalMargin; cy+=7) {
       const top=cy-blockHeight/2, bottom=cy+blockHeight/2;
       let minX=-Infinity, maxX=Infinity;
       for (let i=0;i<widths.length;i++) {
@@ -137,8 +138,8 @@ function fitSilhouetteText(poly, item, subject, measure) {
         for (const y of [baseline-(i?23:17)-8,baseline+6+8]) {
           const cuts=silhouetteCrossings(poly,y);
           if (cuts.length<2) { minX=Infinity; break; }
-          minX=Math.max(minX,cuts[0]+half+15);
-          maxX=Math.min(maxX,cuts.at(-1)-half-15);
+          minX=Math.max(minX,cuts[0]+half+horizontalMargin);
+          maxX=Math.min(maxX,cuts.at(-1)-half-horizontalMargin);
         }
       }
       if (maxX<minX) continue;
@@ -182,15 +183,15 @@ function silhouetteLayout(rows, scene, ownership, measure, top, bottom) {
   const seam=Yn(12+1576*totals[0]/(totals[0]+totals[1]));
   // Center the silhouette near the shared seam. A side with more top-ranked claims gets more room.
   const main=projectSubject(posterDrawing(scene.objects[0]),seam,top+6,1080,bottom-top-12);
-  for (let variant=0;variant<4;variant++) {
+  for (let variant=0;variant<8;variant++) {
     const pieces=[];
     for (let index=0;index<2;index++) {
       const side=index?'right':'left',box={left:index?seam:12,right:index?1588:seam,top,bottom,seam};
-      const sites=silhouetteSites(sides[index],side,box,main,variant);
+      const sites=silhouetteSites(sides[index],side,box,main,variant%4);
       const polygons=weightedSilhouetteCells(sites,box);
       if (!polygons) break;
       for (let i=0;i<sites.length;i++) {
-        const poly=polygons[i],item=sites[i].item, text=fitSilhouetteText(poly,item,main,measure);
+        const poly=polygons[i],item=sites[i].item, text=fitSilhouetteText(poly,item,main,measure,variant>=4);
         if (!text) break;
         const edge=(p,q)=>{
           const onBorder=[12,seam,1588].some(x=>Math.abs(p[0]-x)<.01&&Math.abs(q[0]-x)<.01)
