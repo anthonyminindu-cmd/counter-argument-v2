@@ -1,0 +1,47 @@
+[
+  {
+    "id": "merge-concurrent-friend-discussion-writes",
+    "find": "function pD(e,t){",
+    "replace": "async function v2UpdateFriendDiscussion(sessionId, message, change) {\n  // Every database update advances updated_at. Re-read before merging when another participant wins the write.\n  for (let attempt = 0; attempt < 6; attempt++) {\n    const {data: row, error: readError} = await $.from(\"debate_sessions\")\n      .select(\"updated_at,current_phase,shared_data,user_a,user_b\").eq(\"id\",sessionId).single();\n    if (readError || !row?.updated_at) throw readError || new Error(\"The discussion could not be loaded.\");\n    const shared = row.shared_data || {};\n    const messages = shared.chat_messages || [];\n    if (messages.some(saved => saved.id === message.id)) return row;\n    const patch = change(row, shared, [...messages, message]);\n    const {data: saved, error: writeError} = await $.from(\"debate_sessions\").update(patch)\n      .eq(\"id\",sessionId).eq(\"updated_at\",row.updated_at).select(\"id\").maybeSingle();\n    if (writeError) throw writeError;\n    if (saved) return {...row,...patch};\n  }\n  throw new Error(\"Your partner also updated the discussion. Please try again.\");\n}\nfunction v2AppendFriendMessage(sessionId, message, limitHistory = false) {\n  return v2UpdateFriendDiscussion(sessionId, message, (_row, shared, messages) => ({\n    shared_data: {...shared, chat_messages: limitHistory ? messages.slice(-100) : messages}\n  }));\n}\nfunction v2UpdateTopicProposal(sessionId, action, proposal, message, actor) {\n  return v2UpdateFriendDiscussion(sessionId, message, (row, shared, messages) => {\n    if (![\"matching\",\"topic_selection\"].includes(row.current_phase)) throw new Error(\"The discussion has moved to the next step.\");\n    const current = shared.topic_proposal;\n    const updated = {...shared, chat_messages: messages};\n    if (action === \"propose\") {\n      if (current) throw new Error(\"Your partner proposed a topic. Review the current proposal.\");\n      updated.topic_proposal = proposal;\n    } else {\n      if (!current || current.topic !== proposal.topic || current.proposed_at !== proposal.proposed_at ||\n          current.proposed_by !== proposal.proposed_by) throw new Error(\"The topic changed. Review the current proposal.\");\n      if (action === \"decline\") {\n        delete updated.topic_proposal;\n      } else {\n        const agreed = [...new Set([...(current.agreed_by || []), actor])];\n        updated.topic_proposal = {...current, agreed_by: agreed};\n        if (row.user_a && row.user_b && [row.user_a,row.user_b].every(owner=>agreed.includes(owner))) {\n          return {shared_data:updated, current_phase:\"position_selection\"};\n        }\n      }\n    }\n    return {shared_data:updated};\n  });\n}\nfunction pD(e,t){"
+  },
+  {
+    "id": "append-topic-chat-to-latest-session",
+    "find": "console.log(\"📝 Created message object:\",A),l(\"\");const{data:O,error:L}=await $.from(\"debate_sessions\").select(\"shared_data\").eq(\"id\",e).single();if(L)throw console.error(\"❌ Error fetching current session:\",L),L;const W=(O==null?void 0:O.shared_data)||{},T=W.chat_messages||[];console.log(\"📊 Current messages in DB:\",T.length),console.log(\"📊 Current messages in state:\",s.length);const M=[...T,A];console.log(\"📤 Updating database with\",M.length,\"messages\");const{error:J}=await $.from(\"debate_sessions\").update({shared_data:{...W,chat_messages:M,topic_proposal:f}}).eq(\"id\",e);if(J)throw console.error(\"❌ Database update error:\",J),l(k),J;console.log(\"✅ Message sent successfully to database\"),o(M)}catch(A){console.error(\"❌ Error sending message:\",A),r({title:\"Error\",description:\"Failed to send message\",variant:\"destructive\"})}",
+    "replace": "l(\"\");await v2AppendFriendMessage(e,A);o(current=>current.some(item=>item.id===A.id)?current:[...current,A])}catch(A){l(current=>current||k);r({title:\"Message could not be sent\",description:\"Your draft is ready to try again.\",variant:\"destructive\"})}"
+  },
+  {
+    "id": "preserve-session-when-proposing-a-topic",
+    "find": ",A=[...s,P],{error:O}=await $.from(\"debate_sessions\").update({shared_data:{chat_messages:A,topic_proposal:k}}).eq(\"id\",e);if(O)throw O;",
+    "replace": ";await v2UpdateTopicProposal(e,\"propose\",k,P,n.id);"
+  },
+  {
+    "id": "preserve-session-when-proposing-a-trending-topic",
+    "find": ",O=[...s,A],{error:L}=await $.from(\"debate_sessions\").update({shared_data:{chat_messages:O,topic_proposal:P}}).eq(\"id\",e);if(L)throw L;",
+    "replace": ";await v2UpdateTopicProposal(e,\"propose\",P,A,n.id);"
+  },
+  {
+    "id": "accept-only-the-current-topic",
+    "find": "const k=[...f.agreed_by,n.id],P=c.every(M=>k.includes(M.user_id)),A={...f,agreed_by:k},O={id:crypto.randomUUID(),user_id:\"system\",message:P?`All participants agreed! Starting debate on: \"${f.topic}\"`:`${R(n.id)} agreed to the topic proposal`,created_at:new Date().toISOString()},W={shared_data:{chat_messages:[...s,O],topic_proposal:A}};P&&(W.current_phase=\"position_selection\",console.log(\"All participants agreed! Updating phase to position_selection\")),console.log(\"Updating session with data:\",W);const{error:T}=await $.from(\"debate_sessions\").update(W).eq(\"id\",e);if(T)throw T;",
+    "replace": "const event={id:crypto.randomUUID(),user_id:\"system\",message:`${R(n.id)} agreed to the topic proposal`,created_at:new Date().toISOString()};const saved=await v2UpdateTopicProposal(e,\"accept\",f,event,n.id),P=saved.current_phase===\"position_selection\";"
+  },
+  {
+    "id": "decline-only-the-current-topic",
+    "find": ",P=[...s,k],{error:A}=await $.from(\"debate_sessions\").update({shared_data:{chat_messages:P}}).eq(\"id\",e);if(A)throw A;",
+    "replace": ";await v2UpdateTopicProposal(e,\"decline\",f,k,n.id);"
+  },
+  {
+    "id": "append-active-chat-to-latest-session",
+    "find": ",{data:b,error:v}=await $.from(\"debate_sessions\").select(\"shared_data\").eq(\"id\",e).single();if(v)throw console.error(\"❌ Error fetching session data:\",v),v;const w=b.shared_data||{},x=w.chat_messages||[],j={id:crypto.randomUUID(),user_id:n.id,message:m,display_name:g,created_at:new Date().toISOString(),message_type:\"chat\"};console.log(\"📝 PersistentChat: Created message object:\",j);const S=[...x,j].slice(-100);console.log(\"📊 PersistentChat: Updating with\",S.length,\"messages\");const{error:N}=await $.from(\"debate_sessions\").update({shared_data:{...w,chat_messages:S}}).eq(\"id\",e);if(N)throw console.error(\"❌ Error updating session:\",N),N;console.log(\"✅ PersistentChat: Message sent successfully\")",
+    "replace": ";const message={id:crypto.randomUUID(),user_id:n.id,message:m,display_name:g,created_at:new Date().toISOString(),message_type:\"chat\"};await v2AppendFriendMessage(e,message,true)"
+  },
+  {
+    "id": "name-topic-chat-send-button",
+    "find": "i.jsx(G,{onClick:S,disabled:!a.trim(),children:i.jsx(Sm",
+    "replace": "i.jsx(G,{\"aria-label\":\"Send message\",onClick:S,disabled:!a.trim(),children:i.jsx(Sm"
+  },
+  {
+    "id": "name-active-chat-send-button",
+    "find": "i.jsx(G,{size:\"icon\",onClick:h,disabled:!o.trim()||!e||!n",
+    "replace": "i.jsx(G,{\"aria-label\":\"Send message\",size:\"icon\",onClick:h,disabled:!o.trim()||!e||!n"
+  }
+]

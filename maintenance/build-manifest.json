@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "d780453173c54f70ecc294c6a3d0b40fa58cff7e3c3621a01b57dda230f45eae",
-  "generatedAsset": "assets/index-v2-d780453173c54f70.js",
+  "generatedSha256": "52fa69dbe3330614b0d0daff3061c0d2b70c91a288b3eade00bf66c56a59bd43",
+  "generatedAsset": "assets/index-v2-52fa69dbe3330614.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -94,6 +94,15 @@
     "restore-friend-session-route-and-agreed-topic",
     "include-resume-route-for-unfinished-friend-session",
     "show-return-to-unfinished-friend-session",
-    "explain-how-to-continue-accepted-friend-debates"
+    "explain-how-to-continue-accepted-friend-debates",
+    "merge-concurrent-friend-discussion-writes",
+    "append-topic-chat-to-latest-session",
+    "preserve-session-when-proposing-a-topic",
+    "preserve-session-when-proposing-a-trending-topic",
+    "accept-only-the-current-topic",
+    "decline-only-the-current-topic",
+    "append-active-chat-to-latest-session",
+    "name-topic-chat-send-button",
+    "name-active-chat-send-button"
   ]
 }

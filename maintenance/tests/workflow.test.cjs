@@ -100,8 +100,10 @@ test('failed chat reads and writes restore the outgoing draft without overwritin
   for(const failure of ['read','write'])for(const newer of ['', 'A newer unsent draft']) {
     let sessionRead,sessionWrite,sessionCalls=0;
     const read={select(){return this},eq(){return this},single(){return new Promise(resolve=>{sessionRead=resolve})}};
-    const write={update(){return this},eq(){return new Promise(resolve=>{sessionWrite=resolve})}};
+    const write={update(){return this},eq(){return this},select(){return this},maybeSingle(){return new Promise(resolve=>{sessionWrite=resolve})}};
     const c=context(chatExpr,{$:{from:table=>table==='profiles'?{select(){return this},eq(){return this},single:async()=>({data:{display_name:'Test'}})}:(sessionCalls++===0?read:write)},crypto:{randomUUID:()=> 'test-message'}});
+    const helpers=bundle.slice(bundle.indexOf('async function v2UpdateFriendDiscussion('),bundle.indexOf('function pD('));
+    c.ctx.v2AppendFriendMessage=vm.runInNewContext(helpers+';v2AppendFriendMessage',c.ctx);
     let stateNo=0;
     const hook=c.ctx.p.useState;
     c.ctx.p.useState=init=>hook(stateNo++===1?'Original outgoing draft':init);
@@ -110,7 +112,7 @@ test('failed chat reads and writes restore the outgoing draft without overwritin
     await new Promise(setImmediate);
     assert.equal(typeof sessionRead,'function');
     if(failure==='write') {
-      sessionRead({data:{shared_data:{chat_messages:[]}},error:null});
+      sessionRead({data:{updated_at:'version-1',shared_data:{chat_messages:[]}},error:null});
       await new Promise(setImmediate);assert.equal(typeof sessionWrite,'function');
     }
     if(newer)input.props.onChange({target:{value:newer}});
