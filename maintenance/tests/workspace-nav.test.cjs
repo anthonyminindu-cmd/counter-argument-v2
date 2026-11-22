@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-test('all three exploration actions live in the global header across feed and account routes', async () => {
+test('Friend and AI are direct header links across feed and account routes', async () => {
   const {createWorkspace, afterLogin} = await import('../workspace/app.mjs');
   const React = {
     createElement: (type, props, ...children) => ({type, props, children}),
@@ -14,15 +14,20 @@ test('all three exploration actions live in the global header across feed and ac
       const header = workspace.Nav();
       const nav = header.children.find(child=>child?.props?.['aria-label']==='Start and discover');
       assert.ok(nav,url);
-      const [debate,trending]=nav.children;
-      assert.equal(debate.type,'details');
-      const [summary,formats]=debate.children;
-      assert.ok(summary.children.includes('Start a debate'));
-      const [withFriend,withAI,teams,privacy]=formats.children;
-      assert.match(privacy.children[0],/private.*choose to publish/);
-      assert.deepEqual([withFriend,withAI,teams,trending].map(link=>link.children[1].children[0]),
-        ['Friend','AI','Teams','Trending topics']);
-      for(const [link,mode] of [[withFriend,'/debate/start?mode=friend'],[withAI,'/debate/topic?mode=ai'],[teams,'/debate/start?mode=team']]){
+      const [debate,discover]=nav.children;
+      assert.deepEqual([debate,discover].map(group=>{
+        const label=group.children[0];
+        assert.equal(group.props['aria-labelledby'],label.props.id);
+        return label.children[0];
+      }),['Start a debate with a friend or AI','Discover']);
+      const [withFriend,withAI]=debate.children.slice(1);
+      assert.deepEqual([withFriend.type,withAI.type],['link','link']);
+      const [trending]=discover.children.slice(1);
+      assert.equal(debate.children.length,3);
+      assert.equal(discover.children.length,2);
+      assert.deepEqual([withFriend,withAI,trending].map(link=>link.children[1].children[0]),
+        ['Debate with a friend','Debate with AI','Trending topics']);
+      for(const [link,mode] of [[withFriend,'/debate/start?mode=friend'],[withAI,'/debate/topic?mode=ai']]){
         const to=link.props.to;
         if(!user)assert.match(to,/^\/login\?next=/);
         assert.equal(user?to:afterLogin(to.slice(to.indexOf('?'))),mode);

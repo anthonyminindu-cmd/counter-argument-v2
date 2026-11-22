@@ -1,15 +1,3 @@
-lock table dk_safety.team_rooms, dk_safety.team_members, dk_safety.team_points, dk_safety.join_links in access exclusive mode;
-do $guard$
-begin
-  if exists(select from dk_safety.team_rooms) or exists(select from dk_safety.team_members)
-     or exists(select from dk_safety.team_points) or exists(select from dk_safety.join_links where room is not null) then
-    raise exception 'Existing participant data requires preservation before retiring this feature';
-  end if;
-end $guard$;
-drop function public.dk_team_create(text,text,text),public.dk_my_teams(),public.dk_team_read(uuid),public.dk_team_save(uuid,int,uuid,text,text),public.dk_team_finalize(uuid),dk_safety.approve_team(text,text);
-drop function public.dk_issue_link(uuid,text),public.dk_open_links(uuid);
-alter table dk_safety.join_links drop column room, drop column side;
-drop table dk_safety.team_points, dk_safety.team_members, dk_safety.team_rooms;
 create table if not exists dk_safety.join_links (
   id uuid primary key default gen_random_uuid(),
   digest bytea unique not null,

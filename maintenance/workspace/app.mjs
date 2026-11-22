@@ -1,6 +1,6 @@
 import {websitePosterSvg} from '../renderer/poster-finish.mjs';
 import {pointSnapshot,createPointReader,useAudiencePoster,createPuzzlePoster,reactionIntent} from './reader.mjs';
-import {createTeamExperience} from './teams.mjs';
+import {createFriendInvitations} from './invitations.mjs';
 import {createFriendExperience} from './friend.mjs';
 // Editable production workspace. The V2 router, authenticated client and debate flows are injected by the build.
 const home = '/home';
@@ -97,7 +97,7 @@ const glyphs = {
   pump:'M3 21h11M5 20V3h8v17M5 9h8m1 3h2v5a2 2 0 0 0 4 0V9l-4-4',
   basket:'M2 10h20l-3 10H5zM7 10l4-7m6 7-4-7m-4 10v4m6-4v4',
   phone:'M7 2h10v20H7zM11 18h2',globe:'M22 12a10 10 0 1 1-20 0 10 10 0 1 1 20 0M2 12h20M12 2c-6 5-6 15 0 20 6-5 6-15 0-20',
-  leaf:'M4 20C2 7 10 4 21 3c0 11-5 17-14 15m-5 4L16 8', teams:'M3 4h18v16H3zM12 4v16M3 12h18',
+  leaf:'M4 20C2 7 10 4 21 3c0 11-5 17-14 15m-5 4L16 8',
   heart:'M20 5c-2-2-5-2-8 1-3-3-6-3-8-1-3 3-2 6 1 9l7 6 7-6c3-3 4-6 1-9z', eye:'M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12zm13 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0z',
   bell:'M18 8a6 6 0 0 0-12 0c0 7-3 8-3 10h18c0-2-3-3-3-10M10 21h4',
   home:'m3 10 9-7 9 7v10h-6v-6H9v6H3z', feed:'M3 6h18M3 12h13M3 18h16',
@@ -116,7 +116,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   const PuzzlePoster=createPuzzlePoster({React,Link,useLocation});
   function ReactionLoginCopy(){
     const loc=useLocation(),intent=reactionIntent(afterLogin(loc.search));
-    if(!intent)return 'Explore a question with a friend, AI, or two teams.';
+    if(!intent)return 'Start a debate with a friend or AI.';
     const title=new URLSearchParams(loc.search).get('argument');
     return h(React.Fragment,null,h('strong',null,'Sign in to mark this point as '+intent+'.'),
       title&&h('span',{className:'dk-signin-point'},'“'+title+'”'),
@@ -147,7 +147,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function Icon({name}) {return h('svg',{className:'dk-icon',viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:1.7,strokeLinecap:'round',strokeLinejoin:'round','aria-hidden':true},h('path',{d:glyphs[name]}));}
   const icon=name=>h(Icon,{name});
-  const {InboxProvider,Notifications,FriendSetup,FriendPointEditor,useFriendTopic,useFriendPreparationSync}=createFriendExperience({React,db,Link,useLocation,useNavigate,Directory,icon,ExternalInvites:()=>h(React.Fragment,null,h(InviteTools),link('/debate/start?mode=team','Start or open a team debate','dk-secondary'))});
+  const {InboxProvider,Notifications,FriendSetup,FriendPointEditor,useFriendTopic,useFriendPreparationSync}=createFriendExperience({React,db,Link,useLocation,useNavigate,Directory,icon,ExternalInvites:()=>h(InviteTools)});
   const link=(to,label,cls='dk-link')=>h(Link,{to,className:cls},label);
   const status=(message,alert=false)=>h('p',{className:'dk-note',role:alert?'alert':'status'},message);
   function useQuery(key,load) {
@@ -198,24 +198,13 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function Nav() {
     const {user,signOut}=useAuth(), loc=useLocation(), navigate=useNavigate();
     const [error,setError]=useState('');
-    useEffect(()=>{
-      const menu=document.querySelector('.dk-format-menu');
-      if(!menu)return;
-      menu.open=false;
-      const close=e=>{if(!menu.contains(e.target))menu.open=false;};
-      document.addEventListener('pointerdown',close);
-      document.addEventListener('focusin',close);
-      return ()=>{document.removeEventListener('pointerdown',close);document.removeEventListener('focusin',close);};
-    },[loc.key]);
     const onHome=['/','/home','/home/'].includes(loc.pathname);
     const inFeed=onHome&&new URLSearchParams(loc.search).get('view')==='feed';
     const active=loc.pathname.startsWith('/profile')?'Profile':inFeed?'Feed':onHome?'Home':'';
     const destinations=[[home,'Home','home'],[feed,'Feed','feed'],[user?profile:login(profile),'Profile','person']];
-    function action(to,label,glyph,detail) {
-      return h(Link,{to,className:'dk-choice dk-'+glyph,onClick:event=>{
-        if(!event.ctrlKey&&!event.metaKey)event.currentTarget.closest('details')?.removeAttribute('open');
-        scrollToStart(event);
-      }},h('span',{className:'dk-symbol'},icon(glyph)),h('span',null,label,detail&&h('small',null,detail)));
+    function action(to,label,glyph) {
+      return h(Link,{to,className:'dk-choice dk-'+glyph,onClick:scrollToStart},
+        h('span',{className:'dk-symbol'},icon(glyph)),h('span',null,label));
     }
     function scrollToStart(event) {
       if(event.button===0&&!event.metaKey&&!event.ctrlKey&&!event.shiftKey&&!event.altKey)window.scrollTo(0,0);
@@ -235,14 +224,13 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
           h('button',{key:'out',className:'dk-small',onClick:async()=>{try{await signOut();navigate('/')}catch{setError('Sign-out failed. Try again.')}}},'Sign out')
         ]:link(login(home),'Sign in','dk-small'))),
       h('nav',{'aria-label':'Start and discover',className:'dk-launch'},
-        h('details',{className:'dk-format-menu',onKeyDown:e=>{if(e.key==='Escape'){e.currentTarget.open=false;e.currentTarget.querySelector('summary').focus()}}},
-          h('summary',null,icon('friends'),'Start a debate'),
-          h('div',{className:'dk-format-list'},
-            action(user?friend:login(friend),'Friend','friends','You and a friend each contribute ten points.'),
-            action(user?ai:login(ai),'AI','ai','You bring ten points. AI researches the other side.'),
-            action(user?'/debate/start?mode=team':login('/debate/start?mode=team'),'Teams','teams','Two invited teams build ten points per side.'),
-            h('p',null,'All three start private. The infographic becomes public when you choose to publish it.'))),
-        action(trending,'Trending topics','trend')),
+        h('div',{role:'group','aria-labelledby':'dk-start-label',className:'dk-launch-group dk-start-group'},
+          h('span',{id:'dk-start-label',className:'dk-launch-label'},'Start a debate with a friend or AI'),
+          action(user?friend:login(friend),'Debate with a friend','friends'),
+          action(user?ai:login(ai),'Debate with AI','ai')),
+        h('div',{role:'group','aria-labelledby':'dk-discover-label',className:'dk-launch-group dk-discover-group'},
+          h('span',{id:'dk-discover-label',className:'dk-launch-label'},'Discover'),
+          action(trending,'Trending topics','trend'))),
       error&&status(error,true));
   }
   function useActivity(id) {
@@ -273,7 +261,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function Setup(){
     const loc=useLocation();
     const mode=new URLSearchParams(loc.search).get('mode');
-    return mode==='team'?h(TeamHub):mode==='friend'?h(FriendSetup):mode?h(OriginalStart):h(Start);
+    return mode==='friend'?h(FriendSetup):mode==='ai'?h(OriginalStart):h(Start);
   }
   function Topic(){
     const loc=useLocation(),{user,loading}=useAuth(),navigate=useNavigate(),[question,set]=useState('');
@@ -460,7 +448,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         q.data?.length>limit&&h('button',{className:'dk-small',onClick:()=>setLimit(limit+30)},'Show older comments')));
   }
   const PointReader=createPointReader({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,exampleRoute,MemberComments,status});
-  const {TeamHub,JoinLink,InviteTools}=createTeamExperience({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,checkContent,status,Poster:typeof lg==='function'?lg:null});
+  const {JoinLink,InviteTools}=createFriendInvitations({React,db,useAuth,useNavigate,useQuery,link,login,status});
   function LikedPosters({user}) {
     const q=useQuery(user.id,()=>db.rpc('dk_poster_history'));
     return h('section',{className:'dk-panel'},h('h2',null,'Liked infographics'),
@@ -746,7 +734,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     if(!user)return h('main',{className:'dk-main'},h('h1',null,'Your profile'),loading?status('Loading account…'):link(login(profile+loc.search),'Sign in to open your profile','dk-primary'));
     const items=c.items.filter(row=>tab==='Posters'?row.kind==='poster':['debate','question'].includes(row.kind));
     return h('main',{className:'dk-main dk-profile'},h('div',{className:'dk-kicker'},'Personal workspace'),h('h1',null,'Your profile'),h('nav',{className:'dk-filters','aria-label':'Profile sections'},...personalTabs.map(key=>h(Link,{key,to:profileRoute(key),'aria-current':tab===key?'page':undefined},key==='Table'?'Your table':key))),
-      tab==='Liked'?h(LikedPosters,{key:user.id,user}):tab==='Created'?h(CreatedPosters,{key:user.id,user}):tab==='Table'?h(React.Fragment,null,h(Activity,{key:user.id}),link('/debate/start?mode=team','Your team debates','dk-secondary')):tab==='Account'?h(Account,{key:user.id}):c.error?h('button',{className:'dk-secondary',onClick:c.refresh},'Retry loading collection'):c.loading&&!c.data?status('Loading your collection…'):tab==='People'?h(People,{user}):
+      tab==='Liked'?h(LikedPosters,{key:user.id,user}):tab==='Created'?h(CreatedPosters,{key:user.id,user}):tab==='Table'?h(Activity,{key:user.id}):tab==='Account'?h(Account,{key:user.id}):c.error?h('button',{className:'dk-secondary',onClick:c.refresh},'Retry loading collection'):c.loading&&!c.data?status('Loading your collection…'):tab==='People'?h(People,{user}):
       h('section',{className:'dk-collection'},!items.length?h('div',{className:'dk-panel'},h('h2',null,tab==='Posters'?'Your saved posters':'Your pinned discussions'),h('p',null,tab==='Posters'?'Open a finished infographic and choose Save poster.':'Pin a public question or an exploration from your table to return to it here.'),link(tab==='Posters'?profile:feed,tab==='Posters'?'Open your table':'Browse the feed','dk-secondary')):items.map(item=>tab==='Posters'?h(SavedArtwork,{key:item.target,item}):h('article',{key:item.kind+item.target,className:'dk-card'},h('small',null,item.kind==='question'?'Public question':'Your exploration'),h('div',{className:'dk-sectionline'},link(item.kind==='question'?feed+'&question='+item.target:'/debate/view/'+item.target,item.label,'dk-titlelink'),h(Save,{kind:item.kind,target:item.target,label:item.label}))))));
   }
   return {initialProfileName,checkContent,useCommenterMatches,ReactionLoginCopy,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
