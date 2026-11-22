@@ -263,7 +263,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
               h('ul',null,...entry.arguments.slice(side*10,side*10+10).map(([label,explanation],i)=>
                 h('li',{key:label},h('h4',null,h('span',null,'#'+(i*2+side+1)+' '),label),h('p',null,explanation)))))))),
         h('section',{className:'dk-panel dk-example-discussion'},h('h2',null,'Example discussion'),h('p',null,entry.followUp),
-          entry.sampleActivity?h(React.Fragment,null,h(SampleActivity,{entry}),h('p',null,'These example comments are from fictional profiles.'),
+          entry.sampleActivity?h(React.Fragment,null,h(SampleActivity,{entry}),h('p',null,'These comments are part of a simulated discussion.'),
             personas.data ? renderDiscussion(entry.sampleActivity.comments, personas.data) :
               personas.error ? h('button',{onClick:personas.refresh},'Retry loading commenters') : status('Loading discussion…')):
             h('ul',null,...entry.comments.map((comment,i)=>h('li',{key:i},comment)))),
@@ -293,8 +293,8 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     return h('main',{className:'dk-main',id:'dk-main'},link(trending,'Back to Trending'),
       personas.error || edition.error ? h('button',{onClick:()=>{personas.refresh();edition.refresh();}},'Retry loading profile') :
       !personas.data ? status('Loading profile…') : !person ? h('h1',null,'Profile unavailable') :
-      h('section',{className:'dk-panel'},h('small',null,'Fictional commenter'),h('h1',null,person.name),
-        h('p',null,'@'+person.handle),h('p',null,person.bio),h('p',null,'Debate style · '+person.style),
+      h('section',{className:'dk-panel'},h('h1',null,person.name),
+        h('p',null,'@'+person.handle),h('p',null,'This profile participates in simulated discussions.'),h('p',null,person.bio),h('p',null,'Debate style · '+person.style),
         h('h2',null,'Discussion history'),
         ...discussions.map(({entry,comments})=>h('article',{key:entry.id,className:'dk-card'},
           h('h3',null,link(exampleRoute(entry.id),entry.question,'dk-link')),
