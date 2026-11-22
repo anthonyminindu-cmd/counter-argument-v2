@@ -19,20 +19,41 @@ test('Trending keeps ranked, published posters with available content', async ()
   assert.equal(posts[1].published_at, publication);
 });
 
-test('Latest merges questions and posters by publication date before limiting the feed', async () => {
-  const {latestFeedEntries} = await import('../workspace/app.mjs');
-  const posts = [
-    {id:'older',published_at:'2026-11-01T18:00:00Z'},
-    {id:'yesterday',published_at:'2026-11-21T18:00:00Z'}
+test('Latest requests the five newest eligible public debates, Trending keeps the popularity order', async () => {
+  const {posterMetricsQuery} = await import('../workspace/app.mjs');
+  const calls = [];
+  const query = Object.fromEntries(['rpc','eq','or','order','limit'].map(method=>[
+    method,(...args)=>{calls.push([method,...args]);return query;}
+  ]));
+  const eligible = [
+    ['rpc','dk_ranked_posters'],['eq','published',true],['or','has_artwork.eq.true,slug.in.(topic-one,topic-two)']
   ];
-  const questions = [
-    {id:'starter',is_starter:true,published_at:'2026-11-22T19:00:00Z'},
-    {id:'new',is_starter:false,published_at:'2026-11-22T18:00:00Z'},
-    {id:'old-thread',is_starter:false,published_at:'2026-11-02T18:00:00Z',last_activity:'2026-11-22T20:00:00Z'}
-  ];
-  const ids=items=>items.map(({kind,entry})=>[kind,entry.id]);
-  assert.deepEqual(ids(latestFeedEntries(posts,questions,3)), [
-    ['question','new'],['poster','yesterday'],['question','old-thread']
-  ]);
-  assert.deepEqual(ids(latestFeedEntries(posts,[],1)), [['poster','yesterday']]);
+  for (const order of ['latest','trending']) {
+    calls.length=0;
+    posterMetricsQuery(query,order,['topic-one','topic-two']);
+    assert.deepEqual(calls,order==='latest'?[...eligible,
+      ['order','published_at',{ascending:false}],['order','slug',{ascending:true}],['limit',5]
+    ]:eligible);
+  }
+  calls.length=0;
+  posterMetricsQuery(query);
+  assert.deepEqual(calls,[['rpc','dk_ranked_posters']]);
+});
+
+test('guest and member feeds open the debate list without a standalone question composer', async () => {
+  const {createWorkspace} = await import('../workspace/app.mjs');
+  const React = {
+    createElement:(type,props,...children)=>({type,props,children}),createContext:()=>({}),
+    useContext:()=>({items:[]}),useState:value=>[value,()=>{}],useEffect:()=>{}
+  };
+  for(const user of [null,{id:'member'}]){
+    for(const order of ['latest','trending']){
+      const workspace=createWorkspace({React,Link:'link',useAuth:()=>({user}),
+        useLocation:()=>new URL('/home?view=feed&sort='+order,'https://example.test')});
+      const feed=workspace.Start().children[1].children[0];
+      const view=feed.type(feed.props);
+      assert.equal(view.children.at(-1).props.order,order);
+      assert.doesNotMatch(JSON.stringify(view),/Post a question|Sign in to post|Publish question|Be the first to post/i);
+    }
+  }
 });

@@ -31,12 +31,15 @@ export function publicPosterEntries(ranked,edition) {
   });
 }
 
-export function latestFeedEntries(posters,questions,limit) {
-  return [
-    ...posters.map(entry=>({kind:'poster',entry})),
-    ...questions.filter(entry=>!entry.is_starter).map(entry=>({kind:'question',entry}))
-  ].sort((a,b)=>Date.parse(b.entry.published_at)-Date.parse(a.entry.published_at)
-    ||a.entry.id.localeCompare(b.entry.id)||a.kind.localeCompare(b.kind)).slice(0,limit);
+export function posterMetricsQuery(db,order,editorialIds=[]) {
+  const ranked=db.rpc('dk_ranked_posters');
+  if(!order)return ranked;
+  const published=ranked.eq('published',true);
+  const available=editorialIds.length
+    ?published.or('has_artwork.eq.true,slug.in.('+editorialIds.join(',')+')')
+    :published.eq('has_artwork',true);
+  if(order==='latest')return available.order('published_at',{ascending:false}).order('slug',{ascending:true}).limit(5);
+  return available;
 }
 
 function isWelcomeLocation(location) {
@@ -240,9 +243,9 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         comment.replies?.length ? renderDiscussion(comment.replies, personas, true) : null)));
   }
   const Engagement=createContext(null);
-  function PosterActivity({children}) {
+  function PosterActivity({children,order,editorialIds}) {
     const {user}=useAuth();
-    const metrics=useQuery(user?.id||'guest',()=>db.rpc('dk_ranked_posters'));
+    const metrics=useQuery(JSON.stringify([user?.id,order,editorialIds]),()=>posterMetricsQuery(db,order,editorialIds));
     useEffect(()=>{
       function sync(){if(!document.hidden)metrics.refresh()}
       window.addEventListener('focus',sync);
@@ -424,16 +427,19 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('div',{className:'dk-example-card-text'},h('small',null,entry.category,h(PostedDate,{at:entry.published_at,slug:entry.id})),
           h('h3',null,entry.question,icon('enter')))),h(PosterActions,{entry}));
   }
-  function PosterFeed({questions,limit,landing}) {
-    const edition=useNovemberEdition(),metrics=useContext(Engagement);
-    if(edition.error||metrics.error)return h('button',{type:'button',className:'dk-secondary',onClick:()=>{edition.refresh();metrics.refresh()}},'Retry loading topics');
-    if(!edition.data||!metrics.data)return status('Loading topics…');
-    const posters=publicPosterEntries(metrics.data,edition.data);
-    if(!questions)return h('div',{className:'dk-example-grid'},...posters.map(entry=>h(ExampleCard,{key:entry.id,entry})));
-    const entries=latestFeedEntries(posters,questions,limit);
-    return entries.length?h('div',{className:'dk-example-grid'},...entries.map(({kind,entry})=>
-      kind==='poster'?h(ExampleCard,{key:'poster:'+entry.id,entry}):h(QuestionCard,{key:'question:'+entry.id,row:entry,landing}))):
-      h('p',null,'Be the first to post a question.');
+  function PosterFeed({order}) {
+    const edition=useNovemberEdition();
+    if(edition.error)return h('button',{type:'button',className:'dk-secondary',onClick:edition.refresh},'Retry loading topics');
+    if(!edition.data)return status('Loading topics…');
+    return h(PosterActivity,{order,editorialIds:edition.data.map(entry=>entry.id)},h(PosterFeedCards,{edition:edition.data}));
+  }
+  function PosterFeedCards({edition}) {
+    const metrics=useContext(Engagement);
+    if(metrics.error)return h('button',{type:'button',className:'dk-secondary',onClick:metrics.refresh},'Retry loading topics');
+    if(!metrics.data)return status('Loading topics…');
+    const entries=publicPosterEntries(metrics.data,edition);
+    return entries.length?h('div',{className:'dk-example-grid'},...entries.map(entry=>h(ExampleCard,{key:entry.id,entry}))):
+      h('p',null,'No debates have been published yet.');
   }
   function ExampleDebate({entry}) {
     const personas = usePersonas();
@@ -538,35 +544,31 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('div',{className:'dk-cardfoot'},link(url,'Open discussion'),h('small',null,replies+(Number(row.contributors)>0?' · '+row.contributors+' active in 24h':''))));
   }
   function Feed({full,landing}) {
-    const loc=useLocation(), navigate=useNavigate(), {user}=useAuth(), c=useContext(Collection);
+    const loc=useLocation(), {user}=useAuth(), c=useContext(Collection);
     const params=new URLSearchParams(loc.search), chosen=params.get('question'), order=['latest','people'].includes(params.get('sort'))?params.get('sort'):'trending';
     const people=c.items.filter(row=>row.kind==='person').map(row=>row.target);
-    const [compose,setCompose]=useState(false),[question,setQuestion]=useState(''),[busy,setBusy]=useState(false),[err,setErr]=useState('');
-    const query=useQuery(JSON.stringify([order,chosen,order==='people'?people:[],user?.id]),()=>db.rpc('dk_feed',{p_order:order,p_question:chosen,p_people:chosen||order!=='people'?null:people}));
-    useEffect(()=>{const refresh=()=>{if(!document.hidden)query.refresh()};window.addEventListener('focus',refresh);const timer=setInterval(refresh,60000);return()=>{window.removeEventListener('focus',refresh);clearInterval(timer)}},[]);
+    const questionQueryKey=chosen||order==='people'?JSON.stringify([order,chosen,people,user?.id]):null;
+    const query=useQuery(questionQueryKey,()=>db.rpc('dk_feed',{p_order:order,p_question:chosen,p_people:chosen?null:people}));
+    useEffect(()=>{
+      if(!questionQueryKey)return;
+      const refresh=()=>{if(!document.hidden)query.refresh()};
+      window.addEventListener('focus',refresh);
+      const timer=setInterval(refresh,60000);
+      return ()=>{window.removeEventListener('focus',refresh);clearInterval(timer)};
+    },[questionQueryKey]);
     const rows=query.data||[];
-    async function publish(e) {
-      e.preventDefault();if(busy||!user||question.trim().length<5)return;
-      setBusy(true);setErr('');
-      try{await checkContent('question','',[question.trim()]);
-        const {data,error}=await db.from('dk_questions').insert({author_id:user.id,question:question.trim()}).select('id').single();
-        if(error)throw error;setQuestion('');setCompose(false);navigate(feed+'&question='+data.id);query.refresh();
-      }catch(e){setErr(e.communitySafety?e.message:'Your question could not be published. Your text is still here.')}finally{setBusy(false)}
-    }
     const urlFor=key=>key==='trending'?trending:feed+'&sort='+key;
     if(chosen)return h('section',{className:'dk-feed'},link(feed,'Back to feed'),query.loading&&!query.data?status('Loading discussion…'):query.error?status('Could not load this discussion.',true):rows[0]?h(Thread,{key:rows[0].id,thread:rows[0],refresh:query.refresh}):status('This discussion is unavailable.'));
     const feedTitle=order==='trending'?'Trending':order==='latest'?'Latest':'Your people';
     return h('section',{className:'dk-feed','aria-label':feedTitle},
-      h('div',{className:'dk-sectionline'},h(landing?'h2':'h1',null,landing&&icon('trend'),feedTitle),user?h('button',{className:'dk-secondary',onClick:()=>setCompose(!compose),'aria-expanded':compose},'Post a question'):link(login(feed),'Sign in to post','dk-small')),
-      compose&&h('form',{onSubmit:publish,className:'dk-form dk-panel'},h('label',null,'Ask the community',h('textarea',{required:true,minLength:5,maxLength:320,value:question,onChange:e=>setQuestion(e.target.value),placeholder:'What would you like another perspective on?'})),h('small',null,'Your question and its replies will be public.'),h('button',{className:'dk-primary',disabled:busy||question.trim().length<5},busy?'Publishing…':'Publish question'),err&&status(err,true)),
+      h('div',{className:'dk-sectionline'},h(landing?'h2':'h1',null,landing&&icon('trend'),feedTitle)),
       h('nav',{className:'dk-filters','aria-label':'Feed order'},...[[urlFor('trending'),'Trending','trending'],[urlFor('latest'),'Latest','latest'],...(user?[[urlFor('people'),'Your people','people']]:[])].map(([to,label,key])=>h(Link,{key,to,'aria-current':key===order?'page':undefined},label))),
-      order==='trending'?h(PosterActivity,null,h(PosterFeed)):
+      order!=='people'?h(PosterFeed,{order}):
       query.error?h('div',{className:'dk-panel'},status('The feed could not be loaded.',true),h('button',{className:'dk-secondary',onClick:query.refresh},'Try again')):query.loading&&!query.data?status('Loading discussions…'):
       h(React.Fragment,null,
-        order==='latest'?h(PosterActivity,null,h(PosterFeed,{questions:rows,limit:full?50:4,landing})):
-        h(React.Fragment,null,!landing&&h('p',{className:'dk-note'},'Public questions from people you’ve saved.'),
-          !rows.length&&h('p',null,'Save a person to see their public questions here.'),
-          ...rows.slice(0,full?50:4).map(row=>h(QuestionCard,{key:row.id,row,landing}))),
+        !landing&&h('p',{className:'dk-note'},'Public questions from people you’ve saved.'),
+        !rows.length&&h('p',null,'Save a person to see their public questions here.'),
+        ...rows.slice(0,full?50:4).map(row=>h(QuestionCard,{key:row.id,row,landing})),
         !full&&link(feed,'See the full feed','dk-secondary')));
   }
   function Thread({thread,refresh}) {
