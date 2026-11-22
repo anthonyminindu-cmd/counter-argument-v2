@@ -53,7 +53,12 @@ with sync_playwright() as pw:
     fresh=link.input_value()
     assert fresh!=revoked
     guest.get_by_role("button",name="Sign out",exact=True).click()
+    expect(guest.get_by_role("link",name="Sign in",exact=True)).to_be_visible()
+    guest.wait_for_url(lambda url: "join=" not in url)
+    guest.close()
+    guest=chrome.new_page(viewport={"width":390,"height":844})
     guest.goto(fresh)
+    expect(guest.get_by_role("heading",name="Join a private debate")).to_be_visible()
     guest.get_by_role("link",name="Sign in or create an account",exact=True).click()
     guest.get_by_placeholder("Enter your email",exact=True).fill(b["email"])
     guest.get_by_placeholder("Enter your password",exact=True).fill(b["password"])
