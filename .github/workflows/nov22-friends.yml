@@ -1,0 +1,23 @@
+name: November 22 friend debate acceptance
+on:
+  push:
+    branches: [qa/black-friday-friends-20261122]
+permissions:
+  contents: read
+jobs:
+  debate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - run: python -m pip install playwright==1.55.0
+      - run: python maintenance/e2e/nov22_friends.py
+        env:
+          DK_TEST_URL: https://anthonyminindu-cmd.github.io/counter-argument-v2
+          DK_TEST_SCREENSHOTS: qa-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: friend-debate-screenshots
+          path: qa-evidence/*.jpg
+          retention-days: 7
