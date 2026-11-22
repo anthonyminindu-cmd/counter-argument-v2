@@ -1,3 +1,4 @@
+import {websitePosterSvg} from '../renderer/poster-finish.mjs';
 import {pointSnapshot,createPointReader,useAudiencePoster} from './reader.mjs';
 import {createTeamExperience} from './teams.mjs';
 import {createFriendExperience} from './friend.mjs';
@@ -9,7 +10,7 @@ const friend = '/debate/start?mode=friend';
 const ai = '/debate/topic?mode=ai';
 const personalTabs = ['Table','Created','Liked','Pinned','Posters','People','Account'];
 const novemberPath = '/counter-argument-v2/demo/november-2026/';
-const examplePoster = id => novemberPath+id+'.svg?v=3';
+const examplePoster = id => novemberPath+id+'.svg?v=4';
 const trending = feed+'&sort=trending';
 const exampleRoute = id => feed+'&example='+encodeURIComponent(id);
 
@@ -417,7 +418,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const entry={id:row.slug,question:row.title,private:!row.published};
     return h('article',{className:'dk-example-debate'},link(trending,'Back to Trending'),
       h('header',null,h('small',null,row.published?row.category:'Private infographic',row.published&&h(PostedDate,{slug})),h('h1',null,row.title)),
-      h('img',{className:'dk-poster',src:'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(row.artwork),alt:row.title}),
+      h('img',{className:'dk-poster',src:'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(websitePosterSvg(row.artwork)),alt:row.title}),
       h(PosterActions,{entry,onComment:openComments}),h(Report,{kind:'poster',target:entry.id}),row.mine&&h(SharePoster,{row,refresh:()=>{q.refresh();metrics.refresh()}}),
       h('section',null,h('h2',{id:'dk-example-points'},'Explore the points'),h(PointReader,{entry})),
       h('section',{className:'dk-panel dk-example-discussion',ref:comments,tabIndex:-1},h('h2',null,'Comments'),h(MemberComments,{key:user?.id||'guest',entry})));
@@ -458,12 +459,10 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     }
     useEffect(()=>{if(new URLSearchParams(loc.search).has('comments'))openComments()},[loc.search]);
     const [exporting,setExporting]=useState(false),[exportError,setExportError]=useState('');
-    const [design,setDesign]=useState('comparison');
-    const pilot=entry.id==='ai-data-centers';
-    const comparison=pilot&&design==='comparison';
+    const hasAudienceExport=entry.id==='ai-data-centers';
     const [includeAudience,setIncludeAudience]=useState(false);
-    const original=comparison?novemberPath+entry.id+'-comparison.svg':examplePoster(entry.id);
-    const audience=useAudiencePoster(React,db,comparison&&includeAudience,entry.id,original);
+    const original=examplePoster(entry.id);
+    const audience=useAudiencePoster(React,db,hasAudienceExport&&includeAudience,entry.id,original);
     const poster=audience.url||original;
     const friendTopic=friend+'&suggested='+encodeURIComponent(entry.question);
     function readPoints() {
@@ -484,13 +483,12 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('header',null,h('small',null,'By Differ Kindly',h(PostedDate,{slug:entry.id})),h('h1',null,entry.question),h('p',null,entry.overview),
           h('button',{type:'button',className:'dk-secondary dk-read-points',onClick:readPoints},'Read all 20 points')),
         h('figure',{className:'dk-example-figure'},
-          pilot&&h('div',{className:'dk-actions','aria-label':'Poster design'},...['comparison','puzzle'].map(value=>h('button',{className:'dk-small',key:value,'aria-pressed':value===design,onClick:()=>setDesign(value)},value==='comparison'?'Side by side':'Puzzle'))),
-          comparison&&h('label',{className:'dk-audience-toggle'},h('input',{type:'checkbox',checked:includeAudience,onChange:e=>setIncludeAudience(e.target.checked)}),'Include audience responses on this poster'),
-          comparison&&includeAudience&&!audience.url&&status(audience.error?'Audience totals could not load. Turn the option off and on to retry.':'Loading audience totals…',audience.error),
+          hasAudienceExport&&h('label',{className:'dk-audience-toggle'},h('input',{type:'checkbox',checked:includeAudience,onChange:e=>setIncludeAudience(e.target.checked)}),'Include audience responses on this poster'),
+          hasAudienceExport&&includeAudience&&!audience.url&&status(audience.error?'Audience totals could not load. Turn the option off and on to retry.':'Loading audience totals…',audience.error),
           h('a',{href:poster,target:'_blank',rel:'noopener','aria-label':'Open full-size poster in a new tab'},
             h('img',{src:poster,alt:entry.subject+' — both perspectives and all 20 points. Full text follows.',width:1600,height:900})),
           h('figcaption',{className:'dk-actions'},h('a',{className:'dk-secondary',href:poster,target:'_blank',rel:'noopener'},'Open full-size poster'),
-            h('button',{className:'dk-secondary',type:'button',disabled:exporting||(comparison&&includeAudience&&!audience.url),onClick:download},exporting?'Preparing PNG…':'Download PNG'),
+            h('button',{className:'dk-secondary',type:'button',disabled:exporting||(hasAudienceExport&&includeAudience&&!audience.url),onClick:download},exporting?'Preparing PNG…':'Download PNG'),
             link(user?friendTopic:login(friendTopic),'Debate this with a friend','dk-primary'),exportError&&status(exportError,true))),
         h(PosterActions,{entry,onComment:openComments}),h(Report,{kind:'poster',target:entry.id}),
         h('section',{'aria-labelledby':'dk-example-points'},
@@ -603,7 +601,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function SavedArtwork({item}) {
     const {id}=useContext(Collection),[open,setOpen]=useState(false),[url,setUrl]=useState(''),[error,setError]=useState('');
     const q=useQuery(open?id+item.target:null,()=>db.from('dk_collection').select('artwork').eq('owner_id',id).eq('kind','poster').eq('target',item.target).single());
-    useEffect(()=>{if(!open||!q.data?.artwork){setUrl('');return}const objectUrl=URL.createObjectURL(new Blob([q.data.artwork],{type:'image/svg+xml'}));setUrl(objectUrl);return()=>URL.revokeObjectURL(objectUrl)},[open,q.data]);
+    useEffect(()=>{if(!open||!q.data?.artwork){setUrl('');return}const objectUrl=URL.createObjectURL(new Blob([websitePosterSvg(q.data.artwork)],{type:'image/svg+xml'}));setUrl(objectUrl);return()=>URL.revokeObjectURL(objectUrl)},[open,q.data]);
     async function downloadPng(){
       try{
         await downloadStoredPoster(url,'Differ-Kindly-poster.png');

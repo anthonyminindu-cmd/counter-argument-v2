@@ -1,0 +1,17 @@
+[
+  {
+    "id": "retain-canonical-poster-artwork",
+    "find": "const{svg:Z,pieces:printed}=F5",
+    "replace": "const{svg:Z,storageSvg:canonicalSvg,pieces:printed}=F5"
+  },
+  {
+    "id": "keep-canonical-artwork-with-the-preview",
+    "find": "P&&h({scope:u,svg:Z,labels:new Map(printed",
+    "replace": "P&&h({scope:u,svg:Z,storageSvg:canonicalSvg||Z,labels:new Map(printed"
+  },
+  {
+    "id": "use-original-artwork-for-social-identity",
+    "find": "DK.SavePoster,{title:t,svg:d.svg,points:e,positions:n}",
+    "replace": "DK.SavePoster,{title:t,svg:d.storageSvg,points:e,positions:n}"
+  }
+]

@@ -75,16 +75,18 @@ export function useAudiencePoster(React,db,enabled,slug,original){
       .then(([markup,{data,error}])=>{
         if(error||data?.length!==20)throw Error();
         const xml=new DOMParser().parseFromString(markup,'image/svg+xml');
+        const compact=new Intl.NumberFormat('en',{notation:'compact',maximumFractionDigits:1});
         for(const p of data){
-          const group=xml.querySelector('g[data-rank="'+p.rank+'"]');
-          const title=group?.lastElementChild;
-          if(!title)throw Error();
-          const note=xml.createElementNS('http://www.w3.org/2000/svg','text');
-          note.setAttribute('x',title.getAttribute('x'));note.setAttribute('y',String(Number(title.getAttribute('y'))+19));
-          note.setAttribute('font-size','16');note.setAttribute('fill','#34473a');
-          note.textContent=p.informative+' informative   ·   '+p.convincing+' convincing   ·   '+p.respondents+' readers';
-          group.appendChild(note);
+          const marker=xml.querySelector('[data-rank-marker="'+p.rank+'"]');
+          if(!marker)throw Error();
+          marker.setAttribute('letter-spacing','0');
+          marker.setAttribute('font-size','13');
+          const counts=[p.informative,p.convincing,p.respondents].map(n=>compact.format(n));
+          marker.textContent+='  ·  I '+counts[0]+'  C '+counts[1]+'  R '+counts[2];
         }
+        const key=xml.querySelector('svg > text:last-child');
+        if(!key)throw Error();
+        key.textContent='I = informative   ·   C = convincing   ·   R = distinct readers who responded   ·   Piece size follows argument rank.';
         if(alive){
           objectUrl=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(xml)],{type:'image/svg+xml'}));
           setResult({original,url:objectUrl});

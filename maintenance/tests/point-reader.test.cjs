@@ -21,15 +21,15 @@ test('personal reader snapshots keep original identities, positions, and point-s
   assert.equal(pointSnapshot(rows.slice(1)),null);
 });
 
-test('comparison poster uses the existing edition labels, rank identities and brand mark',()=>{
-  const [pilot]=require('../../demo/november-2026/edition.json');
-  const svg=fs.readFileSync(path.join(root,'demo/november-2026/ai-data-centers-comparison.svg'),'utf8');
-  const rows=[...svg.matchAll(/<g data-rank="(\d+)">.*?<\/text><text [^>]+>(.*?)<\/text><\/g>/g)];
-  assert.equal(rows.length,20);
-  assert.equal(new Set(rows.map(row=>row[1])).size,20);
-  for(const [i,row] of rows.entries()){
-    assert.equal(Number(row[1]),(i%10)*2+Math.floor(i/10)+1);
-    assert.equal(row[2],pilot.arguments[i][0]);
+test('every editorial uses the twenty-piece puzzle and shared pilot links resolve to it',()=>{
+  const entries=require('../../demo/november-2026/edition.json');
+  const read=name=>fs.readFileSync(path.join(root,'demo/november-2026',name+'.svg'),'utf8');
+  for(const entry of entries){
+    const svg=read(entry.id);
+    const ranks=Array.from(svg.matchAll(/data-rank-marker="(\d+)"/g),match=>Number(match[1]));
+    assert.deepEqual(ranks,Array.from({length:20},(_,i)=>i+1));
+    assert.ok(svg.includes('data-main-subject=""'));
+    for(const color of ['#225e3c','#bcf1c8','#c6aff8','#17251e'])assert.ok(svg.includes(color));
   }
-  assert.ok(svg.includes('Differ Kindly'));
+  assert.equal(read('ai-data-centers-comparison'),read('ai-data-centers'));
 });

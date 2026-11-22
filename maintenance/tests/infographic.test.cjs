@@ -44,10 +44,19 @@ test('poster label inks remain readable across every rank and background tint',(
     return channels[0]*.2126+channels[1]*.7152+channels[2]*.0722;
   };
   const contrast=(a,b)=>(Math.max(luminance(a),luminance(b))+.05)/(Math.min(luminance(a),luminance(b))+.05);
-  for(const material of Object.values(palette)) {
+  const alternating=new Map(rows.map((row,i)=>[row.id,i%2?'right':'left']));
+  const {svg,storageSvg}=render(rows,plan,'Exact proposition',measure,alternating);
+  assert.ok(storageSvg.includes('#1852a3') && !svg.includes('#1852a3'));
+  const neutralize=markup=>markup.replace(/(?:fill|stroke|stop-color)="#[a-f0-9]{6}"/gi,'paint');
+  assert.equal(neutralize(svg),neutralize(storageSvg));
+  for(const side of Object.keys(palette)) {
     for(const tier of ['core','medium','small']) {
-      const ink=tier==='core'?material.coreInk:material.ink;
-      for(const color of material[tier]) assert.ok(contrast(color,ink)>=7,ink+' on '+color);
+      const group=svg.match(new RegExp('data-side="'+side+'"[^>]*data-band="'+tier+'"[^>]*fill="(#[a-f0-9]{6})"','i'));
+      const gradient=svg.match(new RegExp('<linearGradient id="finish-'+side+'-'+tier+'"[^>]*>(.*?)</linearGradient>'));
+      assert.ok(group&&gradient);
+      const ink=group[1], stops=[...gradient[1].matchAll(/stop-color="(#[a-f0-9]{6})"/gi)].map(match=>match[1]);
+      assert.equal(stops.length,3);
+      for(const color of stops) assert.ok(contrast(color,ink)>=7,ink+' on '+color);
     }
   }
 });

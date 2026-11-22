@@ -382,7 +382,7 @@ function renderSilhouettePuzzle(rows,scene,question,measure,ownership){
     '<path d="'+profile+'" fill="none" stroke="#172f49" stroke-width="7.5" stroke-linejoin="round"/><path d="'+profile+'" fill="none" stroke="url(#object-rim)" stroke-width="4.5" stroke-linejoin="round"/>'+foreground.join('')+annotation.join('')+
     '<rect width="1600" height="'+header.height+'" fill="url(#poster-masthead)"/>'+header.title+header.question+header.captions+
     '<text x="800" y="883" text-anchor="middle" font-size="18">Ranks 1–8 are large · 9–13 medium · 14–20 small. Match each number to the full point below.</text></svg>';
-  return {svg,pieces};
+  return {svg:websitePosterSvg(svg),storageSvg:svg,pieces};
 }
 
 function posterSvgBlob(svg, width = 1600, height = 900) {
