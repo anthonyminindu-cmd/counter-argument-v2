@@ -1,0 +1,28 @@
+name: Verify production debate workflows
+on:
+  push:
+    branches: [qa/debate-workflows-nov22]
+permissions:
+  contents: read
+jobs:
+  production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 23
+    strategy:
+      fail-fast: false
+      matrix:
+        journey: [friend, solo]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - run: python -m pip install playwright==1.55.0
+      - name: Exercise the published site
+        env:
+          DK_TEST_URL: https://anthonyminindu-cmd.github.io/counter-argument-v2
+          DK_TEST_RANKING: '1'
+          JOURNEY: ${{ matrix.journey }}
+        run: |
+          if [ "$JOURNEY" = "friend" ]; then
+            python maintenance/e2e/friend_live.py
+          else
+            python maintenance/e2e/solo_live_qa.py
+          fi
