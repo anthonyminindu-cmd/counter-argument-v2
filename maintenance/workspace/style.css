@@ -221,7 +221,7 @@ html{scroll-padding-top:155px}
 .dk-example-positions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
 .dk-example-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:9px; margin:14px 0 20px; }
 .dk-example-card { padding:0; overflow:hidden; margin:0; }
-.dk-example-link { display:block; height:100%; text-decoration:none; }
+.dk-example-link { display:block; text-decoration:none; }
 .dk-example-link:focus-visible { outline-offset:-4px; }
 .dk-example-figure img { display:block; width:100%; height:auto; background:#fffbf3; }
 .dk-example-card-text { display:grid; align-content:start; gap:8px; padding:13px 14px; }
@@ -253,7 +253,7 @@ html{scroll-padding-top:155px}
 .dk-example-card-text h3 { display:flex; align-items:center; justify-content:space-between; gap:14px; }
 .dk-example-card-text h3 .dk-icon { flex:none; color:var(--dk-mint); }
 .dk-example-link:hover h3 { color:var(--dk-mint); }
-.dk-topic-metrics { display:flex; flex-wrap:wrap; align-items:center; gap:5px 14px; margin-top:3px; color:var(--dk-muted); font-size:.83rem; }
+.dk-topic-metrics { display:flex; flex-wrap:wrap; align-items:center; gap:5px 14px; margin-top:3px; color:var(--dk-sub); font-size:.83rem; }
 .dk-topic-metrics span { display:inline-flex; align-items:center; gap:4px; }
 .dk-topic-metrics b { font-variant-numeric:tabular-nums; }
 .dk-topic-metrics .dk-icon { width:15px; height:15px; }
@@ -261,6 +261,11 @@ html{scroll-padding-top:155px}
 .dk-discussion-replies { margin-inline-start:clamp(4px, 1.5vw, 18px); padding-inline-start:clamp(6px, 1.5vw, 18px); border-inline-start:2px solid var(--dk-line); }
 
 .dk-social { margin: .65rem 0; }
+.dk-example-card > .dk-social {
+  margin:0; padding:4px clamp(8px,2vw,18px); border-top:1px solid var(--dk-line);
+  column-gap:clamp(4px,1vw,14px); background:var(--dk-panel);
+}
+.dk-example-card > .dk-social button { min-height:44px; }
 .dk-social button[aria-pressed="true"] .dk-icon { fill:currentColor; }
 .dk-example-discussion { scroll-margin-top:9rem; }
 .dk-example-discussion .dk-replies p { white-space:pre-wrap; overflow-wrap:anywhere; }
