@@ -49,6 +49,12 @@ def create_member(role, page):
         raise RuntimeError("QA signup did not produce a verified session.")
     print("FRIEND_QA_ACCOUNT", result["user"]["id"], email, flush=True)
     expect(page.get_by_role("button", name="Sign out", exact=True)).to_be_visible(timeout=60000)
+    # Authentication updates the header before the signup form finishes saving the profile.
+    page.wait_for_url(lambda url: "/login" not in urlparse(url).path, timeout=60000)
+    profile = Request(API + "/rest/v1/profiles?select=display_name&user_id=eq." + result["user"]["id"],
+                      headers={"apikey": public_key, "Authorization": "Bearer " + result["access_token"]})
+    with urlopen(profile, timeout=20) as response:
+        assert json.load(response) == [{"display_name": display}], "Signup did not save the display name"
     return {"id": result["user"]["id"], "name": display, "email": email,
             "password": password, "access_token": result["access_token"]}
 
