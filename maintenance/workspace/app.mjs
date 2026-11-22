@@ -179,7 +179,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function useNovemberEdition() {
     return useQuery('november-2026',async()=>{
-      const response=await fetch(novemberPath+'edition.json?v=3');
+      const response=await fetch(novemberPath+'edition.json?v=4');
       if(!response.ok)throw Error('The November edition is unavailable.');
       return {data:await response.json()};
     });
@@ -240,7 +240,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
                 h('li',{key:label},h('h4',null,h('span',null,'#'+(i*2+side+1)+' '),label),h('p',null,explanation)))))))),
         h('section',{className:'dk-panel dk-example-discussion'},h('h2',null,'Example discussion'),h('p',null,entry.followUp),
           entry.sampleActivity?h(React.Fragment,null,h(SampleActivity,{entry}),h('p',null,'These example comments are from fictional profiles.'),
-            h('ul',null,...entry.sampleActivity.comments.map((comment,i)=>h('li',{key:i},h('strong',null,comment.name),h('p',null,comment.body))))):
+            h('ul',null,...entry.sampleActivity.comments.map((comment,i)=>h('li',{key:i},h('strong',null,comment.name),...comment.body.split('\n\n').map((paragraph,index)=>h('p',{key:index},paragraph)))))):
             h('ul',null,...entry.comments.map((comment,i)=>h('li',{key:i},comment)))),
         h('section',{className:'dk-example-sources'},h('h2',null,'November context'),h('p',null,entry.context),
           h('ul',null,...entry.sources.map(({label,url})=>h('li',{key:url},h('a',{href:url,className:'dk-link'},label)))))));
