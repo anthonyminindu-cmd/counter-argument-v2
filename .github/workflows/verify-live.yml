@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        journey: [friend, solo]
+        journey: [community]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - run: python -m pip install playwright==1.55.0
@@ -24,5 +24,5 @@ jobs:
           if [ "$JOURNEY" = "friend" ]; then
             python maintenance/e2e/friend_live.py
           else
-            python maintenance/e2e/solo_live_qa.py
+            python maintenance/e2e/community_live_qa.py
           fi
