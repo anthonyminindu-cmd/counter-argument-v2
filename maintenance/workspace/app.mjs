@@ -224,7 +224,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const sample=entry.sampleActivity;
     if(!sample)return null;
     const metrics=[['heart','reactions',sample.reactions],['message','comments',discussionCount(sample.comments)],['eye','impressions',sample.impressions]];
-    return h('div',{className:'dk-topic-metrics'},h('small',{className:'dk-sample-label'},'Simulated activity'),
+    return h('div',{className:'dk-topic-metrics'},h('small',{className:'dk-sample-label'},'Sample activity'),
       ...metrics.map(([glyph,label,count])=>h('span',{key:label},icon(glyph),h('b',null,count.toLocaleString()),' '+label)));
   }
   function ExampleCard({entry}) {
@@ -276,7 +276,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
               h('ul',null,...entry.arguments.slice(side*10,side*10+10).map(([label,explanation],i)=>
                 h('li',{key:label},h('h4',null,h('span',null,'#'+(i*2+side+1)+' '),label),h('p',null,explanation)))))))),
         h('section',{className:'dk-panel dk-example-discussion'},h('h2',null,'Example discussion'),h('p',null,entry.followUp),
-          entry.sampleActivity?h(React.Fragment,null,h(SampleActivity,{entry}),h('p',null,'These comments are part of a simulated discussion.'),
+          entry.sampleActivity?h(React.Fragment,null,h(SampleActivity,{entry}),
             personas.data ? renderDiscussion(entry.sampleActivity.comments, personas.data) :
               personas.error ? h('button',{onClick:personas.refresh},'Retry loading commenters') : status('Loading discussion…')):
             h('ul',null,...entry.comments.map((comment,i)=>h('li',{key:i},comment)))),
@@ -307,7 +307,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       personas.error || edition.error ? h('button',{onClick:()=>{personas.refresh();edition.refresh();}},'Retry loading profile') :
       !personas.data ? status('Loading profile…') : !person ? h('h1',null,'Profile unavailable') :
       h('section',{className:'dk-panel'},h('h1',null,person.name),
-        h('p',null,'@'+person.handle),h('p',null,'This profile participates in simulated discussions.'),h('p',null,person.bio),h('p',null,'Debate style · '+person.style),
+        h('p',null,'@'+person.handle),h('p',null,person.bio),h('p',null,'Debate style · '+person.style),
         h('h2',null,'Discussion history'),
         ...discussions.map(({entry,comments})=>h('article',{key:entry.id,className:'dk-card'},
           h('h3',null,link(exampleRoute(entry.id),entry.question,'dk-link')),
@@ -402,7 +402,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       (rows.length>0||commenters.matches.length>0)&&h('ul',{className:'dk-list'},
         ...rows.map(row=>h('li',{key:row.target},h('div',null,h('strong',null,row.label),link(friend+'&person='+encodeURIComponent(row.query||row.label),'Invite to debate')),h(Save,{kind:'person',target:row.target,label:row.label}))),
         ...commenters.matches.map(person=>h('li',{key:person.user_id},h('div',null,
-          link(person.profileUrl,person.display_name),h('small',null,'@'+person.username)),h('small',null,'Simulated discussion profile')))));
+          link(person.profileUrl,person.display_name),h('small',null,'@'+person.username))))));
   }
   function Profile(){
     const {user,loading}=useAuth(),loc=useLocation(),c=useContext(Collection);

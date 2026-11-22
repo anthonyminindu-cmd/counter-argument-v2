@@ -22,6 +22,6 @@
   {
     "id": "link-commenters-instead-of-inviting",
     "find": "i.jsx(G,{size:\"sm\",onClick:()=>y(g),",
-    "replace": "g.profileUrl?i.jsxs(\"div\",{className:\"text-right\",children:[i.jsx(Qe,{to:g.profileUrl,className:\"dk-link\",children:\"View profile\"}),i.jsx(\"p\",{className:\"text-xs text-muted-foreground\",children:\"Simulated discussion profile\"})]}):i.jsx(G,{size:\"sm\",onClick:()=>y(g),"
+    "replace": "g.profileUrl?i.jsx(Qe,{to:g.profileUrl,className:\"dk-link\",children:\"View profile\"}):i.jsx(G,{size:\"sm\",onClick:()=>y(g),"
   }
 ]

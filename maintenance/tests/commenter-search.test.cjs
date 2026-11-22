@@ -18,6 +18,6 @@ test('friend search finds the existing commenter profile by name or @handle', as
   }
   assert.equal(search('@').matches.length, 0);
   assert.equal(search('no-matching-profile').matches.length, 0);
-  assert.match(output, /g\.profileUrl\?i\.jsxs\("div".*?children:"View profile".*?:i\.jsx\(G,\{size:"sm",onClick:\(\)=>y\(g\)/);
+  assert.match(output, /g\.profileUrl\?i\.jsx\(Qe,\{to:g\.profileUrl,.*?children:"View profile".*?:i\.jsx\(G,\{size:"sm",onClick:\(\)=>y\(g\)/);
   assert.match(output, /commenters\.matches\.map\(person=>h\('li'/);
 });
