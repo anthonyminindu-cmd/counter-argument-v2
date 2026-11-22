@@ -375,7 +375,7 @@ if __name__ == "__main__":
         # Here the sender keeps browsing after sending another invitation.
         send(sender, b)
         sender.get_by_role("link", name="Feed", exact=True).click()
-        expect(sender.get_by_role("heading", name="Community feed", exact=True)).to_be_visible()
+        expect(sender.get_by_role("heading", name="Trending", exact=True)).to_be_visible()
         await_popup(receiver, a["name"]).get_by_role("button", name="Accept invitation", exact=True).click()
         alert = sender.get_by_role("dialog")
         expect(alert.get_by_text(b["name"] + " accepted your invitation", exact=True)).to_be_visible(timeout=30000)

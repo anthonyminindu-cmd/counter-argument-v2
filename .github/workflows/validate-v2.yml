@@ -14,3 +14,4 @@ jobs:
           node-version: '24'
       - run: node --test maintenance/tests/*.test.cjs
       - run: node maintenance/build.mjs --check
+      - run: node maintenance/editorial/render-poster.mjs --check

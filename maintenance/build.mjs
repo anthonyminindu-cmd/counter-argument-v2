@@ -31,7 +31,8 @@ export function compile() {
   if (start < 0 || end <= start || digest(output.slice(start,end)) !== '8fca088b30f740937ae317444a701c391e0894f63216ca9d96403711a0e93f97') {
     throw new Error('The V2 custom poster renderer changed. Review the integration before building.');
   }
-  const silhouette = fs.readFileSync(path.join(root, 'maintenance/renderer/silhouette.js'), 'utf8');
+  const finish = fs.readFileSync(path.join(root, 'maintenance/renderer/poster-finish.mjs'), 'utf8').replace(/^export /gm, '');
+  const silhouette = finish + '\n' + fs.readFileSync(path.join(root, 'maintenance/renderer/silhouette.js'), 'utf8');
   output = output.slice(0,start) + silhouette + output.slice(end);
   const mount = 'Zw(document.getElementById("root")).render(i.jsx(aM,{}));';
   if (output.split(mount).length !== 2) throw new Error('Review the V2 mount before integrating the workspace');

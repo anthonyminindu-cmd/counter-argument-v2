@@ -11,7 +11,7 @@ test.before(async()=>{
   const start=source.indexOf('const gi=1600,'),end=source.indexOf('async function z5(',start);
   assert.ok(start>0&&end>start);
   const context={getComputedStyle:node=>node.style};vm.createContext(context);
-  vm.runInContext(source.slice(start,end)+';globalThis.api={render:F5,header:V2SceneHeader,check:x_,palette:posterPalette};',context);
+  vm.runInContext(source.slice(start,end)+';globalThis.api={render:F5,header:V2SceneHeader,check:x_,palette:posterMaterials};',context);
   ({render,header,check,palette}=context.api);
 });
 const measure=text=>text.length*13;
@@ -44,8 +44,11 @@ test('poster label inks remain readable across every rank and background tint',(
     return channels[0]*.2126+channels[1]*.7152+channels[2]*.0722;
   };
   const contrast=(a,b)=>(Math.max(luminance(a),luminance(b))+.05)/(Math.min(luminance(a),luminance(b))+.05);
-  for(const [fills,ink] of [[palette.left.face,'#ffffff'],[palette.left.surround,'#203952'],[palette.right.face,'#261902'],[palette.right.surround,'#493C2C']]){
-    for(const fill of fills) assert.ok(contrast(fill,ink)>=4.5,ink+' on '+fill);
+  for(const material of Object.values(palette)) {
+    for(const tier of ['core','medium','small']) {
+      const ink=tier==='core'?material.coreInk:material.ink;
+      for(const color of material[tier]) assert.ok(contrast(color,ink)>=7,ink+' on '+color);
+    }
   }
 });
 test('long valid title wraps at the original 42px instead of overflowing or dropping words',()=>{
@@ -270,7 +273,7 @@ function puzzleArea(pathData) {
   return Math.abs(twiceArea)/2;
 }
 
-test('the full outline is tiled by twenty arguments with eight larger pieces across ownership splits', () => {
+test('twenty pieces use the main outline and three ranked sizes across ownership splits', () => {
   for (const pattern of ['ABBBBBAAABAABAAABBBA', 'AB'.repeat(10), 'A'.repeat(10)+'B'.repeat(10), 'B'.repeat(10)+'A'.repeat(10)]) {
     const owners = new Map(rows.map((r,i)=>[r.id,pattern[i]==='A'?'left':'right']));
     const poster = render(rows,plan,'The complete question?',measure,owners);
@@ -279,11 +282,13 @@ test('the full outline is tiled by twenty arguments with eight larger pieces acr
     const surface=poster.svg.match(/<clipPath id="subject-outline"><path d="([^"]+)"/)[1];
     const silhouetteArea=puzzleArea(surface);
     assert.ok(poster.pieces.every(p=>p.inside));
-    assert.ok(Math.abs(areas.reduce((a,b)=>a+b)-silhouetteArea)<silhouetteArea*.001);
+    const coverage=areas.reduce((a,b)=>a+b)/silhouetteArea;
+    assert.ok(coverage>.77 && coverage<1.003,'physical face coverage '+coverage);
+    assert.ok(Math.min(...areas.slice(8,13))>Math.max(...areas.slice(13)),pattern);
     assert.ok(Math.min(...areas.slice(0,8))>Math.max(...areas.slice(8)),pattern);
     for(const p of poster.pieces) {
       assert.equal(p.side,owners.get(p.id));
-      assert.equal(p.level,p.rank<=8?'core':'outer');
+      assert.equal(p.level,p.rank<=8?'core':p.rank<=13?'medium':'small');
       assert.ok(p.lineLengths.every(width=>width<=p.bounds.right-p.bounds.left));
       assert.equal(p.lines.join(' '),p.statement);
     }
@@ -368,9 +373,10 @@ test('the shared silhouette stays centered across all nine ownership splits of t
     assert.ok(Math.abs(Math.min(...center)+Math.max(...center)-1600)<.1);
     const cores=pieces.filter(p=>p.level==='core');
     assert.equal(cores.length,8);
-    assert.ok(cores.some(p=>p.x<800)&&cores.some(p=>p.x>800));
+    assert.equal(cores.filter(p=>p.x<800).length,count);
     for(const p of pieces){
       assert.equal(p.side,owners.get(p.id));
+      assert.ok(p.side==='left'?p.bounds.right<=800:p.bounds.left>=800);
       assert.ok(p.rankSize<p.fontSize);
       assert.ok(p.x>=p.bounds.left && p.x<=p.bounds.right);
     }

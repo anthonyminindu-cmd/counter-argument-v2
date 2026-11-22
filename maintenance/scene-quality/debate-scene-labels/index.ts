@@ -36,7 +36,7 @@ async function generateScene(req: Request, silhouette = false, context?:ReceiptC
   }).strict();
   const scaledSubject = subject.extend({aspectRatio:z.number().min(0.4).max(3)});
   const composition = silhouette
-    ? z.object({main:scaledSubject.extend({drawing:z.enum(['custom','open_laptop','plug_in_energy_meter','robot_bust'])}),context:scaledSubject.nullable()}).strict()
+    ? z.object({main:scaledSubject.extend({drawing:z.enum(['custom','open_laptop','plug_in_energy_meter','robot_bust','open_book_reader','alarm_clock','street_tree','side_view_car'])}),context:scaledSubject.nullable()}).strict()
     : z.object(Object.fromEntries(subjectRoles.map(role=>[role,subject]))).strict();
   const caption=z.string().min(1).max(46);
   const baseSchema=z.object({
