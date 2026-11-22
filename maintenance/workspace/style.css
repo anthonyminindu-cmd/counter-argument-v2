@@ -257,6 +257,5 @@ html{scroll-padding-top:155px}
 .dk-topic-metrics span { display:inline-flex; align-items:center; gap:4px; }
 .dk-topic-metrics b { font-variant-numeric:tabular-nums; }
 .dk-topic-metrics .dk-icon { width:15px; height:15px; }
-.dk-sample-label { font-size:.8rem; }
 
 .dk-discussion-replies { margin-inline-start:clamp(4px, 1.5vw, 18px); padding-inline-start:clamp(6px, 1.5vw, 18px); border-inline-start:2px solid var(--dk-line); }

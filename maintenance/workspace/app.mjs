@@ -224,7 +224,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const sample=entry.sampleActivity;
     if(!sample)return null;
     const metrics=[['heart','reactions',sample.reactions],['message','comments',discussionCount(sample.comments)],['eye','impressions',sample.impressions]];
-    return h('div',{className:'dk-topic-metrics'},h('small',{className:'dk-sample-label'},'Sample activity'),
+    return h('div',{className:'dk-topic-metrics'},
       ...metrics.map(([glyph,label,count])=>h('span',{key:label},icon(glyph),h('b',null,count.toLocaleString()),' '+label)));
   }
   function ExampleCard({entry}) {
