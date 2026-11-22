@@ -26,8 +26,8 @@ const feedDateFormat=new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric
 export function publicPosterEntries(ranked,edition) {
   const editorial=new Map(edition.map(entry=>[entry.id,entry]));
   return ranked.filter(row=>row.published&&(row.has_artwork||editorial.has(row.slug))).map(row=>{
-    const entry=editorial.get(row.slug);
-    return {id:row.slug,question:entry?.question??row.title,category:entry?.category??row.category,published_at:row.published_at};
+    const entry=editorial.get(row.slug)||{id:row.slug,question:row.title,category:row.category};
+    return {...entry,published_at:row.published_at};
   });
 }
 

@@ -10,10 +10,12 @@ test('Trending keeps ranked, published posters with available content', async ()
     {slug:'private', published:false, has_artwork:true},
     {slug:'editorial', published:true, has_artwork:false, published_at:publication}
   ];
-  const posts = publicPosterEntries(ranked, [{id:'editorial',question:'Editorial question',category:'Policy'}]);
+  const sampleActivity = {comments:[{replies:[{}]}]};
+  const posts = publicPosterEntries(ranked, [{id:'editorial',question:'Editorial question',category:'Policy',sampleActivity}]);
   assert.deepEqual(posts.map(p=>p.id), ['member','editorial']);
   assert.equal(posts[0].question, 'Member question');
   assert.equal(posts[1].question, 'Editorial question');
+  assert.deepEqual(posts[1].sampleActivity, sampleActivity);
   assert.equal(posts[1].published_at, publication);
 });
 
