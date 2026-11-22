@@ -122,7 +122,25 @@
         },
         {
           "name": "Callum Reid",
-          "body": "A construction boom and a permanent jobs program are two different things. I want to see the staffing plan for year five before we promise a twenty-year tax break."
+          "body": "A construction boom and a permanent jobs program are two different things. I want to see the staffing plan for year five before we promise a twenty-year tax break.",
+          "replies": [
+            {
+              "name": "Noah Bennett",
+              "body": "Why count only the jobs inside the building? Construction crews and nearby businesses get work too.",
+              "replies": [
+                {
+                  "name": "Callum Reid",
+                  "body": "Those jobs count. My question is how many are still there after the crews leave.",
+                  "replies": [
+                    {
+                      "name": "Noah Bennett",
+                      "body": "Fair. I'd ask for a separate estimate of temporary and permanent jobs before voting."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Noah Bennett",
@@ -138,7 +156,19 @@
         },
         {
           "name": "Haruto Nakajima",
-          "body": "Water would be my first question, especially in August."
+          "body": "Water would be my first question, especially in August.",
+          "replies": [
+            {
+              "name": "Achieng Odhiambo",
+              "body": "Water use depends on the cooling system. I'd ask what they're installing before assuming the worst.",
+              "replies": [
+                {
+                  "name": "Haruto Nakajima",
+                  "body": "Agreed. I'd still want a cap for drought days written into the deal."
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Achieng Odhiambo",
@@ -319,7 +349,25 @@
         },
         {
           "name": "Renata Queiroz",
-          "body": "Would the savings reach the checkout line? I'd love to see a store put its prices before and after the change next to each other."
+          "body": "Would the savings reach the checkout line? I'd love to see a store put its prices before and after the change next to each other.",
+          "replies": [
+            {
+              "name": "Haruto Nakajima",
+              "body": "Prices can move because of a bad harvest too. A before-and-after photo won't tell you what the tariff did.",
+              "replies": [
+                {
+                  "name": "Renata Queiroz",
+                  "body": "True. I'd compare several products that got the cut with similar products that didn't.",
+                  "replies": [
+                    {
+                      "name": "Haruto Nakajima",
+                      "body": "That would help, especially if the stores show what they paid their suppliers."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Haruto Nakajima",
@@ -335,7 +383,19 @@
         },
         {
           "name": "Leila Hussain",
-          "body": "Leave fresh produce alone during the local harvest and revisit it in winter."
+          "body": "Leave fresh produce alone during the local harvest and revisit it in winter.",
+          "replies": [
+            {
+              "name": "Lily Chen",
+              "body": "Seasonal rules sound simple until a freeze wipes out the local crop.",
+              "replies": [
+                {
+                  "name": "Leila Hussain",
+                  "body": "Then give stores a way to request a temporary exception."
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Lily Chen",
@@ -492,7 +552,25 @@
         },
         {
           "name": "Devin Miller",
-          "body": "The premium is only half my problem. I can afford the plan and still put off a visit because of the deductible."
+          "body": "The premium is only half my problem. I can afford the plan and still put off a visit because of the deductible.",
+          "replies": [
+            {
+              "name": "Phoebe Clarke",
+              "body": "Wouldn't smaller deductibles just push the premiums back up?",
+              "replies": [
+                {
+                  "name": "Devin Miller",
+                  "body": "They could. I'd compare the yearly cost for someone who actually uses the plan.",
+                  "replies": [
+                    {
+                      "name": "Phoebe Clarke",
+                      "body": "That comparison would be more useful to me than the monthly price alone."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Phoebe Clarke",
@@ -508,7 +586,19 @@
         },
         {
           "name": "Yassin Hegazy",
-          "body": "How about a smaller credit that lasts? The annual cliff is exhausting."
+          "body": "How about a smaller credit that lasts? The annual cliff is exhausting.",
+          "replies": [
+            {
+              "name": "Manon Lefèvre",
+              "body": "A smaller credit still leaves some people facing a bill they can't pay.",
+              "replies": [
+                {
+                  "name": "Yassin Hegazy",
+                  "body": "I'd taper it with income. I care as much about avoiding a sudden drop as the dollar amount."
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Manon Lefèvre",
@@ -673,7 +763,25 @@
         },
         {
           "name": "Wanjiku Muriuki",
-          "body": "I use a playlist to follow a full drawing lesson. Having to tap every two minutes would make that harder, especially with paint all over my hands."
+          "body": "I use a playlist to follow a full drawing lesson. Having to tap every two minutes would make that harder, especially with paint all over my hands.",
+          "replies": [
+            {
+              "name": "Emeka Okafor",
+              "body": "A drawing playlist feels different from a feed that keeps picking new clips.",
+              "replies": [
+                {
+                  "name": "Wanjiku Muriuki",
+                  "body": "It does. My worry is that a broad rule would treat them the same.",
+                  "replies": [
+                    {
+                      "name": "Emeka Okafor",
+                      "body": "Then I'd keep autoplay for playlists the viewer deliberately starts."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Emeka Okafor",
@@ -689,7 +797,19 @@
         },
         {
           "name": "Marta Szymańska",
-          "body": "Our family can decide, sure. But changing one setting on every app after every update is a lot of work for a parent."
+          "body": "Our family can decide, sure. But changing one setting on every app after every update is a lot of work for a parent.",
+          "replies": [
+            {
+              "name": "Emilio Zamora",
+              "body": "Why should every family have to accept the same default?",
+              "replies": [
+                {
+                  "name": "Marta Szymańska",
+                  "body": "They could choose a different setting. An off default just gives families a starting point."
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Emilio Zamora",
@@ -842,7 +962,25 @@
         },
         {
           "name": "Rhys Morgan",
-          "body": "I worry a rigid deadline would give the other side an incentive to wait out the vote. I'd want a way to extend it briefly if troops are in immediate danger."
+          "body": "I worry a rigid deadline would give the other side an incentive to wait out the vote. I'd want a way to extend it briefly if troops are in immediate danger.",
+          "replies": [
+            {
+              "name": "Salma Hassan",
+              "body": "If there’s always an exception for danger, what stops the exception from lasting months?",
+              "replies": [
+                {
+                  "name": "Rhys Morgan",
+                  "body": "Give the extension its own short expiration and say what it covers.",
+                  "replies": [
+                    {
+                      "name": "Salma Hassan",
+                      "body": "I could live with that if Congress still has to vote on the wider mission."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Salma Hassan",
@@ -858,7 +996,19 @@
         },
         {
           "name": "Yassin Hegazy",
-          "body": "Members can already demand answers. I'd like to see them use the authority they have."
+          "body": "Members can already demand answers. I'd like to see them use the authority they have.",
+          "replies": [
+            {
+              "name": "Reem Mahmoud",
+              "body": "Hearings can get answers. I still want a vote on whether a campaign continues.",
+              "replies": [
+                {
+                  "name": "Yassin Hegazy",
+                  "body": "I'd want both. Give lawmakers the facts before making them take a position."
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Reem Mahmoud",
@@ -1023,7 +1173,25 @@
         },
         {
           "name": "Rahul Krishnan",
-          "body": "If stations don't pass through the whole cut, we give up road money and still pay almost the same at the pump."
+          "body": "If stations don't pass through the whole cut, we give up road money and still pay almost the same at the pump.",
+          "replies": [
+            {
+              "name": "Sadiq Lawal",
+              "body": "Stations down the street compete with each other. Why wouldn't they pass it through?",
+              "replies": [
+                {
+                  "name": "Rahul Krishnan",
+                  "body": "They might. I'd want to see how quickly prices move and by how much.",
+                  "replies": [
+                    {
+                      "name": "Sadiq Lawal",
+                      "body": "Fair enough. I'd especially want to see what happens in towns with only one station."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Sadiq Lawal",
@@ -1039,7 +1207,19 @@
         },
         {
           "name": "Ji-ho Kim",
-          "body": "I'd support a short pause if Congress replaces every dollar it takes from road repairs and sets an end date now."
+          "body": "I'd support a short pause if Congress replaces every dollar it takes from road repairs and sets an end date now.",
+          "replies": [
+            {
+              "name": "Imogen Shaw",
+              "body": "Where does the replacement road money come from?",
+              "replies": [
+                {
+                  "name": "Ji-ho Kim",
+                  "body": "That should be in the same bill. If lawmakers can't name a source, I'd drop the pause."
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Imogen Shaw",
@@ -1200,7 +1380,25 @@
         },
         {
           "name": "Rahul Krishnan",
-          "body": "I’d allow it near transit and grocery stores. A strip of offices on a six-lane road with no sidewalk needs a different plan."
+          "body": "I’d allow it near transit and grocery stores. A strip of offices on a six-lane road with no sidewalk needs a different plan.",
+          "replies": [
+            {
+              "name": "Tunde Adebayo",
+              "body": "If we wait for sidewalks and stores, people may never get the housing.",
+              "replies": [
+                {
+                  "name": "Rahul Krishnan",
+                  "body": "Allow the housing and make the road crossing part of the project.",
+                  "replies": [
+                    {
+                      "name": "Tunde Adebayo",
+                      "body": "That works if the crossing is open by move-in day."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Tunde Adebayo",
@@ -1216,7 +1414,19 @@
         },
         {
           "name": "Hye-jin Lee",
-          "body": "Keeping an empty parking lot because the map says “office” feels like a waste."
+          "body": "Keeping an empty parking lot because the map says “office” feels like a waste.",
+          "replies": [
+            {
+              "name": "Noah Bennett",
+              "body": "Some of those lots may fill up again. Who decides what's truly vacant?",
+              "replies": [
+                {
+                  "name": "Hye-jin Lee",
+                  "body": "Start with lots that have been empty for years and publish how they're picked."
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Noah Bennett",
@@ -1365,7 +1575,25 @@
         },
         {
           "name": "Neha Kapoor",
-          "body": "A single bill can still have different start dates. I'd want the application process and staffing spelled out before anyone is told to sign up."
+          "body": "A single bill can still have different start dates. I'd want the application process and staffing spelled out before anyone is told to sign up.",
+          "replies": [
+            {
+              "name": "Haruto Nakajima",
+              "body": "Different start dates could mean one part takes effect while the other keeps getting delayed.",
+              "replies": [
+                {
+                  "name": "Neha Kapoor",
+                  "body": "That's why I'd put dates and staffing commitments in the bill itself.",
+                  "replies": [
+                    {
+                      "name": "Haruto Nakajima",
+                      "body": "I'd also ask Congress to publish progress on both parts so we can see what's slipping."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Haruto Nakajima",
@@ -1381,7 +1609,19 @@
         },
         {
           "name": "Yassin Hegazy",
-          "body": "A combined bill makes sense if the two parts can work independently after it passes. One missed hiring deadline shouldn't freeze everything else."
+          "body": "A combined bill makes sense if the two parts can work independently after it passes. One missed hiring deadline shouldn't freeze everything else.",
+          "replies": [
+            {
+              "name": "Atieno Onyango",
+              "body": "If the parts can work independently, why bundle them at all?",
+              "replies": [
+                {
+                  "name": "Yassin Hegazy",
+                  "body": "The votes to pass them may depend on each other. The agencies can still run them separately."
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Atieno Onyango",
@@ -1554,7 +1794,25 @@
         },
         {
           "name": "Rocío Ferreyra",
-          "body": "I'd start with a shared target for coal and let the timelines for gas vary with the grid."
+          "body": "I'd start with a shared target for coal and let the timelines for gas vary with the grid.",
+          "replies": [
+            {
+              "name": "Sadiq Lawal",
+              "body": "A later gas deadline could become an excuse to build plants that run for decades.",
+              "replies": [
+                {
+                  "name": "Rocío Ferreyra",
+                  "body": "Then distinguish new plants from ones already keeping the lights on.",
+                  "replies": [
+                    {
+                      "name": "Sadiq Lawal",
+                      "body": "I'd put that distinction in the agreement so the exception has an endpoint."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Sadiq Lawal",
@@ -1570,7 +1828,19 @@
         },
         {
           "name": "Samuel Kariuki",
-          "body": "I work around heavy equipment. I'd like to see a plan for backup power and parts before anyone announces a shutdown date."
+          "body": "I work around heavy equipment. I'd like to see a plan for backup power and parts before anyone announces a shutdown date.",
+          "replies": [
+            {
+              "name": "Aoi Fujimoto",
+              "body": "Does backup power have to use the same fuel as the main system?",
+              "replies": [
+                {
+                  "name": "Samuel Kariuki",
+                  "body": "No. I'd want to see what can run long enough during an outage and how we'd keep it supplied."
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Aoi Fujimoto",
@@ -1723,7 +1993,25 @@
         },
         {
           "name": "Lily Chen",
-          "body": "The big question is whether the backup uses the same login. If the login service is down too, you're back where you started."
+          "body": "The big question is whether the backup uses the same login. If the login service is down too, you're back where you started.",
+          "replies": [
+            {
+              "name": "Priya Das",
+              "body": "An independent login is another password people might forget.",
+              "replies": [
+                {
+                  "name": "Lily Chen",
+                  "body": "Exactly why I'd run a drill. We'd find out who can actually get in.",
+                  "replies": [
+                    {
+                      "name": "Priya Das",
+                      "body": "I'd keep a phone list too for anyone who still gets locked out."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Priya Das",
@@ -1739,7 +2027,19 @@
         },
         {
           "name": "Neha Kapoor",
-          "body": "An SMS notification is fine for “check the status page.” Please keep customer details out of it."
+          "body": "An SMS notification is fine for “check the status page.” Please keep customer details out of it.",
+          "replies": [
+            {
+              "name": "Sadiq Lawal",
+              "body": "What if the status page is down too?",
+              "replies": [
+                {
+                  "name": "Neha Kapoor",
+                  "body": "Put the basic next step in the text and keep the status page on a separate service."
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Sadiq Lawal",

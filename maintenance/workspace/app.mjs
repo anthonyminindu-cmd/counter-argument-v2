@@ -179,15 +179,24 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function useNovemberEdition() {
     return useQuery('november-2026',async()=>{
-      const response=await fetch(novemberPath+'edition.json?v=4');
+      const response=await fetch(novemberPath+'edition.json?v=5');
       if(!response.ok)throw Error('The November edition is unavailable.');
       return {data:await response.json()};
     });
   }
+  function discussionCount(comments) {
+    return comments.reduce((total, comment) => total + 1 + discussionCount(comment.replies ?? []), 0);
+  }
+  function renderDiscussion(comments, nested = false) {
+    return h('ul', {className: nested ? 'dk-discussion-replies' : undefined}, ...comments.map((comment, index) =>
+      h('li', {key: index}, h('strong', null, comment.name),
+        ...comment.body.split('\n\n').map((paragraph, i) => h('p', {key: i}, paragraph)),
+        comment.replies?.length ? renderDiscussion(comment.replies, true) : null)));
+  }
   function SampleActivity({entry}) {
     const sample=entry.sampleActivity;
     if(!sample)return null;
-    const metrics=[['heart','reactions',sample.reactions],['message','comments',sample.comments.length],['eye','impressions',sample.impressions]];
+    const metrics=[['heart','reactions',sample.reactions],['message','comments',discussionCount(sample.comments)],['eye','impressions',sample.impressions]];
     return h('div',{className:'dk-topic-metrics'},h('small',{className:'dk-sample-label'},'Simulated activity'),
       ...metrics.map(([glyph,label,count])=>h('span',{key:label},icon(glyph),h('b',null,count.toLocaleString()),' '+label)));
   }
@@ -240,7 +249,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
                 h('li',{key:label},h('h4',null,h('span',null,'#'+(i*2+side+1)+' '),label),h('p',null,explanation)))))))),
         h('section',{className:'dk-panel dk-example-discussion'},h('h2',null,'Example discussion'),h('p',null,entry.followUp),
           entry.sampleActivity?h(React.Fragment,null,h(SampleActivity,{entry}),h('p',null,'These example comments are from fictional profiles.'),
-            h('ul',null,...entry.sampleActivity.comments.map((comment,i)=>h('li',{key:i},h('strong',null,comment.name),...comment.body.split('\n\n').map((paragraph,index)=>h('p',{key:index},paragraph)))))):
+            renderDiscussion(entry.sampleActivity.comments)):
             h('ul',null,...entry.comments.map((comment,i)=>h('li',{key:i},comment)))),
         h('section',{className:'dk-example-sources'},h('h2',null,'November context'),h('p',null,entry.context),
           h('ul',null,...entry.sources.map(({label,url})=>h('li',{key:url},h('a',{href:url,className:'dk-link'},label)))))));
