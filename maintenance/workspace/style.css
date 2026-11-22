@@ -218,12 +218,12 @@ html{scroll-padding-top:155px}
 .dk-friend-points li a { text-decoration:underline; }
 @media(max-width:600px){.dk-friend-points button { width:100%; }}
 .dk-example-debate header small { color:var(--dk-warm); font-weight:680; }
-.dk-example-grid,.dk-example-positions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
-.dk-example-grid { margin:14px 0 20px; }
+.dk-example-positions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+.dk-example-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:9px; margin:14px 0 20px; }
 .dk-example-card { padding:0; overflow:hidden; margin:0; }
 .dk-example-link { display:block; height:100%; text-decoration:none; }
 .dk-example-link:focus-visible { outline-offset:-4px; }
-.dk-example-link img,.dk-example-figure img { display:block; width:100%; height:auto; background:#fffbf3; }
+.dk-example-figure img { display:block; width:100%; height:auto; background:#fffbf3; }
 .dk-example-card-text { display:grid; align-content:start; gap:8px; padding:13px 14px; }
 .dk-example-card-text h3 { font-size:1.13rem; letter-spacing:-.022em; line-height:1.3; }
 .dk-example-card-text .dk-link { display:inline-flex; gap:5px; align-items:center; }
@@ -245,8 +245,16 @@ html{scroll-padding-top:155px}
 .dk-suggested-topic { margin:12px 0 18px; }
 @media(max-width:570px) {
   .dk-example-grid,.dk-example-positions { grid-template-columns:1fr; }
-  .dk-example-link { display:grid; grid-template-columns:34% minmax(0,1fr); align-items:center; }
-  .dk-example-link img { border-radius:6px; margin-left:7px; width:calc(100% - 7px); }
   .dk-example-card-text { padding:9px 11px; }
   .dk-example-card-text h3 { font-size:1rem; }
 }
+
+.dk-example-card-text { padding:15px 18px; }
+.dk-example-card-text h3 { display:flex; align-items:center; justify-content:space-between; gap:14px; }
+.dk-example-card-text h3 .dk-icon { flex:none; color:var(--dk-mint); }
+.dk-example-link:hover h3 { color:var(--dk-mint); }
+.dk-topic-metrics { display:flex; flex-wrap:wrap; align-items:center; gap:5px 14px; margin-top:3px; color:var(--dk-muted); font-size:.83rem; }
+.dk-topic-metrics span { display:inline-flex; align-items:center; gap:4px; }
+.dk-topic-metrics b { font-variant-numeric:tabular-nums; }
+.dk-topic-metrics .dk-icon { width:15px; height:15px; }
+.dk-sample-label { font-size:.8rem; }

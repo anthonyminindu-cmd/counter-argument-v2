@@ -37,7 +37,7 @@ test('Chromium verifies three poster subjects, full-size viewing and native PNG 
           const readVector=async()=>new DOMParser().parseFromString(await vector.text(),'image/svg+xml').documentElement;
           HTMLAnchorElement.prototype.click=function(){};
           const paths=[];
-          for(const drawing of ['open_laptop','plug_in_energy_meter','robot_bust']){
+          for(const drawing of ['open_laptop','plug_in_energy_meter','robot_bust','alarm_clock','open_book_reader','side_view_car','street_tree']){
             const scene={title:'Which platform best fits the business?',overview:'Existing app requirements and different job needs shape the choice.',profile:'custom',objects:[{name:drawing,drawing,outline,details:[[outline[0],outline[1]]]}],summaries,sideTitles:['First position','Second position']};
             const owners=new Map(rows.map((r,i)=>[r.id,i<10?'right':'left']));
             const poster=F5(rows,scene,'Which option fits this use?',text=>measure.measureText(text).width,owners);
@@ -59,6 +59,14 @@ test('Chromium verifies three poster subjects, full-size viewing and native PNG 
               if(centers.some(center=>!outline.isPointInFill(center)) || centers.filter(p=>p.y<body.y+body.height*.44).length<4) throw Error('Robot head or body lost its labels');
             }
             paths.push(poster.pieces.map(p=>p.d).join(''));
+            for(const [tier,count] of [['core',8],['medium',5],['small',7]]){
+              if(svg.querySelectorAll('[data-piece-tier="'+tier+'"]').length!==count)throw Error('Wrong rank tiers in '+drawing);
+            }
+            for(const g of svg.querySelectorAll('[data-rank]')){
+              const b=g.getBBox(),left=g.dataset.side==='left';
+              if(left?b.x+b.width>800:b.x<800)throw Error('Crossed participant divide in '+drawing);
+            }
+            if(!['open_laptop','plug_in_energy_meter','robot_bust'].includes(drawing))continue;
             await z5(svg);
             const image=await createImageBitmap(png);
             const rasterSource=await readVector();
@@ -87,7 +95,15 @@ test('Chromium verifies three poster subjects, full-size viewing and native PNG 
               };
               try{
                 png=undefined;
-                await z5(svg);
+                for(const [tier,count] of [['core',8],['medium',5],['small',7]]){
+              if(svg.querySelectorAll('[data-piece-tier="'+tier+'"]').length!==count)throw Error('Wrong rank tiers in '+drawing);
+            }
+            for(const g of svg.querySelectorAll('[data-rank]')){
+              const b=g.getBBox(),left=g.dataset.side==='left';
+              if(left?b.x+b.width>800:b.x<800)throw Error('Crossed participant divide in '+drawing);
+            }
+            if(!['open_laptop','plug_in_energy_meter','robot_bust'].includes(drawing))continue;
+            await z5(svg);
                 const fallback=await createImageBitmap(png);
                 if(fallback.width!==4480||fallback.height!==2520) throw Error('Reduced-memory export size is wrong');
                 fallback.close();

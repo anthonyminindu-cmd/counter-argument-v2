@@ -2,7 +2,7 @@
   {
     "id": "version-reader-poster",
     "find": "const Wf=\"illustrated-debate-silhouette-v6\"",
-    "replace": "const Wf=\"illustrated-debate-silhouette-v7.2\""
+    "replace": "const Wf=\"illustrated-debate-silhouette-v8.0\""
   },
   {
     "id": "request-reader-poster",
