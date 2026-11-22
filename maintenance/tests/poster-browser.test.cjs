@@ -74,7 +74,7 @@ test('Chromium verifies three poster subjects, full-size viewing and native PNG 
             const sample=document.createElement('canvas').getContext('2d');
             sample.drawImage(image,4,4,1,1,0,0,1,1);
             const [r,g,b,alpha]=sample.getImageData(0,0,1,1).data;
-            if(r>35||g>65||b<50||alpha!==255) throw Error('Navy masthead missing from export');
+            if(Math.abs(r-16)>2||Math.abs(g-25)>2||Math.abs(b-16)>2||alpha!==255) throw Error('Expected the website’s dark green masthead in the PNG export');
             image.close();
             await downloadPoster(svg,'debate-scene.svg','svg');
             const exported=await readVector();
