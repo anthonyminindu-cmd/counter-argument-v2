@@ -83,14 +83,15 @@ function labelGroup(card) {
   const firstY = rankY + 11 + text.size * .8;
   const spans = text.lines.map((line, i) => `<tspan x="${x}" y="${firstY + i * lineHeight}">${escape(line)}</tspan>`).join('');
   const rankInk = core ? side.coreInk : side.ink;
-  return `<g data-argument-id="point-${index+1}" data-rank="${rank}" data-side="${side.name}" data-band="${posterTier(rank)}" fill="${rankInk}" text-anchor="middle">` +
+  return `<g data-argument-id="point-${index+1}" data-reader-id="${escape(card.readerId)}" data-rank="${rank}" data-side="${side.name}" data-band="${posterTier(rank)}" fill="${rankInk}" text-anchor="middle">` +
     `<title>${escape(label)}</title><text data-rank-marker="${rank}" x="${x}" y="${rankY}" font-size="${core ? 16 : 14}" font-weight="700" letter-spacing="1">${side.mark} · #${rank}</text>` +
     `<text data-label="" font-size="${text.size}" font-weight="700">${spans}</text></g>`;
 }
 
 function render(entry, subject) {
   if (!subject || entry.arguments.length !== 20 || entry.sideTitles.length !== 2) throw new Error('Missing piece or subject for '+entry.id);
-  const cards = colors.flatMap((side, i) => entry.arguments.slice(i*10, i*10+10).map(([label], j) => {
+  const cards = colors.flatMap((side, i) => entry.arguments.slice(i*10, i*10+10).map(([label,,readerId], j) => {
+    if(!readerId)throw new Error('Missing permanent point ID for '+label);
     const rank=j*2+i+1, tier=posterTier(rank), core=tier==='core', medium=tier==='medium';
     const tierStart=core?0:medium?4:i===0?7:6;
     const cut=j-tierStart, count=core?4:medium?(i===0?3:2):(i===0?3:4);
@@ -102,7 +103,7 @@ function render(entry, subject) {
     const x=i===0?x0:1600-x0, y=(cuts[cut]+cuts[cut+1])/2;
     const width=core?282:medium?210:181;
     const path=shapeCell(...bounds,cuts,cut,core?19:medium?15:12,i===0?bounds[1]:bounds[0]);
-    return {side,index:i*10+j,rank,cut,core,path,label,x,y,width,tier};
+    return {side,index:i*10+j,rank,cut,core,path,label,readerId,x,y,width,tier};
   })).sort((a,b)=>a.rank-b.rank);
   const defs = `
     ${posterFinishDefs()}

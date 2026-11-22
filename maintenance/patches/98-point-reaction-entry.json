@@ -1,0 +1,12 @@
+[
+  {
+    "id": "explain-point-reaction-on-account-entry",
+    "find": "children:\"Debate a friend or an AI research opponent.\"",
+    "replace": "children:i.jsx(DK.ReactionLoginCopy,{})"
+  },
+  {
+    "id": "return-confirmed-signups-to-the-selected-action",
+    "find": "emailRedirectTo:`${window.location.origin}/counter-argument-v2/`",
+    "replace": "emailRedirectTo:window.location.origin+'/counter-argument-v2'+DK.afterLogin(window.location.search).replace(/^([^?]+)(.*)$/,(_,path,search)=>path.replace(/\\/?$/,'/')+search)"
+  }
+]

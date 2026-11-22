@@ -6,7 +6,7 @@ test('all three exploration actions live in the global header across feed and ac
   const React = {
     createElement: (type, props, ...children) => ({type, props, children}),
     createContext: () => ({}),
-    useState: value => [value, () => {}]
+    useState: value => [value, () => {}], useEffect:()=>{}
   };
   for (const user of [null,{id:'member'}]) {
     for (const url of ['/','/home?view=feed&sort=latest','/home?view=feed&sort=people','/home?view=feed&question=abc','/profile','/debate/topic?mode=ai']) {
@@ -14,19 +14,15 @@ test('all three exploration actions live in the global header across feed and ac
       const header = workspace.Nav();
       const nav = header.children.find(child=>child?.props?.['aria-label']==='Start and discover');
       assert.ok(nav,url);
-      const [debate,discover]=nav.children;
-      assert.deepEqual([debate,discover].map(group=>{
-        const label=group.children[0];
-        assert.equal(group.props['aria-labelledby'],label.props.id);
-        return label.children[0];
-      }),['Start a debate','Discover']);
-      const [withFriend,withAI]=debate.children.slice(1);
-      const [trending]=discover.children.slice(1);
-      assert.equal(debate.children.length,3);
-      assert.equal(discover.children.length,2);
-      assert.deepEqual([withFriend,withAI,trending].map(link=>link.children[1].children[0]),
-        ['Debate with a friend','Debate with AI','Trending topics']);
-      for(const [link,mode] of [[withFriend,'/debate/start?mode=friend'],[withAI,'/debate/topic?mode=ai']]){
+      const [debate,trending]=nav.children;
+      assert.equal(debate.type,'details');
+      const [summary,formats]=debate.children;
+      assert.ok(summary.children.includes('Start a debate'));
+      const [withFriend,withAI,teams,privacy]=formats.children;
+      assert.match(privacy.children[0],/private.*choose to publish/);
+      assert.deepEqual([withFriend,withAI,teams,trending].map(link=>link.children[1].children[0]),
+        ['Friend','AI','Teams','Trending topics']);
+      for(const [link,mode] of [[withFriend,'/debate/start?mode=friend'],[withAI,'/debate/topic?mode=ai'],[teams,'/debate/start?mode=team']]){
         const to=link.props.to;
         if(!user)assert.match(to,/^\/login\?next=/);
         assert.equal(user?to:afterLogin(to.slice(to.indexOf('?'))),mode);
@@ -38,7 +34,7 @@ test('all three exploration actions live in the global header across feed and ac
 
 test('a fresh landing shows the welcome before the feed and keeps focused destinations compact', async () => {
   const {createWorkspace}=await import('../workspace/app.mjs');
-  const React={createElement:(type,props,...children)=>({type,props,children}),createContext:()=>({})};
+  const React={createElement:(type,props,...children)=>({type,props,children}),createContext:()=>({}),useContext:()=>({data:[]}),useState:v=>[v,()=>{}],useRef:()=>({}),useEffect:()=>{},useLayoutEffect:()=>{}};
   for(const [url,expected] of [
     ['/',true],['/home/',true],['/home?next=return',true],['/home?view=feed',false],
     ['/home?view=feed&sort=people',false],['/home?question=one',false],
@@ -46,13 +42,14 @@ test('a fresh landing shows the welcome before the feed and keeps focused destin
   ]){
     const loc=new URL(url,'https://example.test');
     const page=createWorkspace({React,useLocation:()=>loc}).Start();
-    const [welcome,grid]=page.children;
+    const main=typeof page.type==='function'?page.type().children[0]:page;
+    const grid=main.children.at(-1),welcome=main.children.length>1&&main.children[0];
     assert.equal(Boolean(welcome),expected,url);
     assert.equal(grid.children[0].props.landing,expected);
     if(loc.search.includes('edition=')) assert.equal(grid.children[0].props.full,true);
     assert.equal(grid.children[1].props.compact,true);
     if(welcome){
-      const [copy,photo]=welcome.type().children;
+      const [copy,photo]=welcome.type(welcome.props).children;
       assert.equal(copy.children[0].children[0],'Welcome');
       assert.equal(copy.children[1].type,'h1');
       assert.equal(photo.type,'img');

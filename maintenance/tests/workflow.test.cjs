@@ -166,11 +166,12 @@ test('the argument-stage editor invalidates the previous stance and research wai
   assert.equal(calls[0][0],argumentsList);
 });
 
-test('account entry identifies Differ Kindly, both debate modes and the supported sign-in method',()=>{
+test('account entry identifies Differ Kindly and renders the action-specific sign-in prompt',()=>{
   const header=slice('const xj=',',Je=p.forwardRef');
-  const accountHeader=text(context(header).run()());
+  const result=context(header,{DK:{ReactionLoginCopy:'ReactionLoginCopy'}}).run()();
+  const accountHeader=text(result);
   assert.match(accountHeader,/Differ Kindly/);
-  assert.match(accountHeader,/a friend or an AI research opponent/);
+  assert.ok(walk(result).some(node=>node.type==='ReactionLoginCopy'));
   // Both tabs share this instruction, including when the user selects Sign Up.
   assert.ok(bundle.includes('Use your email and password to sign in or create an account.'));
 });

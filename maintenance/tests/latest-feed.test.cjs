@@ -44,13 +44,13 @@ test('guest and member feeds open the debate list without a standalone question 
   const {createWorkspace} = await import('../workspace/app.mjs');
   const React = {
     createElement:(type,props,...children)=>({type,props,children}),createContext:()=>({}),
-    useContext:()=>({items:[]}),useState:value=>[value,()=>{}],useEffect:()=>{}
+    useContext:()=>({items:[]}),useState:value=>[value,()=>{}],useEffect:()=>{},useLayoutEffect:()=>{},useRef:()=>({current:null})
   };
   for(const user of [null,{id:'member'}]){
     for(const order of ['latest','trending']){
       const workspace=createWorkspace({React,Link:'link',useAuth:()=>({user}),
         useLocation:()=>new URL('/home?view=feed&sort='+order,'https://example.test')});
-      const feed=workspace.Start().children[1].children[0];
+      const feed=workspace.Start().children[0].children[0];
       const view=feed.type(feed.props);
       assert.equal(view.children.at(-1).props.order,order);
       assert.doesNotMatch(JSON.stringify(view),/Post a question|Sign in to post|Publish question|Be the first to post/i);

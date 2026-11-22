@@ -28,8 +28,26 @@ test('every editorial uses the twenty-piece puzzle and shared pilot links resolv
     const svg=read(entry.id);
     const ranks=Array.from(svg.matchAll(/data-rank-marker="(\d+)"/g),match=>Number(match[1]));
     assert.deepEqual(ranks,Array.from({length:20},(_,i)=>i+1));
+    const links=[...svg.matchAll(/data-argument-id="point-(\d+)" data-reader-id="([^"]+)" data-rank="(\d+)"/g)];
+    assert.equal(new Set(links.map(match=>match[2])).size,20);
+    for(const [,index,id,rank] of links){
+      assert.equal(id,entry.arguments[Number(index)-1][2]);
+      assert.match(id,/^[a-f0-9-]{36}$/);
+      assert.ok(svg.includes('data-piece-rank="'+rank+'"'));
+    }
     assert.ok(svg.includes('data-main-subject=""'));
     for(const color of ['#225e3c','#bcf1c8','#c6aff8','#17251e'])assert.ok(svg.includes(color));
   }
   assert.equal(read('ai-data-centers-comparison'),read('ai-data-centers'));
+});
+
+test('reaction intent requires a known action, debate, and permanent point',async()=>{
+  const {reactionIntent}=await import('../workspace/reader.mjs');
+  const {afterLogin}=await import('../workspace/app.mjs');
+  const route='/home/?view=feed&from=latest&example=debate&point=permanent&react=informative';
+  assert.equal(reactionIntent(afterLogin('?next='+encodeURIComponent(route))),'informative');
+  assert.equal(reactionIntent(route.replace('informative','convincing')),'convincing');
+  for(const invalid of [route.replace('&point=permanent',''),route.replace('informative','like'),route.replace('/home/','/profile')]){
+    assert.equal(reactionIntent(invalid),null);
+  }
 });

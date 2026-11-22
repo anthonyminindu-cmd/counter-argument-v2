@@ -1,5 +1,5 @@
 import {websitePosterSvg} from '../renderer/poster-finish.mjs';
-import {pointSnapshot,createPointReader,useAudiencePoster} from './reader.mjs';
+import {pointSnapshot,createPointReader,useAudiencePoster,createPuzzlePoster,reactionIntent} from './reader.mjs';
 import {createTeamExperience} from './teams.mjs';
 import {createFriendExperience} from './friend.mjs';
 // Editable production workspace. The V2 router, authenticated client and debate flows are injected by the build.
@@ -10,9 +10,46 @@ const friend = '/debate/start?mode=friend';
 const ai = '/debate/topic?mode=ai';
 const personalTabs = ['Table','Created','Liked','Pinned','Posters','People','Account'];
 const novemberPath = '/counter-argument-v2/demo/november-2026/';
-const examplePoster = id => novemberPath+id+'.svg?v=4';
+const examplePoster = id => novemberPath+id+'.svg?v=5';
 const trending = feed+'&sort=trending';
 const exampleRoute = id => feed+'&example='+encodeURIComponent(id);
+const feedOrigins = {
+  home: [home, 'Back to home'], latest: [feed+'&sort=latest', 'Back to Latest'],
+  trending: [trending, 'Back to Trending'], people: [feed+'&sort=people', 'Back to Your people']
+};
+
+function originOf(loc) {
+  if (isWelcomeLocation(loc)) return 'home';
+  if (new URLSearchParams(loc.search).get('view') !== 'feed') return null;
+  const sort = new URLSearchParams(loc.search).get('sort');
+  return sort === 'latest' || sort === 'people' ? sort : 'trending';
+}
+function withOrigin(url, origin) { return origin ? url+'&from='+origin : url; }
+function rememberCard(event, origin, card) {
+  if (!origin || event.button > 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+  const action = event.target.closest('a[href],button[data-opens-debate]');
+  if (!action) return;
+  const position = {origin, card, control:[...event.currentTarget.querySelectorAll('a,button')].indexOf(action),
+    top:event.currentTarget.getBoundingClientRect().top};
+  try {
+    history.replaceState({...history.state, dkCard:position}, '');
+    sessionStorage.setItem('dk-card:'+origin+':'+card, JSON.stringify(position));
+  } catch {}
+}
+
+const topicStyles = {
+  'ai-data-centers':['mint','server'], 'cloud-outage-backup':['blue','cloud'], 'health-insurance':['violet','health'],
+  'federal-gas-tax':['amber','pump'], 'grocery-tariffs':['mint','basket'], 'teen-autoplay':['violet','phone'],
+  'iran-war-powers':['amber','globe'], 'office-land-housing':['blue','home'], 'immigration-bill':['violet','book'],
+  'fossil-fuel-deadline':['mint','leaf']
+};
+function topicStyle(entry) {
+  if (Object.hasOwn(topicStyles,entry.id)) return topicStyles[entry.id];
+  const value = entry.category || entry.id || '';
+  let hash = 0;
+  for (const char of value) hash = (31*hash + char.codePointAt(0)) >>> 0;
+  return [['mint','message'],['blue','message'],['violet','message'],['amber','message']][hash%4];
+}
 
 function visibleFriendProfile(person) {
   return ![person.display_name, person.username].some(value =>
@@ -21,7 +58,7 @@ function visibleFriendProfile(person) {
 
 export function afterLogin(search) {
   const next = new URLSearchParams(search).get('next') || '';
-  if (!/^\/(?:home|profile|settings|debate\/(?:start|topic|active))(?:\?[^#\\]*)?$/.test(next)) return home;
+  if (!/^\/(?:home|profile|settings|debate\/(?:start|topic|active))\/?(?:\?[^#\\]*)?$/.test(next)) return home;
   return next;
 }
 const feedDateFormat=new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'America/Chicago'});
@@ -54,6 +91,13 @@ function login(next) { return '/login?next='+encodeURIComponent(next); }
 function topicRoute(title) { return '/debate/active?mode=ai&topic='+encodeURIComponent(title); }
 function profileRoute(tab) { return tab==='Table'?profile:profile+'?tab='+tab.toLowerCase(); }
 const glyphs = {
+  server:'M3 4h18v6H3zM3 14h18v6H3zM7 7h.1M7 17h.1m5.9-10h4m-4 10h4',
+  cloud:'M6 18a4 4 0 0 1-1-7.9 7 7 0 0 1 13.3-1.3A4.7 4.7 0 0 1 18 18z',
+  health:'M5 6h14v14H5zM9 6V3h6v3m-3 4v6m-3-3h6',
+  pump:'M3 21h11M5 20V3h8v17M5 9h8m1 3h2v5a2 2 0 0 0 4 0V9l-4-4',
+  basket:'M2 10h20l-3 10H5zM7 10l4-7m6 7-4-7m-4 10v4m6-4v4',
+  phone:'M7 2h10v20H7zM11 18h2',globe:'M22 12a10 10 0 1 1-20 0 10 10 0 1 1 20 0M2 12h20M12 2c-6 5-6 15 0 20 6-5 6-15 0-20',
+  leaf:'M4 20C2 7 10 4 21 3c0 11-5 17-14 15m-5 4L16 8', teams:'M3 4h18v16H3zM12 4v16M3 12h18',
   heart:'M20 5c-2-2-5-2-8 1-3-3-6-3-8-1-3 3-2 6 1 9l7 6 7-6c3-3 4-6 1-9z', eye:'M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12zm13 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0z',
   bell:'M18 8a6 6 0 0 0-12 0c0 7-3 8-3 10h18c0-2-3-3-3-10M10 21h4',
   home:'m3 10 9-7 9 7v10h-6v-6H9v6H3z', feed:'M3 6h18M3 12h13M3 18h16',
@@ -69,6 +113,38 @@ const glyphs = {
 export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,Account,OriginalTopic,OriginalStart,Directory}) {
   const h=React.createElement, {useState,useEffect,useRef,useContext,createContext}=React;
   const Collection=createContext(null);
+  const PuzzlePoster=createPuzzlePoster({React,Link,useLocation});
+  function ReactionLoginCopy(){
+    const loc=useLocation(),intent=reactionIntent(afterLogin(loc.search));
+    if(!intent)return 'Explore a question with a friend, AI, or two teams.';
+    const title=new URLSearchParams(loc.search).get('argument');
+    return h(React.Fragment,null,h('strong',null,'Sign in to mark this point as '+intent+'.'),
+      title&&h('span',{className:'dk-signin-point'},'“'+title+'”'),
+      'After sign-in, you’ll return to this point to confirm your response.');
+  }
+  function BackToFeed({id}) {
+    const loc=useLocation(), from=new URLSearchParams(loc.search).get('from');
+    const [to,label]=Object.hasOwn(feedOrigins,from)?feedOrigins[from]:feedOrigins.trending;
+    return h(Link,{className:'dk-link',to,state:{dkReturn:id}},label);
+  }
+  function useRestoreCard(ready,origin,feature=false) {
+    const loc=useLocation(), restored=useRef(null);
+    React.useLayoutEffect(()=>{
+      if(!ready||!origin||restored.current===loc.key)return;
+      let mark=history.state?.dkCard;
+      if(loc.state?.dkReturn){
+        try { mark=JSON.parse(sessionStorage.getItem('dk-card:'+origin+':'+loc.state.dkReturn)) || {origin,card:loc.state.dkReturn}; } catch {}
+      }
+      if(mark?.origin!==origin||mark.card.startsWith('feature-')!==feature)return;
+      const card=document.getElementById('dk-card-'+mark.card);
+      if(!card)return;
+      restored.current=loc.key;
+      const control=card.querySelectorAll('a,button')[mark.control]||card.querySelector('a,button');
+      control?.focus({preventScroll:true});
+      if(Number.isFinite(mark.top))window.scrollBy(0,card.getBoundingClientRect().top-mark.top);
+      else card.scrollIntoView({block:'center'});
+    },[ready,origin,feature,loc.key,loc.state]);
+  }
   function Icon({name}) {return h('svg',{className:'dk-icon',viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:1.7,strokeLinecap:'round',strokeLinejoin:'round','aria-hidden':true},h('path',{d:glyphs[name]}));}
   const icon=name=>h(Icon,{name});
   const {InboxProvider,Notifications,FriendSetup,FriendPointEditor,useFriendTopic,useFriendPreparationSync}=createFriendExperience({React,db,Link,useLocation,useNavigate,Directory,icon,ExternalInvites:()=>h(React.Fragment,null,h(InviteTools),link('/debate/start?mode=team','Start or open a team debate','dk-secondary'))});
@@ -122,18 +198,31 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function Nav() {
     const {user,signOut}=useAuth(), loc=useLocation(), navigate=useNavigate();
     const [error,setError]=useState('');
+    useEffect(()=>{
+      const menu=document.querySelector('.dk-format-menu');
+      if(!menu)return;
+      menu.open=false;
+      const close=e=>{if(!menu.contains(e.target))menu.open=false;};
+      document.addEventListener('pointerdown',close);
+      document.addEventListener('focusin',close);
+      return ()=>{document.removeEventListener('pointerdown',close);document.removeEventListener('focusin',close);};
+    },[loc.key]);
     const onHome=['/','/home','/home/'].includes(loc.pathname);
     const inFeed=onHome&&new URLSearchParams(loc.search).get('view')==='feed';
     const active=loc.pathname.startsWith('/profile')?'Profile':inFeed?'Feed':onHome?'Home':'';
     const destinations=[[home,'Home','home'],[feed,'Feed','feed'],[user?profile:login(profile),'Profile','person']];
-    function action(to,label,glyph) {
-      return h(Link,{to,className:'dk-choice dk-'+glyph,onClick:scrollToStart},
-        h('span',{className:'dk-symbol'},icon(glyph)),h('span',null,label));
+    function action(to,label,glyph,detail) {
+      return h(Link,{to,className:'dk-choice dk-'+glyph,onClick:event=>{
+        if(!event.ctrlKey&&!event.metaKey)event.currentTarget.closest('details')?.removeAttribute('open');
+        scrollToStart(event);
+      }},h('span',{className:'dk-symbol'},icon(glyph)),h('span',null,label,detail&&h('small',null,detail)));
     }
     function scrollToStart(event) {
       if(event.button===0&&!event.metaKey&&!event.ctrlKey&&!event.shiftKey&&!event.altKey)window.scrollTo(0,0);
     }
     return h('header',{className:'dk-header'},
+      onHome&&!['example','question','commenter','join'].some(key=>new URLSearchParams(loc.search).has(key))&&
+        h('a',{className:'dk-skip',href:'#dk-debates',onClick:e=>{const el=document.getElementById('dk-debates');if(el){e.preventDefault();el.focus();el.scrollIntoView({block:'start'});}}},'Skip to debates'),
       h('div',{className:'dk-bar'},
         h(Link,{to:home,className:'dk-brand','aria-label':'Differ Kindly home',onClick:scrollToStart},
           h('span',{className:'dk-mark','aria-hidden':true},h('i'),h('i')),
@@ -146,13 +235,14 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
           h('button',{key:'out',className:'dk-small',onClick:async()=>{try{await signOut();navigate('/')}catch{setError('Sign-out failed. Try again.')}}},'Sign out')
         ]:link(login(home),'Sign in','dk-small'))),
       h('nav',{'aria-label':'Start and discover',className:'dk-launch'},
-        h('div',{role:'group','aria-labelledby':'dk-start-label',className:'dk-launch-group dk-start-group'},
-          h('span',{id:'dk-start-label',className:'dk-launch-label'},'Start a debate'),
-          action(user?friend:login(friend),'Debate with a friend','friends'),
-          action(user?ai:login(ai),'Debate with AI','ai')),
-        h('div',{role:'group','aria-labelledby':'dk-discover-label',className:'dk-launch-group dk-discover-group'},
-          h('span',{id:'dk-discover-label',className:'dk-launch-label'},'Discover'),
-          action(trending,'Trending topics','trend'))),
+        h('details',{className:'dk-format-menu',onKeyDown:e=>{if(e.key==='Escape'){e.currentTarget.open=false;e.currentTarget.querySelector('summary').focus()}}},
+          h('summary',null,icon('friends'),'Start a debate'),
+          h('div',{className:'dk-format-list'},
+            action(user?friend:login(friend),'Friend','friends','You and a friend each contribute ten points.'),
+            action(user?ai:login(ai),'AI','ai','You bring ten points. AI researches the other side.'),
+            action(user?'/debate/start?mode=team':login('/debate/start?mode=team'),'Teams','teams','Two invited teams build ten points per side.'),
+            h('p',null,'All three start private. The infographic becomes public when you choose to publish it.'))),
+        action(trending,'Trending topics','trend')),
       error&&status(error,true));
   }
   function useActivity(id) {
@@ -194,15 +284,21 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('button',{className:'dk-primary',disabled:loading||!question.trim()},'Continue with AI')),
       link(feed,'Pick a question from the feed','dk-secondary'));
   }
-  function Welcome() {
+  function Welcome({edition}) {
     const imageRoot='/counter-argument-v2/assets/neighborhood-table-';
+    const metrics=useContext(Engagement);
+    const entry=publicPosterEntries(metrics.data||[],edition.data||[])[0];
+    const activity=entry&&metrics.data.find(row=>row.slug===entry.id);
+    useRestoreCard(!!entry,'home',true);
     return h('section',{className:'dk-welcome','aria-labelledby':'dk-welcome-title'},
       h('div',{className:'dk-welcome-copy'},
         h('p',{className:'dk-welcome-tagline'},'Welcome'),
         h('h1',{id:'dk-welcome-title'},'Pull up a ',h('em',null,'chair.')),
-        h('p',{className:'dk-welcome-purpose'},'A community for people who want to understand each other.'),
-        h('p',{className:'dk-welcome-mission'},'Start with a question you both care about. Explore it together, then use a shared infographic to see where your ideas overlap. When a point surprises you, ask, “What led you to see it that way?”'),
-        h('div',{className:'dk-actions'},link(trending,'Explore public debates','dk-primary'),link('/debate/start?mode=team','Team debates','dk-secondary'))),
+        entry?h('div',{id:'dk-card-feature-'+entry.id,className:'dk-feature',onClickCapture:e=>rememberCard(e,'home','feature-'+entry.id)},
+          h(Link,{className:'dk-feature-question',to:withOrigin(exampleRoute(entry.id),'home')+'&featured=1'},entry.question),
+          h('p',null,activity.likes+' likes · '+(Number(activity.comments)+discussionCount(entry.sampleActivity?.comments||[]))+' comments')):
+          h('p',{className:'dk-welcome-purpose'},'A community for people who want to understand each other.'),
+        link(trending,'Explore public debates','dk-link')),
       h('img',{className:'dk-welcome-photo',src:imageRoot+'wide.webp',
         srcSet:imageRoot+'small.webp 640w, '+imageRoot+'wide.webp 1280w',
         sizes:'(max-width: 900px) 92vw, (max-width: 1300px) 51vw, 655px',
@@ -247,9 +343,9 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         comment.replies?.length ? renderDiscussion(comment.replies, personas, true) : null)));
   }
   const Engagement=createContext(null);
-  function PosterActivity({children,order,editorialIds}) {
+  function PosterActivity({children,order,editorialIds,wait=false}) {
     const {user}=useAuth();
-    const metrics=useQuery(JSON.stringify([user?.id,order,editorialIds]),()=>posterMetricsQuery(db,order,editorialIds));
+    const metrics=useQuery(wait?null:JSON.stringify([user?.id,order,editorialIds]),()=>posterMetricsQuery(db,order,editorialIds));
     useEffect(()=>{
       function sync(){if(!document.hidden)metrics.refresh()}
       window.addEventListener('focus',sync);
@@ -258,11 +354,11 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     },[]);
     return h(Engagement.Provider,{value:metrics},children);
   }
-  function PosterActions({entry,onComment}) {
+  function PosterActions({entry,onComment,origin}) {
     const metrics=useContext(Engagement), {user}=useAuth(), navigate=useNavigate();
     const [busy,setBusy]=useState(false),[failed,setFailed]=useState(false);
     const row=metrics.data?.find(item=>item.slug===entry.id);
-    const url=exampleRoute(entry.id);
+    const url=withOrigin(exampleRoute(entry.id),origin);
     async function like(){
       if(!user){navigate(login(url));return}
       if(!row||busy)return;
@@ -276,7 +372,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const comments=row?Number(row.comments)+discussionCount(entry.sampleActivity?.comments??[]):'…';
     return h('div',{className:'dk-topic-metrics dk-social',title:entry.sampleActivity?'Totals include editorial persona activity and member activity.':undefined},
       h('button',{type:'button',className:'dk-small',onClick:like,disabled:busy||(!!user&&(!row||metrics.loading)),'aria-pressed':!!row?.liked},icon('heart'),row?.liked?'Liked':'Like',' · ',row?.likes??'…'),
-      h('button',{type:'button',className:'dk-small',onClick:onComment||(()=>navigate(url+'&comments=1'))},icon('message'),'Comments · ',comments),
+      h('button',{type:'button',className:'dk-small','data-opens-debate':true,onClick:onComment||(()=>navigate(url+'&comments=1'))},icon('message'),'Comments · ',comments),
       h('span',null,icon('eye'),row?.impressions??'…',Number(row?.impressions)===1?' impression':' impressions'),
       failed&&status('Could not update your like. Try again.',true),
       metrics.error&&h('button',{className:'dk-small',onClick:metrics.refresh},'Retry counts'));
@@ -407,6 +503,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function CatalogPoster({slug}) {
     const {user}=useAuth(),loc=useLocation();
     const q=useQuery(slug+':'+(user?.id||'guest'),()=>db.rpc('dk_read_poster',{p_slug:slug}).maybeSingle());
+    const points=useQuery('catalog-points:'+slug+':'+(user?.id||'guest'),()=>db.rpc('dk_points',{p_slug:slug}));
     const metrics=useContext(Engagement),comments=useRef(null);
     const row=q.data;
     usePosterImpression(row?.slug);
@@ -416,23 +513,27 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     if(q.loading&&!row)return status('Loading infographic…');
     if(!row?.artwork)return status('This infographic is unavailable.');
     const entry={id:row.slug,question:row.title,private:!row.published};
-    return h('article',{className:'dk-example-debate'},link(trending,'Back to Trending'),
+    return h('article',{className:'dk-example-debate'},h(BackToFeed,{id:slug}),
       h('header',null,h('small',null,row.published?row.category:'Private infographic',row.published&&h(PostedDate,{slug})),h('h1',null,row.title)),
-      h('img',{className:'dk-poster',src:'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(websitePosterSvg(row.artwork)),alt:row.title}),
+      h(PuzzlePoster,{src:'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(websitePosterSvg(row.artwork)),alt:row.title,markup:websitePosterSvg(row.artwork),points:points.data||[]}),
       h(PosterActions,{entry,onComment:openComments}),h(Report,{kind:'poster',target:entry.id}),row.mine&&h(SharePoster,{row,refresh:()=>{q.refresh();metrics.refresh()}}),
-      h('section',null,h('h2',{id:'dk-example-points'},'Explore the points'),h(PointReader,{entry})),
+      h('section',null,h('h2',{id:'dk-example-points',tabIndex:-1},'Explore the points'),h(PointReader,{entry,provided:points})),
       h('section',{className:'dk-panel dk-example-discussion',ref:comments,tabIndex:-1},h('h2',null,'Comments'),h(MemberComments,{key:user?.id||'guest',entry})));
   }
-  function PostedDate({at,slug}) {
+  function PostedDate({at,slug,standalone}) {
     const metrics=useContext(Engagement);
     const date=at||metrics?.data?.find(row=>row.slug===slug&&row.published)?.published_at;
-    return date?h(React.Fragment,null,' · ',h('time',{dateTime:date},feedDateFormat.format(new Date(date)))):null;
+    return date?h(React.Fragment,null,!standalone&&' · ',h('time',{dateTime:date},feedDateFormat.format(new Date(date)))):null;
   }
-  function ExampleCard({entry}) {
-    return h('article',{className:'dk-card dk-example-card'},
-      h(Link,{to:exampleRoute(entry.id),className:'dk-example-link','aria-label':entry.question},
-        h('div',{className:'dk-example-card-text'},h('small',null,entry.category,h(PostedDate,{at:entry.published_at,slug:entry.id})),
-          h('h3',null,entry.question,icon('enter')))),link(exampleRoute(entry.id)+'&points=1','Explore the points'),h(PosterActions,{entry}));
+  function ExampleCard({entry,origin}) {
+    const [tone,glyph]=topicStyle(entry), url=withOrigin(exampleRoute(entry.id),origin);
+    return h('article',{className:'dk-card dk-example-card dk-tone-'+tone,id:'dk-card-'+entry.id,onClickCapture:e=>rememberCard(e,origin,entry.id)},
+      h('div',{className:'dk-example-card-text'},
+        h('div',{className:'dk-topic-meta'},h('span',{className:'dk-topic-label'},icon(glyph),entry.category||'Community debate'),
+          h(PostedDate,{at:entry.published_at,slug:entry.id,standalone:true})),
+        h('h3',null,h(Link,{to:url,className:'dk-example-link'},entry.question)),
+        link(url+'&points=1','Explore the points')),
+      h(PosterActions,{entry,origin}));
   }
   function PosterFeed({order}) {
     const edition=useNovemberEdition();
@@ -442,10 +543,12 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function PosterFeedCards({edition}) {
     const metrics=useContext(Engagement);
+    const origin=originOf(useLocation());
+    useRestoreCard(!!metrics.data,origin);
     if(metrics.error)return h('button',{type:'button',className:'dk-secondary',onClick:metrics.refresh},'Retry loading topics');
     if(!metrics.data)return status('Loading topics…');
     const entries=publicPosterEntries(metrics.data,edition);
-    return entries.length?h('div',{className:'dk-example-grid'},...entries.map(entry=>h(ExampleCard,{key:entry.id,entry}))):
+    return entries.length?h('div',{className:'dk-example-grid'},...entries.map(entry=>h(ExampleCard,{key:entry.id,entry,origin}))):
       h('p',null,'No debates have been published yet.');
   }
   function ExampleDebate({entry}) {
@@ -478,15 +581,14 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       }catch{setExportError('Could not create a PNG. You can open the full-size poster instead.')}
       finally{setExporting(false)}
     }
-    return h(React.Fragment,null,link(trending,'Back to Trending'),
+    return h(React.Fragment,null,h(BackToFeed,{id:new URLSearchParams(loc.search).has('featured')?'feature-'+entry.id:entry.id}),
       h('article',{className:'dk-example-debate'},
         h('header',null,h('small',null,'By Differ Kindly',h(PostedDate,{slug:entry.id})),h('h1',null,entry.question),h('p',null,entry.overview),
           h('button',{type:'button',className:'dk-secondary dk-read-points',onClick:readPoints},'Read all 20 points')),
         h('figure',{className:'dk-example-figure'},
           hasAudienceExport&&h('label',{className:'dk-audience-toggle'},h('input',{type:'checkbox',checked:includeAudience,onChange:e=>setIncludeAudience(e.target.checked)}),'Include audience responses on this poster'),
           hasAudienceExport&&includeAudience&&!audience.url&&status(audience.error?'Audience totals could not load. Turn the option off and on to retry.':'Loading audience totals…',audience.error),
-          h('a',{href:poster,target:'_blank',rel:'noopener','aria-label':'Open full-size poster in a new tab'},
-            h('img',{src:poster,alt:entry.subject+' — both perspectives and all 20 points. Full text follows.',width:1600,height:900})),
+          h(PuzzlePoster,{src:poster,geometrySrc:original,alt:entry.subject+' — both perspectives and all 20 points. Full text follows.'}),
           h('figcaption',{className:'dk-actions'},h('a',{className:'dk-secondary',href:poster,target:'_blank',rel:'noopener'},'Open full-size poster'),
             h('button',{className:'dk-secondary',type:'button',disabled:exporting||(hasAudienceExport&&includeAudience&&!audience.url),onClick:download},exporting?'Preparing PNG…':'Download PNG'),
             link(user?friendTopic:login(friendTopic),'Debate this with a friend','dk-primary'),exportError&&status(exportError,true))),
@@ -544,20 +646,28 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     if(params.has('join'))return h(JoinLink);
     if(commenter)return h(CommenterPage,{id:commenter});
     if(example)return h(PosterActivity,null,h(ExamplePage,{example}));
-    return h('main',{className:landing?'dk-main dk-home':'dk-main',id:'dk-main'},
-      landing&&h(Welcome),
-      h('div',{className:'dk-grid'},h(Feed,{full:onFeed,landing}),h(Activity,{compact:true})));
+    return landing?h(HomeFeed):h('main',{className:'dk-main',id:'dk-main'},
+      h('div',{className:'dk-grid'},h(Feed,{full:onFeed,landing:false}),h(Activity,{compact:true})));
+  }
+  function HomeFeed() {
+    const edition=useNovemberEdition();
+    const list=edition.error?h('button',{className:'dk-secondary',onClick:edition.refresh},'Retry loading topics'):
+      edition.data?h(PosterFeedCards,{edition:edition.data}):status('Loading topics…');
+    return h(PosterActivity,{order:'trending',editorialIds:edition.data?.map(entry=>entry.id),wait:!edition.data},
+      h('main',{className:'dk-main dk-home',id:'dk-main'},h(Welcome,{edition}),
+        h('div',{className:'dk-grid'},h(Feed,{full:false,landing:true,publicList:list}),h(Activity,{compact:true}))));
   }
   function QuestionCard({row,landing}) {
-    const url=feed+'&question='+row.id;
+    const url=withOrigin(feed+'&question='+row.id,'people');
+    const [tone,glyph]=topicStyle({id:row.id,category:row.category});
     const replies=row.replies+' '+(Number(row.replies)===1?'reply':'replies');
-    return h('article',{className:landing?'dk-card dk-home-question':'dk-card'},
-      h('div',{className:'dk-sectionline'},h('small',null,'Community question · Public',h(PostedDate,{at:row.published_at})),h(Save,{kind:'question',target:row.id,label:row.question})),
+    return h('article',{className:'dk-card dk-people-card dk-tone-'+tone,id:'dk-card-'+row.id,onClickCapture:e=>rememberCard(e,'people',row.id)},
+      h('div',{className:'dk-sectionline'},h('div',{className:'dk-topic-meta'},h('span',{className:'dk-topic-label'},icon(glyph),row.category||'Community question'),h(PostedDate,{at:row.published_at,standalone:true})),h(Save,{kind:'question',target:row.id,label:row.question})),
       h('h3',null,h(Link,{to:url,className:'dk-titlelink'},row.question,landing&&icon('enter'))),
       landing?(Number(row.replies)>0&&h('small',null,replies)):
         h('div',{className:'dk-cardfoot'},link(url,'Open discussion'),h('small',null,replies+(Number(row.contributors)>0?' · '+row.contributors+' active in 24h':''))));
   }
-  function Feed({full,landing}) {
+  function Feed({full,landing,publicList}) {
     const loc=useLocation(), {user}=useAuth(), c=useContext(Collection);
     const params=new URLSearchParams(loc.search), chosen=params.get('question'), order=['latest','people'].includes(params.get('sort'))?params.get('sort'):'trending';
     const people=c.items.filter(row=>row.kind==='person').map(row=>row.target);
@@ -571,13 +681,14 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       return ()=>{window.removeEventListener('focus',refresh);clearInterval(timer)};
     },[questionQueryKey]);
     const rows=query.data||[];
+    useRestoreCard(order==='people'&&!chosen&&!!query.data,'people');
     const urlFor=key=>key==='trending'?trending:feed+'&sort='+key;
-    if(chosen)return h('section',{className:'dk-feed'},link(feed,'Back to feed'),query.loading&&!query.data?status('Loading discussion…'):query.error?status('Could not load this discussion.',true):rows[0]?h(Thread,{key:rows[0].id,thread:rows[0],refresh:query.refresh}):status('This discussion is unavailable.'));
+    if(chosen)return h('section',{className:'dk-feed'},h(BackToFeed,{id:chosen}),query.loading&&!query.data?status('Loading discussion…'):query.error?status('Could not load this discussion.',true):rows[0]?h(Thread,{key:rows[0].id,thread:rows[0],refresh:query.refresh}):status('This discussion is unavailable.'));
     const feedTitle=order==='trending'?'Trending':order==='latest'?'Latest':'Your people';
-    return h('section',{className:'dk-feed','aria-label':feedTitle},
+    return h('section',{className:'dk-feed',id:'dk-debates',tabIndex:-1,'aria-label':feedTitle},
       h('div',{className:'dk-sectionline'},h(landing?'h2':'h1',null,landing&&icon('trend'),feedTitle)),
       h('nav',{className:'dk-filters','aria-label':'Feed order'},...[[urlFor('trending'),'Trending','trending'],[urlFor('latest'),'Latest','latest'],...(user?[[urlFor('people'),'Your people','people']]:[])].map(([to,label,key])=>h(Link,{key,to,'aria-current':key===order?'page':undefined},label))),
-      order!=='people'?h(PosterFeed,{order}):
+      order!=='people'?(publicList||h(PosterFeed,{order})):
       query.error?h('div',{className:'dk-panel'},status('The feed could not be loaded.',true),h('button',{className:'dk-secondary',onClick:query.refresh},'Try again')):query.loading&&!query.data?status('Loading discussions…'):
       h(React.Fragment,null,
         !landing&&h('p',{className:'dk-note'},'Public questions from people you’ve saved.'),
@@ -638,5 +749,5 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       tab==='Liked'?h(LikedPosters,{key:user.id,user}):tab==='Created'?h(CreatedPosters,{key:user.id,user}):tab==='Table'?h(React.Fragment,null,h(Activity,{key:user.id}),link('/debate/start?mode=team','Your team debates','dk-secondary')):tab==='Account'?h(Account,{key:user.id}):c.error?h('button',{className:'dk-secondary',onClick:c.refresh},'Retry loading collection'):c.loading&&!c.data?status('Loading your collection…'):tab==='People'?h(People,{user}):
       h('section',{className:'dk-collection'},!items.length?h('div',{className:'dk-panel'},h('h2',null,tab==='Posters'?'Your saved posters':'Your pinned discussions'),h('p',null,tab==='Posters'?'Open a finished infographic and choose Save poster.':'Pin a public question or an exploration from your table to return to it here.'),link(tab==='Posters'?profile:feed,tab==='Posters'?'Open your table':'Browse the feed','dk-secondary')):items.map(item=>tab==='Posters'?h(SavedArtwork,{key:item.target,item}):h('article',{key:item.kind+item.target,className:'dk-card'},h('small',null,item.kind==='question'?'Public question':'Your exploration'),h('div',{className:'dk-sectionline'},link(item.kind==='question'?feed+'&question='+item.target:'/debate/view/'+item.target,item.label,'dk-titlelink'),h(Save,{kind:item.kind,target:item.target,label:item.label}))))));
   }
-  return {initialProfileName,checkContent,useCommenterMatches,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
+  return {initialProfileName,checkContent,useCommenterMatches,ReactionLoginCopy,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
 }
