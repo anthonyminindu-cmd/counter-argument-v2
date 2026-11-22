@@ -189,14 +189,27 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       return {data:await response.json()};
     });
   }
-  function usePersonas() {
-    return useQuery('trending-personas', async () => {
+  function usePersonas(enabled = true) {
+    return useQuery(enabled ? 'trending-personas' : null, async () => {
       const response = await fetch(novemberPath+'personas.json');
       if (!response.ok) throw Error('The commenter profiles are unavailable.');
       return {data: await response.json()};
     });
   }
   const personaRoute = id => feed+'&commenter='+encodeURIComponent(id);
+  function useCommenterMatches(search) {
+    const term = search.trim().replace(/^@/, '').toLowerCase();
+    const enabled = term.length >= 2;
+    const personas = usePersonas(enabled);
+    const matches = enabled ? Object.entries(personas.data ?? {})
+      .filter(([, person]) => visibleFriendProfile({display_name:person.name, username:person.handle}) &&
+        [person.name, person.handle].some(value => value.toLowerCase().includes(term)))
+      .map(([id, person]) => ({
+        user_id:id, display_name:person.name, username:person.handle, profileUrl:personaRoute(id)
+      })) : [];
+    return {...personas, matches};
+  }
+
 
   function discussionCount(comments) {
     return comments.reduce((total, comment) => total + 1 + discussionCount(comment.replies ?? []), 0);
@@ -377,11 +390,19 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const c=useContext(Collection),[input,setInput]=useState(''),[search,setSearch]=useState('');
     useEffect(()=>{const timer=setTimeout(()=>setSearch(input.trim()),260);return()=>clearTimeout(timer)},[input]);
     const q=useQuery(search.length>=2?user.id+':'+search:null,()=>db.rpc('search_debate_partners',{p_query:search}));
+    const commenters=useCommenterMatches(search);
     const saved=c.items.filter(row=>row.kind==='person');
     const rows=search.length>=2?(q.data||[]).filter(row=>row.user_id!==user.id && visibleFriendProfile(row)).map(row=>({target:row.user_id,label:row.display_name||row.username||'Community member',query:row.username||row.display_name})):saved;
     return h('section',{className:'dk-panel'},h('h2',null,'Your people'),h('label',{className:'dk-form'},'Find a friend',h('input',{value:input,type:'search',placeholder:'Search by name or username',onChange:e=>setInput(e.target.value)})),
-      q.error?status('Could not search for people.',true):q.loading?status('Searching…'):!rows.length?h('p',null,search.length>=2?'No matching people. Try another name.':'Save a friend to quickly start your next exploration.'):
-      h('ul',{className:'dk-list'},...rows.map(row=>h('li',{key:row.target},h('div',null,h('strong',null,row.label),link(friend+'&person='+encodeURIComponent(row.query||row.label),'Invite to debate')),h(Save,{kind:'person',target:row.target,label:row.label})))));
+      q.error&&status('Could not search member accounts.',true),
+      commenters.error&&h('button',{type:'button',onClick:commenters.refresh},'Retry loading commenter profiles'),
+      (q.loading||commenters.loading)&&status('Searching…'),
+      !q.error&&!commenters.error&&!q.loading&&!commenters.loading&&!rows.length&&!commenters.matches.length&&
+        h('p',null,search.length>=2?'No matching people. Try another name.':'Save a friend to quickly start your next exploration.'),
+      (rows.length>0||commenters.matches.length>0)&&h('ul',{className:'dk-list'},
+        ...rows.map(row=>h('li',{key:row.target},h('div',null,h('strong',null,row.label),link(friend+'&person='+encodeURIComponent(row.query||row.label),'Invite to debate')),h(Save,{kind:'person',target:row.target,label:row.label}))),
+        ...commenters.matches.map(person=>h('li',{key:person.user_id},h('div',null,
+          link(person.profileUrl,person.display_name),h('small',null,'@'+person.username)),h('small',null,'Simulated discussion profile')))));
   }
   function Profile(){
     const {user,loading}=useAuth(),loc=useLocation(),c=useContext(Collection);
@@ -392,5 +413,5 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       tab==='Table'?h(Activity,{key:user.id}):tab==='Account'?h(Account,{key:user.id}):c.error?h('button',{className:'dk-secondary',onClick:c.refresh},'Retry loading collection'):c.loading&&!c.data?status('Loading your collection…'):tab==='People'?h(People,{user}):
       h('section',{className:'dk-collection'},!items.length?h('div',{className:'dk-panel'},h('h2',null,tab==='Posters'?'Your saved posters':'Your pinned discussions'),h('p',null,tab==='Posters'?'Open a finished infographic and choose Save poster.':'Pin a public question or an exploration from your table to return to it here.'),link(tab==='Posters'?profile:feed,tab==='Posters'?'Open your table':'Browse the feed','dk-secondary')):items.map(item=>tab==='Posters'?h(SavedArtwork,{key:item.target,item}):h('article',{key:item.kind+item.target,className:'dk-card'},h('small',null,item.kind==='question'?'Public question':'Your exploration'),h('div',{className:'dk-sectionline'},link(item.kind==='question'?feed+'&question='+item.target:'/debate/view/'+item.target,item.label,'dk-titlelink'),h(Save,{kind:item.kind,target:item.target,label:item.label}))))));
   }
-  return {Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
+  return {useCommenterMatches,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
 }

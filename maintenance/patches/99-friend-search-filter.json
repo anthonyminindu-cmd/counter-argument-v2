@@ -3,5 +3,25 @@
     "id": "hide-test-friend-search-results",
     "find": "const x=(v||[]).map(j=>({...j,is_online:n(j.user_id)}));l(x)",
     "replace": "const x=(v||[]).filter(DK.visibleFriendProfile).map(j=>({...j,is_online:n(j.user_id)}));l(x)"
+  },
+  {
+    "id": "match-commenters-in-friend-directory",
+    "find": "[d,h]=p.useState(new Set);p.useEffect(()=>{console.log(\"🔍 DIRECTORY:",
+    "replace": "[d,h]=p.useState(new Set);const commenters=DK.useCommenterMatches(s),directoryRows=[...a,...commenters.matches];p.useEffect(()=>{console.log(\"🔍 DIRECTORY:"
+  },
+  {
+    "id": "count-commenters-in-friend-directory",
+    "find": "c?\"Looking for matches…\":s.trim().length<2?\"Keep typing to find your friend\":a.length>0?`${a.length} ${a.length===1?\"match\":\"matches\"}`:\"No matches. Try another name.\"",
+    "replace": "directoryRows.length>0?`Found ${directoryRows.length} profile${directoryRows.length===1?\"\":\"s\"}`:c||commenters.loading?\"Searching…\":commenters.error?\"Could not load commenter profiles\":\"No users found\""
+  },
+  {
+    "id": "render-commenters-in-friend-directory",
+    "find": "children:a.map(g=>i.jsx(ce,{className:\"bg-card/50",
+    "replace": "children:directoryRows.map(g=>i.jsx(ce,{className:\"bg-card/50"
+  },
+  {
+    "id": "link-commenters-instead-of-inviting",
+    "find": "i.jsx(G,{size:\"sm\",onClick:()=>y(g),",
+    "replace": "g.profileUrl?i.jsxs(\"div\",{className:\"text-right\",children:[i.jsx(Qe,{to:g.profileUrl,className:\"dk-link\",children:\"View profile\"}),i.jsx(\"p\",{className:\"text-xs text-muted-foreground\",children:\"Simulated discussion profile\"})]}):i.jsx(G,{size:\"sm\",onClick:()=>y(g),"
   }
 ]

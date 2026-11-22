@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "6c285b371bdcaec2713e6d37d0e3d54a04b53e31f4f33a2502e7a3e67d0f6113",
-  "generatedAsset": "assets/index-v2-6c285b371bdcaec2.js",
+  "generatedSha256": "eb018e122efe9c3e44892c0bfb3393d8579688272c2d47f3d5cfe34a8ebb7dfa",
+  "generatedAsset": "assets/index-v2-eb018e122efe9c3e.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -209,6 +209,10 @@
     "land-at-the-friend-rankings-heading",
     "make-the-results-heading-focusable",
     "use-clear-ranking-evidence-language",
-    "hide-test-friend-search-results"
+    "hide-test-friend-search-results",
+    "match-commenters-in-friend-directory",
+    "count-commenters-in-friend-directory",
+    "render-commenters-in-friend-directory",
+    "link-commenters-instead-of-inviting"
   ]
 }
