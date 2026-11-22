@@ -1,0 +1,7 @@
+[
+  {
+    "id": "hide-test-friend-search-results",
+    "find": "const x=(v||[]).map(j=>({...j,is_online:n(j.user_id)}));l(x)",
+    "replace": "const x=(v||[]).filter(DK.visibleFriendProfile).map(j=>({...j,is_online:n(j.user_id)}));l(x)"
+  }
+]

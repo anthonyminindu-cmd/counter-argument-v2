@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "eb007923fbabd984c8398a78cae52ef455292d4ddf9e962a4807cbdc40a4fe70",
-  "generatedAsset": "assets/index-v2-eb007923fbabd984.js",
+  "generatedSha256": "af4f2bdb2c74de3ba6b12a01d091faf7b7e7164472adbb734f8d93e4b80bf9fd",
+  "generatedAsset": "assets/index-v2-af4f2bdb2c74de3b.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -208,6 +208,7 @@
     "let-the-friend-writing-form-start-higher",
     "land-at-the-friend-rankings-heading",
     "make-the-results-heading-focusable",
-    "use-clear-ranking-evidence-language"
+    "use-clear-ranking-evidence-language",
+    "hide-test-friend-search-results"
   ]
 }

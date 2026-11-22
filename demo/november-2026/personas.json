@@ -1,0 +1,1802 @@
+{
+  "person-001": {
+    "name": "Avery Brooks",
+    "handle": "avery-brooks-001",
+    "style": "Explores tradeoffs",
+    "bio": "I like questions with a decision at the end."
+  },
+  "person-002": {
+    "name": "Jasmine Carter",
+    "handle": "jasmine-carter-002",
+    "style": "Follows the money",
+    "bio": "Here to compare what sounds good with what might work."
+  },
+  "person-003": {
+    "name": "Emily Mercer",
+    "handle": "emily-mercer-003",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about how towns and schools make everyday decisions."
+  },
+  "person-004": {
+    "name": "Angela Nguyen",
+    "handle": "angela-nguyen-004",
+    "style": "Explores tradeoffs",
+    "bio": "I learn best when someone shows me a concrete example."
+  },
+  "person-005": {
+    "name": "Grace Patel",
+    "handle": "grace-patel-005",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a discussion where I can change my mind halfway through."
+  },
+  "person-006": {
+    "name": "Caroline Price",
+    "handle": "caroline-price-006",
+    "style": "Follows the money",
+    "bio": "Usually the first to ask who pays and who benefits."
+  },
+  "person-007": {
+    "name": "Maya Washington",
+    "handle": "maya-washington-007",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in questions people can talk through over dinner."
+  },
+  "person-008": {
+    "name": "Isabel Rivera",
+    "handle": "isabel-rivera-008",
+    "style": "Starts with a question",
+    "bio": "I’m drawn to the parts of a proposal people tend to skip."
+  },
+  "person-009": {
+    "name": "Rachel Kim",
+    "handle": "rachel-kim-009",
+    "style": "Explores tradeoffs",
+    "bio": "I like comparing short-term relief with longer-term fixes."
+  },
+  "person-010": {
+    "name": "Zoe Sanders",
+    "handle": "zoe-sanders-010",
+    "style": "Explores tradeoffs",
+    "bio": "Here for practical ideas that can be tested on a small scale."
+  },
+  "person-011": {
+    "name": "Elijah Reed",
+    "handle": "elijah-reed-011",
+    "style": "Explores tradeoffs",
+    "bio": "I'd rather hear the reasoning than guess what someone believes."
+  },
+  "person-012": {
+    "name": "Marcus Green",
+    "handle": "marcus-green-012",
+    "style": "Explores tradeoffs",
+    "bio": "I pay attention to who gets left out of a plan."
+  },
+  "person-013": {
+    "name": "Noah Bennett",
+    "handle": "noah-bennett-013",
+    "style": "Starts with a question",
+    "bio": "I usually start by asking how we would measure success."
+  },
+  "person-014": {
+    "name": "Caleb Foster",
+    "handle": "caleb-foster-014",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about the difference one detail can make in a public decision."
+  },
+  "person-015": {
+    "name": "Isaac Turner",
+    "handle": "isaac-turner-015",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a good follow-up question."
+  },
+  "person-016": {
+    "name": "Julian Hart",
+    "handle": "julian-hart-016",
+    "style": "Explores tradeoffs",
+    "bio": "I like simple explanations and surprisingly complicated choices."
+  },
+  "person-017": {
+    "name": "Micah Allen",
+    "handle": "micah-allen-017",
+    "style": "Explores tradeoffs",
+    "bio": "I tend to ask what happens after the opening day."
+  },
+  "person-018": {
+    "name": "Andre Walker",
+    "handle": "andre-walker-018",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in technology and its effects on everyday routines."
+  },
+  "person-019": {
+    "name": "Lucas Hayes",
+    "handle": "lucas-hayes-019",
+    "style": "Explores tradeoffs",
+    "bio": "I like a fair summary of a view I disagree with."
+  },
+  "person-020": {
+    "name": "Devin Miller",
+    "handle": "devin-miller-020",
+    "style": "Checks how it would work",
+    "bio": "I like questions with a decision at the end."
+  },
+  "person-021": {
+    "name": "Valeria Cortés",
+    "handle": "valeria-cortes-021",
+    "style": "Explores tradeoffs",
+    "bio": "Here to compare what sounds good with what might work."
+  },
+  "person-022": {
+    "name": "Ximena Salgado",
+    "handle": "ximena-salgado-022",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about how towns and schools make everyday decisions."
+  },
+  "person-023": {
+    "name": "Elena Pineda",
+    "handle": "elena-pineda-023",
+    "style": "Explores tradeoffs",
+    "bio": "I learn best when someone shows me a concrete example."
+  },
+  "person-024": {
+    "name": "Renata Lozano",
+    "handle": "renata-lozano-024",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a discussion where I can change my mind halfway through."
+  },
+  "person-025": {
+    "name": "Camila Ibarra",
+    "handle": "camila-ibarra-025",
+    "style": "Explores tradeoffs",
+    "bio": "Usually the first to ask who pays and who benefits."
+  },
+  "person-026": {
+    "name": "Lucía Meza",
+    "handle": "lucia-meza-026",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in questions people can talk through over dinner."
+  },
+  "person-027": {
+    "name": "Marisol Vega",
+    "handle": "marisol-vega-027",
+    "style": "Explores tradeoffs",
+    "bio": "I like comparing short-term relief with longer-term fixes."
+  },
+  "person-028": {
+    "name": "Adriana Peña",
+    "handle": "adriana-pena-028",
+    "style": "Explores tradeoffs",
+    "bio": "Here for practical ideas that can be tested on a small scale."
+  },
+  "person-029": {
+    "name": "Sofía Treviño",
+    "handle": "sofia-trevino-029",
+    "style": "Explores tradeoffs",
+    "bio": "I'd rather hear the reasoning than guess what someone believes."
+  },
+  "person-030": {
+    "name": "Daniela Montes",
+    "handle": "daniela-montes-030",
+    "style": "Follows the money",
+    "bio": "I pay attention to who gets left out of a plan."
+  },
+  "person-031": {
+    "name": "Diego Olvera",
+    "handle": "diego-olvera-031",
+    "style": "Follows the money",
+    "bio": "I usually start by asking how we would measure success."
+  },
+  "person-032": {
+    "name": "Mateo Barrera",
+    "handle": "mateo-barrera-032",
+    "style": "Explores tradeoffs",
+    "bio": "I like hearing how the same proposal could work differently in two places."
+  },
+  "person-033": {
+    "name": "Iván Aranda",
+    "handle": "ivan-aranda-033",
+    "style": "Follows the money",
+    "bio": "Curious about the difference one detail can make in a public decision."
+  },
+  "person-034": {
+    "name": "Raúl Córdova",
+    "handle": "raul-cordova-034",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a good follow-up question."
+  },
+  "person-035": {
+    "name": "Sergio Robles",
+    "handle": "sergio-robles-035",
+    "style": "Follows the money",
+    "bio": "I like simple explanations and surprisingly complicated choices."
+  },
+  "person-036": {
+    "name": "Arturo Castañeda",
+    "handle": "arturo-castaneda-036",
+    "style": "Explores tradeoffs",
+    "bio": "I tend to ask what happens after the opening day."
+  },
+  "person-037": {
+    "name": "Nicolás Ríos",
+    "handle": "nicolas-rios-037",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in technology and its effects on everyday routines."
+  },
+  "person-038": {
+    "name": "Andrés Peralta",
+    "handle": "andres-peralta-038",
+    "style": "Looks for safeguards",
+    "bio": "I like a fair summary of a view I disagree with."
+  },
+  "person-039": {
+    "name": "Luis Becerra",
+    "handle": "luis-becerra-039",
+    "style": "Explores tradeoffs",
+    "bio": "I like questions with a decision at the end."
+  },
+  "person-040": {
+    "name": "Emilio Zamora",
+    "handle": "emilio-zamora-040",
+    "style": "Looks for who gets left out",
+    "bio": "Curious about how towns and schools make everyday decisions."
+  },
+  "person-041": {
+    "name": "Mariana Moreira",
+    "handle": "mariana-moreira-041",
+    "style": "Explores tradeoffs",
+    "bio": "I learn best when someone shows me a concrete example."
+  },
+  "person-042": {
+    "name": "Tainá Nascimento",
+    "handle": "taina-nascimento-042",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a discussion where I can change my mind halfway through."
+  },
+  "person-043": {
+    "name": "Beatriz Rocha",
+    "handle": "beatriz-rocha-043",
+    "style": "Follows the money",
+    "bio": "Usually the first to ask who pays and who benefits."
+  },
+  "person-044": {
+    "name": "Luana Ribeiro",
+    "handle": "luana-ribeiro-044",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in questions people can talk through over dinner."
+  },
+  "person-045": {
+    "name": "Paula Andrade",
+    "handle": "paula-andrade-045",
+    "style": "Explores tradeoffs",
+    "bio": "I’m drawn to the parts of a proposal people tend to skip."
+  },
+  "person-046": {
+    "name": "Aline Duarte",
+    "handle": "aline-duarte-046",
+    "style": "Explores tradeoffs",
+    "bio": "I like comparing short-term relief with longer-term fixes."
+  },
+  "person-047": {
+    "name": "Júlia Nunes",
+    "handle": "julia-nunes-047",
+    "style": "Follows the money",
+    "bio": "Here for practical ideas that can be tested on a small scale."
+  },
+  "person-048": {
+    "name": "Renata Queiroz",
+    "handle": "renata-queiroz-048",
+    "style": "Follows the money",
+    "bio": "I'd rather hear the reasoning than guess what someone believes."
+  },
+  "person-049": {
+    "name": "Ana Luísa Barros",
+    "handle": "ana-luisa-barros-049",
+    "style": "Explores tradeoffs",
+    "bio": "I pay attention to who gets left out of a plan."
+  },
+  "person-050": {
+    "name": "Isabela Teixeira",
+    "handle": "isabela-teixeira-050",
+    "style": "Explores tradeoffs",
+    "bio": "I usually start by asking how we would measure success."
+  },
+  "person-051": {
+    "name": "Rafael Almeida",
+    "handle": "rafael-almeida-051",
+    "style": "Explores tradeoffs",
+    "bio": "I like hearing how the same proposal could work differently in two places."
+  },
+  "person-052": {
+    "name": "Thiago Pinto",
+    "handle": "thiago-pinto-052",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about the difference one detail can make in a public decision."
+  },
+  "person-053": {
+    "name": "João Pedro Castro",
+    "handle": "joao-pedro-castro-053",
+    "style": "Explores tradeoffs",
+    "bio": "I like simple explanations and surprisingly complicated choices."
+  },
+  "person-054": {
+    "name": "Daniel Gomes",
+    "handle": "daniel-gomes-054",
+    "style": "Explores tradeoffs",
+    "bio": "I tend to ask what happens after the opening day."
+  },
+  "person-055": {
+    "name": "Gabriel Reis",
+    "handle": "gabriel-reis-055",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in technology and its effects on everyday routines."
+  },
+  "person-056": {
+    "name": "Leandro Machado",
+    "handle": "leandro-machado-056",
+    "style": "Explores tradeoffs",
+    "bio": "I like a fair summary of a view I disagree with."
+  },
+  "person-057": {
+    "name": "Felipe Silveira",
+    "handle": "felipe-silveira-057",
+    "style": "Checks how it would work",
+    "bio": "I like questions with a decision at the end."
+  },
+  "person-058": {
+    "name": "Victor Cardoso",
+    "handle": "victor-cardoso-058",
+    "style": "Explores tradeoffs",
+    "bio": "Here to compare what sounds good with what might work."
+  },
+  "person-059": {
+    "name": "Caio Farias",
+    "handle": "caio-farias-059",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about how towns and schools make everyday decisions."
+  },
+  "person-060": {
+    "name": "Bruno Azevedo",
+    "handle": "bruno-azevedo-060",
+    "style": "Checks how it would work",
+    "bio": "I learn best when someone shows me a concrete example."
+  },
+  "person-061": {
+    "name": "Milagros Vidal",
+    "handle": "milagros-vidal-061",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a discussion where I can change my mind halfway through."
+  },
+  "person-062": {
+    "name": "Abril Mansilla",
+    "handle": "abril-mansilla-062",
+    "style": "Explores tradeoffs",
+    "bio": "Usually the first to ask who pays and who benefits."
+  },
+  "person-063": {
+    "name": "Julieta Rivas",
+    "handle": "julieta-rivas-063",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in questions people can talk through over dinner."
+  },
+  "person-064": {
+    "name": "Malena Pereyra",
+    "handle": "malena-pereyra-064",
+    "style": "Explores tradeoffs",
+    "bio": "I’m drawn to the parts of a proposal people tend to skip."
+  },
+  "person-065": {
+    "name": "Josefina Acosta",
+    "handle": "josefina-acosta-065",
+    "style": "Explores tradeoffs",
+    "bio": "I like comparing short-term relief with longer-term fixes."
+  },
+  "person-066": {
+    "name": "Catalina Leiva",
+    "handle": "catalina-leiva-066",
+    "style": "Explores tradeoffs",
+    "bio": "I'd rather hear the reasoning than guess what someone believes."
+  },
+  "person-067": {
+    "name": "Pilar Santoro",
+    "handle": "pilar-santoro-067",
+    "style": "Explores tradeoffs",
+    "bio": "I pay attention to who gets left out of a plan."
+  },
+  "person-068": {
+    "name": "Rocío Ferreyra",
+    "handle": "rocio-ferreyra-068",
+    "style": "Looks for safeguards",
+    "bio": "I usually start by asking how we would measure success."
+  },
+  "person-069": {
+    "name": "Martina Ponce",
+    "handle": "martina-ponce-069",
+    "style": "Explores tradeoffs",
+    "bio": "I like hearing how the same proposal could work differently in two places."
+  },
+  "person-070": {
+    "name": "Agustina Gaitán",
+    "handle": "agustina-gaitan-070",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about the difference one detail can make in a public decision."
+  },
+  "person-071": {
+    "name": "Santiago Arce",
+    "handle": "santiago-arce-071",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a good follow-up question."
+  },
+  "person-072": {
+    "name": "Lautaro Quiroga",
+    "handle": "lautaro-quiroga-072",
+    "style": "Explores tradeoffs",
+    "bio": "I like simple explanations and surprisingly complicated choices."
+  },
+  "person-073": {
+    "name": "Tomás Molina",
+    "handle": "tomas-molina-073",
+    "style": "Explores tradeoffs",
+    "bio": "I tend to ask what happens after the opening day."
+  },
+  "person-074": {
+    "name": "Bautista Ocampo",
+    "handle": "bautista-ocampo-074",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in technology and its effects on everyday routines."
+  },
+  "person-075": {
+    "name": "Emiliano Luna",
+    "handle": "emiliano-luna-075",
+    "style": "Explores tradeoffs",
+    "bio": "I like a fair summary of a view I disagree with."
+  },
+  "person-076": {
+    "name": "Franco Sosa",
+    "handle": "franco-sosa-076",
+    "style": "Explores tradeoffs",
+    "bio": "I like questions with a decision at the end."
+  },
+  "person-077": {
+    "name": "Joaquín Roldán",
+    "handle": "joaquin-roldan-077",
+    "style": "Explores tradeoffs",
+    "bio": "Here to compare what sounds good with what might work."
+  },
+  "person-078": {
+    "name": "Matías Ledesma",
+    "handle": "matias-ledesma-078",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about how towns and schools make everyday decisions."
+  },
+  "person-079": {
+    "name": "Ramiro Herrera",
+    "handle": "ramiro-herrera-079",
+    "style": "Follows the money",
+    "bio": "I enjoy a discussion where I can change my mind halfway through."
+  },
+  "person-080": {
+    "name": "Facundo Rivero",
+    "handle": "facundo-rivero-080",
+    "style": "Looks for who gets left out",
+    "bio": "Usually the first to ask who pays and who benefits."
+  },
+  "person-081": {
+    "name": "Nora Sinclair",
+    "handle": "nora-sinclair-081",
+    "style": "Follows the money",
+    "bio": "Interested in questions people can talk through over dinner."
+  },
+  "person-082": {
+    "name": "Élodie Fortin",
+    "handle": "elodie-fortin-082",
+    "style": "Explores tradeoffs",
+    "bio": "I’m drawn to the parts of a proposal people tend to skip."
+  },
+  "person-083": {
+    "name": "Céline Bergeron",
+    "handle": "celine-bergeron-083",
+    "style": "Starts with a question",
+    "bio": "I like comparing short-term relief with longer-term fixes."
+  },
+  "person-084": {
+    "name": "Amara Clarke",
+    "handle": "amara-clarke-084",
+    "style": "Explores tradeoffs",
+    "bio": "Here for practical ideas that can be tested on a small scale."
+  },
+  "person-085": {
+    "name": "Sophie MacLeod",
+    "handle": "sophie-macleod-085",
+    "style": "Follows the money",
+    "bio": "I'd rather hear the reasoning than guess what someone believes."
+  },
+  "person-086": {
+    "name": "Alina Park",
+    "handle": "alina-park-086",
+    "style": "Explores tradeoffs",
+    "bio": "I pay attention to who gets left out of a plan."
+  },
+  "person-087": {
+    "name": "Margot Bouchard",
+    "handle": "margot-bouchard-087",
+    "style": "Explores tradeoffs",
+    "bio": "I usually start by asking how we would measure success."
+  },
+  "person-088": {
+    "name": "Lily Chen",
+    "handle": "lily-chen-088",
+    "style": "Looks for safeguards",
+    "bio": "I like hearing how the same proposal could work differently in two places."
+  },
+  "person-089": {
+    "name": "Nadia Desjardins",
+    "handle": "nadia-desjardins-089",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about the difference one detail can make in a public decision."
+  },
+  "person-090": {
+    "name": "Mina Singh",
+    "handle": "mina-singh-090",
+    "style": "Follows the money",
+    "bio": "I enjoy a good follow-up question."
+  },
+  "person-091": {
+    "name": "Owen Campbell",
+    "handle": "owen-campbell-091",
+    "style": "Explores tradeoffs",
+    "bio": "I like simple explanations and surprisingly complicated choices."
+  },
+  "person-092": {
+    "name": "Louis Gagnon",
+    "handle": "louis-gagnon-092",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in technology and its effects on everyday routines."
+  },
+  "person-093": {
+    "name": "Marc Beaulieu",
+    "handle": "marc-beaulieu-093",
+    "style": "Follows the money",
+    "bio": "I like a fair summary of a view I disagree with."
+  },
+  "person-094": {
+    "name": "Ethan McKenzie",
+    "handle": "ethan-mckenzie-094",
+    "style": "Explores tradeoffs",
+    "bio": "I like questions with a decision at the end."
+  },
+  "person-095": {
+    "name": "Hugo Lévesque",
+    "handle": "hugo-levesque-095",
+    "style": "Explores tradeoffs",
+    "bio": "Here to compare what sounds good with what might work."
+  },
+  "person-096": {
+    "name": "Adrian Wu",
+    "handle": "adrian-wu-096",
+    "style": "Follows the money",
+    "bio": "Curious about how towns and schools make everyday decisions."
+  },
+  "person-097": {
+    "name": "Kieran Fraser",
+    "handle": "kieran-fraser-097",
+    "style": "Explores tradeoffs",
+    "bio": "I learn best when someone shows me a concrete example."
+  },
+  "person-098": {
+    "name": "Simon Pelletier",
+    "handle": "simon-pelletier-098",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a discussion where I can change my mind halfway through."
+  },
+  "person-099": {
+    "name": "Reid Martin",
+    "handle": "reid-martin-099",
+    "style": "Explores tradeoffs",
+    "bio": "Usually the first to ask who pays and who benefits."
+  },
+  "person-100": {
+    "name": "Amir Abbas",
+    "handle": "amir-abbas-100",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in questions people can talk through over dinner."
+  },
+  "person-101": {
+    "name": "Imogen Shaw",
+    "handle": "imogen-shaw-101",
+    "style": "Starts with a question",
+    "bio": "I’m drawn to the parts of a proposal people tend to skip."
+  },
+  "person-102": {
+    "name": "Leila Hussain",
+    "handle": "leila-hussain-102",
+    "style": "Follows the money",
+    "bio": "I like comparing short-term relief with longer-term fixes."
+  },
+  "person-103": {
+    "name": "Aisha Owen",
+    "handle": "aisha-owen-103",
+    "style": "Explores tradeoffs",
+    "bio": "Here for practical ideas that can be tested on a small scale."
+  },
+  "person-104": {
+    "name": "Harriet Wood",
+    "handle": "harriet-wood-104",
+    "style": "Explores tradeoffs",
+    "bio": "I'd rather hear the reasoning than guess what someone believes."
+  },
+  "person-105": {
+    "name": "Alice Atkinson",
+    "handle": "alice-atkinson-105",
+    "style": "Explores tradeoffs",
+    "bio": "I usually start by asking how we would measure success."
+  },
+  "person-106": {
+    "name": "Phoebe Clarke",
+    "handle": "phoebe-clarke-106",
+    "style": "Starts with a question",
+    "bio": "I like hearing how the same proposal could work differently in two places."
+  },
+  "person-107": {
+    "name": "Hannah MacDonald",
+    "handle": "hannah-macdonald-107",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about the difference one detail can make in a public decision."
+  },
+  "person-108": {
+    "name": "Freya Hughes",
+    "handle": "freya-hughes-108",
+    "style": "Starts with a question",
+    "bio": "I enjoy a good follow-up question."
+  },
+  "person-109": {
+    "name": "Poppy Martin",
+    "handle": "poppy-martin-109",
+    "style": "Explores tradeoffs",
+    "bio": "I like simple explanations and surprisingly complicated choices."
+  },
+  "person-110": {
+    "name": "Zara Davies",
+    "handle": "zara-davies-110",
+    "style": "Explores tradeoffs",
+    "bio": "I tend to ask what happens after the opening day."
+  },
+  "person-111": {
+    "name": "Callum Reid",
+    "handle": "callum-reid-111",
+    "style": "Follows the money",
+    "bio": "Interested in technology and its effects on everyday routines."
+  },
+  "person-112": {
+    "name": "Rhys Morgan",
+    "handle": "rhys-morgan-112",
+    "style": "Looks for safeguards",
+    "bio": "I like a fair summary of a view I disagree with."
+  },
+  "person-113": {
+    "name": "Oliver Webb",
+    "handle": "oliver-webb-113",
+    "style": "Explores tradeoffs",
+    "bio": "I like questions with a decision at the end."
+  },
+  "person-114": {
+    "name": "Rory Ellis",
+    "handle": "rory-ellis-114",
+    "style": "Explores tradeoffs",
+    "bio": "Here to compare what sounds good with what might work."
+  },
+  "person-115": {
+    "name": "Samuel Watson",
+    "handle": "samuel-watson-115",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about how towns and schools make everyday decisions."
+  },
+  "person-116": {
+    "name": "Tariq Ali",
+    "handle": "tariq-ali-116",
+    "style": "Explores tradeoffs",
+    "bio": "I learn best when someone shows me a concrete example."
+  },
+  "person-117": {
+    "name": "Finley Cooper",
+    "handle": "finley-cooper-117",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a discussion where I can change my mind halfway through."
+  },
+  "person-118": {
+    "name": "Ewan Scott",
+    "handle": "ewan-scott-118",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in questions people can talk through over dinner."
+  },
+  "person-119": {
+    "name": "Nathan Ahmed",
+    "handle": "nathan-ahmed-119",
+    "style": "Explores tradeoffs",
+    "bio": "I’m drawn to the parts of a proposal people tend to skip."
+  },
+  "person-120": {
+    "name": "Toby Baker",
+    "handle": "toby-baker-120",
+    "style": "Starts with a question",
+    "bio": "I like comparing short-term relief with longer-term fixes."
+  },
+  "person-121": {
+    "name": "Manon Lefèvre",
+    "handle": "manon-lefevre-121",
+    "style": "Follows the money",
+    "bio": "Here for practical ideas that can be tested on a small scale."
+  },
+  "person-122": {
+    "name": "Sarah Benali",
+    "handle": "sarah-benali-122",
+    "style": "Explores tradeoffs",
+    "bio": "I'd rather hear the reasoning than guess what someone believes."
+  },
+  "person-123": {
+    "name": "Léa Laurent",
+    "handle": "lea-laurent-123",
+    "style": "Looks for safeguards",
+    "bio": "I pay attention to who gets left out of a plan."
+  },
+  "person-124": {
+    "name": "Amel Haddad",
+    "handle": "amel-haddad-124",
+    "style": "Follows the money",
+    "bio": "I usually start by asking how we would measure success."
+  },
+  "person-125": {
+    "name": "Camille Girard",
+    "handle": "camille-girard-125",
+    "style": "Explores tradeoffs",
+    "bio": "I like hearing how the same proposal could work differently in two places."
+  },
+  "person-126": {
+    "name": "Chloé Robin",
+    "handle": "chloe-robin-126",
+    "style": "Follows the money",
+    "bio": "Curious about the difference one detail can make in a public decision."
+  },
+  "person-127": {
+    "name": "Inès Bensaïd",
+    "handle": "ines-bensaid-127",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a good follow-up question."
+  },
+  "person-128": {
+    "name": "Émilie Caron",
+    "handle": "emilie-caron-128",
+    "style": "Explores tradeoffs",
+    "bio": "I like simple explanations and surprisingly complicated choices."
+  },
+  "person-129": {
+    "name": "Maëlle Perrot",
+    "handle": "maelle-perrot-129",
+    "style": "Explores tradeoffs",
+    "bio": "I tend to ask what happens after the opening day."
+  },
+  "person-130": {
+    "name": "Amandine Roy",
+    "handle": "amandine-roy-130",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in technology and its effects on everyday routines."
+  },
+  "person-131": {
+    "name": "Mathis Fontaine",
+    "handle": "mathis-fontaine-131",
+    "style": "Explores tradeoffs",
+    "bio": "I like questions with a decision at the end."
+  },
+  "person-132": {
+    "name": "Hugo Moreau",
+    "handle": "hugo-moreau-132",
+    "style": "Follows the money",
+    "bio": "Here to compare what sounds good with what might work."
+  },
+  "person-133": {
+    "name": "Adam Belkacem",
+    "handle": "adam-belkacem-133",
+    "style": "Follows the money",
+    "bio": "Curious about how towns and schools make everyday decisions."
+  },
+  "person-134": {
+    "name": "Noé Garcia",
+    "handle": "noe-garcia-134",
+    "style": "Explores tradeoffs",
+    "bio": "I learn best when someone shows me a concrete example."
+  },
+  "person-135": {
+    "name": "Rémi Giraud",
+    "handle": "remi-giraud-135",
+    "style": "Starts with a question",
+    "bio": "I enjoy a discussion where I can change my mind halfway through."
+  },
+  "person-136": {
+    "name": "Jules Mercier",
+    "handle": "jules-mercier-136",
+    "style": "Explores tradeoffs",
+    "bio": "Usually the first to ask who pays and who benefits."
+  },
+  "person-137": {
+    "name": "Bastien Colin",
+    "handle": "bastien-colin-137",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in questions people can talk through over dinner."
+  },
+  "person-138": {
+    "name": "Sami Gérard",
+    "handle": "sami-gerard-138",
+    "style": "Explores tradeoffs",
+    "bio": "I’m drawn to the parts of a proposal people tend to skip."
+  },
+  "person-139": {
+    "name": "Théo Blanc",
+    "handle": "theo-blanc-139",
+    "style": "Looks for safeguards",
+    "bio": "I like comparing short-term relief with longer-term fixes."
+  },
+  "person-140": {
+    "name": "Léo Marchand",
+    "handle": "leo-marchand-140",
+    "style": "Explores tradeoffs",
+    "bio": "Here for practical ideas that can be tested on a small scale."
+  },
+  "person-141": {
+    "name": "Zofia Lis",
+    "handle": "zofia-lis-141",
+    "style": "Explores tradeoffs",
+    "bio": "I'd rather hear the reasoning than guess what someone believes."
+  },
+  "person-142": {
+    "name": "Alicja Kowalska",
+    "handle": "alicja-kowalska-142",
+    "style": "Explores tradeoffs",
+    "bio": "I pay attention to who gets left out of a plan."
+  },
+  "person-143": {
+    "name": "Emilia Mazur",
+    "handle": "emilia-mazur-143",
+    "style": "Follows the money",
+    "bio": "I usually start by asking how we would measure success."
+  },
+  "person-144": {
+    "name": "Karolina Grabowska",
+    "handle": "karolina-grabowska-144",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about the difference one detail can make in a public decision."
+  },
+  "person-145": {
+    "name": "Agata Król",
+    "handle": "agata-krol-145",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a good follow-up question."
+  },
+  "person-146": {
+    "name": "Julia Wójcik",
+    "handle": "julia-wojcik-146",
+    "style": "Explores tradeoffs",
+    "bio": "I like simple explanations and surprisingly complicated choices."
+  },
+  "person-147": {
+    "name": "Marta Szymańska",
+    "handle": "marta-szymanska-147",
+    "style": "Looks for who gets left out",
+    "bio": "I tend to ask what happens after the opening day."
+  },
+  "person-148": {
+    "name": "Anna Zielińska",
+    "handle": "anna-zielinska-148",
+    "style": "Checks how it would work",
+    "bio": "Interested in technology and its effects on everyday routines."
+  },
+  "person-149": {
+    "name": "Nina Pawlak",
+    "handle": "nina-pawlak-149",
+    "style": "Explores tradeoffs",
+    "bio": "I like a fair summary of a view I disagree with."
+  },
+  "person-150": {
+    "name": "Iga Wróbel",
+    "handle": "iga-wrobel-150",
+    "style": "Explores tradeoffs",
+    "bio": "I like questions with a decision at the end."
+  },
+  "person-151": {
+    "name": "Jakub Kaczmarek",
+    "handle": "jakub-kaczmarek-151",
+    "style": "Looks for who gets left out",
+    "bio": "Here to compare what sounds good with what might work."
+  },
+  "person-152": {
+    "name": "Adam Nowak",
+    "handle": "adam-nowak-152",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about how towns and schools make everyday decisions."
+  },
+  "person-153": {
+    "name": "Oskar Kamiński",
+    "handle": "oskar-kaminski-153",
+    "style": "Explores tradeoffs",
+    "bio": "I learn best when someone shows me a concrete example."
+  },
+  "person-154": {
+    "name": "Marek Dąbrowski",
+    "handle": "marek-dabrowski-154",
+    "style": "Follows the money",
+    "bio": "I enjoy a discussion where I can change my mind halfway through."
+  },
+  "person-155": {
+    "name": "Filip Zając",
+    "handle": "filip-zajac-155",
+    "style": "Explores tradeoffs",
+    "bio": "Usually the first to ask who pays and who benefits."
+  },
+  "person-156": {
+    "name": "Jan Górski",
+    "handle": "jan-gorski-156",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in questions people can talk through over dinner."
+  },
+  "person-157": {
+    "name": "Antoni Sokołowski",
+    "handle": "antoni-sokoowski-157",
+    "style": "Explores tradeoffs",
+    "bio": "I like comparing short-term relief with longer-term fixes."
+  },
+  "person-158": {
+    "name": "Kamil Kalinowski",
+    "handle": "kamil-kalinowski-158",
+    "style": "Explores tradeoffs",
+    "bio": "Here for practical ideas that can be tested on a small scale."
+  },
+  "person-159": {
+    "name": "Michał Wilk",
+    "handle": "micha-wilk-159",
+    "style": "Follows the money",
+    "bio": "I'd rather hear the reasoning than guess what someone believes."
+  },
+  "person-160": {
+    "name": "Piotr Jankowski",
+    "handle": "piotr-jankowski-160",
+    "style": "Explores tradeoffs",
+    "bio": "I pay attention to who gets left out of a plan."
+  },
+  "person-161": {
+    "name": "Adaeze Nwosu",
+    "handle": "adaeze-nwosu-161",
+    "style": "Explores tradeoffs",
+    "bio": "I usually start by asking how we would measure success."
+  },
+  "person-162": {
+    "name": "Amina Bello",
+    "handle": "amina-bello-162",
+    "style": "Explores tradeoffs",
+    "bio": "I like hearing how the same proposal could work differently in two places."
+  },
+  "person-163": {
+    "name": "Ifeoma Okeke",
+    "handle": "ifeoma-okeke-163",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about the difference one detail can make in a public decision."
+  },
+  "person-164": {
+    "name": "Zainab Ibrahim",
+    "handle": "zainab-ibrahim-164",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a good follow-up question."
+  },
+  "person-165": {
+    "name": "Temilade Afolayan",
+    "handle": "temilade-afolayan-165",
+    "style": "Explores tradeoffs",
+    "bio": "I like simple explanations and surprisingly complicated choices."
+  },
+  "person-166": {
+    "name": "Chidinma Eze",
+    "handle": "chidinma-eze-166",
+    "style": "Explores tradeoffs",
+    "bio": "I tend to ask what happens after the opening day."
+  },
+  "person-167": {
+    "name": "Aisha Abubakar",
+    "handle": "aisha-abubakar-167",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in technology and its effects on everyday routines."
+  },
+  "person-168": {
+    "name": "Oluwaseun Ajayi",
+    "handle": "oluwaseun-ajayi-168",
+    "style": "Follows the money",
+    "bio": "I like a fair summary of a view I disagree with."
+  },
+  "person-169": {
+    "name": "Nneka Umeh",
+    "handle": "nneka-umeh-169",
+    "style": "Explores tradeoffs",
+    "bio": "I like questions with a decision at the end."
+  },
+  "person-170": {
+    "name": "Tolani Balogun",
+    "handle": "tolani-balogun-170",
+    "style": "Looks for who gets left out",
+    "bio": "Curious about how towns and schools make everyday decisions."
+  },
+  "person-171": {
+    "name": "Chinedu Nnamani",
+    "handle": "chinedu-nnamani-171",
+    "style": "Explores tradeoffs",
+    "bio": "I learn best when someone shows me a concrete example."
+  },
+  "person-172": {
+    "name": "Ibrahim Musa",
+    "handle": "ibrahim-musa-172",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a discussion where I can change my mind halfway through."
+  },
+  "person-173": {
+    "name": "Tunde Adebayo",
+    "handle": "tunde-adebayo-173",
+    "style": "Follows the money",
+    "bio": "Usually the first to ask who pays and who benefits."
+  },
+  "person-174": {
+    "name": "Emeka Okafor",
+    "handle": "emeka-okafor-174",
+    "style": "Follows the money",
+    "bio": "Interested in questions people can talk through over dinner."
+  },
+  "person-175": {
+    "name": "Femi Adeyemi",
+    "handle": "femi-adeyemi-175",
+    "style": "Explores tradeoffs",
+    "bio": "I’m drawn to the parts of a proposal people tend to skip."
+  },
+  "person-176": {
+    "name": "Obinna Ude",
+    "handle": "obinna-ude-176",
+    "style": "Follows the money",
+    "bio": "I like comparing short-term relief with longer-term fixes."
+  },
+  "person-177": {
+    "name": "Sadiq Lawal",
+    "handle": "sadiq-lawal-177",
+    "style": "Looks for safeguards",
+    "bio": "Here for practical ideas that can be tested on a small scale."
+  },
+  "person-178": {
+    "name": "Bayo Ogunleye",
+    "handle": "bayo-ogunleye-178",
+    "style": "Follows the money",
+    "bio": "I'd rather hear the reasoning than guess what someone believes."
+  },
+  "person-179": {
+    "name": "Uche Nwankwo",
+    "handle": "uche-nwankwo-179",
+    "style": "Looks for who gets left out",
+    "bio": "I pay attention to who gets left out of a plan."
+  },
+  "person-180": {
+    "name": "Abdul Danjuma",
+    "handle": "abdul-danjuma-180",
+    "style": "Follows the money",
+    "bio": "I usually start by asking how we would measure success."
+  },
+  "person-181": {
+    "name": "Wanjiku Muriuki",
+    "handle": "wanjiku-muriuki-181",
+    "style": "Follows the money",
+    "bio": "I like hearing how the same proposal could work differently in two places."
+  },
+  "person-182": {
+    "name": "Achieng Odhiambo",
+    "handle": "achieng-odhiambo-182",
+    "style": "Starts with a question",
+    "bio": "Curious about the difference one detail can make in a public decision."
+  },
+  "person-183": {
+    "name": "Njeri Kamau",
+    "handle": "njeri-kamau-183",
+    "style": "Explores tradeoffs",
+    "bio": "I like simple explanations and surprisingly complicated choices."
+  },
+  "person-184": {
+    "name": "Halima Abdi",
+    "handle": "halima-abdi-184",
+    "style": "Explores tradeoffs",
+    "bio": "I tend to ask what happens after the opening day."
+  },
+  "person-185": {
+    "name": "Nyambura Maina",
+    "handle": "nyambura-maina-185",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in technology and its effects on everyday routines."
+  },
+  "person-186": {
+    "name": "Atieno Onyango",
+    "handle": "atieno-onyango-186",
+    "style": "Starts with a question",
+    "bio": "I like a fair summary of a view I disagree with."
+  },
+  "person-187": {
+    "name": "Wairimu Karanja",
+    "handle": "wairimu-karanja-187",
+    "style": "Starts with a question",
+    "bio": "I like questions with a decision at the end."
+  },
+  "person-188": {
+    "name": "Salma Hassan",
+    "handle": "salma-hassan-188",
+    "style": "Looks for safeguards",
+    "bio": "Here to compare what sounds good with what might work."
+  },
+  "person-189": {
+    "name": "Nafula Barasa",
+    "handle": "nafula-barasa-189",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about how towns and schools make everyday decisions."
+  },
+  "person-190": {
+    "name": "Wambui Njoroge",
+    "handle": "wambui-njoroge-190",
+    "style": "Looks for safeguards",
+    "bio": "I learn best when someone shows me a concrete example."
+  },
+  "person-191": {
+    "name": "Brian Otieno",
+    "handle": "brian-otieno-191",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a discussion where I can change my mind halfway through."
+  },
+  "person-192": {
+    "name": "Kevin Mwangi",
+    "handle": "kevin-mwangi-192",
+    "style": "Follows the money",
+    "bio": "Usually the first to ask who pays and who benefits."
+  },
+  "person-193": {
+    "name": "Abdi Mohamed",
+    "handle": "abdi-mohamed-193",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in questions people can talk through over dinner."
+  },
+  "person-194": {
+    "name": "David Kiptoo",
+    "handle": "david-kiptoo-194",
+    "style": "Explores tradeoffs",
+    "bio": "I’m drawn to the parts of a proposal people tend to skip."
+  },
+  "person-195": {
+    "name": "Juma Omar",
+    "handle": "juma-omar-195",
+    "style": "Explores tradeoffs",
+    "bio": "I like comparing short-term relief with longer-term fixes."
+  },
+  "person-196": {
+    "name": "Samuel Kariuki",
+    "handle": "samuel-kariuki-196",
+    "style": "Looks for who gets left out",
+    "bio": "I'd rather hear the reasoning than guess what someone believes."
+  },
+  "person-197": {
+    "name": "Peter Kibet",
+    "handle": "peter-kibet-197",
+    "style": "Explores tradeoffs",
+    "bio": "I pay attention to who gets left out of a plan."
+  },
+  "person-198": {
+    "name": "Mohammed Ali",
+    "handle": "mohammed-ali-198",
+    "style": "Explores tradeoffs",
+    "bio": "I usually start by asking how we would measure success."
+  },
+  "person-199": {
+    "name": "Felix Ochieng",
+    "handle": "felix-ochieng-199",
+    "style": "Explores tradeoffs",
+    "bio": "I like hearing how the same proposal could work differently in two places."
+  },
+  "person-200": {
+    "name": "Joseph Wekesa",
+    "handle": "joseph-wekesa-200",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about the difference one detail can make in a public decision."
+  },
+  "person-201": {
+    "name": "Mariam Saad",
+    "handle": "mariam-saad-201",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a good follow-up question."
+  },
+  "person-202": {
+    "name": "Yasmin Adel",
+    "handle": "yasmin-adel-202",
+    "style": "Looks for safeguards",
+    "bio": "I like simple explanations and surprisingly complicated choices."
+  },
+  "person-203": {
+    "name": "Nour Youssef",
+    "handle": "nour-youssef-203",
+    "style": "Explores tradeoffs",
+    "bio": "I tend to ask what happens after the opening day."
+  },
+  "person-204": {
+    "name": "Salma Hamdy",
+    "handle": "salma-hamdy-204",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in technology and its effects on everyday routines."
+  },
+  "person-205": {
+    "name": "Nada Ibrahim",
+    "handle": "nada-ibrahim-205",
+    "style": "Explores tradeoffs",
+    "bio": "I like a fair summary of a view I disagree with."
+  },
+  "person-206": {
+    "name": "Habiba Fawzi",
+    "handle": "habiba-fawzi-206",
+    "style": "Explores tradeoffs",
+    "bio": "I like questions with a decision at the end."
+  },
+  "person-207": {
+    "name": "Reem Mahmoud",
+    "handle": "reem-mahmoud-207",
+    "style": "Looks for safeguards",
+    "bio": "Here to compare what sounds good with what might work."
+  },
+  "person-208": {
+    "name": "Farida Hossam",
+    "handle": "farida-hossam-208",
+    "style": "Checks how it would work",
+    "bio": "Curious about how towns and schools make everyday decisions."
+  },
+  "person-209": {
+    "name": "Hana Tarek",
+    "handle": "hana-tarek-209",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a discussion where I can change my mind halfway through."
+  },
+  "person-210": {
+    "name": "Malak Hamed",
+    "handle": "malak-hamed-210",
+    "style": "Explores tradeoffs",
+    "bio": "Usually the first to ask who pays and who benefits."
+  },
+  "person-211": {
+    "name": "Omar Khalil",
+    "handle": "omar-khalil-211",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in questions people can talk through over dinner."
+  },
+  "person-212": {
+    "name": "Karim Nassar",
+    "handle": "karim-nassar-212",
+    "style": "Explores tradeoffs",
+    "bio": "I’m drawn to the parts of a proposal people tend to skip."
+  },
+  "person-213": {
+    "name": "Youssef Fahmy",
+    "handle": "youssef-fahmy-213",
+    "style": "Explores tradeoffs",
+    "bio": "I like comparing short-term relief with longer-term fixes."
+  },
+  "person-214": {
+    "name": "Hassan Farouk",
+    "handle": "hassan-farouk-214",
+    "style": "Explores tradeoffs",
+    "bio": "Here for practical ideas that can be tested on a small scale."
+  },
+  "person-215": {
+    "name": "Mostafa Gamal",
+    "handle": "mostafa-gamal-215",
+    "style": "Explores tradeoffs",
+    "bio": "I'd rather hear the reasoning than guess what someone believes."
+  },
+  "person-216": {
+    "name": "Ahmed Magdy",
+    "handle": "ahmed-magdy-216",
+    "style": "Explores tradeoffs",
+    "bio": "I pay attention to who gets left out of a plan."
+  },
+  "person-217": {
+    "name": "Amr Soliman",
+    "handle": "amr-soliman-217",
+    "style": "Explores tradeoffs",
+    "bio": "I usually start by asking how we would measure success."
+  },
+  "person-218": {
+    "name": "Khaled Fathy",
+    "handle": "khaled-fathy-218",
+    "style": "Starts with a question",
+    "bio": "I like hearing how the same proposal could work differently in two places."
+  },
+  "person-219": {
+    "name": "Tarek Saeed",
+    "handle": "tarek-saeed-219",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about the difference one detail can make in a public decision."
+  },
+  "person-220": {
+    "name": "Yassin Hegazy",
+    "handle": "yassin-hegazy-220",
+    "style": "Looks for safeguards",
+    "bio": "I enjoy a good follow-up question."
+  },
+  "person-221": {
+    "name": "Ananya Rao",
+    "handle": "ananya-rao-221",
+    "style": "Looks for safeguards",
+    "bio": "I like simple explanations and surprisingly complicated choices."
+  },
+  "person-222": {
+    "name": "Meera Nair",
+    "handle": "meera-nair-222",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in technology and its effects on everyday routines."
+  },
+  "person-223": {
+    "name": "Kavya Kulkarni",
+    "handle": "kavya-kulkarni-223",
+    "style": "Follows the money",
+    "bio": "I like a fair summary of a view I disagree with."
+  },
+  "person-224": {
+    "name": "Isha Menon",
+    "handle": "isha-menon-224",
+    "style": "Explores tradeoffs",
+    "bio": "I like questions with a decision at the end."
+  },
+  "person-225": {
+    "name": "Neha Kapoor",
+    "handle": "neha-kapoor-225",
+    "style": "Follows the money",
+    "bio": "Here to compare what sounds good with what might work."
+  },
+  "person-226": {
+    "name": "Aditi Shah",
+    "handle": "aditi-shah-226",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about how towns and schools make everyday decisions."
+  },
+  "person-227": {
+    "name": "Sana Qureshi",
+    "handle": "sana-qureshi-227",
+    "style": "Explores tradeoffs",
+    "bio": "I learn best when someone shows me a concrete example."
+  },
+  "person-228": {
+    "name": "Priya Das",
+    "handle": "priya-das-228",
+    "style": "Starts with a question",
+    "bio": "I enjoy a discussion where I can change my mind halfway through."
+  },
+  "person-229": {
+    "name": "Riya Banerjee",
+    "handle": "riya-banerjee-229",
+    "style": "Explores tradeoffs",
+    "bio": "Usually the first to ask who pays and who benefits."
+  },
+  "person-230": {
+    "name": "Nisha Iyer",
+    "handle": "nisha-iyer-230",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in questions people can talk through over dinner."
+  },
+  "person-231": {
+    "name": "Arjun Mehta",
+    "handle": "arjun-mehta-231",
+    "style": "Explores tradeoffs",
+    "bio": "I’m drawn to the parts of a proposal people tend to skip."
+  },
+  "person-232": {
+    "name": "Vikram Desai",
+    "handle": "vikram-desai-232",
+    "style": "Explores tradeoffs",
+    "bio": "I like comparing short-term relief with longer-term fixes."
+  },
+  "person-233": {
+    "name": "Aditya Joshi",
+    "handle": "aditya-joshi-233",
+    "style": "Explores tradeoffs",
+    "bio": "Here for practical ideas that can be tested on a small scale."
+  },
+  "person-234": {
+    "name": "Rohan Malhotra",
+    "handle": "rohan-malhotra-234",
+    "style": "Explores tradeoffs",
+    "bio": "I'd rather hear the reasoning than guess what someone believes."
+  },
+  "person-235": {
+    "name": "Kabir Sethi",
+    "handle": "kabir-sethi-235",
+    "style": "Explores tradeoffs",
+    "bio": "I usually start by asking how we would measure success."
+  },
+  "person-236": {
+    "name": "Rahul Krishnan",
+    "handle": "rahul-krishnan-236",
+    "style": "Follows the money",
+    "bio": "I like hearing how the same proposal could work differently in two places."
+  },
+  "person-237": {
+    "name": "Sameer Ansari",
+    "handle": "sameer-ansari-237",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about the difference one detail can make in a public decision."
+  },
+  "person-238": {
+    "name": "Karan Bhat",
+    "handle": "karan-bhat-238",
+    "style": "Follows the money",
+    "bio": "I enjoy a good follow-up question."
+  },
+  "person-239": {
+    "name": "Siddharth Pillai",
+    "handle": "siddharth-pillai-239",
+    "style": "Explores tradeoffs",
+    "bio": "I like simple explanations and surprisingly complicated choices."
+  },
+  "person-240": {
+    "name": "Nikhil Reddy",
+    "handle": "nikhil-reddy-240",
+    "style": "Follows the money",
+    "bio": "I tend to ask what happens after the opening day."
+  },
+  "person-241": {
+    "name": "Maria Liza Ramos",
+    "handle": "maria-liza-ramos-241",
+    "style": "Follows the money",
+    "bio": "Interested in technology and its effects on everyday routines."
+  },
+  "person-242": {
+    "name": "Janelle Bautista",
+    "handle": "janelle-bautista-242",
+    "style": "Explores tradeoffs",
+    "bio": "I like a fair summary of a view I disagree with."
+  },
+  "person-243": {
+    "name": "Alyssa Villanueva",
+    "handle": "alyssa-villanueva-243",
+    "style": "Explores tradeoffs",
+    "bio": "I like questions with a decision at the end."
+  },
+  "person-244": {
+    "name": "Bianca Panganiban",
+    "handle": "bianca-panganiban-244",
+    "style": "Explores tradeoffs",
+    "bio": "Here to compare what sounds good with what might work."
+  },
+  "person-245": {
+    "name": "Rina Mercado",
+    "handle": "rina-mercado-245",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about how towns and schools make everyday decisions."
+  },
+  "person-246": {
+    "name": "Paula Reyes",
+    "handle": "paula-reyes-246",
+    "style": "Explores tradeoffs",
+    "bio": "I learn best when someone shows me a concrete example."
+  },
+  "person-247": {
+    "name": "Cristina Mendoza",
+    "handle": "cristina-mendoza-247",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a discussion where I can change my mind halfway through."
+  },
+  "person-248": {
+    "name": "Joanna Navarro",
+    "handle": "joanna-navarro-248",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in questions people can talk through over dinner."
+  },
+  "person-249": {
+    "name": "Camille Dizon",
+    "handle": "camille-dizon-249",
+    "style": "Explores tradeoffs",
+    "bio": "I’m drawn to the parts of a proposal people tend to skip."
+  },
+  "person-250": {
+    "name": "Patricia Salazar",
+    "handle": "patricia-salazar-250",
+    "style": "Explores tradeoffs",
+    "bio": "I like comparing short-term relief with longer-term fixes."
+  },
+  "person-251": {
+    "name": "Miguel Dela Cruz",
+    "handle": "miguel-dela-cruz-251",
+    "style": "Follows the money",
+    "bio": "Here for practical ideas that can be tested on a small scale."
+  },
+  "person-252": {
+    "name": "Rafael Santos",
+    "handle": "rafael-santos-252",
+    "style": "Explores tradeoffs",
+    "bio": "I'd rather hear the reasoning than guess what someone believes."
+  },
+  "person-253": {
+    "name": "Paolo Manalo",
+    "handle": "paolo-manalo-253",
+    "style": "Explores tradeoffs",
+    "bio": "I pay attention to who gets left out of a plan."
+  },
+  "person-254": {
+    "name": "Angelo Reyes",
+    "handle": "angelo-reyes-254",
+    "style": "Checks how it would work",
+    "bio": "I usually start by asking how we would measure success."
+  },
+  "person-255": {
+    "name": "Luis Agustin",
+    "handle": "luis-agustin-255",
+    "style": "Explores tradeoffs",
+    "bio": "I like hearing how the same proposal could work differently in two places."
+  },
+  "person-256": {
+    "name": "Jose Carlo Mariano",
+    "handle": "jose-carlo-mariano-256",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about the difference one detail can make in a public decision."
+  },
+  "person-257": {
+    "name": "Adrian Lim",
+    "handle": "adrian-lim-257",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a good follow-up question."
+  },
+  "person-258": {
+    "name": "Joshua Garcia",
+    "handle": "joshua-garcia-258",
+    "style": "Follows the money",
+    "bio": "I like simple explanations and surprisingly complicated choices."
+  },
+  "person-259": {
+    "name": "Marco Velasco",
+    "handle": "marco-velasco-259",
+    "style": "Explores tradeoffs",
+    "bio": "I tend to ask what happens after the opening day."
+  },
+  "person-260": {
+    "name": "Nico Valdez",
+    "handle": "nico-valdez-260",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in technology and its effects on everyday routines."
+  },
+  "person-261": {
+    "name": "Aoi Fujimoto",
+    "handle": "aoi-fujimoto-261",
+    "style": "Follows the money",
+    "bio": "I like questions with a decision at the end."
+  },
+  "person-262": {
+    "name": "Yui Hasegawa",
+    "handle": "yui-hasegawa-262",
+    "style": "Explores tradeoffs",
+    "bio": "Here to compare what sounds good with what might work."
+  },
+  "person-263": {
+    "name": "Misaki Watanabe",
+    "handle": "misaki-watanabe-263",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about how towns and schools make everyday decisions."
+  },
+  "person-264": {
+    "name": "Sakura Tanaka",
+    "handle": "sakura-tanaka-264",
+    "style": "Looks for safeguards",
+    "bio": "I learn best when someone shows me a concrete example."
+  },
+  "person-265": {
+    "name": "Hina Matsumoto",
+    "handle": "hina-matsumoto-265",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a discussion where I can change my mind halfway through."
+  },
+  "person-266": {
+    "name": "Rin Shimizu",
+    "handle": "rin-shimizu-266",
+    "style": "Explores tradeoffs",
+    "bio": "Usually the first to ask who pays and who benefits."
+  },
+  "person-267": {
+    "name": "Akari Sato",
+    "handle": "akari-sato-267",
+    "style": "Looks for safeguards",
+    "bio": "Interested in questions people can talk through over dinner."
+  },
+  "person-268": {
+    "name": "Hana Kimura",
+    "handle": "hana-kimura-268",
+    "style": "Explores tradeoffs",
+    "bio": "I’m drawn to the parts of a proposal people tend to skip."
+  },
+  "person-269": {
+    "name": "Nanami Okada",
+    "handle": "nanami-okada-269",
+    "style": "Explores tradeoffs",
+    "bio": "I like comparing short-term relief with longer-term fixes."
+  },
+  "person-270": {
+    "name": "Mio Inoue",
+    "handle": "mio-inoue-270",
+    "style": "Follows the money",
+    "bio": "Here for practical ideas that can be tested on a small scale."
+  },
+  "person-271": {
+    "name": "Haruto Nakajima",
+    "handle": "haruto-nakajima-271",
+    "style": "Follows the money",
+    "bio": "I'd rather hear the reasoning than guess what someone believes."
+  },
+  "person-272": {
+    "name": "Ren Kobayashi",
+    "handle": "ren-kobayashi-272",
+    "style": "Explores tradeoffs",
+    "bio": "I pay attention to who gets left out of a plan."
+  },
+  "person-273": {
+    "name": "Yuta Suzuki",
+    "handle": "yuta-suzuki-273",
+    "style": "Explores tradeoffs",
+    "bio": "I usually start by asking how we would measure success."
+  },
+  "person-274": {
+    "name": "Sota Nakamura",
+    "handle": "sota-nakamura-274",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about the difference one detail can make in a public decision."
+  },
+  "person-275": {
+    "name": "Hiroto Hayashi",
+    "handle": "hiroto-hayashi-275",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a good follow-up question."
+  },
+  "person-276": {
+    "name": "Kaito Ishikawa",
+    "handle": "kaito-ishikawa-276",
+    "style": "Explores tradeoffs",
+    "bio": "I like simple explanations and surprisingly complicated choices."
+  },
+  "person-277": {
+    "name": "Daiki Mori",
+    "handle": "daiki-mori-277",
+    "style": "Explores tradeoffs",
+    "bio": "I tend to ask what happens after the opening day."
+  },
+  "person-278": {
+    "name": "Riku Yamamoto",
+    "handle": "riku-yamamoto-278",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in technology and its effects on everyday routines."
+  },
+  "person-279": {
+    "name": "Shun Ogawa",
+    "handle": "shun-ogawa-279",
+    "style": "Explores tradeoffs",
+    "bio": "I like a fair summary of a view I disagree with."
+  },
+  "person-280": {
+    "name": "Yuki Abe",
+    "handle": "yuki-abe-280",
+    "style": "Explores tradeoffs",
+    "bio": "I like questions with a decision at the end."
+  },
+  "person-281": {
+    "name": "Ji-eun Park",
+    "handle": "ji-eun-park-281",
+    "style": "Follows the money",
+    "bio": "Here to compare what sounds good with what might work."
+  },
+  "person-282": {
+    "name": "Seo-yeon Kim",
+    "handle": "seo-yeon-kim-282",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about how towns and schools make everyday decisions."
+  },
+  "person-283": {
+    "name": "Hye-jin Lee",
+    "handle": "hye-jin-lee-283",
+    "style": "Follows the money",
+    "bio": "I learn best when someone shows me a concrete example."
+  },
+  "person-284": {
+    "name": "Ha-yun Choi",
+    "handle": "ha-yun-choi-284",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a discussion where I can change my mind halfway through."
+  },
+  "person-285": {
+    "name": "Su-bin Han",
+    "handle": "su-bin-han-285",
+    "style": "Explores tradeoffs",
+    "bio": "Usually the first to ask who pays and who benefits."
+  },
+  "person-286": {
+    "name": "Ye-jin Kang",
+    "handle": "ye-jin-kang-286",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in questions people can talk through over dinner."
+  },
+  "person-287": {
+    "name": "Min-seo Jung",
+    "handle": "min-seo-jung-287",
+    "style": "Explores tradeoffs",
+    "bio": "I like comparing short-term relief with longer-term fixes."
+  },
+  "person-288": {
+    "name": "Yu-na Song",
+    "handle": "yu-na-song-288",
+    "style": "Explores tradeoffs",
+    "bio": "Here for practical ideas that can be tested on a small scale."
+  },
+  "person-289": {
+    "name": "Da-eun Yoon",
+    "handle": "da-eun-yoon-289",
+    "style": "Explores tradeoffs",
+    "bio": "I'd rather hear the reasoning than guess what someone believes."
+  },
+  "person-290": {
+    "name": "Hye-won Lim",
+    "handle": "hye-won-lim-290",
+    "style": "Explores tradeoffs",
+    "bio": "I pay attention to who gets left out of a plan."
+  },
+  "person-291": {
+    "name": "Min-jun Lee",
+    "handle": "min-jun-lee-291",
+    "style": "Explores tradeoffs",
+    "bio": "I usually start by asking how we would measure success."
+  },
+  "person-292": {
+    "name": "Ji-ho Kim",
+    "handle": "ji-ho-kim-292",
+    "style": "Follows the money",
+    "bio": "I like hearing how the same proposal could work differently in two places."
+  },
+  "person-293": {
+    "name": "Hyun-woo Park",
+    "handle": "hyun-woo-park-293",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about the difference one detail can make in a public decision."
+  },
+  "person-294": {
+    "name": "Seung-min Choi",
+    "handle": "seung-min-choi-294",
+    "style": "Explores tradeoffs",
+    "bio": "I enjoy a good follow-up question."
+  },
+  "person-295": {
+    "name": "Jun-seo Kang",
+    "handle": "jun-seo-kang-295",
+    "style": "Explores tradeoffs",
+    "bio": "I like simple explanations and surprisingly complicated choices."
+  },
+  "person-296": {
+    "name": "Jae-hyun Song",
+    "handle": "jae-hyun-song-296",
+    "style": "Explores tradeoffs",
+    "bio": "I tend to ask what happens after the opening day."
+  },
+  "person-297": {
+    "name": "Do-yun Han",
+    "handle": "do-yun-han-297",
+    "style": "Explores tradeoffs",
+    "bio": "Interested in technology and its effects on everyday routines."
+  },
+  "person-298": {
+    "name": "Tae-hyun Shin",
+    "handle": "tae-hyun-shin-298",
+    "style": "Explores tradeoffs",
+    "bio": "I like a fair summary of a view I disagree with."
+  },
+  "person-299": {
+    "name": "Hyun-jin Yoon",
+    "handle": "hyun-jin-yoon-299",
+    "style": "Looks for who gets left out",
+    "bio": "I like questions with a decision at the end."
+  },
+  "person-300": {
+    "name": "Jin-woo Kwon",
+    "handle": "jin-woo-kwon-300",
+    "style": "Explores tradeoffs",
+    "bio": "Curious about how towns and schools make everyday decisions."
+  }
+}

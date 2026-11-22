@@ -113,114 +113,114 @@
       "reactions": 94,
       "comments": [
         {
-          "name": "Iván Aranda",
-          "body": "Who pays for the substation?"
+          "body": "Who pays for the substation?",
+          "profileId": "person-033"
         },
         {
-          "name": "Toby Baker",
-          "body": "I keep coming back to the same question: what does the town get in exchange for hosting it?"
+          "body": "I keep coming back to the same question: what does the town get in exchange for hosting it?",
+          "profileId": "person-120"
         },
         {
-          "name": "Callum Reid",
           "body": "A construction boom and a permanent jobs program are two different things. I want to see the staffing plan for year five before we promise a twenty-year tax break.",
           "replies": [
             {
-              "name": "Noah Bennett",
               "body": "Why count only the jobs inside the building? Construction crews and nearby businesses get work too.",
               "replies": [
                 {
-                  "name": "Callum Reid",
                   "body": "Those jobs count. My question is how many are still there after the crews leave.",
                   "replies": [
                     {
-                      "name": "Noah Bennett",
-                      "body": "Fair. I'd ask for a separate estimate of temporary and permanent jobs before voting."
+                      "body": "Fair. I'd ask for a separate estimate of temporary and permanent jobs before voting.",
+                      "profileId": "person-013"
                     }
-                  ]
+                  ],
+                  "profileId": "person-111"
                 }
-              ]
+              ],
+              "profileId": "person-013"
             }
-          ]
+          ],
+          "profileId": "person-111"
         },
         {
-          "name": "Noah Bennett",
-          "body": "Would the town get a say in expansions, or would the first permit cover them all?"
+          "body": "Would the town get a say in expansions, or would the first permit cover them all?",
+          "profileId": "person-013"
         },
         {
-          "name": "Adrian Wu",
-          "body": "I was a yes until I saw that the utility upgrade could go into everyone’s rates. If the operator pays for the capacity it needs, I'm back to a maybe."
+          "body": "I was a yes until I saw that the utility upgrade could go into everyone’s rates. If the operator pays for the capacity it needs, I'm back to a maybe.",
+          "profileId": "person-096"
         },
         {
-          "name": "Amel Haddad",
-          "body": "The offer should include who pays to restore the site if the operator leaves."
+          "body": "The offer should include who pays to restore the site if the operator leaves.",
+          "profileId": "person-124"
         },
         {
-          "name": "Haruto Nakajima",
           "body": "Water would be my first question, especially in August.",
           "replies": [
             {
-              "name": "Achieng Odhiambo",
               "body": "Water use depends on the cooling system. I'd ask what they're installing before assuming the worst.",
               "replies": [
                 {
-                  "name": "Haruto Nakajima",
-                  "body": "Agreed. I'd still want a cap for drought days written into the deal."
+                  "body": "Agreed. I'd still want a cap for drought days written into the deal.",
+                  "profileId": "person-271"
                 }
-              ]
+              ],
+              "profileId": "person-182"
             }
-          ]
+          ],
+          "profileId": "person-271"
         },
         {
-          "name": "Achieng Odhiambo",
-          "body": "What happens if a cheaper power rate for the site lasts longer than its commitment to hire locally?"
+          "body": "What happens if a cheaper power rate for the site lasts longer than its commitment to hire locally?",
+          "profileId": "person-182"
         },
         {
-          "name": "Hyun-jin Yoon",
-          "body": "If we wait for a project with zero downside, nothing is getting built here."
+          "body": "If we wait for a project with zero downside, nothing is getting built here.",
+          "profileId": "person-299"
         },
         {
-          "name": "Atieno Onyango",
-          "body": "Maybe the public meeting should start with a map of the nearest homes and schools."
+          "body": "Maybe the public meeting should start with a map of the nearest homes and schools.",
+          "profileId": "person-186"
         },
         {
-          "name": "Khaled Fathy",
-          "body": "Could a town test the deal by budgeting for fewer jobs and more power use than the company expects?"
+          "body": "Could a town test the deal by budgeting for fewer jobs and more power use than the company expects?",
+          "profileId": "person-218"
         },
         {
-          "name": "Andrés Peralta",
-          "body": "The poll question was about banning all new centers. I could oppose a ban and still vote no on one site."
+          "body": "The poll question was about banning all new centers. I could oppose a ban and still vote no on one site.",
+          "profileId": "person-038"
         },
         {
-          "name": "Joshua Garcia",
-          "body": "I would prefer a site on land already zoned for industry, even if the approvals take longer."
+          "body": "I would prefer a site on land already zoned for industry, even if the approvals take longer.",
+          "profileId": "person-258"
         },
         {
-          "name": "Akari Sato",
-          "body": "I don't want the town to say no just because the project has AI in the name. I'd apply the same noise, water and traffic rules to any big industrial user."
+          "body": "I don't want the town to say no just because the project has AI in the name. I'd apply the same noise, water and traffic rules to any big industrial user.",
+          "profileId": "person-267"
         },
         {
-          "name": "Léa Laurent",
-          "body": "I'd ask for someone outside the project to review the water and power promises."
+          "body": "I'd ask for someone outside the project to review the water and power promises.",
+          "profileId": "person-123"
         },
         {
-          "name": "Bayo Ogunleye",
-          "body": "The tax deal should kick in after the jobs show up.\n\nIf the company walks away, the agreement should also say who gets stuck with the site and what they have to do to clean it up."
+          "body": "The tax deal should kick in after the jobs show up.\n\nIf the company walks away, the agreement should also say who gets stuck with the site and what they have to do to clean it up.",
+          "profileId": "person-178"
         },
         {
-          "name": "Beatriz Rocha",
-          "body": "If the developer can fully cover the cost, I'd lean yes. I still want to see the details."
+          "body": "If the developer can fully cover the cost, I'd lean yes. I still want to see the details.",
+          "profileId": "person-043"
         },
         {
-          "name": "Freya Hughes",
-          "body": "Can they put it in the old industrial park? That's a different conversation from putting it behind somebody's house."
+          "body": "Can they put it in the old industrial park? That's a different conversation from putting it behind somebody's house.",
+          "profileId": "person-108"
         },
         {
-          "name": "Facundo Rivero",
-          "body": "Local training sounds good if there are actual roles for people who finish it."
+          "body": "Local training sounds good if there are actual roles for people who finish it.",
+          "profileId": "person-080"
         },
         {
-          "name": "Michał Wilk",
-          "body": "I'd take the tax revenue. Our town has been cutting services for years."
+          "body": "I'd take the tax revenue. Our town has been cutting services for years.",
+          "profileId": "person-159"
         }
       ],
       "impressions": 162
@@ -340,90 +340,90 @@
       "reactions": 67,
       "comments": [
         {
-          "name": "Reem Mahmoud",
-          "body": "Take them off coffee, at least."
+          "body": "Take them off coffee, at least.",
+          "profileId": "person-207"
         },
         {
-          "name": "Salma Hassan",
-          "body": "How long would we give a change before checking the prices and deciding what to keep?"
+          "body": "How long would we give a change before checking the prices and deciding what to keep?",
+          "profileId": "person-188"
         },
         {
-          "name": "Renata Queiroz",
           "body": "Would the savings reach the checkout line? I'd love to see a store put its prices before and after the change next to each other.",
           "replies": [
             {
-              "name": "Haruto Nakajima",
               "body": "Prices can move because of a bad harvest too. A before-and-after photo won't tell you what the tariff did.",
               "replies": [
                 {
-                  "name": "Renata Queiroz",
                   "body": "True. I'd compare several products that got the cut with similar products that didn't.",
                   "replies": [
                     {
-                      "name": "Haruto Nakajima",
-                      "body": "That would help, especially if the stores show what they paid their suppliers."
+                      "body": "That would help, especially if the stores show what they paid their suppliers.",
+                      "profileId": "person-271"
                     }
-                  ]
+                  ],
+                  "profileId": "person-048"
                 }
-              ]
+              ],
+              "profileId": "person-271"
             }
-          ]
+          ],
+          "profileId": "person-048"
         },
         {
-          "name": "Haruto Nakajima",
-          "body": "Could the rules be easier to follow for a small importer?"
+          "body": "Could the rules be easier to follow for a small importer?",
+          "profileId": "person-271"
         },
         {
-          "name": "Nora Sinclair",
-          "body": "My grocery bill is due Friday. I'm more interested in relief now than in what a tariff might accomplish in three years."
+          "body": "My grocery bill is due Friday. I'm more interested in relief now than in what a tariff might accomplish in three years.",
+          "profileId": "person-081"
         },
         {
-          "name": "Andrés Peralta",
-          "body": "If the tariff exists to give producers breathing room, how do we know when they've had enough?"
+          "body": "If the tariff exists to give producers breathing room, how do we know when they've had enough?",
+          "profileId": "person-038"
         },
         {
-          "name": "Leila Hussain",
           "body": "Leave fresh produce alone during the local harvest and revisit it in winter.",
           "replies": [
             {
-              "name": "Lily Chen",
               "body": "Seasonal rules sound simple until a freeze wipes out the local crop.",
               "replies": [
                 {
-                  "name": "Leila Hussain",
-                  "body": "Then give stores a way to request a temporary exception."
+                  "body": "Then give stores a way to request a temporary exception.",
+                  "profileId": "person-102"
                 }
-              ]
+              ],
+              "profileId": "person-088"
             }
-          ]
+          ],
+          "profileId": "person-102"
         },
         {
-          "name": "Lily Chen",
-          "body": "If we're going to keep exceptions, who gets to decide which ones? The biggest producers will have someone in the room. Small shops probably won't."
+          "body": "If we're going to keep exceptions, who gets to decide which ones? The biggest producers will have someone in the room. Small shops probably won't.",
+          "profileId": "person-088"
         },
         {
-          "name": "Marek Dąbrowski",
-          "body": "Can someone walk through who pays when a shipment comes in?"
+          "body": "Can someone walk through who pays when a shipment comes in?",
+          "profileId": "person-154"
         },
         {
-          "name": "Mio Inoue",
-          "body": "I keep hearing that we can protect farmers by making imports expensive. I'd rather pay for that support through the budget where we can all see the cost.\n\nThat also gives us a chance to ask which farms actually need the help."
+          "body": "I keep hearing that we can protect farmers by making imports expensive. I'd rather pay for that support through the budget where we can all see the cost.\n\nThat also gives us a chance to ask which farms actually need the help.",
+          "profileId": "person-270"
         },
         {
-          "name": "Sergio Robles",
-          "body": "If shoppers get relief and growers get an adjustment period, I could see a deal."
+          "body": "If shoppers get relief and growers get an adjustment period, I could see a deal.",
+          "profileId": "person-035"
         },
         {
-          "name": "Bruno Azevedo",
-          "body": "I'm for dropping the tariffs on foods we barely grow here. For crops where growers are making planting decisions months ahead, give them a date they can plan around."
+          "body": "I'm for dropping the tariffs on foods we barely grow here. For crops where growers are making planting decisions months ahead, give them a date they can plan around.",
+          "profileId": "person-060"
         },
         {
-          "name": "Hugo Moreau",
-          "body": "I don't want a tax meant for luxury products driving up an everyday staple by accident."
+          "body": "I don't want a tax meant for luxury products driving up an everyday staple by accident.",
+          "profileId": "person-132"
         },
         {
-          "name": "Manon Lefèvre",
-          "body": "I buy groceries too, but a cheap season of imports doesn't help much if the local growers are gone by next year."
+          "body": "I buy groceries too, but a cheap season of imports doesn't help much if the local growers are gone by next year.",
+          "profileId": "person-121"
         }
       ],
       "impressions": 137
@@ -543,102 +543,102 @@
       "reactions": 81,
       "comments": [
         {
-          "name": "Wambui Njoroge",
-          "body": "Yes. People budget around that monthly premium."
+          "body": "Yes. People budget around that monthly premium.",
+          "profileId": "person-190"
         },
         {
-          "name": "Tolani Balogun",
-          "body": "I'd start with people facing the steepest jump and see if the design can scale."
+          "body": "I'd start with people facing the steepest jump and see if the design can scale.",
+          "profileId": "person-170"
         },
         {
-          "name": "Devin Miller",
           "body": "The premium is only half my problem. I can afford the plan and still put off a visit because of the deductible.",
           "replies": [
             {
-              "name": "Phoebe Clarke",
               "body": "Wouldn't smaller deductibles just push the premiums back up?",
               "replies": [
                 {
-                  "name": "Devin Miller",
                   "body": "They could. I'd compare the yearly cost for someone who actually uses the plan.",
                   "replies": [
                     {
-                      "name": "Phoebe Clarke",
-                      "body": "That comparison would be more useful to me than the monthly price alone."
+                      "body": "That comparison would be more useful to me than the monthly price alone.",
+                      "profileId": "person-106"
                     }
-                  ]
+                  ],
+                  "profileId": "person-020"
                 }
-              ]
+              ],
+              "profileId": "person-106"
             }
-          ]
+          ],
+          "profileId": "person-020"
         },
         {
-          "name": "Phoebe Clarke",
-          "body": "I would ask how the plan handles an income change halfway through the year."
+          "body": "I would ask how the plan handles an income change halfway through the year.",
+          "profileId": "person-106"
         },
         {
-          "name": "Diego Olvera",
-          "body": "I'd renew the help for a year while Congress works on prices. The hospital billing problem won't be resolved by the next enrollment deadline.\n\nGive people a date and a clear estimate of what next year's coverage will cost them."
+          "body": "I'd renew the help for a year while Congress works on prices. The hospital billing problem won't be resolved by the next enrollment deadline.\n\nGive people a date and a clear estimate of what next year's coverage will cost them.",
+          "profileId": "person-031"
         },
         {
-          "name": "Wairimu Karanja",
-          "body": "If a proposal saves money on premiums, I'd also ask whether it changes which plans stay available."
+          "body": "If a proposal saves money on premiums, I'd also ask whether it changes which plans stay available.",
+          "profileId": "person-187"
         },
         {
-          "name": "Yassin Hegazy",
           "body": "How about a smaller credit that lasts? The annual cliff is exhausting.",
           "replies": [
             {
-              "name": "Manon Lefèvre",
               "body": "A smaller credit still leaves some people facing a bill they can't pay.",
               "replies": [
                 {
-                  "name": "Yassin Hegazy",
-                  "body": "I'd taper it with income. I care as much about avoiding a sudden drop as the dollar amount."
+                  "body": "I'd taper it with income. I care as much about avoiding a sudden drop as the dollar amount.",
+                  "profileId": "person-220"
                 }
-              ]
+              ],
+              "profileId": "person-121"
             }
-          ]
+          ],
+          "profileId": "person-220"
         },
         {
-          "name": "Manon Lefèvre",
-          "body": "Would anyone choose a narrower provider network if it meant keeping their current monthly payment?"
+          "body": "Would anyone choose a narrower provider network if it meant keeping their current monthly payment?",
+          "profileId": "person-121"
         },
         {
-          "name": "Chloé Robin",
-          "body": "A person between jobs may need a different kind of help than someone buying insurance year after year."
+          "body": "A person between jobs may need a different kind of help than someone buying insurance year after year.",
+          "profileId": "person-126"
         },
         {
-          "name": "Júlia Nunes",
-          "body": "I’d put the money into cheaper plans with smaller networks. I know that’s a tough sell in a rural county where there might be one specialist."
+          "body": "I’d put the money into cheaper plans with smaller networks. I know that’s a tough sell in a rural county where there might be one specialist.",
+          "profileId": "person-047"
         },
         {
-          "name": "Marc Beaulieu",
-          "body": "I'd like a cost estimate per household alongside the estimate for the whole program."
+          "body": "I'd like a cost estimate per household alongside the estimate for the whole program.",
+          "profileId": "person-093"
         },
         {
-          "name": "Obinna Ude",
-          "body": "I'm wary of another temporary extension. At some point you have to say what it costs over ten years and where the money comes from."
+          "body": "I'm wary of another temporary extension. At some point you have to say what it costs over ten years and where the money comes from.",
+          "profileId": "person-176"
         },
         {
-          "name": "Emilio Zamora",
-          "body": "Can existing credits reach people with very low incomes in every state?"
+          "body": "Can existing credits reach people with very low incomes in every state?",
+          "profileId": "person-040"
         },
         {
-          "name": "Céline Bergeron",
-          "body": "What happens to someone who gets a small raise and loses a big chunk of the credit?"
+          "body": "What happens to someone who gets a small raise and loses a big chunk of the credit?",
+          "profileId": "person-083"
         },
         {
-          "name": "Hyun-jin Yoon",
-          "body": "What would it take to simplify the forms so more eligible people can actually get help?"
+          "body": "What would it take to simplify the forms so more eligible people can actually get help?",
+          "profileId": "person-299"
         },
         {
-          "name": "Théo Blanc",
-          "body": "I want help for people close to losing their coverage. I’m less sold on making the broader subsidies permanent."
+          "body": "I want help for people close to losing their coverage. I’m less sold on making the broader subsidies permanent.",
+          "profileId": "person-139"
         },
         {
-          "name": "Karan Bhat",
-          "body": "Both sides seem to agree coverage should be affordable even when you change jobs."
+          "body": "Both sides seem to agree coverage should be affordable even when you change jobs.",
+          "profileId": "person-238"
         }
       ],
       "impressions": 170
@@ -754,86 +754,86 @@
       "reactions": 49,
       "comments": [
         {
-          "name": "Adrian Wu",
-          "body": "Give me the off switch too. I'm 38."
+          "body": "Give me the off switch too. I'm 38.",
+          "profileId": "person-096"
         },
         {
-          "name": "Rémi Giraud",
-          "body": "Should platforms have to show teens how many times autoplay sent them to a new video?"
+          "body": "Should platforms have to show teens how many times autoplay sent them to a new video?",
+          "profileId": "person-135"
         },
         {
-          "name": "Wanjiku Muriuki",
           "body": "I use a playlist to follow a full drawing lesson. Having to tap every two minutes would make that harder, especially with paint all over my hands.",
           "replies": [
             {
-              "name": "Emeka Okafor",
               "body": "A drawing playlist feels different from a feed that keeps picking new clips.",
               "replies": [
                 {
-                  "name": "Wanjiku Muriuki",
                   "body": "It does. My worry is that a broad rule would treat them the same.",
                   "replies": [
                     {
-                      "name": "Emeka Okafor",
-                      "body": "Then I'd keep autoplay for playlists the viewer deliberately starts."
+                      "body": "Then I'd keep autoplay for playlists the viewer deliberately starts.",
+                      "profileId": "person-174"
                     }
-                  ]
+                  ],
+                  "profileId": "person-181"
                 }
-              ]
+              ],
+              "profileId": "person-174"
             }
-          ]
+          ],
+          "profileId": "person-181"
         },
         {
-          "name": "Emeka Okafor",
-          "body": "A button that says Play next sounds like enough of a pause to think about it."
+          "body": "A button that says Play next sounds like enough of a pause to think about it.",
+          "profileId": "person-174"
         },
         {
-          "name": "Toby Baker",
-          "body": "I'd distinguish between the next video in a playlist you picked and an endless stream the app picked.\n\nThe first helps you finish something. The second makes it hard to tell when you're done."
+          "body": "I'd distinguish between the next video in a playlist you picked and an endless stream the app picked.\n\nThe first helps you finish something. The second makes it hard to tell when you're done.",
+          "profileId": "person-120"
         },
         {
-          "name": "Nikhil Reddy",
-          "body": "My issue is bedtime. I'd take a setting that stops the stream at a time we agree on."
+          "body": "My issue is bedtime. I'd take a setting that stops the stream at a time we agree on.",
+          "profileId": "person-240"
         },
         {
-          "name": "Marta Szymańska",
           "body": "Our family can decide, sure. But changing one setting on every app after every update is a lot of work for a parent.",
           "replies": [
             {
-              "name": "Emilio Zamora",
               "body": "Why should every family have to accept the same default?",
               "replies": [
                 {
-                  "name": "Marta Szymańska",
-                  "body": "They could choose a different setting. An off default just gives families a starting point."
+                  "body": "They could choose a different setting. An off default just gives families a starting point.",
+                  "profileId": "person-147"
                 }
-              ]
+              ],
+              "profileId": "person-040"
             }
-          ]
+          ],
+          "profileId": "person-147"
         },
         {
-          "name": "Emilio Zamora",
-          "body": "This feels like something families can decide."
+          "body": "This feels like something families can decide.",
+          "profileId": "person-040"
         },
         {
-          "name": "Samuel Kariuki",
-          "body": "I'd let families make household choices as long as every option is easy to find."
+          "body": "I'd let families make household choices as long as every option is easy to find.",
+          "profileId": "person-196"
         },
         {
-          "name": "Léa Laurent",
-          "body": "How does the app know who's under 16? I wouldn't upload my kid's ID just to change this setting."
+          "body": "How does the app know who's under 16? I wouldn't upload my kid's ID just to change this setting.",
+          "profileId": "person-123"
         },
         {
-          "name": "Uche Nwankwo",
-          "body": "I wonder if pauses between videos would matter as much as turning off late-night notifications."
+          "body": "I wonder if pauses between videos would matter as much as turning off late-night notifications.",
+          "profileId": "person-179"
         },
         {
-          "name": "Emilia Mazur",
-          "body": "Default it off. Kids who want another video already know where the play button is."
+          "body": "Default it off. Kids who want another video already know where the play button is.",
+          "profileId": "person-143"
         },
         {
-          "name": "Yasmin Adel",
-          "body": "I'd like the debate to include teenagers who use these apps every day."
+          "body": "I'd like the debate to include teenagers who use these apps every day.",
+          "profileId": "person-202"
         }
       ],
       "impressions": 145
@@ -953,98 +953,98 @@
       "reactions": 56,
       "comments": [
         {
-          "name": "Diego Olvera",
-          "body": "Yes. Put every member's vote on the record."
+          "body": "Yes. Put every member's vote on the record.",
+          "profileId": "person-031"
         },
         {
-          "name": "Angelo Reyes",
-          "body": "My answer hinges on how much room is left for diplomacy and who oversees that plan."
+          "body": "My answer hinges on how much room is left for diplomacy and who oversees that plan.",
+          "profileId": "person-254"
         },
         {
-          "name": "Rhys Morgan",
           "body": "I worry a rigid deadline would give the other side an incentive to wait out the vote. I'd want a way to extend it briefly if troops are in immediate danger.",
           "replies": [
             {
-              "name": "Salma Hassan",
               "body": "If there’s always an exception for danger, what stops the exception from lasting months?",
               "replies": [
                 {
-                  "name": "Rhys Morgan",
                   "body": "Give the extension its own short expiration and say what it covers.",
                   "replies": [
                     {
-                      "name": "Salma Hassan",
-                      "body": "I could live with that if Congress still has to vote on the wider mission."
+                      "body": "I could live with that if Congress still has to vote on the wider mission.",
+                      "profileId": "person-188"
                     }
-                  ]
+                  ],
+                  "profileId": "person-112"
                 }
-              ]
+              ],
+              "profileId": "person-188"
             }
-          ]
+          ],
+          "profileId": "person-112"
         },
         {
-          "name": "Salma Hassan",
-          "body": "What choice does a voter have if the president and Congress blame each other for the next decision?"
+          "body": "What choice does a voter have if the president and Congress blame each other for the next decision?",
+          "profileId": "person-188"
         },
         {
-          "name": "Rocío Ferreyra",
-          "body": "Give Congress a deadline and let classified briefings cover sensitive details. The public should still hear the basic objective, the expected cost and when lawmakers have to vote again.\n\nOtherwise a broad authorization can become a blank check for the next president too."
+          "body": "Give Congress a deadline and let classified briefings cover sensitive details. The public should still hear the basic objective, the expected cost and when lawmakers have to vote again.\n\nOtherwise a broad authorization can become a blank check for the next president too.",
+          "profileId": "person-068"
         },
         {
-          "name": "Leila Hussain",
-          "body": "I have more trust in a decision that explains the costs along with the goal."
+          "body": "I have more trust in a decision that explains the costs along with the goal.",
+          "profileId": "person-102"
         },
         {
-          "name": "Yassin Hegazy",
           "body": "Members can already demand answers. I'd like to see them use the authority they have.",
           "replies": [
             {
-              "name": "Reem Mahmoud",
               "body": "Hearings can get answers. I still want a vote on whether a campaign continues.",
               "replies": [
                 {
-                  "name": "Yassin Hegazy",
-                  "body": "I'd want both. Give lawmakers the facts before making them take a position."
+                  "body": "I'd want both. Give lawmakers the facts before making them take a position.",
+                  "profileId": "person-220"
                 }
-              ]
+              ],
+              "profileId": "person-207"
             }
-          ]
+          ],
+          "profileId": "person-220"
         },
         {
-          "name": "Reem Mahmoud",
-          "body": "Would a time-limited authorization make compromise more likely?"
+          "body": "Would a time-limited authorization make compromise more likely?",
+          "profileId": "person-207"
         },
         {
-          "name": "Hyun-jin Yoon",
-          "body": "A regular report would make it easier for voters to understand why leaders picked a course of action."
+          "body": "A regular report would make it easier for voters to understand why leaders picked a course of action.",
+          "profileId": "person-299"
         },
         {
-          "name": "Sakura Tanaka",
-          "body": "Would the authorization include a requirement to come back for a new vote if the mission expands?"
+          "body": "Would the authorization include a requirement to come back for a new vote if the mission expands?",
+          "profileId": "person-264"
         },
         {
-          "name": "Atieno Onyango",
-          "body": "A public disagreement can be uncomfortable. I'd still rather hear the reasoning on the record."
+          "body": "A public disagreement can be uncomfortable. I'd still rather hear the reasoning on the record.",
+          "profileId": "person-186"
         },
         {
-          "name": "Léa Laurent",
-          "body": "I’d let the executive handle a short operation and require a vote for anything that becomes a campaign."
+          "body": "I’d let the executive handle a short operation and require a vote for anything that becomes a campaign.",
+          "profileId": "person-123"
         },
         {
-          "name": "Emeka Okafor",
-          "body": "I understand why someone would prefer flexibility. I'd be willing to define an emergency in more detail."
+          "body": "I understand why someone would prefer flexibility. I'd be willing to define an emergency in more detail.",
+          "profileId": "person-174"
         },
         {
-          "name": "Yasmin Adel",
-          "body": "Okay, but what's the goal we're voting on? “Keep going” doesn't tell me what success looks like."
+          "body": "Okay, but what's the goal we're voting on? “Keep going” doesn't tell me what success looks like.",
+          "profileId": "person-202"
         },
         {
-          "name": "Miguel Dela Cruz",
-          "body": "If the authority is broad, I'd want regular hearings so the public can follow the policy."
+          "body": "If the authority is broad, I'd want regular hearings so the public can follow the policy.",
+          "profileId": "person-251"
         },
         {
-          "name": "Daniela Montes",
-          "body": "A commander has to protect troops in an emergency. Congress can still decide whether the fighting continues after that emergency."
+          "body": "A commander has to protect troops in an emergency. Congress can still decide whether the fighting continues after that emergency.",
+          "profileId": "person-030"
         }
       ],
       "impressions": 155
@@ -1164,94 +1164,94 @@
       "reactions": 73,
       "comments": [
         {
-          "name": "Noah Bennett",
-          "body": "How much would I actually save on one fill-up?"
+          "body": "How much would I actually save on one fill-up?",
+          "profileId": "person-013"
         },
         {
-          "name": "Maria Liza Ramos",
-          "body": "The idea is easier to support if Congress puts the road replacement funding in the same bill."
+          "body": "The idea is easier to support if Congress puts the road replacement funding in the same bill.",
+          "profileId": "person-241"
         },
         {
-          "name": "Rahul Krishnan",
           "body": "If stations don't pass through the whole cut, we give up road money and still pay almost the same at the pump.",
           "replies": [
             {
-              "name": "Sadiq Lawal",
               "body": "Stations down the street compete with each other. Why wouldn't they pass it through?",
               "replies": [
                 {
-                  "name": "Rahul Krishnan",
                   "body": "They might. I'd want to see how quickly prices move and by how much.",
                   "replies": [
                     {
-                      "name": "Sadiq Lawal",
-                      "body": "Fair enough. I'd especially want to see what happens in towns with only one station."
+                      "body": "Fair enough. I'd especially want to see what happens in towns with only one station.",
+                      "profileId": "person-177"
                     }
-                  ]
+                  ],
+                  "profileId": "person-236"
                 }
-              ]
+              ],
+              "profileId": "person-177"
             }
-          ]
+          ],
+          "profileId": "person-236"
         },
         {
-          "name": "Sadiq Lawal",
-          "body": "I'd compare it with targeted relief and see which gets more help to people on tight budgets."
+          "body": "I'd compare it with targeted relief and see which gets more help to people on tight budgets.",
+          "profileId": "person-177"
         },
         {
-          "name": "Ramiro Herrera",
-          "body": "I'd keep the revenue and give temporary help to households that spend a big share of their income commuting.\n\nThe catch is that people need the money while prices are high. A credit that arrives next spring doesn't do much for this week's bill."
+          "body": "I'd keep the revenue and give temporary help to households that spend a big share of their income commuting.\n\nThe catch is that people need the money while prices are high. A credit that arrives next spring doesn't do much for this week's bill.",
+          "profileId": "person-079"
         },
         {
-          "name": "Kevin Mwangi",
-          "body": "I drive very little in this scenario, so I'd care more about the bridge funding than the price per gallon."
+          "body": "I drive very little in this scenario, so I'd care more about the bridge funding than the price per gallon.",
+          "profileId": "person-192"
         },
         {
-          "name": "Ji-ho Kim",
           "body": "I'd support a short pause if Congress replaces every dollar it takes from road repairs and sets an end date now.",
           "replies": [
             {
-              "name": "Imogen Shaw",
               "body": "Where does the replacement road money come from?",
               "replies": [
                 {
-                  "name": "Ji-ho Kim",
-                  "body": "That should be in the same bill. If lawmakers can't name a source, I'd drop the pause."
+                  "body": "That should be in the same bill. If lawmakers can't name a source, I'd drop the pause.",
+                  "profileId": "person-292"
                 }
-              ]
+              ],
+              "profileId": "person-101"
             }
-          ]
+          ],
+          "profileId": "person-292"
         },
         {
-          "name": "Imogen Shaw",
-          "body": "Anyone who barely drives gets almost nothing out of it."
+          "body": "Anyone who barely drives gets almost nothing out of it.",
+          "profileId": "person-101"
         },
         {
-          "name": "Mina Singh",
-          "body": "Maybe the policy should expire when prices fall back below the original trigger."
+          "body": "Maybe the policy should expire when prices fall back below the original trigger.",
+          "profileId": "person-090"
         },
         {
-          "name": "Andrés Peralta",
-          "body": "Please just fix the roads near me."
+          "body": "Please just fix the roads near me.",
+          "profileId": "person-038"
         },
         {
-          "name": "Daniela Montes",
-          "body": "If the federal tax pauses, do state gas taxes keep working the same way?"
+          "body": "If the federal tax pauses, do state gas taxes keep working the same way?",
+          "profileId": "person-030"
         },
         {
-          "name": "Isabel Rivera",
-          "body": "What would trigger the pause? A nationwide average misses the fact that prices swing a lot by region."
+          "body": "What would trigger the pause? A nationwide average misses the fact that prices swing a lot by region.",
+          "profileId": "person-008"
         },
         {
-          "name": "Caroline Price",
-          "body": "Can we show past prices with and without the federal tax for scale?"
+          "body": "Can we show past prices with and without the federal tax for scale?",
+          "profileId": "person-006"
         },
         {
-          "name": "Diego Olvera",
-          "body": "I'd take a few dollars back this week. I drive to work before the buses start running."
+          "body": "I'd take a few dollars back this week. I drive to work before the buses start running.",
+          "profileId": "person-031"
         },
         {
-          "name": "Jakub Kaczmarek",
-          "body": "I'd want a simple report afterward on how much people saved and how much revenue was lost."
+          "body": "I'd want a simple report afterward on how much people saved and how much revenue was lost.",
+          "profileId": "person-151"
         }
       ],
       "impressions": 169
@@ -1371,82 +1371,82 @@
       "reactions": 41,
       "comments": [
         {
-          "name": "Joshua Garcia",
-          "body": "Apartments near jobs make sense to me."
+          "body": "Apartments near jobs make sense to me.",
+          "profileId": "person-258"
         },
         {
-          "name": "Yasmin Adel",
-          "body": "A safe walking route from home to work seems like a win worth designing for."
+          "body": "A safe walking route from home to work seems like a win worth designing for.",
+          "profileId": "person-202"
         },
         {
-          "name": "Rahul Krishnan",
           "body": "I’d allow it near transit and grocery stores. A strip of offices on a six-lane road with no sidewalk needs a different plan.",
           "replies": [
             {
-              "name": "Tunde Adebayo",
               "body": "If we wait for sidewalks and stores, people may never get the housing.",
               "replies": [
                 {
-                  "name": "Rahul Krishnan",
                   "body": "Allow the housing and make the road crossing part of the project.",
                   "replies": [
                     {
-                      "name": "Tunde Adebayo",
-                      "body": "That works if the crossing is open by move-in day."
+                      "body": "That works if the crossing is open by move-in day.",
+                      "profileId": "person-173"
                     }
-                  ]
+                  ],
+                  "profileId": "person-236"
                 }
-              ]
+              ],
+              "profileId": "person-173"
             }
-          ]
+          ],
+          "profileId": "person-236"
         },
         {
-          "name": "Tunde Adebayo",
-          "body": "I'd be more inclined to say yes if the site keeps a corner for shops."
+          "body": "I'd be more inclined to say yes if the site keeps a corner for shops.",
+          "profileId": "person-173"
         },
         {
-          "name": "Kavya Kulkarni",
-          "body": "Try it on the lots that have sat empty longest.\n\nI'd ask the developer for a safe path to the nearest bus stop and enough housing at prices that people working nearby can actually pay."
+          "body": "Try it on the lots that have sat empty longest.\n\nI'd ask the developer for a safe path to the nearest bus stop and enough housing at prices that people working nearby can actually pay.",
+          "profileId": "person-223"
         },
         {
-          "name": "Samuel Kariuki",
-          "body": "Mixed-use would be my first choice. Give people a place to live and a couple of useful stores at street level."
+          "body": "Mixed-use would be my first choice. Give people a place to live and a couple of useful stores at street level.",
+          "profileId": "person-196"
         },
         {
-          "name": "Hye-jin Lee",
           "body": "Keeping an empty parking lot because the map says “office” feels like a waste.",
           "replies": [
             {
-              "name": "Noah Bennett",
               "body": "Some of those lots may fill up again. Who decides what's truly vacant?",
               "replies": [
                 {
-                  "name": "Hye-jin Lee",
-                  "body": "Start with lots that have been empty for years and publish how they're picked."
+                  "body": "Start with lots that have been empty for years and publish how they're picked.",
+                  "profileId": "person-283"
                 }
-              ]
+              ],
+              "profileId": "person-013"
             }
-          ]
+          ],
+          "profileId": "person-283"
         },
         {
-          "name": "Noah Bennett",
-          "body": "If the schools are full today, show me where the extra seats will come from."
+          "body": "If the schools are full today, show me where the extra seats will come from.",
+          "profileId": "person-013"
         },
         {
-          "name": "Akari Sato",
-          "body": "What is the tradeoff if small businesses rely on deliveries at hours the new neighbors find disruptive?"
+          "body": "What is the tradeoff if small businesses rely on deliveries at hours the new neighbors find disruptive?",
+          "profileId": "person-267"
         },
         {
-          "name": "Phoebe Clarke",
-          "body": "My concern is what happens to small businesses when every cheap office lot turns into expensive housing."
+          "body": "My concern is what happens to small businesses when every cheap office lot turns into expensive housing.",
+          "profileId": "person-106"
         },
         {
-          "name": "Toby Baker",
-          "body": "I'd ask how many apartments the new rule would realistically add."
+          "body": "I'd ask how many apartments the new rule would realistically add.",
+          "profileId": "person-120"
         },
         {
-          "name": "Nikhil Reddy",
-          "body": "Check the bus schedule before calling it walkable."
+          "body": "Check the bus schedule before calling it walkable.",
+          "profileId": "person-240"
         }
       ],
       "impressions": 130
@@ -1566,106 +1566,106 @@
       "reactions": 64,
       "comments": [
         {
-          "name": "Yasmin Adel",
-          "body": "Two votes. Let people see where their lawmakers stand."
+          "body": "Two votes. Let people see where their lawmakers stand.",
+          "profileId": "person-202"
         },
         {
-          "name": "Facundo Rivero",
-          "body": "I'd like the debate to say what would count as a good outcome for both parts."
+          "body": "I'd like the debate to say what would count as a good outcome for both parts.",
+          "profileId": "person-080"
         },
         {
-          "name": "Neha Kapoor",
           "body": "A single bill can still have different start dates. I'd want the application process and staffing spelled out before anyone is told to sign up.",
           "replies": [
             {
-              "name": "Haruto Nakajima",
               "body": "Different start dates could mean one part takes effect while the other keeps getting delayed.",
               "replies": [
                 {
-                  "name": "Neha Kapoor",
                   "body": "That's why I'd put dates and staffing commitments in the bill itself.",
                   "replies": [
                     {
-                      "name": "Haruto Nakajima",
-                      "body": "I'd also ask Congress to publish progress on both parts so we can see what's slipping."
+                      "body": "I'd also ask Congress to publish progress on both parts so we can see what's slipping.",
+                      "profileId": "person-271"
                     }
-                  ]
+                  ],
+                  "profileId": "person-225"
                 }
-              ]
+              ],
+              "profileId": "person-271"
             }
-          ]
+          ],
+          "profileId": "person-225"
         },
         {
-          "name": "Haruto Nakajima",
-          "body": "Could a bill lay out a plan for processing applications as well as deciding who's eligible?"
+          "body": "Could a bill lay out a plan for processing applications as well as deciding who's eligible?",
+          "profileId": "person-271"
         },
         {
-          "name": "Sergio Robles",
-          "body": "I'd take a narrower bill that can actually pass. I've watched big packages fall apart over one provision too many times.\n\nIf Congress splits it, schedule both votes up front so the second one can't simply disappear."
+          "body": "I'd take a narrower bill that can actually pass. I've watched big packages fall apart over one provision too many times.\n\nIf Congress splits it, schedule both votes up front so the second one can't simply disappear.",
+          "profileId": "person-035"
         },
         {
-          "name": "Angelo Reyes",
-          "body": "I wonder how long the text would be and whether people would have time to read what was added."
+          "body": "I wonder how long the text would be and whether people would have time to read what was added.",
+          "profileId": "person-254"
         },
         {
-          "name": "Yassin Hegazy",
           "body": "A combined bill makes sense if the two parts can work independently after it passes. One missed hiring deadline shouldn't freeze everything else.",
           "replies": [
             {
-              "name": "Atieno Onyango",
               "body": "If the parts can work independently, why bundle them at all?",
               "replies": [
                 {
-                  "name": "Yassin Hegazy",
-                  "body": "The votes to pass them may depend on each other. The agencies can still run them separately."
+                  "body": "The votes to pass them may depend on each other. The agencies can still run them separately.",
+                  "profileId": "person-220"
                 }
-              ]
+              ],
+              "profileId": "person-186"
             }
-          ]
+          ],
+          "profileId": "person-220"
         },
         {
-          "name": "Atieno Onyango",
-          "body": "I can see an argument for linking the policies if it makes a deal last past the next election."
+          "body": "I can see an argument for linking the policies if it makes a deal last past the next election.",
+          "profileId": "person-186"
         },
         {
-          "name": "Mio Inoue",
-          "body": "What measures would tell us the border provision was working?"
+          "body": "What measures would tell us the border provision was working?",
+          "profileId": "person-270"
         },
         {
-          "name": "Júlia Nunes",
-          "body": "I'd want the bill to say clearly who qualifies and who handles appeals."
+          "body": "I'd want the bill to say clearly who qualifies and who handles appeals.",
+          "profileId": "person-047"
         },
         {
-          "name": "Marek Dąbrowski",
-          "body": "A careful rollout matters whether the two pieces are in one bill or two."
+          "body": "A careful rollout matters whether the two pieces are in one bill or two.",
+          "profileId": "person-154"
         },
         {
-          "name": "Sadiq Lawal",
-          "body": "I'd start with quicker hearings. Waiting years helps almost nobody."
+          "body": "I'd start with quicker hearings. Waiting years helps almost nobody.",
+          "profileId": "person-177"
         },
         {
-          "name": "Obinna Ude",
-          "body": "If one measure has support already, should it wait for another one that needs more work?"
+          "body": "If one measure has support already, should it wait for another one that needs more work?",
+          "profileId": "person-176"
         },
         {
-          "name": "Leila Hussain",
-          "body": "I care more about clear eligibility than how many bills it takes."
+          "body": "I care more about clear eligibility than how many bills it takes.",
+          "profileId": "person-102"
         },
         {
-          "name": "Hyun-jin Yoon",
-          "body": "I'd look at what happens to families during the gap between passing a law and starting a new process."
+          "body": "I'd look at what happens to families during the gap between passing a law and starting a new process.",
+          "profileId": "person-299"
         },
         {
-          "name": "Théo Blanc",
-          "body": "Who's handling the backlog while the new rules roll out?"
+          "body": "Who's handling the backlog while the new rules roll out?",
+          "profileId": "person-139"
         },
         {
-          "name": "Wairimu Karanja",
-          "body": "If it takes years to meet a milestone, does that mean the other half is on hold all that time?"
+          "body": "If it takes years to meet a milestone, does that mean the other half is on hold all that time?",
+          "profileId": "person-187"
         },
         {
-          "name": "Adam Belkacem",
-          "body": "I'd keep them together. Each side is more likely to follow through when both parts are in the same agreement."
+          "body": "I'd keep them together. Each side is more likely to follow through when both parts are in the same agreement.",
+          "profileId": "person-133"
         }
       ],
       "impressions": 169
@@ -1785,90 +1785,90 @@
       "reactions": 53,
       "comments": [
         {
-          "name": "Farida Hossam",
-          "body": "Yes, give utilities a date they can plan around."
+          "body": "Yes, give utilities a date they can plan around.",
+          "profileId": "person-208"
         },
         {
-          "name": "Akari Sato",
-          "body": "I'd start the discussion by asking what countries can commit to this decade."
+          "body": "I'd start the discussion by asking what countries can commit to this decade.",
+          "profileId": "person-267"
         },
         {
-          "name": "Rocío Ferreyra",
           "body": "I'd start with a shared target for coal and let the timelines for gas vary with the grid.",
           "replies": [
             {
-              "name": "Sadiq Lawal",
               "body": "A later gas deadline could become an excuse to build plants that run for decades.",
               "replies": [
                 {
-                  "name": "Rocío Ferreyra",
                   "body": "Then distinguish new plants from ones already keeping the lights on.",
                   "replies": [
                     {
-                      "name": "Sadiq Lawal",
-                      "body": "I'd put that distinction in the agreement so the exception has an endpoint."
+                      "body": "I'd put that distinction in the agreement so the exception has an endpoint.",
+                      "profileId": "person-177"
                     }
-                  ]
+                  ],
+                  "profileId": "person-068"
                 }
-              ]
+              ],
+              "profileId": "person-177"
             }
-          ]
+          ],
+          "profileId": "person-068"
         },
         {
-          "name": "Sadiq Lawal",
-          "body": "I'd like to see how a community around one large employer would handle the change."
+          "body": "I'd like to see how a community around one large employer would handle the change.",
+          "profileId": "person-177"
         },
         {
-          "name": "Théo Blanc",
-          "body": "I'd back a shared deadline if wealthier countries help finance the switch and actually deliver the money.\n\nIf that support comes late, the agreement needs a way to help a country catch up without making households absorb the whole cost."
+          "body": "I'd back a shared deadline if wealthier countries help finance the switch and actually deliver the money.\n\nIf that support comes late, the agreement needs a way to help a country catch up without making households absorb the whole cost.",
+          "profileId": "person-139"
         },
         {
-          "name": "Lily Chen",
-          "body": "A country still expanding access to electricity should be part of deciding what an achievable plan looks like."
+          "body": "A country still expanding access to electricity should be part of deciding what an achievable plan looks like.",
+          "profileId": "person-088"
         },
         {
-          "name": "Samuel Kariuki",
           "body": "I work around heavy equipment. I'd like to see a plan for backup power and parts before anyone announces a shutdown date.",
           "replies": [
             {
-              "name": "Aoi Fujimoto",
               "body": "Does backup power have to use the same fuel as the main system?",
               "replies": [
                 {
-                  "name": "Samuel Kariuki",
-                  "body": "No. I'd want to see what can run long enough during an outage and how we'd keep it supplied."
+                  "body": "No. I'd want to see what can run long enough during an outage and how we'd keep it supplied.",
+                  "profileId": "person-196"
                 }
-              ]
+              ],
+              "profileId": "person-261"
             }
-          ]
+          ],
+          "profileId": "person-196"
         },
         {
-          "name": "Aoi Fujimoto",
-          "body": "Waiting for every alternative to be perfect also has a cost. I'd set the date and review progress every few years."
+          "body": "Waiting for every alternative to be perfect also has a cost. I'd set the date and review progress every few years.",
+          "profileId": "person-261"
         },
         {
-          "name": "Ananya Rao",
-          "body": "I'd want the plan to spell out what counts as meeting the deadline."
+          "body": "I'd want the plan to spell out what counts as meeting the deadline.",
+          "profileId": "person-221"
         },
         {
-          "name": "Ji-ho Kim",
-          "body": "Some places will promise anything at a summit. What would we measure next year?"
+          "body": "Some places will promise anything at a summit. What would we measure next year?",
+          "profileId": "person-292"
         },
         {
-          "name": "Emilio Zamora",
-          "body": "The timing might be easier to negotiate if independent reports track progress along the way."
+          "body": "The timing might be easier to negotiate if independent reports track progress along the way.",
+          "profileId": "person-040"
         },
         {
-          "name": "Joshua Garcia",
-          "body": "Who's paying for the transmission lines and storage?"
+          "body": "Who's paying for the transmission lines and storage?",
+          "profileId": "person-258"
         },
         {
-          "name": "Wambui Njoroge",
-          "body": "A temporary exception could make sense if everyone knows when it expires."
+          "body": "A temporary exception could make sense if everyone knows when it expires.",
+          "profileId": "person-190"
         },
         {
-          "name": "Jakub Kaczmarek",
-          "body": "A deadline means something very different in a country with reliable electricity than it does where many people are still waiting for it."
+          "body": "A deadline means something very different in a country with reliable electricity than it does where many people are still waiting for it.",
+          "profileId": "person-151"
         }
       ],
       "impressions": 144
@@ -1984,110 +1984,110 @@
       "reactions": 88,
       "comments": [
         {
-          "name": "Abdul Danjuma",
-          "body": "Yes. My team can't read outage instructions inside the app that's down."
+          "body": "Yes. My team can't read outage instructions inside the app that's down.",
+          "profileId": "person-180"
         },
         {
-          "name": "Jasmine Carter",
-          "body": "I'd try one short drill before paying for a new tool."
+          "body": "I'd try one short drill before paying for a new tool.",
+          "profileId": "person-002"
         },
         {
-          "name": "Lily Chen",
           "body": "The big question is whether the backup uses the same login. If the login service is down too, you're back where you started.",
           "replies": [
             {
-              "name": "Priya Das",
               "body": "An independent login is another password people might forget.",
               "replies": [
                 {
-                  "name": "Lily Chen",
                   "body": "Exactly why I'd run a drill. We'd find out who can actually get in.",
                   "replies": [
                     {
-                      "name": "Priya Das",
-                      "body": "I'd keep a phone list too for anyone who still gets locked out."
+                      "body": "I'd keep a phone list too for anyone who still gets locked out.",
+                      "profileId": "person-228"
                     }
-                  ]
+                  ],
+                  "profileId": "person-088"
                 }
-              ]
+              ],
+              "profileId": "person-228"
             }
-          ]
+          ],
+          "profileId": "person-088"
         },
         {
-          "name": "Priya Das",
-          "body": "How would a new hire find instructions if the normal intranet were down?"
+          "body": "How would a new hire find instructions if the normal intranet were down?",
+          "profileId": "person-228"
         },
         {
-          "name": "Anna Zielińska",
-          "body": "For a hospital or a dispatch center, pay for a separate system and drill it. A six-person office can probably get by with a call tree.\n\nEither way, try it during an ordinary workday before you count on it in an emergency."
+          "body": "For a hospital or a dispatch center, pay for a separate system and drill it. A six-person office can probably get by with a call tree.\n\nEither way, try it during an ordinary workday before you count on it in an emergency.",
+          "profileId": "person-148"
         },
         {
-          "name": "Felipe Silveira",
-          "body": "If a service is easy to maintain, I'm more inclined to make it part of the everyday plan."
+          "body": "If a service is easy to maintain, I'm more inclined to make it part of the everyday plan.",
+          "profileId": "person-057"
         },
         {
-          "name": "Neha Kapoor",
           "body": "An SMS notification is fine for “check the status page.” Please keep customer details out of it.",
           "replies": [
             {
-              "name": "Sadiq Lawal",
               "body": "What if the status page is down too?",
               "replies": [
                 {
-                  "name": "Neha Kapoor",
-                  "body": "Put the basic next step in the text and keep the status page on a separate service."
+                  "body": "Put the basic next step in the text and keep the status page on a separate service.",
+                  "profileId": "person-225"
                 }
-              ]
+              ],
+              "profileId": "person-177"
             }
-          ]
+          ],
+          "profileId": "person-225"
         },
         {
-          "name": "Sadiq Lawal",
-          "body": "I'd want to make sure the backup is accessible to people who can't use a voice call."
+          "body": "I'd want to make sure the backup is accessible to people who can't use a voice call.",
+          "profileId": "person-177"
         },
         {
-          "name": "Oluwaseun Ajayi",
-          "body": "I'd compare a separate paid service with a well-maintained contact tree."
+          "body": "I'd compare a separate paid service with a well-maintained contact tree.",
+          "profileId": "person-168"
         },
         {
-          "name": "Devin Miller",
-          "body": "What message needs to go out in the first ten minutes?"
+          "body": "What message needs to go out in the first ten minutes?",
+          "profileId": "person-020"
         },
         {
-          "name": "Sophie MacLeod",
-          "body": "Employees should know which number or channel to trust before anything breaks."
+          "body": "Employees should know which number or channel to trust before anything breaks.",
+          "profileId": "person-085"
         },
         {
-          "name": "Isabel Rivera",
-          "body": "Could we agree who sends the first message? During our last outage three people sent three different instructions."
+          "body": "Could we agree who sends the first message? During our last outage three people sent three different instructions.",
+          "profileId": "person-008"
         },
         {
-          "name": "Tunde Adebayo",
-          "body": "A short outage can cost more if customers and staff all rely on the same tool."
+          "body": "A short outage can cost more if customers and staff all rely on the same tool.",
+          "profileId": "person-173"
         },
         {
-          "name": "Emeka Okafor",
-          "body": "When the alternative is another app nobody remembers to check, save the money."
+          "body": "When the alternative is another app nobody remembers to check, save the money.",
+          "profileId": "person-174"
         },
         {
-          "name": "Renata Queiroz",
-          "body": "I'd tell people in advance what information belongs in the backup channel and what stays out."
+          "body": "I'd tell people in advance what information belongs in the backup channel and what stays out.",
+          "profileId": "person-048"
         },
         {
-          "name": "Wanjiku Muriuki",
-          "body": "I don't want my personal number on a spreadsheet that gets emailed around. Let staff opt in and make it easy to update or remove their number."
+          "body": "I don't want my personal number on a spreadsheet that gets emailed around. Let staff opt in and make it easy to update or remove their number.",
+          "profileId": "person-181"
         },
         {
-          "name": "Ji-ho Kim",
-          "body": "It might help to write separate plans for an office outage and a regional power outage."
+          "body": "It might help to write separate plans for an office outage and a regional power outage.",
+          "profileId": "person-292"
         },
         {
-          "name": "Ji-eun Park",
-          "body": "A phone tree and a printed list would do for a shop our size."
+          "body": "A phone tree and a printed list would do for a shop our size.",
+          "profileId": "person-281"
         },
         {
-          "name": "Uche Nwankwo",
-          "body": "The best backup for the scenario might be the one people use with the fewest new steps."
+          "body": "The best backup for the scenario might be the one people use with the fewest new steps.",
+          "profileId": "person-179"
         }
       ],
       "impressions": 171

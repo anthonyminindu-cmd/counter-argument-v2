@@ -11,6 +11,11 @@ const examplePoster = id => novemberPath+id+'.svg?v=3';
 const trending = feed+'&sort=trending';
 const exampleRoute = id => feed+'&example='+encodeURIComponent(id);
 
+function visibleFriendProfile(person) {
+  return ![person.display_name, person.username].some(value =>
+    /(?:^|[^a-z])(?:qa|test(?:er|ing)?)(?=$|[^a-z])|^(?:test|qa)(?:account|user|profile|friend|member|debate)/i.test(value || ''));
+}
+
 export function afterLogin(search) {
   const next = new URLSearchParams(search).get('next') || '';
   if (!/^\/(?:home|profile|settings|debate\/(?:start|topic|active))(?:\?[^#\\]*)?$/.test(next)) return home;
@@ -179,19 +184,28 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function useNovemberEdition() {
     return useQuery('november-2026',async()=>{
-      const response=await fetch(novemberPath+'edition.json?v=5');
+      const response=await fetch(novemberPath+'edition.json?v=6');
       if(!response.ok)throw Error('The November edition is unavailable.');
       return {data:await response.json()};
     });
   }
+  function usePersonas() {
+    return useQuery('trending-personas', async () => {
+      const response = await fetch(novemberPath+'personas.json');
+      if (!response.ok) throw Error('The commenter profiles are unavailable.');
+      return {data: await response.json()};
+    });
+  }
+  const personaRoute = id => feed+'&commenter='+encodeURIComponent(id);
+
   function discussionCount(comments) {
     return comments.reduce((total, comment) => total + 1 + discussionCount(comment.replies ?? []), 0);
   }
-  function renderDiscussion(comments, nested = false) {
+  function renderDiscussion(comments, personas, nested = false) {
     return h('ul', {className: nested ? 'dk-discussion-replies' : undefined}, ...comments.map((comment, index) =>
-      h('li', {key: index}, h('strong', null, comment.name),
+      h('li', {key: index}, h(Link, {to:personaRoute(comment.profileId), className:'dk-link'}, personas[comment.profileId].name),
         ...comment.body.split('\n\n').map((paragraph, i) => h('p', {key: i}, paragraph)),
-        comment.replies?.length ? renderDiscussion(comment.replies, true) : null)));
+        comment.replies?.length ? renderDiscussion(comment.replies, personas, true) : null)));
   }
   function SampleActivity({entry}) {
     const sample=entry.sampleActivity;
@@ -213,6 +227,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     return h('div',{className:'dk-example-grid'},...(edition.data||[]).map(entry=>h(ExampleCard,{key:entry.id,entry})));
   }
   function ExampleDebate({entry}) {
+    const personas = usePersonas();
     const {user}=useAuth();
     const pointsHeading=useRef(null);
     const [exporting,setExporting]=useState(false),[exportError,setExportError]=useState('');
@@ -249,7 +264,8 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
                 h('li',{key:label},h('h4',null,h('span',null,'#'+(i*2+side+1)+' '),label),h('p',null,explanation)))))))),
         h('section',{className:'dk-panel dk-example-discussion'},h('h2',null,'Example discussion'),h('p',null,entry.followUp),
           entry.sampleActivity?h(React.Fragment,null,h(SampleActivity,{entry}),h('p',null,'These example comments are from fictional profiles.'),
-            renderDiscussion(entry.sampleActivity.comments)):
+            personas.data ? renderDiscussion(entry.sampleActivity.comments, personas.data) :
+              personas.error ? h('button',{onClick:personas.refresh},'Retry loading commenters') : status('Loading discussion…')):
             h('ul',null,...entry.comments.map((comment,i)=>h('li',{key:i},comment)))),
         h('section',{className:'dk-example-sources'},h('h2',null,'November context'),h('p',null,entry.context),
           h('ul',null,...entry.sources.map(({label,url})=>h('li',{key:url},h('a',{href:url,className:'dk-link'},label)))))));
@@ -263,10 +279,33 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       november.loading?status('Loading the November debates…'):entry?h(ExampleDebate,{key:entry.id,entry}):
         h('section',{className:'dk-panel'},h('h1',null,'Debate unavailable'),link(trending,'Back to Trending')));
   }
+  function CommenterPage({id}) {
+    const personas = usePersonas(), edition = useNovemberEdition();
+    const person = personas.data && Object.hasOwn(personas.data, id) ? personas.data[id] : null;
+    useEffect(() => window.scrollTo(0,0), [id]);
+    const authored = comments => comments.flatMap(comment => [
+      ...(comment.profileId === id ? [comment] : []), ...authored(comment.replies ?? [])
+    ]);
+    const discussions = (edition.data ?? []).flatMap(entry => {
+      const comments = authored(entry.sampleActivity?.comments ?? []);
+      return comments.length ? [{entry, comments}] : [];
+    });
+    return h('main',{className:'dk-main',id:'dk-main'},link(trending,'Back to Trending'),
+      personas.error || edition.error ? h('button',{onClick:()=>{personas.refresh();edition.refresh();}},'Retry loading profile') :
+      !personas.data ? status('Loading profile…') : !person ? h('h1',null,'Profile unavailable') :
+      h('section',{className:'dk-panel'},h('small',null,'Fictional commenter'),h('h1',null,person.name),
+        h('p',null,'@'+person.handle),h('p',null,person.bio),h('p',null,'Debate style · '+person.style),
+        h('h2',null,'Discussion history'),
+        ...discussions.map(({entry,comments})=>h('article',{key:entry.id,className:'dk-card'},
+          h('h3',null,link(exampleRoute(entry.id),entry.question,'dk-link')),
+          ...comments.map(({body},i)=>h('blockquote',{key:i},...body.split('\n\n').map((part,j)=>h('p',{key:j},part))))))));
+  }
   function Start() {
     const loc=useLocation(), landing=isWelcomeLocation(loc);
     const params=new URLSearchParams(loc.search), onFeed=params.get('view')==='feed'||params.has('edition');
     const example=params.get('example');
+    const commenter=params.get('commenter');
+    if(commenter)return h(CommenterPage,{id:commenter});
     if(example)return h(ExamplePage,{example});
     return h('main',{className:landing?'dk-main dk-home':'dk-main',id:'dk-main'},
       landing&&h(Welcome),
@@ -339,7 +378,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     useEffect(()=>{const timer=setTimeout(()=>setSearch(input.trim()),260);return()=>clearTimeout(timer)},[input]);
     const q=useQuery(search.length>=2?user.id+':'+search:null,()=>db.rpc('search_debate_partners',{p_query:search}));
     const saved=c.items.filter(row=>row.kind==='person');
-    const rows=search.length>=2?(q.data||[]).filter(row=>row.user_id!==user.id).map(row=>({target:row.user_id,label:row.display_name||row.username||'Community member',query:row.username||row.display_name})):saved;
+    const rows=search.length>=2?(q.data||[]).filter(row=>row.user_id!==user.id && visibleFriendProfile(row)).map(row=>({target:row.user_id,label:row.display_name||row.username||'Community member',query:row.username||row.display_name})):saved;
     return h('section',{className:'dk-panel'},h('h2',null,'Your people'),h('label',{className:'dk-form'},'Find a friend',h('input',{value:input,type:'search',placeholder:'Search by name or username',onChange:e=>setInput(e.target.value)})),
       q.error?status('Could not search for people.',true):q.loading?status('Searching…'):!rows.length?h('p',null,search.length>=2?'No matching people. Try another name.':'Save a friend to quickly start your next exploration.'):
       h('ul',{className:'dk-list'},...rows.map(row=>h('li',{key:row.target},h('div',null,h('strong',null,row.label),link(friend+'&person='+encodeURIComponent(row.query||row.label),'Invite to debate')),h(Save,{kind:'person',target:row.target,label:row.label})))));
