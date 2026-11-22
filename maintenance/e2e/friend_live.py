@@ -30,19 +30,27 @@ SCREENSHOTS = os.getenv("DK_TEST_SCREENSHOTS")
 print("QA cohort dk-invite-e2e-" + run, flush=True)
 
 
-def create_member(role):
+def create_member(role, page):
     display = "InboxQA" + run + role
     email = f"dk-invite-e2e-{run}-{role.lower()}@example.com"
     password = secrets.token_urlsafe(28)
-    request = Request(API + "/auth/v1/signup", data=json.dumps({
-        "email": email, "password": password, "data": {"display_name": display}
-    }).encode(), headers={"apikey": public_key, "Content-Type": "application/json"})
-    with urlopen(request, timeout=30) as response:
-        result = json.load(response)
-    print("FRIEND_QA_ACCOUNT", result["user"]["id"], email, flush=True)
+    page.goto(APP + "/?qa=" + run)
+    page.get_by_role("link", name="Sign in", exact=True).click()
+    page.get_by_role("tab", name="Sign Up").click()
+    page.locator("#displayName").fill(display)
+    page.locator("#signupEmail").fill(email)
+    page.locator("#signupPassword").fill(password)
+    page.locator("#confirmPassword").fill(password)
+    with page.expect_response(lambda res: res.url.split("?")[0].endswith("/auth/v1/signup") and res.request.method == "POST") as signed:
+        page.get_by_role("button", name="Create Account").click()
+    assert signed.value.ok, f"QA signup returned HTTP {signed.value.status}"
+    result = signed.value.json()
     if not result.get("access_token"):
         raise RuntimeError("QA signup did not produce a verified session.")
-    return {"id": result["user"]["id"], "name": display, "email": email, "password": password, "access_token": result["access_token"]}
+    print("FRIEND_QA_ACCOUNT", result["user"]["id"], email, flush=True)
+    expect(page.get_by_role("button", name="Sign out", exact=True)).to_be_visible(timeout=60000)
+    return {"id": result["user"]["id"], "name": display, "email": email,
+            "password": password, "access_token": result["access_token"]}
 
 
 def login(page, member):
@@ -299,8 +307,6 @@ if __name__ == "__main__":
             stack.callback(server.shutdown)
         with urlopen(APP + "/?qa_build=" + run, timeout=20) as response:
             assert build["generatedAsset"] in response.read().decode(), "The test URL is serving a different build"
-        a, b = create_member("Sender"), create_member("Receiver")
-        assert a["id"] != b["id"]
         pw = stack.enter_context(sync_playwright())
         chrome = shutil.which("google-chrome") or shutil.which("chromium")
         if not chrome:
@@ -317,8 +323,8 @@ if __name__ == "__main__":
             page.on("response",report_rpc_failure)
             return page
         sender, receiver = browser_page(1180), browser_page(390)
-        login(sender,a)
-        login(receiver,b)
+        a, b = create_member("Sender", sender), create_member("Receiver", receiver)
+        assert a["id"] != b["id"]
         receiver.get_by_role("link",name="Latest",exact=True).click()
         send(sender, a, b)
         capture(sender, "01-desktop-invitation-sent")
