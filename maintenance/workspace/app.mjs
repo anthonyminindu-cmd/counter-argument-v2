@@ -5,7 +5,7 @@ const feed = '/home?view=feed';
 const profile = '/profile';
 const friend = '/debate/start?mode=friend';
 const ai = '/debate/topic?mode=ai';
-const personalTabs = ['Table','Liked','Pinned','Posters','People','Account'];
+const personalTabs = ['Table','Created','Liked','Pinned','Posters','People','Account'];
 const novemberPath = '/counter-argument-v2/demo/november-2026/';
 const examplePoster = id => novemberPath+id+'.svg?v=3';
 const trending = feed+'&sort=trending';
@@ -88,11 +88,12 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     return h('span',{className:'dk-save'},h('button',{type:'button',onClick:toggle,disabled:busy||c.loading||!!c.error,'aria-pressed':present,className:'dk-small',title:text+' · '+label},icon(kind==='poster'?'art':kind==='person'?'friends':'pin'),text),error&&status(error,true));
   }
   function SavePoster({title,svg}) {
+    const {user}=useAuth();
     const [identity,set]=useState(null);
     useEffect(()=>{let active=true;if(svg) crypto.subtle.digest('SHA-256',new TextEncoder().encode(svg)).then(hash=>{
       if(active)set({svg,key:Array.from(new Uint8Array(hash),v=>v.toString(16).padStart(2,'0')).join('')});
     }).catch(()=>{});return()=>{active=false}},[svg]);
-    return identity?.svg===svg&&svg?h(Save,{kind:'poster',target:identity.key,label:title,artwork:svg}):null;
+    return identity?.svg===svg&&svg&&user?h(React.Fragment,null,h(Save,{kind:'poster',target:identity.key,label:title,artwork:svg}),h(PersonalPoster,{key:user.id+identity.key,title,svg,identity:identity.key,userId:user.id})):null;
   }
   function Nav() {
     const {user,signOut}=useAuth(), loc=useLocation(), navigate=useNavigate();
@@ -223,7 +224,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   const Engagement=createContext(null);
   function PosterActivity({children}) {
     const {user}=useAuth();
-    const metrics=useQuery(user?.id||'guest',()=>db.rpc('dk_poster_metrics'));
+    const metrics=useQuery(user?.id||'guest',()=>db.rpc('dk_ranked_posters'));
     useEffect(()=>{
       function sync(){if(!document.hidden)metrics.refresh()}
       window.addEventListener('focus',sync);
@@ -268,7 +269,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function usePosterImpression(id){
     const {user,loading}=useAuth(),metrics=useContext(Engagement);
     useEffect(()=>{
-      if(loading)return;
+      if(loading||!id)return;
       let active=true,recording=false,done=false;
       async function record(){
         if(!active||document.hidden||recording||done)return;
@@ -301,7 +302,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       }catch{setFailed(true)}finally{setBusy(false)}
     }
     return h(React.Fragment,null,
-      user?h('form',{className:'dk-form',onSubmit:post},h('label',null,'Add a public comment',h('textarea',{maxLength:1200,value:body,disabled:busy,required:true,onChange:e=>setBody(e.target.value)})),
+      user?h('form',{className:'dk-form',onSubmit:post},h('label',null,entry.private?'Add a comment':'Add a public comment',h('textarea',{maxLength:1200,value:body,disabled:busy,required:true,onChange:e=>setBody(e.target.value)})),
         h('button',{className:'dk-primary',disabled:busy||!body.trim()},busy?'Posting…':'Post comment'),
         failed&&status('Could not post your comment. Your draft is here to retry.',true)):
         link(login(exampleRoute(entry.id)+'&comments=1'),'Sign in to comment','dk-secondary'),
@@ -316,6 +317,55 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       q.data?.length?h('ul',{className:'dk-list'},...q.data.map(row=>h('li',{key:row.slug},link(exampleRoute(row.slug),row.title,'dk-titlelink')))):
       h('p',null,'Infographics you like will appear here.'));
   }
+  function SharePoster({row,refresh}) {
+    const [busy,setBusy]=useState(false),[failed,setFailed]=useState(false);
+    async function change(){
+      setBusy(true);setFailed(false);
+      try{
+        const {error}=await db.rpc('dk_share_poster',{p_slug:row.slug,p_publish:!row.published});
+        if(error)throw error;
+        refresh();
+      }catch{setFailed(true)}finally{setBusy(false)}
+    }
+    return h('div',{className:'dk-actions'},h('button',{type:'button',className:'dk-secondary',disabled:busy,onClick:change},
+      row.published?'Make private':'Publish infographic to Trending'),failed&&status('Could not change visibility. Try again.',true));
+  }
+  function PersonalPoster({title,svg,identity,userId}) {
+    const q=useQuery(userId+':'+identity,()=>db.rpc('dk_register_personal_poster',{p_title:title,p_svg:svg}));
+    return q.error?h('button',{className:'dk-small',onClick:q.refresh},'Retry loading infographic activity'):
+      q.data?h(PosterActivity,null,h(PersonalActions,{id:q.data,title})):null;
+  }
+  function PersonalActions({id,title}){
+    const activity=useContext(Engagement);
+    const row=activity.data?.find(item=>item.slug===id);
+    usePosterImpression(id);
+    return h('div',null,h(PosterActions,{entry:{id,question:title}}),row?.mine&&h(SharePoster,{row,refresh:activity.refresh}));
+  }
+  function CreatedPosters({user}){
+    const q=useQuery(user.id,()=>db.rpc('dk_created_posters'));
+    return h('section',{className:'dk-panel'},h('h2',null,'Created infographics'),
+      q.error?h('button',{onClick:q.refresh},'Retry loading infographics'):q.loading?status('Loading infographics…'):
+      q.data?.length?h(PosterActivity,null,h('div',{className:'dk-example-grid'},...q.data.map(row=>h(ExampleCard,{key:row.slug,entry:{id:row.slug,question:row.title,category:row.published?'Published':'Private'}})))):
+      h('p',null,'Your finished infographics appear here.'));
+  }
+  function CatalogPoster({slug}) {
+    const {user}=useAuth(),loc=useLocation();
+    const q=useQuery(slug+':'+(user?.id||'guest'),()=>db.rpc('dk_read_poster',{p_slug:slug}).maybeSingle());
+    const metrics=useContext(Engagement),comments=useRef(null);
+    const row=q.data;
+    usePosterImpression(row?.slug);
+    function openComments(){comments.current?.scrollIntoView({block:'start'});(comments.current?.querySelector('textarea')||comments.current)?.focus({preventScroll:true})}
+    useEffect(()=>{if(row&&new URLSearchParams(loc.search).has('comments'))openComments()},[row?.slug,loc.search]);
+    if(q.error)return h('button',{className:'dk-secondary',onClick:q.refresh},'Retry loading infographic');
+    if(q.loading&&!row)return status('Loading infographic…');
+    if(!row?.artwork)return status('This infographic is unavailable.');
+    const entry={id:row.slug,question:row.title,private:!row.published};
+    return h('article',{className:'dk-example-debate'},link(trending,'Back to Trending'),
+      h('header',null,h('small',null,row.published?row.category:'Private infographic'),h('h1',null,row.title)),
+      h('img',{className:'dk-poster',src:'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(row.artwork),alt:row.title}),
+      h(PosterActions,{entry,onComment:openComments}),row.mine&&h(SharePoster,{row,refresh:()=>{q.refresh();metrics.refresh()}}),
+      h('section',{className:'dk-panel dk-example-discussion',ref:comments,tabIndex:-1},h('h2',null,'Comments'),h(MemberComments,{key:user?.id||'guest',entry})));
+  }
   function ExampleCard({entry}) {
     return h('article',{className:'dk-card dk-example-card'},
       h(Link,{to:exampleRoute(entry.id),className:'dk-example-link','aria-label':entry.question},
@@ -323,10 +373,13 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
           h('h3',null,entry.question,icon('enter')))),h(PosterActions,{entry}));
   }
   function TrendingPosters() {
-    const edition=useNovemberEdition();
-    if(edition.error)return h('button',{type:'button',className:'dk-secondary',onClick:edition.refresh},'Retry loading topics');
-    if(edition.loading)return status('Loading topics…');
-    return h('div',{className:'dk-example-grid'},...(edition.data||[]).map(entry=>h(ExampleCard,{key:entry.id,entry})));
+    const edition=useNovemberEdition(),metrics=useContext(Engagement);
+    if(edition.error||metrics.error)return h('button',{type:'button',className:'dk-secondary',onClick:()=>{edition.refresh();metrics.refresh()}},'Retry loading topics');
+    if(!edition.data||!metrics.data)return status('Loading topics…');
+    const editorial=new Map(edition.data.map(entry=>[entry.id,entry]));
+    const entries=metrics.data.filter(row=>row.published&&(row.has_artwork||editorial.has(row.slug)))
+      .map(row=>editorial.get(row.slug)||{id:row.slug,question:row.title,category:row.category});
+    return h('div',{className:'dk-example-grid'},...entries.map(entry=>h(ExampleCard,{key:entry.id,entry})));
   }
   function ExampleDebate({entry}) {
     const personas = usePersonas();
@@ -387,7 +440,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     return h('main',{className:'dk-main',id:'dk-main'},
       november.error?h('div',{className:'dk-panel'},status('Could not load the November debates.',true),h('button',{className:'dk-secondary',onClick:november.refresh},'Try again')):
       november.loading?status('Loading the November debates…'):entry?h(ExampleDebate,{key:entry.id,entry}):
-        h('section',{className:'dk-panel'},h('h1',null,'Debate unavailable'),link(trending,'Back to Trending')));
+        h(CatalogPoster,{key:example,slug:example}));
   }
   function CommenterPage({id}) {
     const personas = usePersonas(), edition = useNovemberEdition();
@@ -481,6 +534,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       }catch{setError('The PNG could not be prepared. The vector download is available below.')}
     }
     return h('article',{className:'dk-card'},h('div',{className:'dk-sectionline'},h('button',{type:'button',className:'dk-titlelink','aria-expanded':open,onClick:()=>setOpen(!open)},item.label),h(Save,{kind:'poster',target:item.target,label:item.label})),
+      open&&q.data?.artwork&&h(PersonalPoster,{title:item.label,svg:q.data.artwork,identity:item.target,userId:id}),
       open&&(q.error?status('Could not open this poster.',true):url?h(React.Fragment,null,h('img',{className:'dk-poster',src:url,alt:item.label}),h('div',{className:'dk-actions'},h('button',{className:'dk-primary',onClick:downloadPng},'Download PNG'),h('a',{className:'dk-secondary',href:url,download:'Differ-Kindly-poster.svg'},'Download SVG')),error&&status(error,true)):status('Loading your poster…')));
   }
   function People({user}) {
@@ -507,7 +561,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     if(!user)return h('main',{className:'dk-main'},h('h1',null,'Your profile'),loading?status('Loading account…'):link(login(profile+loc.search),'Sign in to open your profile','dk-primary'));
     const items=c.items.filter(row=>tab==='Posters'?row.kind==='poster':['debate','question'].includes(row.kind));
     return h('main',{className:'dk-main dk-profile'},h('div',{className:'dk-kicker'},'Personal workspace'),h('h1',null,'Your profile'),h('nav',{className:'dk-filters','aria-label':'Profile sections'},...personalTabs.map(key=>h(Link,{key,to:profileRoute(key),'aria-current':tab===key?'page':undefined},key==='Table'?'Your table':key))),
-      tab==='Liked'?h(LikedPosters,{key:user.id,user}):tab==='Table'?h(Activity,{key:user.id}):tab==='Account'?h(Account,{key:user.id}):c.error?h('button',{className:'dk-secondary',onClick:c.refresh},'Retry loading collection'):c.loading&&!c.data?status('Loading your collection…'):tab==='People'?h(People,{user}):
+      tab==='Liked'?h(LikedPosters,{key:user.id,user}):tab==='Created'?h(CreatedPosters,{key:user.id,user}):tab==='Table'?h(Activity,{key:user.id}):tab==='Account'?h(Account,{key:user.id}):c.error?h('button',{className:'dk-secondary',onClick:c.refresh},'Retry loading collection'):c.loading&&!c.data?status('Loading your collection…'):tab==='People'?h(People,{user}):
       h('section',{className:'dk-collection'},!items.length?h('div',{className:'dk-panel'},h('h2',null,tab==='Posters'?'Your saved posters':'Your pinned discussions'),h('p',null,tab==='Posters'?'Open a finished infographic and choose Save poster.':'Pin a public question or an exploration from your table to return to it here.'),link(tab==='Posters'?profile:feed,tab==='Posters'?'Open your table':'Browse the feed','dk-secondary')):items.map(item=>tab==='Posters'?h(SavedArtwork,{key:item.target,item}):h('article',{key:item.kind+item.target,className:'dk-card'},h('small',null,item.kind==='question'?'Public question':'Your exploration'),h('div',{className:'dk-sectionline'},link(item.kind==='question'?feed+'&question='+item.target:'/debate/view/'+item.target,item.label,'dk-titlelink'),h(Save,{kind:item.kind,target:item.target,label:item.label}))))));
   }
   return {useCommenterMatches,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
