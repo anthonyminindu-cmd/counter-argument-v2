@@ -259,3 +259,8 @@ html{scroll-padding-top:155px}
 .dk-topic-metrics .dk-icon { width:15px; height:15px; }
 
 .dk-discussion-replies { margin-inline-start:clamp(4px, 1.5vw, 18px); padding-inline-start:clamp(6px, 1.5vw, 18px); border-inline-start:2px solid var(--dk-line); }
+
+.dk-social { margin: .65rem 0; }
+.dk-social button[aria-pressed="true"] .dk-icon { fill:currentColor; }
+.dk-example-discussion { scroll-margin-top:9rem; }
+.dk-example-discussion .dk-replies p { white-space:pre-wrap; overflow-wrap:anywhere; }
