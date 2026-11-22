@@ -53,7 +53,7 @@
   {
     "id": "save-validated-poster",
     "find": "i.jsx(G,{variant:\"outline\",disabled:!R||j,onClick:()=>void k(),children:\"Download PNG\"})",
-    "replace": "R&&i.jsx(DK.SavePoster,{title:t,svg:d.svg}),i.jsx(G,{variant:\"outline\",disabled:!R||j,onClick:()=>void k(),children:\"Download PNG\"})"
+    "replace": "R&&i.jsx(DK.SavePoster,{title:t,svg:d.svg,points:e,positions:n}),i.jsx(G,{variant:\"outline\",disabled:!R||j,onClick:()=>void k(),children:\"Download PNG\"})"
   },
   {
     "id": "engagement-start-route",

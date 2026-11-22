@@ -35,7 +35,7 @@ async function readInbox(db, owner, waiting) {
   return rows.map(row=>({...row, person:names.get(row.sender_id===owner?row.receiver_id:row.sender_id)||'Your friend'}));
 }
 
-export function createFriendExperience({React,db,Link,useLocation,useNavigate,Directory,icon}) {
+export function createFriendExperience({React,db,Link,useLocation,useNavigate,Directory,icon,ExternalInvites}) {
   const h=React.createElement;
   const {useState,useRef,useEffect,useContext}=React;
   const Inbox=React.createContext(null);
@@ -192,6 +192,7 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
       h(React.Fragment,null,
         suggested&&h('aside',{className:'dk-panel dk-suggested-topic'},h('h2',null,'Suggested topic'),
           h('p',null,suggested),h('small',null,'Suggest this question after your friend joins.')),
+        ExternalInvites&&h(ExternalInvites),
         h(Directory,{onInvitationSent:id=>{navigate(searchRoute+'&waiting='+encodeURIComponent(id));void inbox.refresh();}})));
   }
   function PointFields({prefix,point,update}) {

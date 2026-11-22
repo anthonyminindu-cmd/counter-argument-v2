@@ -269,3 +269,17 @@ html{scroll-padding-top:155px}
 .dk-social button[aria-pressed="true"] .dk-icon { fill:currentColor; }
 .dk-example-discussion { scroll-margin-top:9rem; }
 .dk-example-discussion .dk-replies p { white-space:pre-wrap; overflow-wrap:anywhere; }
+
+.dk-reader-point, #dk-example-points { scroll-margin-top:8rem; }
+.dk-example-card > .dk-link { display:inline-block; margin:0 18px 12px; }
+.dk-points-list { list-style:none; padding:0; margin:0; }
+.dk-reader-point,.dk-team-slot { padding:.65rem 0; border-bottom:1px solid var(--dk-line); }
+.dk-point-title { width:100%; display:grid; grid-template-columns:2.2em 1fr 1em; gap:.5rem; align-items:baseline; text-align:left; min-height:44px; }
+.dk-point-rank,.dk-team-slot small { color:var(--dk-sub); }
+.dk-point-body { padding:.5rem; overflow-wrap:anywhere; }
+.dk-point-body p { white-space:pre-wrap; }
+.dk-audience-toggle { display:flex; align-items:center; gap:.6rem; margin:1rem 0; }
+.dk-point-body .dk-actions,.dk-example-figure > .dk-actions { margin:.75rem 0; }
+.dk-point-body [aria-pressed=true],.dk-example-figure [aria-pressed=true] { border-color:var(--dk-mint); font-weight:bold; }
+.dk-invite-links { max-width:65rem; margin:1rem auto; }
+.dk-invite-links input { width:100%; }

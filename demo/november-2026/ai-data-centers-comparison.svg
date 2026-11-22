@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc" font-family="Arial, sans-serif" fill="#15251d">
+<title id="title">Would you welcome a new AI data center in your town?</title><desc id="desc">Two perspectives on a local data center. Each column lists ten ranked points.</desc>
+<rect width="1600" height="900" fill="#101c16"/><svg x="51" y="34" width="60" height="60" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#000"/><path fill="#bcf1c8" d="M10 11h26q6 0 6 6v13q0 6-6 6H22l-9 8v-8q-6 0-6-6V17q0-6 3-6Z"/><path fill="#f5f7ed" stroke="#000" stroke-width="3" stroke-linejoin="round" d="M31 27h22q5 0 5 5v13q0 5-5 5v8l-10-8H31q-5 0-5-5V32q0-5 5-5Z"/></svg>
+<text x="130" y="75" fill="#edf8ed" font-size="32" font-weight="bold">Differ Kindly</text>
+<text x="50" y="145" fill="#fff" font-size="48" font-weight="bold">Would you welcome a new AI data center in your town?</text>
+<rect x="50" y="181" rx="21" width="738" height="658" fill="#c5f0cd"/><text x="84" y="239" font-size="32" font-weight="bold">Approve with safeguards</text><path d="M84 257h670" stroke="#637468"/><g data-rank="1"><text x="84" y="292" font-size="20" fill="#43604c">1</text><text x="136" y="292" font-size="26" font-weight="bold">Charge for power upgrades</text></g>
+<g data-rank="3"><text x="84" y="347" font-size="20" fill="#43604c">3</text><text x="136" y="347" font-size="26" font-weight="bold">Add local tax revenue</text></g>
+<g data-rank="5"><text x="84" y="402" font-size="20" fill="#43604c">5</text><text x="136" y="402" font-size="26" font-weight="bold">Create construction jobs</text></g>
+<g data-rank="7"><text x="84" y="457" font-size="20" fill="#43604c">7</text><text x="136" y="457" font-size="26" font-weight="bold">Reuse an industrial site</text></g>
+<g data-rank="9"><text x="84" y="512" font-size="20" fill="#43604c">9</text><text x="136" y="512" font-size="26" font-weight="bold">Set a water limit</text></g>
+<g data-rank="11"><text x="84" y="567" font-size="20" fill="#43604c">11</text><text x="136" y="567" font-size="26" font-weight="bold">Control noise by permit</text></g>
+<g data-rank="13"><text x="84" y="622" font-size="20" fill="#43604c">13</text><text x="136" y="622" font-size="26" font-weight="bold">Secure local benefits</text></g>
+<g data-rank="15"><text x="84" y="677" font-size="20" fill="#43604c">15</text><text x="136" y="677" font-size="26" font-weight="bold">Upgrade power infrastructure</text></g>
+<g data-rank="17"><text x="84" y="732" font-size="20" fill="#43604c">17</text><text x="136" y="732" font-size="26" font-weight="bold">Require public reporting</text></g>
+<g data-rank="19"><text x="84" y="787" font-size="20" fill="#43604c">19</text><text x="136" y="787" font-size="26" font-weight="bold">Build only in stages</text></g>
+<rect x="812" y="181" rx="21" width="738" height="658" fill="#f4f0df"/><text x="846" y="239" font-size="32" font-weight="bold">Pause until costs are clear</text><path d="M846 257h670" stroke="#637468"/><g data-rank="2"><text x="846" y="292" font-size="20" fill="#43604c">2</text><text x="898" y="292" font-size="26" font-weight="bold">Protect household bills</text></g>
+<g data-rank="4"><text x="846" y="347" font-size="20" fill="#43604c">4</text><text x="898" y="347" font-size="26" font-weight="bold">Check drought demand</text></g>
+<g data-rank="6"><text x="846" y="402" font-size="20" fill="#43604c">6</text><text x="898" y="402" font-size="26" font-weight="bold">Count lasting jobs</text></g>
+<g data-rank="8"><text x="846" y="457" font-size="20" fill="#43604c">8</text><text x="898" y="457" font-size="26" font-weight="bold">Read the tax breaks</text></g>
+<g data-rank="10"><text x="846" y="512" font-size="20" fill="#43604c">10</text><text x="898" y="512" font-size="26" font-weight="bold">Test overnight noise</text></g>
+<g data-rank="12"><text x="846" y="567" font-size="20" fill="#43604c">12</text><text x="898" y="567" font-size="26" font-weight="bold">Compare other land uses</text></g>
+<g data-rank="14"><text x="846" y="622" font-size="20" fill="#43604c">14</text><text x="898" y="622" font-size="26" font-weight="bold">Plan for grid shortages</text></g>
+<g data-rank="16"><text x="846" y="677" font-size="20" fill="#43604c">16</text><text x="898" y="677" font-size="26" font-weight="bold">Count nearby projects</text></g>
+<g data-rank="18"><text x="846" y="732" font-size="20" fill="#43604c">18</text><text x="898" y="732" font-size="26" font-weight="bold">Check enforcement powers</text></g>
+<g data-rank="20"><text x="846" y="787" font-size="20" fill="#43604c">20</text><text x="898" y="787" font-size="26" font-weight="bold">Plan for closure</text></g>
+<text x="52" y="877" fill="#d6e4d9" font-size="21">Explore the reasoning and discuss each point at Differ Kindly.</text>
+</svg>

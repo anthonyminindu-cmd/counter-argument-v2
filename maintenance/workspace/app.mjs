@@ -1,3 +1,5 @@
+import {pointSnapshot,createPointReader,useAudiencePoster} from './reader.mjs';
+import {createTeamExperience} from './teams.mjs';
 import {createFriendExperience} from './friend.mjs';
 // Editable production workspace. The V2 router, authenticated client and debate flows are injected by the build.
 const home = '/home';
@@ -68,7 +70,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   const Collection=createContext(null);
   function Icon({name}) {return h('svg',{className:'dk-icon',viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:1.7,strokeLinecap:'round',strokeLinejoin:'round','aria-hidden':true},h('path',{d:glyphs[name]}));}
   const icon=name=>h(Icon,{name});
-  const {InboxProvider,Notifications,FriendSetup,FriendPointEditor,useFriendTopic,useFriendPreparationSync}=createFriendExperience({React,db,Link,useLocation,useNavigate,Directory,icon});
+  const {InboxProvider,Notifications,FriendSetup,FriendPointEditor,useFriendTopic,useFriendPreparationSync}=createFriendExperience({React,db,Link,useLocation,useNavigate,Directory,icon,ExternalInvites:()=>h(React.Fragment,null,h(InviteTools),link('/debate/start?mode=team','Start or open a team debate','dk-secondary'))});
   const link=(to,label,cls='dk-link')=>h(Link,{to,className:cls},label);
   const status=(message,alert=false)=>h('p',{className:'dk-note',role:alert?'alert':'status'},message);
   function useQuery(key,load) {
@@ -108,13 +110,13 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     }
     return h('span',{className:'dk-save'},h('button',{type:'button',onClick:toggle,disabled:busy||c.loading||!!c.error,'aria-pressed':present,className:'dk-small',title:text+' · '+label},icon(kind==='poster'?'art':kind==='person'?'friends':'pin'),text),error&&status(error,true));
   }
-  function SavePoster({title,svg}) {
+  function SavePoster({title,svg,points,positions}) {
     const {user}=useAuth();
     const [identity,set]=useState(null);
     useEffect(()=>{let active=true;if(svg) crypto.subtle.digest('SHA-256',new TextEncoder().encode(svg)).then(hash=>{
       if(active)set({svg,key:Array.from(new Uint8Array(hash),v=>v.toString(16).padStart(2,'0')).join('')});
     }).catch(()=>{});return()=>{active=false}},[svg]);
-    return identity?.svg===svg&&svg&&user?h(React.Fragment,null,h(Save,{kind:'poster',target:identity.key,label:title,artwork:svg}),h(PersonalPoster,{key:user.id+identity.key,title,svg,identity:identity.key,userId:user.id})):null;
+    return identity?.svg===svg&&svg&&user?h(React.Fragment,null,h(Save,{kind:'poster',target:identity.key,label:title,artwork:svg}),h(PersonalPoster,{key:user.id+identity.key,title,svg,points:pointSnapshot(points,positions),identity:identity.key,userId:user.id})):null;
   }
   function Nav() {
     const {user,signOut}=useAuth(), loc=useLocation(), navigate=useNavigate();
@@ -180,7 +182,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function Setup(){
     const loc=useLocation();
     const mode=new URLSearchParams(loc.search).get('mode');
-    return mode==='friend'?h(FriendSetup):mode?h(OriginalStart):h(Start);
+    return mode==='team'?h(TeamHub):mode==='friend'?h(FriendSetup):mode?h(OriginalStart):h(Start);
   }
   function Topic(){
     const loc=useLocation(),{user,loading}=useAuth(),navigate=useNavigate(),[question,set]=useState('');
@@ -198,7 +200,8 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('p',{className:'dk-welcome-tagline'},'Welcome'),
         h('h1',{id:'dk-welcome-title'},'Pull up a ',h('em',null,'chair.')),
         h('p',{className:'dk-welcome-purpose'},'A community for people who want to understand each other.'),
-        h('p',{className:'dk-welcome-mission'},'Start with a question you both care about. Explore it together, then use a shared infographic to see where your ideas overlap. When a point surprises you, ask, “What led you to see it that way?”')),
+        h('p',{className:'dk-welcome-mission'},'Start with a question you both care about. Explore it together, then use a shared infographic to see where your ideas overlap. When a point surprises you, ask, “What led you to see it that way?”'),
+        h('div',{className:'dk-actions'},link(trending,'Explore public debates','dk-primary'),link('/debate/start?mode=team','Team debates','dk-secondary'))),
       h('img',{className:'dk-welcome-photo',src:imageRoot+'wide.webp',
         srcSet:imageRoot+'small.webp 640w, '+imageRoot+'wide.webp 1280w',
         sizes:'(max-width: 900px) 92vw, (max-width: 1300px) 51vw, 655px',
@@ -333,32 +336,34 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     return h('button',{className:'dk-small',type:'button',disabled:state==='sending'||state==='sent',onClick:report},
       state==='sent'?'Reported':state==='error'?'Retry report':state==='sending'?'Reporting…':'Report');
   }
-  function MemberComments({entry}) {
+  function MemberComments({entry,point=null}) {
     const {user}=useAuth(),metrics=useContext(Engagement);
     const [body,setBody]=useState(''),[busy,setBusy]=useState(false),[failed,setFailed]=useState(false),[limit,setLimit]=useState(30);
     const request=useRef(null);
-    const q=useQuery(entry.id+':'+limit,()=>db.rpc('dk_poster_comments',{p_slug:entry.id}).range(0,limit));
+    const q=useQuery(JSON.stringify([entry.id,point,user?.id,limit]),()=>db.rpc('dk_point_comments',{p_slug:entry.id,p_point:point}).range(0,limit));
     async function post(event){
       event.preventDefault();
       if(!user||busy||!body.trim())return;
       if(request.current?.body!==body)request.current={id:crypto.randomUUID(),body};
       setBusy(true);setFailed(false);
       try{
-        await checkContent('comment',entry.id,[body.trim()]);
-        const {error}=await db.rpc('dk_poster_comment',{p_slug:entry.id,p_id:request.current.id,p_body:body.trim()});
+        await checkContent('comment',point?entry.id+':'+point:entry.id,[body.trim()]);
+        const {error}=await db.rpc('dk_add_point_comment',{p_slug:entry.id,p_point:point,p_id:request.current.id,p_body:body.trim()});
         if(error)throw error;
         request.current=null;setBody('');q.refresh();metrics.refresh();
       }catch(e){setFailed(e.communitySafety?e.message:'Could not post your comment. Your draft is here to retry.')}finally{setBusy(false)}
     }
     return h(React.Fragment,null,
-      user?h('form',{className:'dk-form',onSubmit:post},h('label',null,entry.private?'Add a comment':'Add a public comment',h('textarea',{maxLength:1200,value:body,disabled:busy,required:true,onChange:e=>setBody(e.target.value)})),
+      user?h('form',{className:'dk-form',onSubmit:post},h('label',null,point?'Ask a question or respond to this point':entry.private?'Add a comment':'Add a public comment',h('textarea',{maxLength:1200,value:body,disabled:busy,required:true,onChange:e=>setBody(e.target.value)})),
         h('button',{className:'dk-primary',disabled:busy||!body.trim()},busy?'Posting…':'Post comment'),
         failed&&status(failed,true)):
-        link(login(exampleRoute(entry.id)+'&comments=1'),'Sign in to comment','dk-secondary'),
+        link(login(exampleRoute(entry.id)+(point?'&point='+encodeURIComponent(point):'&comments=1')),'Sign in to comment','dk-secondary'),
       q.error?h('button',{className:'dk-small',onClick:q.refresh},'Retry loading comments'):q.loading&&!q.data?status('Loading comments…'):
       h(React.Fragment,null,h('ul',{className:'dk-replies'},...(q.data||[]).slice(0,limit).map(c=>h('li',{key:c.id},h('strong',null,c.author),h('p',null,c.body),h(Report,{kind:'comment',target:c.id})))),
         q.data?.length>limit&&h('button',{className:'dk-small',onClick:()=>setLimit(limit+30)},'Show older comments')));
   }
+  const PointReader=createPointReader({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,exampleRoute,MemberComments,status});
+  const {TeamHub,JoinLink,InviteTools}=createTeamExperience({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,checkContent,status,Poster:typeof lg==='function'?lg:null});
   function LikedPosters({user}) {
     const q=useQuery(user.id,()=>db.rpc('dk_poster_history'));
     return h('section',{className:'dk-panel'},h('h2',null,'Liked infographics'),
@@ -378,10 +383,10 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       }catch(e){setFailed(e.communitySafety?e.message:'Could not change visibility. Try again.')}finally{setBusy(false)}
     }
     return h('div',{className:'dk-actions'},h('button',{type:'button',className:'dk-secondary',disabled:busy,onClick:change},
-      row.published?'Make private':'Publish infographic to Trending'),failed&&status(failed,true));
+      row.published?'Make private':'Publish infographic and available points to Trending'),failed&&status(failed,true));
   }
-  function PersonalPoster({title,svg,identity,userId}) {
-    const q=useQuery(userId+':'+identity,()=>db.rpc('dk_register_personal_poster',{p_title:title,p_svg:svg}));
+  function PersonalPoster({title,svg,points,identity,userId}) {
+    const q=useQuery(userId+':'+identity+':'+!!points,()=>points?db.rpc('dk_register_points',{p_title:title,p_svg:svg,p_points:points}):db.rpc('dk_register_personal_poster',{p_title:title,p_svg:svg}));
     return q.error?h('button',{className:'dk-small',onClick:q.refresh},'Retry loading infographic activity'):
       q.data?h(PosterActivity,null,h(PersonalActions,{id:q.data,title})):null;
   }
@@ -414,6 +419,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       h('header',null,h('small',null,row.published?row.category:'Private infographic',row.published&&h(PostedDate,{slug})),h('h1',null,row.title)),
       h('img',{className:'dk-poster',src:'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(row.artwork),alt:row.title}),
       h(PosterActions,{entry,onComment:openComments}),h(Report,{kind:'poster',target:entry.id}),row.mine&&h(SharePoster,{row,refresh:()=>{q.refresh();metrics.refresh()}}),
+      h('section',null,h('h2',{id:'dk-example-points'},'Explore the points'),h(PointReader,{entry})),
       h('section',{className:'dk-panel dk-example-discussion',ref:comments,tabIndex:-1},h('h2',null,'Comments'),h(MemberComments,{key:user?.id||'guest',entry})));
   }
   function PostedDate({at,slug}) {
@@ -425,7 +431,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     return h('article',{className:'dk-card dk-example-card'},
       h(Link,{to:exampleRoute(entry.id),className:'dk-example-link','aria-label':entry.question},
         h('div',{className:'dk-example-card-text'},h('small',null,entry.category,h(PostedDate,{at:entry.published_at,slug:entry.id})),
-          h('h3',null,entry.question,icon('enter')))),h(PosterActions,{entry}));
+          h('h3',null,entry.question,icon('enter')))),link(exampleRoute(entry.id)+'&points=1','Explore the points'),h(PosterActions,{entry}));
   }
   function PosterFeed({order}) {
     const edition=useNovemberEdition();
@@ -452,7 +458,13 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     }
     useEffect(()=>{if(new URLSearchParams(loc.search).has('comments'))openComments()},[loc.search]);
     const [exporting,setExporting]=useState(false),[exportError,setExportError]=useState('');
-    const poster=examplePoster(entry.id);
+    const [design,setDesign]=useState('comparison');
+    const pilot=entry.id==='ai-data-centers';
+    const comparison=pilot&&design==='comparison';
+    const [includeAudience,setIncludeAudience]=useState(false);
+    const original=comparison?novemberPath+entry.id+'-comparison.svg':examplePoster(entry.id);
+    const audience=useAudiencePoster(React,db,comparison&&includeAudience,entry.id,original);
+    const poster=audience.url||original;
     const friendTopic=friend+'&suggested='+encodeURIComponent(entry.question);
     function readPoints() {
       const heading=pointsHeading.current;
@@ -472,18 +484,21 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('header',null,h('small',null,'By Differ Kindly',h(PostedDate,{slug:entry.id})),h('h1',null,entry.question),h('p',null,entry.overview),
           h('button',{type:'button',className:'dk-secondary dk-read-points',onClick:readPoints},'Read all 20 points')),
         h('figure',{className:'dk-example-figure'},
+          pilot&&h('div',{className:'dk-actions','aria-label':'Poster design'},...['comparison','puzzle'].map(value=>h('button',{className:'dk-small',key:value,'aria-pressed':value===design,onClick:()=>setDesign(value)},value==='comparison'?'Side by side':'Puzzle'))),
+          comparison&&h('label',{className:'dk-audience-toggle'},h('input',{type:'checkbox',checked:includeAudience,onChange:e=>setIncludeAudience(e.target.checked)}),'Include audience responses on this poster'),
+          comparison&&includeAudience&&!audience.url&&status(audience.error?'Audience totals could not load. Turn the option off and on to retry.':'Loading audience totals…',audience.error),
           h('a',{href:poster,target:'_blank',rel:'noopener','aria-label':'Open full-size poster in a new tab'},
-            h('img',{src:poster,alt:entry.subject+' puzzle comparing both sides. All points are listed below.',width:1600,height:900})),
+            h('img',{src:poster,alt:entry.subject+' — both perspectives and all 20 points. Full text follows.',width:1600,height:900})),
           h('figcaption',{className:'dk-actions'},h('a',{className:'dk-secondary',href:poster,target:'_blank',rel:'noopener'},'Open full-size poster'),
-            h('button',{className:'dk-secondary',type:'button',disabled:exporting,onClick:download},exporting?'Preparing PNG…':'Download PNG'),
+            h('button',{className:'dk-secondary',type:'button',disabled:exporting||(comparison&&includeAudience&&!audience.url),onClick:download},exporting?'Preparing PNG…':'Download PNG'),
             link(user?friendTopic:login(friendTopic),'Debate this with a friend','dk-primary'),exportError&&status(exportError,true))),
         h(PosterActions,{entry,onComment:openComments}),h(Report,{kind:'poster',target:entry.id}),
         h('section',{'aria-labelledby':'dk-example-points'},
           h('h2',{id:'dk-example-points',ref:pointsHeading,tabIndex:-1},'All 20 debate points'),
-          h('div',{className:'dk-example-positions'},...entry.sideTitles.map((title,side)=>
+          h(PointReader,{entry,fallback:h('div',{className:'dk-example-positions'},...entry.sideTitles.map((title,side)=>
             h('section',{className:'dk-panel',key:title},h('h3',null,(side===0?'A · ':'B · ')+title),
               h('ul',null,...entry.arguments.slice(side*10,side*10+10).map(([label,explanation],i)=>
-                h('li',{key:label},h('h4',null,h('span',null,'#'+(i*2+side+1)+' '),label),h('p',null,explanation)))))))),
+                h('li',{key:label},h('h4',null,h('span',null,'#'+(i*2+side+1)+' '),label),h('p',null,explanation)))))))})),
         h('section',{className:'dk-panel dk-example-discussion',ref:discussion,tabIndex:-1},h('h2',null,'Comments'),h('p',null,entry.followUp),
           h(MemberComments,{key:user?.id||'guest',entry}),
           entry.sampleActivity?h(React.Fragment,null,
@@ -528,6 +543,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const params=new URLSearchParams(loc.search), onFeed=params.get('view')==='feed'||params.has('edition');
     const example=params.get('example');
     const commenter=params.get('commenter');
+    if(params.has('join'))return h(JoinLink);
     if(commenter)return h(CommenterPage,{id:commenter});
     if(example)return h(PosterActivity,null,h(ExamplePage,{example}));
     return h('main',{className:landing?'dk-main dk-home':'dk-main',id:'dk-main'},
@@ -621,7 +637,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     if(!user)return h('main',{className:'dk-main'},h('h1',null,'Your profile'),loading?status('Loading account…'):link(login(profile+loc.search),'Sign in to open your profile','dk-primary'));
     const items=c.items.filter(row=>tab==='Posters'?row.kind==='poster':['debate','question'].includes(row.kind));
     return h('main',{className:'dk-main dk-profile'},h('div',{className:'dk-kicker'},'Personal workspace'),h('h1',null,'Your profile'),h('nav',{className:'dk-filters','aria-label':'Profile sections'},...personalTabs.map(key=>h(Link,{key,to:profileRoute(key),'aria-current':tab===key?'page':undefined},key==='Table'?'Your table':key))),
-      tab==='Liked'?h(LikedPosters,{key:user.id,user}):tab==='Created'?h(CreatedPosters,{key:user.id,user}):tab==='Table'?h(Activity,{key:user.id}):tab==='Account'?h(Account,{key:user.id}):c.error?h('button',{className:'dk-secondary',onClick:c.refresh},'Retry loading collection'):c.loading&&!c.data?status('Loading your collection…'):tab==='People'?h(People,{user}):
+      tab==='Liked'?h(LikedPosters,{key:user.id,user}):tab==='Created'?h(CreatedPosters,{key:user.id,user}):tab==='Table'?h(React.Fragment,null,h(Activity,{key:user.id}),link('/debate/start?mode=team','Your team debates','dk-secondary')):tab==='Account'?h(Account,{key:user.id}):c.error?h('button',{className:'dk-secondary',onClick:c.refresh},'Retry loading collection'):c.loading&&!c.data?status('Loading your collection…'):tab==='People'?h(People,{user}):
       h('section',{className:'dk-collection'},!items.length?h('div',{className:'dk-panel'},h('h2',null,tab==='Posters'?'Your saved posters':'Your pinned discussions'),h('p',null,tab==='Posters'?'Open a finished infographic and choose Save poster.':'Pin a public question or an exploration from your table to return to it here.'),link(tab==='Posters'?profile:feed,tab==='Posters'?'Open your table':'Browse the feed','dk-secondary')):items.map(item=>tab==='Posters'?h(SavedArtwork,{key:item.target,item}):h('article',{key:item.kind+item.target,className:'dk-card'},h('small',null,item.kind==='question'?'Public question':'Your exploration'),h('div',{className:'dk-sectionline'},link(item.kind==='question'?feed+'&question='+item.target:'/debate/view/'+item.target,item.label,'dk-titlelink'),h(Save,{kind:item.kind,target:item.target,label:item.label}))))));
   }
   return {initialProfileName,checkContent,useCommenterMatches,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};

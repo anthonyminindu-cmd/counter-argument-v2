@@ -162,3 +162,27 @@ for (const entry of entries) {
   }
 }
 console.log((check ? 'Verified ' : 'Rendered ')+entries.length+' editorial posters');
+
+// The comparison pilot puts each position in its own column. Horizontal spacing
+// separates independent lists so entries do not imply a claim/rebuttal pairing.
+const pilot=entries.find(entry=>entry.id==='ai-data-centers');
+const mark=fs.readFileSync(new URL('../workspace/mark.svg',import.meta.url),'utf8').trim().replace('<svg ','<svg x="51" y="34" width="60" height="60" ');
+const columns=pilot.sideTitles.map((side,index)=>{
+  const x=50+index*762, fill=index?'#f4f0df':'#c5f0cd';
+  const rows=pilot.arguments.slice(index*10,index*10+10).map(([title],i)=>{
+    const y=292+i*55, rank=i*2+index+1;
+    return `<g data-rank="${rank}"><text x="${x+34}" y="${y}" font-size="20" fill="#43604c">${rank}</text><text x="${x+86}" y="${y}" font-size="26" font-weight="bold">${escape(title)}</text></g>`;
+  }).join('\n');
+  return `<rect x="${x}" y="181" rx="21" width="738" height="658" fill="${fill}"/><text x="${x+34}" y="239" font-size="32" font-weight="bold">${escape(side)}</text><path d="M${x+34} 257h670" stroke="#637468"/>${rows}`;
+}).join('\n');
+const comparison=`<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc" font-family="Arial, sans-serif" fill="#15251d">
+<title id="title">${escape(pilot.question)}</title><desc id="desc">Two perspectives on a local data center. Each column lists ten ranked points.</desc>
+<rect width="1600" height="900" fill="#101c16"/>${mark}
+<text x="130" y="75" fill="#edf8ed" font-size="32" font-weight="bold">Differ Kindly</text>
+<text x="50" y="145" fill="#fff" font-size="48" font-weight="bold">${escape(pilot.question)}</text>
+${columns}
+<text x="52" y="877" fill="#d6e4d9" font-size="21">Explore the reasoning and discuss each point at Differ Kindly.</text>
+</svg>\n`;
+const comparePath=new URL(pilot.id+'-comparison.svg',editionDir);
+if(check){if(fs.readFileSync(comparePath,'utf8')!==comparison)throw new Error('Out-of-date comparison poster')}
+else fs.writeFileSync(comparePath,comparison);
