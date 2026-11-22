@@ -24,7 +24,7 @@ test('personal reader snapshots keep original identities, positions, and point-s
 test('every editorial uses the twenty-piece puzzle and shared pilot links resolve to it',()=>{
   const entries=require('../../demo/november-2026/edition.json');
   const read=name=>fs.readFileSync(path.join(root,'demo/november-2026',name+'.svg'),'utf8');
-  for(const entry of entries){
+  for(const entry of entries.filter(item=>item.kind!=='member')){
     const svg=read(entry.id);
     const ranks=Array.from(svg.matchAll(/data-rank-marker="(\d+)"/g),match=>Number(match[1]));
     assert.deepEqual(ranks,Array.from({length:20},(_,i)=>i+1));
