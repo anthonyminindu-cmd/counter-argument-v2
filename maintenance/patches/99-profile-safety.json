@@ -1,0 +1,17 @@
+[
+  {
+    "id": "screen-profile-edits",
+    "find": "const{error:C}=await $.from(\"profiles\").update({display_name:g.display_name,username:g.username,bio:g.bio})",
+    "replace": "await DK.checkContent(\"profile\",\"\",[g.display_name||\"\",g.username||\"\",g.bio||\"\"]);const{error:C}=await $.from(\"profiles\").update({display_name:g.display_name,username:g.username,bio:g.bio})"
+  },
+  {
+    "id": "profile-screening-message",
+    "find": "description:\"Failed to update profile\",variant:\"destructive\"",
+    "replace": "description:_?.communitySafety?_.message:\"Failed to update profile\",variant:\"destructive\""
+  },
+  {
+    "id": "screen-initial-display-name",
+    "find": "g.session?(o({title:\"Account created successfully!\",description:\"Welcome to Differ Kindly!\"})",
+    "replace": "g.session?(await DK.initialProfileName(g.user.id,y),o({title:\"Account created successfully!\",description:\"Welcome to Differ Kindly!\"})"
+  }
+]

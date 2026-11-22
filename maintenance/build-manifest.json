@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "49b949f9356198fbfc88669b9d34b4798168d372ee75647962e37409f3049d7a",
-  "generatedAsset": "assets/index-v2-49b949f9356198fb.js",
+  "generatedSha256": "f34e8ec5c78b5ac0d26b91dcfaa98dc3652bda995860a5082e190596f5a61e9c",
+  "generatedAsset": "assets/index-v2-f34e8ec5c78b5ac0.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -213,6 +213,9 @@
     "match-commenters-in-friend-directory",
     "count-commenters-in-friend-directory",
     "render-commenters-in-friend-directory",
-    "link-commenters-instead-of-inviting"
+    "link-commenters-instead-of-inviting",
+    "screen-profile-edits",
+    "profile-screening-message",
+    "screen-initial-display-name"
   ]
 }

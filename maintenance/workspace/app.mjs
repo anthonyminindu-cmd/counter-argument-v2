@@ -249,10 +249,10 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       }catch{setFailed(true)}finally{setBusy(false)}
     }
     const comments=row?Number(row.comments)+discussionCount(entry.sampleActivity?.comments??[]):'…';
-    return h('div',{className:'dk-topic-metrics dk-social'},
+    return h('div',{className:'dk-topic-metrics dk-social',title:entry.sampleActivity?'Totals include editorial persona activity and member activity.':undefined},
       h('button',{type:'button',className:'dk-small',onClick:like,disabled:busy||(!!user&&(!row||metrics.loading)),'aria-pressed':!!row?.liked},icon('heart'),row?.liked?'Liked':'Like',' · ',row?.likes??'…'),
       h('button',{type:'button',className:'dk-small',onClick:onComment||(()=>navigate(url+'&comments=1'))},icon('message'),'Comments · ',comments),
-      h('span',null,icon('eye'),row?.impressions??'…',' impressions'),
+      h('span',null,icon('eye'),row?.impressions??'…',Number(row?.impressions)===1?' impression':' impressions'),
       failed&&status('Could not update your like. Try again.',true),
       metrics.error&&h('button',{className:'dk-small',onClick:metrics.refresh},'Retry counts'));
   }
@@ -285,6 +285,33 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       return ()=>{active=false;document.removeEventListener('visibilitychange',record);window.removeEventListener('focus',record)};
     },[id,user?.id,loading]);
   }
+  async function checkContent(kind,target,fields) {
+    const {data,error}=await db.functions.invoke('moderate-content',{body:{kind,target,fields}});
+    if(!error&&data?.allowed===true)return;
+    const failure=new Error(data?.message||'Safety screening could not finish. Please try again.');
+    failure.communitySafety=true;
+    throw failure;
+  }
+  async function initialProfileName(id,name){
+    if(!name)return;
+    try{
+      await checkContent('profile','',[name,'','']);
+      await db.from('profiles').update({display_name:name}).eq('user_id',id).is('display_name',null).is('username',null).is('bio',null);
+    }catch{ /* The account is usable; the member can choose a name in Account. */ }
+  }
+  function Report({kind,target}) {
+    const {user}=useAuth(),[state,setState]=useState('');
+    if(!user)return null;
+    async function report(){
+      setState('sending');
+      try{
+        const {error}=await db.rpc('dk_report_content',{p_kind:kind,p_target:target});
+        setState(error?'error':'sent');
+      }catch{setState('error')}
+    }
+    return h('button',{className:'dk-small',type:'button',disabled:state==='sending'||state==='sent',onClick:report},
+      state==='sent'?'Reported':state==='error'?'Retry report':state==='sending'?'Reporting…':'Report');
+  }
   function MemberComments({entry}) {
     const {user}=useAuth(),metrics=useContext(Engagement);
     const [body,setBody]=useState(''),[busy,setBusy]=useState(false),[failed,setFailed]=useState(false),[limit,setLimit]=useState(30);
@@ -296,18 +323,19 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       if(request.current?.body!==body)request.current={id:crypto.randomUUID(),body};
       setBusy(true);setFailed(false);
       try{
+        await checkContent('comment',entry.id,[body.trim()]);
         const {error}=await db.rpc('dk_poster_comment',{p_slug:entry.id,p_id:request.current.id,p_body:body.trim()});
         if(error)throw error;
         request.current=null;setBody('');q.refresh();metrics.refresh();
-      }catch{setFailed(true)}finally{setBusy(false)}
+      }catch(e){setFailed(e.communitySafety?e.message:'Could not post your comment. Your draft is here to retry.')}finally{setBusy(false)}
     }
     return h(React.Fragment,null,
       user?h('form',{className:'dk-form',onSubmit:post},h('label',null,entry.private?'Add a comment':'Add a public comment',h('textarea',{maxLength:1200,value:body,disabled:busy,required:true,onChange:e=>setBody(e.target.value)})),
         h('button',{className:'dk-primary',disabled:busy||!body.trim()},busy?'Posting…':'Post comment'),
-        failed&&status('Could not post your comment. Your draft is here to retry.',true)):
+        failed&&status(failed,true)):
         link(login(exampleRoute(entry.id)+'&comments=1'),'Sign in to comment','dk-secondary'),
       q.error?h('button',{className:'dk-small',onClick:q.refresh},'Retry loading comments'):q.loading&&!q.data?status('Loading comments…'):
-      h(React.Fragment,null,h('ul',{className:'dk-replies'},...(q.data||[]).slice(0,limit).map(c=>h('li',{key:c.id},h('strong',null,c.author),h('p',null,c.body)))),
+      h(React.Fragment,null,h('ul',{className:'dk-replies'},...(q.data||[]).slice(0,limit).map(c=>h('li',{key:c.id},h('strong',null,c.author),h('p',null,c.body),h(Report,{kind:'comment',target:c.id})))),
         q.data?.length>limit&&h('button',{className:'dk-small',onClick:()=>setLimit(limit+30)},'Show older comments')));
   }
   function LikedPosters({user}) {
@@ -322,13 +350,14 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     async function change(){
       setBusy(true);setFailed(false);
       try{
+        if(!row.published)await checkContent('poster',row.slug,[]);
         const {error}=await db.rpc('dk_share_poster',{p_slug:row.slug,p_publish:!row.published});
         if(error)throw error;
         refresh();
-      }catch{setFailed(true)}finally{setBusy(false)}
+      }catch(e){setFailed(e.communitySafety?e.message:'Could not change visibility. Try again.')}finally{setBusy(false)}
     }
     return h('div',{className:'dk-actions'},h('button',{type:'button',className:'dk-secondary',disabled:busy,onClick:change},
-      row.published?'Make private':'Publish infographic to Trending'),failed&&status('Could not change visibility. Try again.',true));
+      row.published?'Make private':'Publish infographic to Trending'),failed&&status(failed,true));
   }
   function PersonalPoster({title,svg,identity,userId}) {
     const q=useQuery(userId+':'+identity,()=>db.rpc('dk_register_personal_poster',{p_title:title,p_svg:svg}));
@@ -363,7 +392,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     return h('article',{className:'dk-example-debate'},link(trending,'Back to Trending'),
       h('header',null,h('small',null,row.published?row.category:'Private infographic'),h('h1',null,row.title)),
       h('img',{className:'dk-poster',src:'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(row.artwork),alt:row.title}),
-      h(PosterActions,{entry,onComment:openComments}),row.mine&&h(SharePoster,{row,refresh:()=>{q.refresh();metrics.refresh()}}),
+      h(PosterActions,{entry,onComment:openComments}),h(Report,{kind:'poster',target:entry.id}),row.mine&&h(SharePoster,{row,refresh:()=>{q.refresh();metrics.refresh()}}),
       h('section',{className:'dk-panel dk-example-discussion',ref:comments,tabIndex:-1},h('h2',null,'Comments'),h(MemberComments,{key:user?.id||'guest',entry})));
   }
   function ExampleCard({entry}) {
@@ -417,7 +446,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
           h('figcaption',{className:'dk-actions'},h('a',{className:'dk-secondary',href:poster,target:'_blank',rel:'noopener'},'Open full-size poster'),
             h('button',{className:'dk-secondary',type:'button',disabled:exporting,onClick:download},exporting?'Preparing PNG…':'Download PNG'),
             link(user?friendTopic:login(friendTopic),'Debate this with a friend','dk-primary'),exportError&&status(exportError,true))),
-        h(PosterActions,{entry,onComment:openComments}),
+        h(PosterActions,{entry,onComment:openComments}),h(Report,{kind:'poster',target:entry.id}),
         h('section',{'aria-labelledby':'dk-example-points'},
           h('h2',{id:'dk-example-points',ref:pointsHeading,tabIndex:-1},'All 20 debate points'),
           h('div',{className:'dk-example-positions'},...entry.sideTitles.map((title,side)=>
@@ -485,9 +514,10 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     async function publish(e) {
       e.preventDefault();if(busy||!user||question.trim().length<5)return;
       setBusy(true);setErr('');
-      try{const {data,error}=await db.from('dk_questions').insert({author_id:user.id,question:question.trim()}).select('id').single();
+      try{await checkContent('question','',[question.trim()]);
+        const {data,error}=await db.from('dk_questions').insert({author_id:user.id,question:question.trim()}).select('id').single();
         if(error)throw error;setQuestion('');setCompose(false);navigate(feed+'&question='+data.id);query.refresh();
-      }catch{setErr('Your question could not be published. Your text is still here.')}finally{setBusy(false)}
+      }catch(e){setErr(e.communitySafety?e.message:'Your question could not be published. Your text is still here.')}finally{setBusy(false)}
     }
     const urlFor=key=>key==='trending'?trending:feed+'&sort='+key;
     if(chosen)return h('section',{className:'dk-feed'},link(feed,'Back to feed'),query.loading&&!query.data?status('Loading discussion…'):query.error?status('Could not load this discussion.',true):rows[0]?h(Thread,{key:rows[0].id,thread:rows[0],refresh:query.refresh}):status('This discussion is unavailable.'));
@@ -516,12 +546,13 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const {user}=useAuth(),[text,set]=useState(''),[busy,setBusy]=useState(false),[err,setErr]=useState('');
     const q=useQuery(thread.id,()=>db.from('dk_replies').select('id,perspective,created_at').eq('question_id',thread.id).order('created_at',{ascending:false}).limit(100));
     async function reply(e){e.preventDefault();if(!user||busy||!text.trim())return;setBusy(true);setErr('');
-      try {const {error}=await db.from('dk_replies').insert({question_id:thread.id,author_id:user.id,perspective:text.trim()});if(error)throw error;set('');q.refresh();refresh();}
-      catch{setErr('Your reply could not be published. Please try again.')}finally{setBusy(false)}}
+      try {await checkContent('reply',thread.id,[text.trim()]);
+        const {error}=await db.from('dk_replies').insert({question_id:thread.id,author_id:user.id,perspective:text.trim()});if(error)throw error;set('');q.refresh();refresh();}
+      catch(e){setErr(e.communitySafety?e.message:'Your reply could not be published. Please try again.')}finally{setBusy(false)}}
     const next=topicRoute(thread.question);
-    return h('article',{className:'dk-panel dk-thread'},h('small',null,thread.is_starter?'Starter question':'Public question'),h('h1',null,thread.question),
+    return h('article',{className:'dk-panel dk-thread'},h('small',null,thread.is_starter?'Starter question':'Public question'),h('h1',null,thread.question),h(Report,{kind:'question',target:thread.id}),
       h('div',{className:'dk-actions'},link(user?next:login(next),'Explore with AI','dk-primary'),h(Save,{kind:'question',target:thread.id,label:thread.question})),
-      h('h2',null,'Perspectives'),q.error?h('button',{className:'dk-secondary',onClick:q.refresh},'Retry loading replies'):q.loading&&!q.data?status('Loading replies…'):q.data?.length?h('ul',{className:'dk-replies'},...q.data.map(row=>h('li',{key:row.id},h('p',null,row.perspective),h('small',null,new Date(row.created_at).toLocaleDateString())))):h('p',null,'What should someone on the other side consider?'),
+      h('h2',null,'Perspectives'),q.error?h('button',{className:'dk-secondary',onClick:q.refresh},'Retry loading replies'):q.loading&&!q.data?status('Loading replies…'):q.data?.length?h('ul',{className:'dk-replies'},...q.data.map(row=>h('li',{key:row.id},h('p',null,row.perspective),h('small',null,new Date(row.created_at).toLocaleDateString()),h(Report,{kind:'reply',target:row.id})))):h('p',null,'What should someone on the other side consider?'),
       user?h('form',{className:'dk-form',onSubmit:reply},h('label',null,'Add a public perspective',h('textarea',{required:true,maxLength:1200,value:text,onChange:e=>set(e.target.value)})),h('button',{className:'dk-secondary',disabled:busy||!text.trim()},busy?'Posting…':'Post reply'),err&&status(err,true)):link(login(feed+'&question='+thread.id),'Sign in to reply','dk-secondary'));
   }
   function SavedArtwork({item}) {
@@ -564,5 +595,5 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       tab==='Liked'?h(LikedPosters,{key:user.id,user}):tab==='Created'?h(CreatedPosters,{key:user.id,user}):tab==='Table'?h(Activity,{key:user.id}):tab==='Account'?h(Account,{key:user.id}):c.error?h('button',{className:'dk-secondary',onClick:c.refresh},'Retry loading collection'):c.loading&&!c.data?status('Loading your collection…'):tab==='People'?h(People,{user}):
       h('section',{className:'dk-collection'},!items.length?h('div',{className:'dk-panel'},h('h2',null,tab==='Posters'?'Your saved posters':'Your pinned discussions'),h('p',null,tab==='Posters'?'Open a finished infographic and choose Save poster.':'Pin a public question or an exploration from your table to return to it here.'),link(tab==='Posters'?profile:feed,tab==='Posters'?'Open your table':'Browse the feed','dk-secondary')):items.map(item=>tab==='Posters'?h(SavedArtwork,{key:item.target,item}):h('article',{key:item.kind+item.target,className:'dk-card'},h('small',null,item.kind==='question'?'Public question':'Your exploration'),h('div',{className:'dk-sectionline'},link(item.kind==='question'?feed+'&question='+item.target:'/debate/view/'+item.target,item.label,'dk-titlelink'),h(Save,{kind:item.kind,target:item.target,label:item.label}))))));
   }
-  return {useCommenterMatches,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
+  return {initialProfileName,checkContent,useCommenterMatches,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
 }
