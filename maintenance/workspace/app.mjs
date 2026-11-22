@@ -127,7 +127,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const [to,label]=Object.hasOwn(feedOrigins,from)?feedOrigins[from]:feedOrigins.trending;
     return h(Link,{className:'dk-link',to,state:{dkReturn:id}},label);
   }
-  function useRestoreCard(ready,origin,feature=false) {
+  function useRestoreCard(ready,origin) {
     const loc=useLocation(), restored=useRef(null);
     React.useLayoutEffect(()=>{
       if(!ready||!origin||restored.current===loc.key)return;
@@ -135,7 +135,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       if(loc.state?.dkReturn){
         try { mark=JSON.parse(sessionStorage.getItem('dk-card:'+origin+':'+loc.state.dkReturn)) || {origin,card:loc.state.dkReturn}; } catch {}
       }
-      if(mark?.origin!==origin||mark.card.startsWith('feature-')!==feature)return;
+      if(mark?.origin!==origin)return;
       const card=document.getElementById('dk-card-'+mark.card);
       if(!card)return;
       restored.current=loc.key;
@@ -143,7 +143,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       control?.focus({preventScroll:true});
       if(Number.isFinite(mark.top))window.scrollBy(0,card.getBoundingClientRect().top-mark.top);
       else card.scrollIntoView({block:'center'});
-    },[ready,origin,feature,loc.key,loc.state]);
+    },[ready,origin,loc.key,loc.state]);
   }
   function Icon({name}) {return h('svg',{className:'dk-icon',viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:1.7,strokeLinecap:'round',strokeLinejoin:'round','aria-hidden':true},h('path',{d:glyphs[name]}));}
   const icon=name=>h(Icon,{name});
@@ -272,20 +272,14 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('button',{className:'dk-primary',disabled:loading||!question.trim()},'Continue with AI')),
       link(feed,'Pick a question from the feed','dk-secondary'));
   }
-  function Welcome({edition}) {
+  function Welcome() {
     const imageRoot='/counter-argument-v2/assets/neighborhood-table-';
-    const metrics=useContext(Engagement);
-    const entry=publicPosterEntries(metrics.data||[],edition.data||[])[0];
-    const activity=entry&&metrics.data.find(row=>row.slug===entry.id);
-    useRestoreCard(!!entry,'home',true);
     return h('section',{className:'dk-welcome','aria-labelledby':'dk-welcome-title'},
       h('div',{className:'dk-welcome-copy'},
         h('p',{className:'dk-welcome-tagline'},'Welcome'),
         h('h1',{id:'dk-welcome-title'},'Pull up a ',h('em',null,'chair.')),
-        entry?h('div',{id:'dk-card-feature-'+entry.id,className:'dk-feature',onClickCapture:e=>rememberCard(e,'home','feature-'+entry.id)},
-          h(Link,{className:'dk-feature-question',to:withOrigin(exampleRoute(entry.id),'home')+'&featured=1'},entry.question),
-          h('p',null,activity.likes+' likes · '+(Number(activity.comments)+discussionCount(entry.sampleActivity?.comments||[]))+' comments')):
-          h('p',{className:'dk-welcome-purpose'},'A community for people who want to understand each other.'),
+        h('p',{className:'dk-welcome-purpose'},'Work through tough questions together.'),
+        h('p',{className:'dk-welcome-mission'},'Share where you stand, explore an opposing view, and discover the experiences and trade-offs that shape each perspective.'),
         link(trending,'Explore public debates','dk-link')),
       h('img',{className:'dk-welcome-photo',src:imageRoot+'wide.webp',
         srcSet:imageRoot+'small.webp 640w, '+imageRoot+'wide.webp 1280w',
@@ -569,7 +563,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       }catch{setExportError('Could not create a PNG. You can open the full-size poster instead.')}
       finally{setExporting(false)}
     }
-    return h(React.Fragment,null,h(BackToFeed,{id:new URLSearchParams(loc.search).has('featured')?'feature-'+entry.id:entry.id}),
+    return h(React.Fragment,null,h(BackToFeed,{id:entry.id}),
       h('article',{className:'dk-example-debate'},
         h('header',null,h('small',null,'By Differ Kindly',h(PostedDate,{slug:entry.id})),h('h1',null,entry.question),h('p',null,entry.overview),
           h('button',{type:'button',className:'dk-secondary dk-read-points',onClick:readPoints},'Read all 20 points')),
@@ -642,7 +636,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const list=edition.error?h('button',{className:'dk-secondary',onClick:edition.refresh},'Retry loading topics'):
       edition.data?h(PosterFeedCards,{edition:edition.data}):status('Loading topics…');
     return h(PosterActivity,{order:'trending',editorialIds:edition.data?.map(entry=>entry.id),wait:!edition.data},
-      h('main',{className:'dk-main dk-home',id:'dk-main'},h(Welcome,{edition}),
+      h('main',{className:'dk-main dk-home',id:'dk-main'},h(Welcome),
         h('div',{className:'dk-grid'},h(Feed,{full:false,landing:true,publicList:list}),h(Activity,{compact:true}))));
   }
   function QuestionCard({row,landing}) {

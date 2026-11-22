@@ -286,10 +286,6 @@ html{scroll-padding-top:155px}
 
 .dk-skip { position:absolute; z-index:52; top:.4rem; left:.6rem; padding:.65rem 1rem; background:var(--dk-mint); color:var(--dk-on); border-radius:6px; transform:translateY(-160%); }
 .dk-skip:focus { transform:none; }
-.dk-feature { margin:.9rem 0 .5rem; padding-inline-start:1rem; border-inline-start:3px solid #bcf1c8; }
-.dk-feature-question { display:block; font-size:clamp(1.2rem,2vw,1.65rem); font-weight:670; line-height:1.23; text-wrap:pretty; }
-.dk-feature-question:hover { text-decoration:underline; }
-.dk-feature p { margin-top:.35rem; color:#dce8dd; font-size:.94rem; }
 .dk-welcome .dk-link { display:inline-flex; align-items:center; min-height:44px; color:#bcf1c8; }
 .dk-signin-point { display:block; margin:.4rem 0; font-weight:600; overflow-wrap:anywhere; }
 
