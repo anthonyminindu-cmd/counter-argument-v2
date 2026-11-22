@@ -2292,5 +2292,46 @@
       ],
       "impressions": 171
     }
+  },
+  {
+    "id": "poster-0f7ba5510ebec28c5dd1d6ba811dfb8a5a2c74357aeefa417f7ff983bcc596e2",
+    "kind": "member",
+    "question": "Black Friday: buy a good deal now or wait until Friday?",
+    "category": "Community",
+    "overview": "Two QA friends debated a planned holiday purchase. One values a fair price and having the gift in hand. The other wants price history and time to compare. The sample reactions below come from fictional profiles.",
+    "sources": [
+      {
+        "label": "November 22 article on Black Friday pricing · The U.S. Sun",
+        "url": "https://www.the-sun.com/money/17329611/black-friday-pre-inflated-prices-trick-exposed/"
+      },
+      {
+        "label": "Amazon’s published Black Friday sale schedule",
+        "url": "https://press.aboutamazon.com/2026/11/amazons-black-friday-week-and-cyber-monday-return-november-19-30-with-millions-of-deals-to-deliver-joy-this-holiday-season"
+      }
+    ],
+    "sampleActivity": {
+      "reactions": 8,
+      "comments": [
+        {
+          "profileId": "person-002",
+          "body": "If the same model was cheaper in October, the percentage on the sign tells me very little. I'd start with the price history.",
+          "replies": [
+            {
+              "profileId": "person-001",
+              "body": "I'd still buy today if it meets the price I set and I can pick it up locally. What would make you stop waiting?"
+            }
+          ]
+        },
+        {
+          "profileId": "person-004",
+          "body": "The return window changes my answer. If it ends before the gift is opened, an early deal is less appealing."
+        },
+        {
+          "profileId": "person-006",
+          "body": "I'd add delivery and membership fees to both prices. That's the comparison I want to see."
+        }
+      ],
+      "impressions": 8
+    }
   }
 ]

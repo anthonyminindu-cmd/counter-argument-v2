@@ -19,6 +19,26 @@ test('Trending keeps ranked, published posters with available content', async ()
   assert.equal(posts[1].published_at, publication);
 });
 
+test('featuring a member discussion requires a published poster with artwork', async () => {
+  const { publicPosterEntries } = await import('../workspace/app.mjs');
+  const edition = require('../../demo/november-2026/edition.json');
+  const personas = require('../../demo/november-2026/personas.json');
+  const features = edition.filter(item => item.kind === 'member');
+  assert.ok(features.length);
+  for (const feature of features) {
+    const row = { slug:feature.id, published:true, has_artwork:true };
+    assert.match(row.slug, /^poster-[a-f0-9]{64}$/);
+    assert.equal(publicPosterEntries([row], edition)[0].sampleActivity, feature.sampleActivity);
+    assert.deepEqual(publicPosterEntries([{...row, published:false}], edition), []);
+    assert.deepEqual(publicPosterEntries([{...row, has_artwork:false}], edition), []);
+    const visit = comment => {
+      assert.ok(personas[comment.profileId] && comment.body.trim());
+      (comment.replies || []).forEach(visit);
+    };
+    feature.sampleActivity.comments.forEach(visit);
+  }
+});
+
 test('Latest requests the five newest eligible public debates, Trending keeps the popularity order', async () => {
   const {posterMetricsQuery} = await import('../workspace/app.mjs');
   const calls = [];

@@ -153,7 +153,7 @@ function render(entry, subject) {
 `;
 }
 
-for (const entry of entries) {
+for (const entry of entries.filter(item => item.kind !== 'member')) {
   const svg = websitePosterSvg(render(entry, subjects[entry.id]));
   // Previously shared pilot URLs should open the restored puzzle as well.
   const names = entry.id === 'ai-data-centers' ? [entry.id, entry.id+'-comparison'] : [entry.id];

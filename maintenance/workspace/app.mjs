@@ -65,7 +65,7 @@ const feedDateFormat=new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric
 
 export function publicPosterEntries(ranked,edition) {
   const editorial=new Map(edition.map(entry=>[entry.id,entry]));
-  return ranked.filter(row=>row.published&&(row.has_artwork||editorial.has(row.slug))).map(row=>{
+  return ranked.filter(row=>row.published&&(row.has_artwork||(editorial.has(row.slug)&&editorial.get(row.slug).kind!=='member'))).map(row=>{
     const entry=editorial.get(row.slug)||{id:row.slug,question:row.title,category:row.category};
     return {...entry,published_at:row.published_at};
   });
@@ -288,7 +288,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function useNovemberEdition() {
     return useQuery('november-2026',async()=>{
-      const response=await fetch(novemberPath+'edition.json?v=6');
+      const response=await fetch(novemberPath+'edition.json?v=7');
       if(!response.ok)throw Error('The November edition is unavailable.');
       return {data:await response.json()};
     });
@@ -356,6 +356,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       h('button',{type:'button',className:'dk-small',onClick:like,disabled:busy||(!!user&&(!row||metrics.loading)),'aria-pressed':!!row?.liked},icon('heart'),row?.liked?'Liked':'Like',' · ',row?.likes??'…'),
       h('button',{type:'button',className:'dk-small','data-opens-debate':true,onClick:onComment||(()=>navigate(url+'&comments=1'))},icon('message'),'Comments · ',comments),
       h('span',null,icon('eye'),row?.impressions??'…',Number(row?.impressions)===1?' impression':' impressions'),
+      entry.kind==='member'&&entry.sampleActivity&&h('small',null,'Includes ',entry.sampleActivity.reactions,' sample likes and ',discussionCount(entry.sampleActivity.comments),' sample comments'),
       failed&&status('Could not update your like. Try again.',true),
       metrics.error&&h('button',{className:'dk-small',onClick:metrics.refresh},'Retry counts'));
   }
@@ -417,24 +418,44 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function MemberComments({entry,point=null}) {
     const {user}=useAuth(),metrics=useContext(Engagement);
-    const [body,setBody]=useState(''),[busy,setBusy]=useState(false),[failed,setFailed]=useState(false),[limit,setLimit]=useState(30);
-    const request=useRef(null);
+    const draftKey=JSON.stringify(['dk-comment',user?.id,entry.id,point]);
+    const [saved]=useState(()=>{
+      try{return JSON.parse(sessionStorage.getItem(draftKey))||{}}catch{return {}}
+    });
+    const [body,setBody]=useState(saved.body||''),[busy,setBusy]=useState(false),[failed,setFailed]=useState(false),[limit,setLimit]=useState(30);
+    const [posted,setPosted]=useState(false);
+    const request=useRef(saved.id?{id:saved.id,body:saved.body}:null);
+    function saveDraft(body,id){
+      try{
+        if(body)sessionStorage.setItem(draftKey,JSON.stringify({body,id}));
+        else sessionStorage.removeItem(draftKey);
+      }catch{}
+    }
     const q=useQuery(JSON.stringify([entry.id,point,user?.id,limit]),()=>db.rpc('dk_point_comments',{p_slug:entry.id,p_point:point}).range(0,limit));
+    useEffect(()=>{
+      if(request.current&&q.data?.some(row=>row.id===request.current.id)){
+        request.current=null;saveDraft('');setBody('');setPosted(true);
+      }
+    },[q.data]);
     async function post(event){
       event.preventDefault();
       if(!user||busy||!body.trim())return;
       if(request.current?.body!==body)request.current={id:crypto.randomUUID(),body};
+      saveDraft(body,request.current.id);
       setBusy(true);setFailed(false);
       try{
         await checkContent('comment',point?entry.id+':'+point:entry.id,[body.trim()]);
         const {error}=await db.rpc('dk_add_point_comment',{p_slug:entry.id,p_point:point,p_id:request.current.id,p_body:body.trim()});
         if(error)throw error;
-        request.current=null;setBody('');q.refresh();metrics.refresh();
+        request.current=null;saveDraft('');setBody('');setPosted(true);q.refresh();metrics.refresh();
       }catch(e){setFailed(e.communitySafety?e.message:'Could not post your comment. Your draft is here to retry.')}finally{setBusy(false)}
     }
     return h(React.Fragment,null,
-      user?h('form',{className:'dk-form',onSubmit:post},h('label',null,point?'Ask a question or respond to this point':entry.private?'Add a comment':'Add a public comment',h('textarea',{maxLength:1200,value:body,disabled:busy,required:true,onChange:e=>setBody(e.target.value)})),
+      user?h('form',{className:'dk-form',onSubmit:post},h('label',null,point?'Ask a question or respond to this point':entry.private?'Add a comment':'Add a public comment',h('textarea',{maxLength:1200,value:body,disabled:busy,required:true,onChange:e=>{
+          const text=e.target.value;request.current=null;setPosted(false);setBody(text);saveDraft(text);
+        }})),
         h('button',{className:'dk-primary',disabled:busy||!body.trim()},busy?'Posting…':'Post comment'),
+        posted&&status('Comment posted.'),
         failed&&status(failed,true)):
         link(login(exampleRoute(entry.id)+(point?'&point='+encodeURIComponent(point):'&comments=1')),'Sign in to comment','dk-secondary'),
       q.error?h('button',{className:'dk-small',onClick:q.refresh},'Retry loading comments'):q.loading&&!q.data?status('Loading comments…'):
@@ -462,7 +483,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       }catch(e){setFailed(e.communitySafety?e.message:'Could not change visibility. Try again.')}finally{setBusy(false)}
     }
     return h('div',{className:'dk-actions'},h('button',{type:'button',className:'dk-secondary',disabled:busy,onClick:change},
-      row.published?'Make private':'Publish infographic and available points to Trending'),failed&&status(failed,true));
+      row.published?'Make private':'Publish infographic and points to Latest and Trending'),failed&&status(failed,true));
   }
   function PersonalPoster({title,svg,points,identity,userId}) {
     const q=useQuery(userId+':'+identity+':'+!!points,()=>points?db.rpc('dk_register_points',{p_title:title,p_svg:svg,p_points:points}):db.rpc('dk_register_personal_poster',{p_title:title,p_svg:svg}));
@@ -482,7 +503,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       q.data?.length?h(PosterActivity,null,h('div',{className:'dk-example-grid'},...q.data.map(row=>h(ExampleCard,{key:row.slug,entry:{id:row.slug,question:row.title,category:row.published?'Published':'Private'}})))):
       h('p',null,'Your finished infographics appear here.'));
   }
-  function CatalogPoster({slug}) {
+  function CatalogPoster({slug,feature}) {
     const {user}=useAuth(),loc=useLocation();
     const q=useQuery(slug+':'+(user?.id||'guest'),()=>db.rpc('dk_read_poster',{p_slug:slug}).maybeSingle());
     const points=useQuery('catalog-points:'+slug+':'+(user?.id||'guest'),()=>db.rpc('dk_points',{p_slug:slug}));
@@ -494,13 +515,24 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     if(q.error)return h('button',{className:'dk-secondary',onClick:q.refresh},'Retry loading infographic');
     if(q.loading&&!row)return status('Loading infographic…');
     if(!row?.artwork)return status('This infographic is unavailable.');
-    const entry={id:row.slug,question:row.title,private:!row.published};
+    const entry={...(row.published?feature:null),id:row.slug,question:row.title,private:!row.published};
+    const friendTopic=friend+'&suggested='+encodeURIComponent(row.title);
     return h('article',{className:'dk-example-debate'},h(BackToFeed,{id:slug}),
-      h('header',null,h('small',null,row.published?row.category:'Private infographic',row.published&&h(PostedDate,{slug})),h('h1',null,row.title)),
+      h('header',null,h('small',null,row.published?row.category:'Private infographic',row.published&&h(PostedDate,{slug})),h('h1',null,row.title),
+        entry.overview&&h('p',null,entry.overview),
+        entry.sources?.length>0&&h('ul',null,...entry.sources.map(({label,url})=>h('li',{key:url},h('a',{className:'dk-link',href:url},label)))),
+        row.published&&link(user?friendTopic:login(friendTopic),'Debate this with a friend','dk-primary')),
       h(PuzzlePoster,{src:'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(websitePosterSvg(row.artwork)),alt:row.title,markup:websitePosterSvg(row.artwork),points:points.data||[]}),
       h(PosterActions,{entry,onComment:openComments}),h(Report,{kind:'poster',target:entry.id}),row.mine&&h(SharePoster,{row,refresh:()=>{q.refresh();metrics.refresh()}}),
       h('section',null,h('h2',{id:'dk-example-points',tabIndex:-1},'Explore the points'),h(PointReader,{entry,provided:points})),
-      h('section',{className:'dk-panel dk-example-discussion',ref:comments,tabIndex:-1},h('h2',null,'Comments'),h(MemberComments,{key:user?.id||'guest',entry})));
+      h('section',{className:'dk-panel dk-example-discussion',ref:comments,tabIndex:-1},h('h2',null,'Comments'),h(MemberComments,{key:user?.id||'guest',entry}),
+        entry.sampleActivity&&h(SampleDiscussion,{entry})));
+  }
+  function SampleDiscussion({entry}){
+    const personas=usePersonas();
+    return h('section',null,h('h3',null,'Sample discussion'),h('p',null,'Fictional community profiles contributed these examples.'),
+      personas.data?renderDiscussion(entry.sampleActivity.comments,personas.data):
+        personas.error?h('button',{onClick:personas.refresh},'Retry loading commenters'):status('Loading discussion…'));
   }
   function PostedDate({at,slug,standalone}) {
     const metrics=useContext(Engagement);
@@ -521,7 +553,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const edition=useNovemberEdition();
     if(edition.error)return h('button',{type:'button',className:'dk-secondary',onClick:edition.refresh},'Retry loading topics');
     if(!edition.data)return status('Loading topics…');
-    return h(PosterActivity,{order,editorialIds:edition.data.map(entry=>entry.id)},h(PosterFeedCards,{edition:edition.data}));
+    return h(PosterActivity,{order,editorialIds:edition.data.filter(entry=>entry.kind!=='member').map(entry=>entry.id)},h(PosterFeedCards,{edition:edition.data}));
   }
   function PosterFeedCards({edition}) {
     const metrics=useContext(Engagement);
@@ -596,17 +628,20 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const entry=november.data?.find(item=>item.id===example);
     return h('main',{className:'dk-main',id:'dk-main'},
       november.error?h('div',{className:'dk-panel'},status('Could not load the November debates.',true),h('button',{className:'dk-secondary',onClick:november.refresh},'Try again')):
-      november.loading?status('Loading the November debates…'):entry?h(ExampleDebate,{key:entry.id,entry}):
-        h(CatalogPoster,{key:example,slug:example}));
+      november.loading?status('Loading the November debates…'):entry&&entry.kind!=='member'?h(ExampleDebate,{key:entry.id,entry}):
+        h(CatalogPoster,{key:example,slug:example,feature:entry}));
   }
   function CommenterPage({id}) {
     const personas = usePersonas(), edition = useNovemberEdition();
     const person = personas.data && Object.hasOwn(personas.data, id) ? personas.data[id] : null;
+    const memberPosters=useQuery(edition.data?.some(entry=>entry.kind==='member')?'public-member-posters':null,()=>
+      db.rpc('dk_ranked_posters').eq('published',true).eq('has_artwork',true));
     useEffect(() => window.scrollTo(0,0), [id]);
     const authored = comments => comments.flatMap(comment => [
       ...(comment.profileId === id ? [comment] : []), ...authored(comment.replies ?? [])
     ]);
     const discussions = (edition.data ?? []).flatMap(entry => {
+      if(entry.kind==='member'&&!memberPosters.data?.some(row=>row.slug===entry.id))return [];
       const comments = authored(entry.sampleActivity?.comments ?? []);
       return comments.length ? [{entry, comments}] : [];
     });
@@ -635,7 +670,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const edition=useNovemberEdition();
     const list=edition.error?h('button',{className:'dk-secondary',onClick:edition.refresh},'Retry loading topics'):
       edition.data?h(PosterFeedCards,{edition:edition.data}):status('Loading topics…');
-    return h(PosterActivity,{order:'trending',editorialIds:edition.data?.map(entry=>entry.id),wait:!edition.data},
+    return h(PosterActivity,{order:'trending',editorialIds:edition.data?.filter(entry=>entry.kind!=='member').map(entry=>entry.id),wait:!edition.data},
       h('main',{className:'dk-main dk-home',id:'dk-main'},h(Welcome),
         h('div',{className:'dk-grid'},h(Feed,{full:false,landing:true,publicList:list}),h(Activity,{compact:true}))));
   }
