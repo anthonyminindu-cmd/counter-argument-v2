@@ -14,6 +14,7 @@ from contextlib import ExitStack
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 from urllib.request import Request, urlopen
+from uuid import UUID
 
 from playwright.sync_api import expect, sync_playwright
 from friend_topic_recovery import check_friend_topic_recovery
@@ -41,7 +42,7 @@ def create_member(role):
     print("FRIEND_QA_ACCOUNT", result["user"]["id"], email, flush=True)
     if not result.get("access_token"):
         raise RuntimeError("QA signup did not produce a verified session.")
-    return {"id": result["user"]["id"], "name": display, "email": email, "password": password}
+    return {"id": result["user"]["id"], "name": display, "email": email, "password": password, "access_token": result["access_token"]}
 
 
 def login(page, member):
@@ -53,13 +54,24 @@ def login(page, member):
     expect(page.get_by_role("button", name="Sign out", exact=True)).to_be_visible()
 
 
-def send(page, member):
+def send(page, sender, receiver):
     page.get_by_role("link", name="Debate with a friend", exact=True).click()
-    page.get_by_label("Search for users").fill(member["name"])
-    expect(page.get_by_text(member["name"], exact=True).first).to_be_visible()
-    page.get_by_role("button", name=re.compile(r"^(Send invitation|Invite)$", re.I)).click()
-    expect(page.get_by_role("heading", name="Invitation sent", exact=True)).to_be_visible()
+    with page.expect_response(lambda res: res.request.method == "POST" and
+                              res.url.endswith("/rpc/search_debate_partners") and
+                              res.request.post_data_json.get("p_query") == receiver["name"]) as lookup:
+        page.get_by_label("Search for users").fill(receiver["name"])
+    assert lookup.value.ok and lookup.value.json() == [], "A QA member is visible in friend search"
+    expect(page.get_by_text("No users found", exact=True)).to_be_visible()
 
+    # Start the private fixture invitation by ID. Its recipient is intentionally undiscoverable.
+    request = Request(API + "/rest/v1/rpc/dk_invite_friend", data=json.dumps({
+        "p_receiver": receiver["id"]
+    }).encode(), headers={"apikey": public_key, "Authorization": "Bearer " + sender["access_token"],
+                          "Content-Type": "application/json"})
+    with urlopen(request, timeout=30) as response:
+        invitation = UUID(json.load(response))
+    page.goto(f"{APP}/debate/start?mode=friend&waiting={invitation}")
+    expect(page.get_by_role("heading", name="Invitation sent", exact=True)).to_be_visible()
 
 def await_popup(page, name):
     dialog = page.get_by_role("dialog")
@@ -308,7 +320,7 @@ if __name__ == "__main__":
         login(sender,a)
         login(receiver,b)
         receiver.get_by_role("link",name="Latest",exact=True).click()
-        send(sender,b)
+        send(sender, a, b)
         capture(sender, "01-desktop-invitation-sent")
         alert = await_popup(receiver,a["name"])
         capture(receiver, "02-mobile-live-invitation")
@@ -325,7 +337,7 @@ if __name__ == "__main__":
         check("Declined invitation closed the waiting debate in the sender's table")
         receiver.get_by_role("button",name="Sign out",exact=True).click()
         expect(receiver.get_by_role("link",name="Sign in",exact=True)).to_be_visible()
-        send(sender,b)
+        send(sender, a, b)
         login(receiver,b)
         alert=await_popup(receiver,a["name"])
         capture(receiver, "03-mobile-invitation-after-sign-in")
@@ -373,7 +385,7 @@ if __name__ == "__main__":
         check_positions_and_arguments(sender, receiver, room, topic)
         # Both accounts have already used the automatic handoff while waiting.
         # Here the sender keeps browsing after sending another invitation.
-        send(sender, b)
+        send(sender, a, b)
         sender.get_by_role("link", name="Feed", exact=True).click()
         expect(sender.get_by_role("heading", name="Trending", exact=True)).to_be_visible()
         await_popup(receiver, a["name"]).get_by_role("button", name="Accept invitation", exact=True).click()
