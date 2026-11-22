@@ -194,7 +194,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function ExampleCard({entry}) {
     return h('article',{className:'dk-card dk-example-card'},
       h(Link,{to:exampleRoute(entry.id),className:'dk-example-link','aria-label':entry.question},
-        h('div',{className:'dk-example-card-text'},h('small',null,'Example debate · '+entry.category),
+        h('div',{className:'dk-example-card-text'},h('small',null,entry.category),
           h('h3',null,entry.question,icon('enter')),h(SampleActivity,{entry}))));
   }
   function TrendingPosters() {
@@ -224,7 +224,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     }
     return h(React.Fragment,null,link(trending,'Back to Trending'),
       h('article',{className:'dk-example-debate'},
-        h('header',null,h('small',null,'Example debate · By Differ Kindly'),h('h1',null,entry.question),h('p',null,entry.overview),
+        h('header',null,h('small',null,'By Differ Kindly'),h('h1',null,entry.question),h('p',null,entry.overview),
           h('button',{type:'button',className:'dk-secondary dk-read-points',onClick:readPoints},'Read all 20 points')),
         h('figure',{className:'dk-example-figure'},
           h('a',{href:poster,target:'_blank',rel:'noopener','aria-label':'Open full-size poster in a new tab'},
@@ -252,7 +252,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     return h('main',{className:'dk-main',id:'dk-main'},
       november.error?h('div',{className:'dk-panel'},status('Could not load the November debates.',true),h('button',{className:'dk-secondary',onClick:november.refresh},'Try again')):
       november.loading?status('Loading the November debates…'):entry?h(ExampleDebate,{key:entry.id,entry}):
-        h('section',{className:'dk-panel'},h('h1',null,'Example debate unavailable'),link(trending,'Back to Trending')));
+        h('section',{className:'dk-panel'},h('h1',null,'Debate unavailable'),link(trending,'Back to Trending')));
   }
   function Start() {
     const loc=useLocation(), landing=isWelcomeLocation(loc);
@@ -270,7 +270,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const [compose,setCompose]=useState(false),[question,setQuestion]=useState(''),[busy,setBusy]=useState(false),[err,setErr]=useState('');
     const query=useQuery(JSON.stringify([order,chosen,order==='people'?people:[],user?.id]),()=>db.rpc('dk_feed',{p_order:order,p_question:chosen,p_people:chosen||order!=='people'?null:people}));
     useEffect(()=>{const refresh=()=>{if(!document.hidden)query.refresh()};window.addEventListener('focus',refresh);const timer=setInterval(refresh,60000);return()=>{window.removeEventListener('focus',refresh);clearInterval(timer)}},[]);
-    const rows=query.data||[], trendingKnown=rows.some(row=>Number(row.contributors)>0);
+    const rows=query.data||[];
     async function publish(e) {
       e.preventDefault();if(busy||!user||question.trim().length<5)return;
       setBusy(true);setErr('');
@@ -285,10 +285,10 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       h('div',{className:'dk-sectionline'},h(landing?'h2':'h1',null,landing&&icon('trend'),feedTitle),user?h('button',{className:'dk-secondary',onClick:()=>setCompose(!compose),'aria-expanded':compose},'Post a question'):link(login(feed),'Sign in to post','dk-small')),
       compose&&h('form',{onSubmit:publish,className:'dk-form dk-panel'},h('label',null,'Ask the community',h('textarea',{required:true,minLength:5,maxLength:320,value:question,onChange:e=>setQuestion(e.target.value),placeholder:'What would you like another perspective on?'})),h('small',null,'Your question and its replies will be public.'),h('button',{className:'dk-primary',disabled:busy||question.trim().length<5},busy?'Publishing…':'Publish question'),err&&status(err,true)),
       h('nav',{className:'dk-filters','aria-label':'Feed order'},...[[urlFor('trending'),'Trending','trending'],[urlFor('latest'),'Latest','latest'],...(user?[[urlFor('people'),'Your people','people']]:[])].map(([to,label,key])=>h(Link,{key,to,'aria-current':key===order?'page':undefined},label))),
-      order==='trending'&&h(TrendingPosters),
+      order==='trending'?h(TrendingPosters):
       query.error?h('div',{className:'dk-panel'},status('The feed could not be loaded.',true),h('button',{className:'dk-secondary',onClick:query.refresh},'Try again')):query.loading&&!query.data?status('Loading discussions…'):
       h(React.Fragment,null,
-        !landing&&h('p',{className:'dk-note'},order==='trending'?(trendingKnown?'Community discussions ranked by contributors in the past 24 hours.':'Pick a question to start a community discussion.'):(order==='latest'?'Most recent activity first.':'Public questions from people you’ve saved.')),
+        !landing&&h('p',{className:'dk-note'},order==='latest'?'Most recent activity first.':'Public questions from people you’ve saved.'),
         !rows.length&&h('p',null,order==='people'?'Save a person to see their public questions here.':'Be the first to post a question.'),
         ...rows.slice(0,full?50:4).map(row=>{
           const url=feed+'&question='+row.id;
