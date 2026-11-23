@@ -28,7 +28,7 @@ test('all entry points, including nested fallback routes, load assets from their
       const { base, redirect } = loadShell(html, host + prefix + route);
       assert.equal(redirect, undefined);
       assert.equal(base.href, host + prefix);
-      const resources = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|svg)(?:\?[^"]*)?)"/g)];
+      const resources = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|svg|ico)(?:\?[^"]*)?)"/g)];
       assert.equal(resources.length, 4);
       for (const [, resource] of resources) {
         const url = new URL(resource, base);

@@ -82,6 +82,8 @@ export function posterMetricsQuery(db,order,editorialIds=[]) {
   return available;
 }
 
+const brandMark = 'maintenance/workspace/mark.svg?v=split-bubble';
+
 function isWelcomeLocation(location) {
   const params=new URLSearchParams(location.search);
   return ['/','/home','/home/'].includes(location.pathname) &&
@@ -214,7 +216,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('a',{className:'dk-skip',href:'#dk-debates',onClick:e=>{const el=document.getElementById('dk-debates');if(el){e.preventDefault();el.focus();el.scrollIntoView({block:'start'});}}},'Skip to debates'),
       h('div',{className:'dk-bar'},
         h(Link,{to:home,className:'dk-brand','aria-label':'Differ Kindly home',onClick:scrollToStart},
-          h('span',{className:'dk-mark','aria-hidden':true},h('i'),h('i')),
+          h('img',{className:'dk-mark',src:brandMark,width:38,height:30,alt:''}),
           h('span',{className:'dk-wordmark'},'Differ Kindly',!isWelcomeLocation(loc)&&h('small',null,'Two views. One table.'))),
         h('nav',{'aria-label':'Primary',className:'dk-nav'},...destinations.map(([to,name,g])=>
           h(Link,{key:name,to,onClick:scrollToStart,'aria-current':active===name?'page':undefined},icon(g),name))),
@@ -283,8 +285,12 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         link(trending,'Explore public debates','dk-link')),
       h('img',{className:'dk-welcome-photo',src:imageRoot+'wide.webp',
         srcSet:imageRoot+'small.webp 640w, '+imageRoot+'wide.webp 1280w',
-        sizes:'(max-width: 900px) 92vw, (max-width: 1300px) 51vw, 655px',
-        width:1280,height:720,alt:'An older woman holding coffee speaks to a younger man with neck tattoos as he sips an energy drink at a café table.',decoding:'async',fetchPriority:'high'}));
+        sizes:'(max-width: 900px) 92vw, (max-width: 1300px) 40vw, 515px',
+        width:1280,height:720,alt:'An older woman holding coffee speaks to a younger man with neck tattoos as he sips an energy drink at a café table.',decoding:'async',fetchPriority:'high'}),
+      h('div',{className:'dk-welcome-brand'},
+        h('strong',null,'Differ Kindly'),
+        h('img',{src:brandMark,width:194,height:152,alt:''}),
+        h('span',null,'Two views. One table.')));
   }
   function useNovemberEdition() {
     return useQuery('november-2026',async()=>{
