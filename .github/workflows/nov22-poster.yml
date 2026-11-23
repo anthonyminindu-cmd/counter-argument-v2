@@ -1,0 +1,14 @@
+name: Check final published poster and mobile point navigation
+on:
+  push:
+    branches: [qa/black-friday-poster-reading]
+permissions:
+  contents: read
+jobs:
+  poster:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - run: python -m pip install playwright==1.55.0 pillow
+      - run: python maintenance/e2e/nov22_poster.py
