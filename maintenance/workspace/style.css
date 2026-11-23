@@ -85,7 +85,6 @@ html{scroll-padding-top:198px}
   position:relative;
   isolation:isolate;
   display:grid;
-  grid-template-columns:19% 37% 1fr;
   align-items:center;
   min-height:clamp(218px,21vw,278px);
   overflow:hidden;
@@ -99,7 +98,7 @@ html{scroll-padding-top:198px}
   position:absolute;
   z-index:-2;
   inset:0 0 0 auto;
-  width:43%;
+  width:55%;
   height:100%;
   object-fit:cover;
   object-position:50% 15%;
@@ -109,17 +108,11 @@ html{scroll-padding-top:198px}
   z-index:-1;
   inset:0;
   content:"";
-  background:linear-gradient(90deg,#0d100e 0%,#0d100e 54%,rgba(13,16,14,.92) 56%,rgba(13,16,14,.08) 65%,transparent 69%);
+  background:linear-gradient(90deg,#0d100e 0%,#0d100e 42%,rgba(13,16,14,.92) 46%,rgba(13,16,14,.08) 59%,transparent 65%);
 }
-.dk-welcome-copy { grid-area:1 / 2; min-width:0; padding:clamp(22px,2.4vw,32px) clamp(12px,1.6vw,24px) clamp(22px,2.4vw,32px) 0; }
-.dk-welcome-brand {
-  grid-area:1 / 1; display:grid; justify-items:center; align-content:center;
-  row-gap:clamp(7px,.85vw,12px); margin-inline:8px; color:white; text-align:center;
-}
-.dk-welcome-brand img { width:clamp(120px,13vw,172px); max-width:100%; height:auto; }
-.dk-welcome-brand span { font-size:clamp(.79rem,1.13vw,.99rem); line-height:1.2; font-weight:600; }
+.dk-welcome-copy { width:48%; padding:clamp(22px,3vw,42px); padding-right:8px; }
 .dk-welcome .dk-welcome-tagline { margin:0 0 9px; color:#bce9c7; font-size:.91rem; font-weight:650; letter-spacing:.035em; }
-.dk-welcome h1 { color:#fffaf0; font-family:"Baskervville",Georgia,"Times New Roman",serif; font-size:clamp(2.75rem,4.5vw,4.3rem); font-weight:400; line-height:1.02; letter-spacing:-.052em; }
+.dk-welcome h1 { color:#fffaf0; font-family:"Baskervville",Georgia,"Times New Roman",serif; font-size:clamp(3.15rem,5.5vw,5rem); font-weight:400; line-height:1.02; letter-spacing:-.052em; }
 .dk-welcome h1 em { font-weight:inherit; }
 .dk-welcome .dk-welcome-purpose { margin:14px 0 0; color:#fffaf0; font-size:clamp(1rem,1.35vw,1.2rem); font-weight:600; text-wrap:balance; }
 .dk-welcome .dk-welcome-mission { max-width:46ch; margin:12px 0 0; color:#e7e9e2; font-size:clamp(.98rem,1.3vw,1.14rem); line-height:1.45; text-wrap:pretty; }
@@ -157,27 +150,13 @@ html{scroll-padding-top:198px}
   .dk-home .dk-feed>.dk-sectionline .dk-secondary { padding-inline:8px; }
 }
 @media(max-width:900px) {
-  .dk-welcome { grid-template-columns:29% 1fr; min-height:0; border-radius:13px; margin-bottom:16px; }
-  .dk-welcome-copy { padding:clamp(18px,3vw,26px) clamp(18px,3vw,26px) clamp(18px,3vw,26px) 0; }
+  .dk-welcome { display:flex; flex-direction:column; align-items:stretch; min-height:0; border-radius:13px; margin-bottom:16px; }
+  .dk-welcome-copy { width:auto; padding:clamp(16px,3vw,26px); }
   .dk-welcome::before { display:none; }
-  .dk-welcome-photo { position:static; grid-area:2 / 1 / auto / -1; width:100%; height:auto; aspect-ratio:16/9; max-height:24rem; }
+  .dk-welcome-photo { position:static; width:100%; height:auto; aspect-ratio:16/9; max-height:24rem; }
   .dk-welcome .dk-welcome-tagline { font-size:.82rem; margin:0 0 4px; }
   .dk-welcome h1 { font-size:clamp(2.65rem,10.5vw,3.2rem); }
   .dk-welcome .dk-welcome-mission { font-size:1rem; max-width:62ch; margin-top:8px; }
-}
-@media(max-width:600px) {
-  .dk-welcome { grid-template-columns:minmax(145px,40%) minmax(0,1fr); padding-top:18px; }
-  .dk-welcome-brand { grid-area:1 / 1 / span 2; gap:5px; margin-inline:5px; }
-  .dk-welcome-brand img { width:min(88%,132px); }
-  .dk-welcome-brand span { font-size:.75rem; }
-  .dk-welcome-copy { display:contents; }
-  .dk-welcome .dk-welcome-tagline { grid-area:1 / 2; align-self:end; margin:0 14px 3px 6px; }
-  .dk-welcome h1 { grid-area:2 / 2; align-self:start; margin:0 12px 0 6px; font-size:clamp(2rem,7.8vw,2.8rem); }
-  .dk-welcome .dk-welcome-purpose,.dk-welcome .dk-welcome-mission,.dk-welcome .dk-link {
-    grid-column:1 / -1; margin-inline:16px;
-  }
-  .dk-welcome .dk-link { justify-self:start; margin-bottom:6px; }
-  .dk-welcome-photo { grid-area:auto / 1 / auto / -1; order:1; }
 }
 .dk-topic-suggestion,.dk-topic-review {
   display:grid;

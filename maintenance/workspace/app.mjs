@@ -285,11 +285,8 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         link(trending,'Explore public debates','dk-link')),
       h('img',{className:'dk-welcome-photo',src:imageRoot+'wide.webp',
         srcSet:imageRoot+'small.webp 640w, '+imageRoot+'wide.webp 1280w',
-        sizes:'(max-width: 900px) 92vw, (max-width: 1300px) 40vw, 515px',
-        width:1280,height:720,alt:'An older woman holding coffee speaks to a younger man with neck tattoos as he sips an energy drink at a café table.',decoding:'async',fetchPriority:'high'}),
-      h('div',{className:'dk-welcome-brand'},
-        h('img',{src:brandMark,width:817,height:670,alt:'Differ Kindly'}),
-        h('span',null,'Two views. One table.')));
+        sizes:'(max-width: 900px) 92vw, (max-width: 1300px) 51vw, 655px',
+        width:1280,height:720,alt:'An older woman holding coffee speaks to a younger man with neck tattoos as he sips an energy drink at a café table.',decoding:'async',fetchPriority:'high'}));
   }
   function useNovemberEdition() {
     return useQuery('november-2026',async()=>{
