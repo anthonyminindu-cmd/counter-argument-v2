@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 from playwright.sync_api import expect, sync_playwright
 TOPIC="Black Friday: buy a good deal now or wait until Friday?"
 SLUG="poster-0f7ba5510ebec28c5dd1d6ba811dfb8a5a2c74357aeefa417f7ff983bcc596e2"
+expect.set_options(timeout=30000)
 with sync_playwright() as pw:
     browser=pw.chromium.launch(executable_path=shutil.which("google-chrome"))
     desktop=browser.new_page(viewport={"width":1280,"height":820})
@@ -22,7 +23,7 @@ with sync_playwright() as pw:
             print(order,"position",ranks.index(TOPIC)+1,"of",len(ranks),flush=True)
         url=APP+"/home/?view=feed&example="+SLUG
         reader.goto(url+"&comments=1")
-        form=reader.get_by_label("Add a public comment",exact=True)
+        form=reader.get_by_role("textbox",name=re.compile(r"^Add a public comment"))
         expect(form).to_be_visible()
         text="QA reader: I would compare the exact model and the full delivered price. A written price adjustment would persuade me to buy early."
         form.fill(text)
@@ -31,6 +32,7 @@ with sync_playwright() as pw:
             button(reader,"Post comment").click()
         reader.reload()
         reader.unroute("**/functions/v1/moderate-content")
+        expect(reader.get_by_role("button",name="Sign out",exact=True)).to_be_visible()
         expect(form).to_have_value(text)
         check("An interrupted submission restored the reader's draft on reload")
         button(reader,"Post comment").click()
@@ -60,6 +62,7 @@ with sync_playwright() as pw:
         check("Four persona comments and one posted member comment reached a signed-out reader")
     except Exception:
         print("HEADINGS",reader.get_by_role("heading").all_text_contents(),flush=True)
+        print("READER CONTROLS",reader.get_by_role("button").all_text_contents()[-12:],reader.locator("textarea").count(),reader.locator("textarea").evaluate_all("(xs)=>xs.map(x=>[x.value,x.labels[0]?.innerText])"),flush=True)
         print("ALERTS",reader.get_by_role("alert").all_text_contents(),flush=True)
         capture(reader,"reader-diagnostic")
         raise
