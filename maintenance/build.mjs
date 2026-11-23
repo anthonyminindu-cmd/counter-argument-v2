@@ -38,13 +38,15 @@ export function compile() {
   if (output.split(mount).length !== 2) throw new Error('Review the V2 mount before integrating the workspace');
   const workspace = ['friend.mjs','reader.mjs','invitations.mjs','app.mjs'].map(file => fs.readFileSync(path.join(root, 'maintenance/workspace',file), 'utf8')
     .replace("import {websitePosterSvg} from '../renderer/poster-finish.mjs';", '')
-    .replace(/^import .* from '\.\/(?:friend|reader|invitations)\.mjs';$/gm, '').replace(/^export /gm, '')).join('\n');
+    .replace(/^import .* from '\.\/(?:friend|reader|invitations|google-login)\.mjs';$/gm, '').replace(/^export /gm, '')).join('\n');
   const adapter = 'const DK=(()=>{' + workspace + '\nreturn {...createWorkspace({React:p,Link:Qe,useAuth:Xt,useLocation:Vi,useNavigate:Mn,db:$,Account:y3,OriginalTopic:vD,OriginalStart:nD,Directory:V5}),afterLogin,visibleFriendProfile};})();\n';
   output = output.replace(mount, () => adapter + mount);
   if (!output.includes('bqhyropctavxjdnogmor.supabase.co')) throw new Error('V2 backend identity missing');
   if (output.includes('jgmkhntqfffkwggqzxql')) throw new Error('Legacy backend identity is forbidden');
   // The module lives in assets/ on both the custom domain and the GitHub project site.
-  output = 'const dkBasePath = new URL("../", import.meta.url).pathname;\n' + output;
+  const googleLogin = fs.readFileSync(path.join(root, 'maintenance/workspace/google-login.mjs'), 'utf8').replace(/^export /gm, '');
+  output = 'const dkBasePath = new URL("../", import.meta.url).pathname;\n' + googleLogin +
+    '\nconst dkGoogleStep = googleLoginStep(new URL(window.location.href), dkBasePath);\n' + output;
   const sha256 = digest(output);
   return { output, origin, patches, manifest: { sourceCommit: origin.commit, sourceAsset: origin.publishedAsset, baselineSha256: origin.baselineSha256, generatedSha256: sha256, generatedAsset: `assets/index-v2-${sha256.slice(0, 16)}.js`, patchIds: patches.map(patch => patch.id) } };
 }

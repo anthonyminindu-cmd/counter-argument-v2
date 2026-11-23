@@ -173,5 +173,5 @@ test('account entry identifies Differ Kindly and renders the action-specific sig
   assert.match(accountHeader,/Differ Kindly/);
   assert.ok(walk(result).some(node=>node.type==='ReactionLoginCopy'));
   // Both tabs share this instruction, including when the user selects Sign Up.
-  assert.ok(bundle.includes('Use your email and password to sign in or create an account.'));
+  assert.ok(bundle.includes('Sign in or create an account.'));
 });

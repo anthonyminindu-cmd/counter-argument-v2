@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "8df58f5e83a55c71bf77d96228c8a39aa0ec38db87bc17d391005a40d2042cb6",
-  "generatedAsset": "assets/index-v2-8df58f5e83a55c71.js",
+  "generatedSha256": "150627ed74f251dd3df99afaa44174ef8bd137d323845885af30cdbdc94bcd8f",
+  "generatedAsset": "assets/index-v2-150627ed74f251dd.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -233,6 +233,10 @@
     "custom-domain-marcus-steel-ln8y-rjn",
     "custom-domain-elena-harmony-cxofouno",
     "custom-domain-thomas-doubt-cbrx1qgm",
-    "custom-domain-isabella-fire-bj9st4o5"
+    "custom-domain-isabella-fire-bj9st4o5",
+    "google-pkce-client",
+    "google-login-route",
+    "google-login-option",
+    "account-login-copy"
   ]
 }

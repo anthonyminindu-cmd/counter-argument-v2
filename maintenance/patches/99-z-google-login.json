@@ -1,0 +1,22 @@
+[
+  {
+    "id": "google-pkce-client",
+    "find": "x4(j4,_4,{auth:{storage:S4(),persistSession:!0,autoRefreshToken:!0}})",
+    "replace": "x4(j4,_4,{auth:{...googleAuthOptions(dkGoogleStep,S4()),persistSession:!0,autoRefreshToken:!0}})"
+  },
+  {
+    "id": "google-login-route",
+    "find": "path:\"/login\",element:i.jsx(h3,{})",
+    "replace": "path:\"/login\",element:dkGoogleStep?i.jsx(DK.GoogleTransition,{step:dkGoogleStep}):i.jsx(h3,{})"
+  },
+  {
+    "id": "google-login-option",
+    "find": "i.jsx(de,{children:i.jsxs(ng,{defaultValue:\"login\",className:\"space-y-4\",children:[",
+    "replace": "i.jsx(de,{children:i.jsxs(ng,{defaultValue:\"login\",className:\"space-y-4\",children:[i.jsx(DK.GoogleOption,{}),"
+  },
+  {
+    "id": "account-login-copy",
+    "find": "i.jsx(qe,{children:\"Use your email and password to sign in or create an account.\"})",
+    "replace": "i.jsx(qe,{children:\"Sign in or create an account.\"})"
+  }
+]
