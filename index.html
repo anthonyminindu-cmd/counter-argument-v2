@@ -2,10 +2,22 @@
 <html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
+    <base href="/" />
+    <script>
+      const projectPath = "/counter-argument-v2";
+      if (location.pathname === projectPath || location.pathname.startsWith(projectPath + "/")) {
+        if (["www.differkindly.com", "differkindly.com"].includes(location.hostname)) {
+          const path = location.pathname.slice(projectPath.length).replace(/^\/+/, "");
+          location.replace(location.origin + "/" + path + location.search + location.hash);
+        } else {
+          document.querySelector("base").href = projectPath + "/";
+        }
+      }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>try{const t=JSON.parse(localStorage.getItem('debateai-settings')||'{}').theme;document.documentElement.classList.toggle('dark',t==='system'?matchMedia('(prefers-color-scheme: dark)').matches:t!=='light')}catch{}</script>
     <meta name="theme-color" content="#000000">
-    <link rel="icon" href="/counter-argument-v2/maintenance/workspace/mark.svg" type="image/svg+xml">
+    <link rel="icon" href="maintenance/workspace/mark.svg" type="image/svg+xml">
     <title>Differ Kindly</title>
     <meta name="description" content="Explore a question with a friend or AI, discover community discussions, and return to your table." />
     <meta name="author" content="Differ Kindly" />
@@ -15,9 +27,9 @@
     <meta property="og:type" content="website" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <script type="module" crossorigin src="/counter-argument-v2/assets/index-v2-5bce667fa6632a75.js"></script>
-    <link rel="stylesheet" crossorigin href="/counter-argument-v2/assets/index-BG6mjP5E.css">
-    <link rel="stylesheet" href="/counter-argument-v2/maintenance/workspace/style.css?v=e6afdb202204">
+    <script type="module" crossorigin src="assets/index-v2-3597591128400c86.js"></script>
+    <link rel="stylesheet" crossorigin href="assets/index-BG6mjP5E.css">
+    <link rel="stylesheet" href="maintenance/workspace/style.css?v=e6afdb202204">
   </head>
 
   <body>

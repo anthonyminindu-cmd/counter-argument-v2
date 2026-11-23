@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "5bce667fa6632a756f78db5bc23c557fd7a5f4d4685c120da07dcf942b529697",
-  "generatedAsset": "assets/index-v2-5bce667fa6632a75.js",
+  "generatedSha256": "3597591128400c864c02e23a6c47f6386df54cfef910bd943e3bc36419f1d69a",
+  "generatedAsset": "assets/index-v2-3597591128400c86.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -221,6 +221,18 @@
     "link-commenters-instead-of-inviting",
     "screen-profile-edits",
     "profile-screening-message",
-    "screen-initial-display-name"
+    "screen-initial-display-name",
+    "custom-domain-preload",
+    "custom-domain-router",
+    "custom-domain-home",
+    "custom-domain-friend-session",
+    "custom-domain-reset",
+    "custom-domain-signup",
+    "custom-domain-8e1f500c-f961-4418-b743-3f282094970e",
+    "custom-domain-alexandra-reid-3zlu6rh2",
+    "custom-domain-marcus-steel-ln8y-rjn",
+    "custom-domain-elena-harmony-cxofouno",
+    "custom-domain-thomas-doubt-cbrx1qgm",
+    "custom-domain-isabella-fire-bj9st4o5"
   ]
 }

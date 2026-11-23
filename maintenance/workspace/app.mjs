@@ -9,7 +9,7 @@ const profile = '/profile';
 const friend = '/debate/start?mode=friend';
 const ai = '/debate/topic?mode=ai';
 const personalTabs = ['Table','Created','Liked','Pinned','Posters','People','Account'];
-const novemberPath = '/counter-argument-v2/demo/november-2026/';
+const novemberPath = 'demo/november-2026/';
 const examplePoster = id => novemberPath+id+'.svg?v=5';
 const trending = feed+'&sort=trending';
 const exampleRoute = id => feed+'&example='+encodeURIComponent(id);
@@ -273,7 +273,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       link(feed,'Pick a question from the feed','dk-secondary'));
   }
   function Welcome() {
-    const imageRoot='/counter-argument-v2/assets/cafe-window-conversation-';
+    const imageRoot='assets/cafe-window-conversation-';
     return h('section',{className:'dk-welcome','aria-labelledby':'dk-welcome-title'},
       h('div',{className:'dk-welcome-copy'},
         h('p',{className:'dk-welcome-tagline'},'Welcome'),

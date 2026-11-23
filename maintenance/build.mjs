@@ -43,6 +43,8 @@ export function compile() {
   output = output.replace(mount, () => adapter + mount);
   if (!output.includes('bqhyropctavxjdnogmor.supabase.co')) throw new Error('V2 backend identity missing');
   if (output.includes('jgmkhntqfffkwggqzxql')) throw new Error('Legacy backend identity is forbidden');
+  // The module lives in assets/ on both the custom domain and the GitHub project site.
+  output = 'const dkBasePath = new URL("../", import.meta.url).pathname;\n' + output;
   const sha256 = digest(output);
   return { output, origin, patches, manifest: { sourceCommit: origin.commit, sourceAsset: origin.publishedAsset, baselineSha256: origin.baselineSha256, generatedSha256: sha256, generatedAsset: `assets/index-v2-${sha256.slice(0, 16)}.js`, patchIds: patches.map(patch => patch.id) } };
 }
@@ -60,12 +62,12 @@ export function build(check = false) {
     fs.writeFileSync(manifestFile, manifestText);
   }
   const css = fs.readFileSync(path.join(root, 'maintenance/workspace/style.css'));
-  const cssUrl = '/counter-argument-v2/maintenance/workspace/style.css?v=' + digest(css).slice(0,12);
+  const cssUrl = 'maintenance/workspace/style.css?v=' + digest(css).slice(0,12);
   for (const shell of shells) {
     const target = path.join(root, shell);
     const html = fs.readFileSync(target, 'utf8');
-    const updated = html.replace(/(href=")[^"]*maintenance\/workspace\/style\.css[^"]*(")/, (_, before, after) => before + cssUrl + after).replace(/(<script\b[^>]*\bsrc=")[^"]*\/assets\/index-[^"]+\.js("[^>]*><\/script>)/, `$1/counter-argument-v2/${result.manifest.generatedAsset}$2`);
-    if (updated === html && !html.includes(`/counter-argument-v2/${result.manifest.generatedAsset}`)) throw new Error(`Runtime reference missing in ${shell}`);
+    const updated = html.replace(/(href=")[^"]*maintenance\/workspace\/style\.css[^"]*(")/, (_, before, after) => before + cssUrl + after).replace(/(<script\b[^>]*\bsrc=")(?:[^"]*\/)?assets\/index-[^"]+\.js("[^>]*><\/script>)/, `$1${result.manifest.generatedAsset}$2`);
+    if (updated === html && !html.includes(`src="${result.manifest.generatedAsset}"`)) throw new Error(`Runtime reference missing in ${shell}`);
     if (!updated.includes('<title>Differ Kindly</title>') || !updated.includes(cssUrl)) throw new Error(`Workspace assets missing in ${shell}`);
     if (check && updated !== html) throw new Error(`Stale runtime reference in ${shell}`);
     if (!check) fs.writeFileSync(target, updated);

@@ -14,7 +14,7 @@ export function createFriendInvitations({React,db,useAuth,useNavigate,useQuery,l
       setBusy(true);setMessage('');
       try{
         const data=await rpc('dk_issue_link',{});
-        const url=new URL('/counter-argument-v2/home/?join=1',location.origin);
+        const url=new URL('home/?join=1',document.baseURI);
         url.hash='invite='+data.token;
         setIssued({...data,url:url.href});links.refresh();
       }catch(e){setMessage(e.message||'Could not create the invitation.')}finally{setBusy(false)}

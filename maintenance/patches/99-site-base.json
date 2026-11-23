@@ -1,0 +1,64 @@
+[
+  {
+    "id": "custom-domain-preload",
+    "find": "return\"/counter-argument-v2/\"+e",
+    "replace": "return dkBasePath+e"
+  },
+  {
+    "id": "custom-domain-router",
+    "find": "basename:\"/counter-argument-v2/\"",
+    "replace": "basename:dkBasePath"
+  },
+  {
+    "id": "custom-domain-home",
+    "find": "href:\"/counter-argument-v2/\"",
+    "replace": "href:dkBasePath"
+  },
+  {
+    "id": "custom-domain-friend-session",
+    "find": "window.location.href=`/counter-argument-v2/debate/topic?",
+    "replace": "window.location.href=`${dkBasePath}debate/topic?",
+    "expectedCount": 2
+  },
+  {
+    "id": "custom-domain-reset",
+    "find": "${window.location.origin}/counter-argument-v2/reset-password",
+    "replace": "${window.location.origin}${dkBasePath}reset-password",
+    "expectedCount": 2
+  },
+  {
+    "id": "custom-domain-signup",
+    "find": "window.location.origin+'/counter-argument-v2'+DK.afterLogin",
+    "replace": "window.location.origin+dkBasePath.slice(0,-1)+DK.afterLogin"
+  },
+  {
+    "id": "custom-domain-8e1f500c-f961-4418-b743-3f282094970e",
+    "find": "\"/counter-argument-v2/lovable-uploads/8e1f500c-f961-4418-b743-3f282094970e.png\"",
+    "replace": "dkBasePath+\"lovable-uploads/8e1f500c-f961-4418-b743-3f282094970e.png\""
+  },
+  {
+    "id": "custom-domain-alexandra-reid-3zlu6rh2",
+    "find": "\"/counter-argument-v2/assets/alexandra-reid-3zlu6RH2.jpg\"",
+    "replace": "dkBasePath+\"assets/alexandra-reid-3zlu6RH2.jpg\""
+  },
+  {
+    "id": "custom-domain-marcus-steel-ln8y-rjn",
+    "find": "\"/counter-argument-v2/assets/marcus-steel-Ln8Y-rJn.jpg\"",
+    "replace": "dkBasePath+\"assets/marcus-steel-Ln8Y-rJn.jpg\""
+  },
+  {
+    "id": "custom-domain-elena-harmony-cxofouno",
+    "find": "\"/counter-argument-v2/assets/elena-harmony-CXofoUNo.jpg\"",
+    "replace": "dkBasePath+\"assets/elena-harmony-CXofoUNo.jpg\""
+  },
+  {
+    "id": "custom-domain-thomas-doubt-cbrx1qgm",
+    "find": "\"/counter-argument-v2/assets/thomas-doubt-CbRx1qGm.jpg\"",
+    "replace": "dkBasePath+\"assets/thomas-doubt-CbRx1qGm.jpg\""
+  },
+  {
+    "id": "custom-domain-isabella-fire-bj9st4o5",
+    "find": "\"/counter-argument-v2/assets/isabella-fire-BJ9ST4O5.jpg\"",
+    "replace": "dkBasePath+\"assets/isabella-fire-BJ9ST4O5.jpg\""
+  }
+]
