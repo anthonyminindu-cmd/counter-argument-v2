@@ -273,7 +273,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       link(feed,'Pick a question from the feed','dk-secondary'));
   }
   function Welcome() {
-    const imageRoot='/counter-argument-v2/assets/neighborhood-table-';
+    const imageRoot='/counter-argument-v2/assets/cafe-window-conversation-';
     return h('section',{className:'dk-welcome','aria-labelledby':'dk-welcome-title'},
       h('div',{className:'dk-welcome-copy'},
         h('p',{className:'dk-welcome-tagline'},'Welcome'),
@@ -284,7 +284,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       h('img',{className:'dk-welcome-photo',src:imageRoot+'wide.webp',
         srcSet:imageRoot+'small.webp 640w, '+imageRoot+'wide.webp 1280w',
         sizes:'(max-width: 900px) 92vw, (max-width: 1300px) 51vw, 655px',
-        width:1280,height:546,alt:'Two neighbors sit across a table. One gestures while the other points to a neighborhood plan.',decoding:'async',fetchPriority:'high'}));
+        width:1280,height:720,alt:'An older woman holding coffee speaks to a younger man with neck tattoos as he sips an energy drink at a café table.',decoding:'async',fetchPriority:'high'}));
   }
   function useNovemberEdition() {
     return useQuery('november-2026',async()=>{

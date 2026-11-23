@@ -105,7 +105,7 @@ html{scroll-padding-top:155px}
   width:55%;
   height:100%;
   object-fit:cover;
-  object-position:50% 48%;
+  object-position:50% 15%;
 }
 .dk-welcome::before {
   position:absolute;
@@ -157,7 +157,7 @@ html{scroll-padding-top:155px}
   .dk-welcome { display:flex; flex-direction:column; align-items:stretch; min-height:0; border-radius:13px; margin-bottom:16px; }
   .dk-welcome-copy { width:auto; padding:clamp(16px,3vw,26px); }
   .dk-welcome::before { display:none; }
-  .dk-welcome-photo { position:static; width:100%; height:auto; aspect-ratio:1280/546; }
+  .dk-welcome-photo { position:static; width:100%; height:auto; aspect-ratio:16/9; max-height:24rem; }
   .dk-welcome .dk-welcome-tagline { font-size:.82rem; margin:0 0 4px; }
   .dk-welcome h1 { font-size:clamp(2.65rem,10.5vw,3.2rem); }
   .dk-welcome .dk-welcome-mission { font-size:1rem; max-width:62ch; margin-top:8px; }
@@ -320,7 +320,7 @@ html{scroll-padding-top:155px}
 .dk-main .dk-example-card a:focus-visible,.dk-main .dk-example-card button:focus-visible { outline-offset:1px; }
 @media(max-width:760px){
   .dk-grid:has(>.dk-feed)>.dk-personal { grid-row:auto; }
-  .dk-welcome-photo { max-height:165px; object-fit:cover; }
+  .dk-welcome-photo { max-height:clamp(165px,43vw,300px); }
   .dk-example-card-text { padding:14px 13px 5px; }
   .dk-feed .dk-example-grid { gap:18px; }
   .dk-topic-meta { align-items:flex-start; }
