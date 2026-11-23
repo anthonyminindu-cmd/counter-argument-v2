@@ -82,7 +82,7 @@ export function posterMetricsQuery(db,order,editorialIds=[]) {
   return available;
 }
 
-const brandMark = 'maintenance/workspace/mark.svg?v=split-bubble';
+const brandMark = 'maintenance/workspace/mark.svg?v=lettered-bubble';
 
 function isWelcomeLocation(location) {
   const params=new URLSearchParams(location.search);
@@ -216,8 +216,8 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('a',{className:'dk-skip',href:'#dk-debates',onClick:e=>{const el=document.getElementById('dk-debates');if(el){e.preventDefault();el.focus();el.scrollIntoView({block:'start'});}}},'Skip to debates'),
       h('div',{className:'dk-bar'},
         h(Link,{to:home,className:'dk-brand','aria-label':'Differ Kindly home',onClick:scrollToStart},
-          h('img',{className:'dk-mark',src:brandMark,width:38,height:30,alt:''}),
-          h('span',{className:'dk-wordmark'},'Differ Kindly',!isWelcomeLocation(loc)&&h('small',null,'Two views. One table.'))),
+          h('img',{className:'dk-mark',src:brandMark,width:817,height:670,alt:''}),
+          !isWelcomeLocation(loc)&&h('small',{className:'dk-brand-tagline'},'Two views. One table.')),
         h('nav',{'aria-label':'Primary',className:'dk-nav'},...destinations.map(([to,name,g])=>
           h(Link,{key:name,to,onClick:scrollToStart,'aria-current':active===name?'page':undefined},icon(g),name))),
         h('div',{className:'dk-account'},user?[
@@ -288,8 +288,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         sizes:'(max-width: 900px) 92vw, (max-width: 1300px) 40vw, 515px',
         width:1280,height:720,alt:'An older woman holding coffee speaks to a younger man with neck tattoos as he sips an energy drink at a café table.',decoding:'async',fetchPriority:'high'}),
       h('div',{className:'dk-welcome-brand'},
-        h('strong',null,'Differ Kindly'),
-        h('img',{src:brandMark,width:194,height:152,alt:''}),
+        h('img',{src:brandMark,width:817,height:670,alt:'Differ Kindly'}),
         h('span',null,'Two views. One table.')));
   }
   function useNovemberEdition() {
