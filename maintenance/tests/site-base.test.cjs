@@ -29,7 +29,7 @@ test('all entry points, including nested fallback routes, load assets from their
       assert.equal(redirect, undefined);
       assert.equal(base.href, host + prefix);
       const resources = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|svg|ico)(?:\?[^"]*)?)"/g)];
-      assert.equal(resources.length, 4);
+      assert.equal(resources.length, 5);
       for (const [, resource] of resources) {
         const url = new URL(resource, base);
         assert.ok(url.pathname.startsWith(prefix));
