@@ -10,13 +10,11 @@ test('label selection uses complete alternatives when proposed copy ends mid-tho
   assert.deepEqual(labels.map(label => label.statement), ['Online borrowing already works', 'Payroll squeezes collections']);
 });
 
-test('custom posters use the versioned silhouette brief and a single art request', async () => {
-  const { compile } = await import('../build.mjs');
-  const { SILHOUETTE_VERSION } = await import('../scene-quality/_shared/silhouetteBrief.mjs');
-  const { output } = compile();
-  assert.ok(output.includes(SILHOUETTE_VERSION));
-  assert.ok(output.includes('T("debate-scene-labels/silhouette/reader")'));
-  assert.doesNotMatch(output, /T\("debate-scene-labels\/art"\)/);
+test('current posters render directly from the scored arguments without paid artwork requests',async()=>{
+  const {output}=(await import('../build.mjs')).compile();
+  const component=output.slice(output.indexOf('function lg('),output.indexOf('function w_('));
+  assert.match(component,/renderImpactPoster\(impactPosterData/);
+  assert.doesNotMatch(component,/functions\.invoke|debate-scene-labels/);
 });
 
 test('published labels preserve concise original titles and reject unfinished comparisons', async () => {

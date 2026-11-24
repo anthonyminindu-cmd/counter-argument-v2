@@ -34,10 +34,17 @@ export function compile() {
   const finish = fs.readFileSync(path.join(root, 'maintenance/renderer/poster-finish.mjs'), 'utf8').replace(/^export /gm, '');
   const silhouette = finish + '\n' + fs.readFileSync(path.join(root, 'maintenance/renderer/silhouette.js'), 'utf8');
   output = output.slice(0,start) + silhouette + output.slice(end);
+  // Replace the recovered live results component at its reviewed boundaries.
+  const liveStart = output.indexOf('function lg({args:');
+  const liveEnd = output.indexOf('function w_({result:',liveStart);
+  if(liveStart<0||liveEnd<=liveStart) throw Error('Review the debate results integration.');
+  const portraitSource = file => fs.readFileSync(path.join(root,'maintenance/renderer',file),'utf8').replace(/^export /gm,'');
+  output = output.slice(0,liveStart)+portraitSource('result-portrait.mjs')+'\n'+output.slice(liveEnd);
+  output = output.replace('function posterSvgBlob(',()=>portraitSource('portrait.mjs')+'\nfunction posterSvgBlob(');
   const mount = 'Zw(document.getElementById("root")).render(i.jsx(aM,{}));';
   if (output.split(mount).length !== 2) throw new Error('Review the V2 mount before integrating the workspace');
   const workspace = ['friend.mjs','reader.mjs','invitations.mjs','app.mjs'].map(file => fs.readFileSync(path.join(root, 'maintenance/workspace',file), 'utf8')
-    .replace("import {websitePosterSvg} from '../renderer/poster-finish.mjs';", '')
+    .replace(/^import .* from '\.\.\/renderer\/(?:poster-finish|portrait)\.mjs';$/gm, '')
     .replace(/^import .* from '\.\/(?:friend|reader|invitations|google-login)\.mjs';$/gm, '').replace(/^export /gm, '')).join('\n');
   const adapter = 'const DK=(()=>{' + workspace + '\nreturn {...createWorkspace({React:p,Link:Qe,useAuth:Xt,useLocation:Vi,useNavigate:Mn,db:$,Account:y3,OriginalTopic:vD,OriginalStart:nD,Directory:V5}),afterLogin,visibleFriendProfile};})();\n';
   output = output.replace(mount, () => adapter + mount);

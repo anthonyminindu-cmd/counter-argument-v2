@@ -1,0 +1,498 @@
+{
+  "title": "School start times",
+  "question": "Should high schools start at 8:30 a.m. or later?",
+  "sides": [
+    "Start at 8:30 or later",
+    "Concerns and alternatives"
+  ],
+  "rows": [
+    {
+      "id": "A01",
+      "title": "A longer night of sleep",
+      "argument": "Moving the first bell later gives teenagers a better chance of getting enough sleep before a required school day.",
+      "analysis": "Increased sleep is central to choosing a later bell over retaining an early start. Objective measurements support meaningful gains, although a later start does not guarantee sufficient sleep. The current start time is unspecified, so the size of the proposed change is unknown.",
+      "sources": [
+        {
+          "label": "Sleepmore in Seattle: Later school start times are associated with more sleep and better performance in high school students",
+          "url": "https://www.science.org/doi/pdf/10.1126/sciadv.aau6200"
+        }
+      ],
+      "side": 0,
+      "headline": "More weekday sleep",
+      "detail": "Later bells leave time for sleep.",
+      "magnitude": 86,
+      "reach": 88,
+      "duration": 84,
+      "confidence": "high",
+      "impact": 86,
+      "pick": 1,
+      "rank": 1
+    },
+    {
+      "id": "A02",
+      "title": "Support for adolescent sleep timing",
+      "argument": "A later start better accommodates the tendency for adolescents to fall asleep later as they mature.",
+      "analysis": "Adolescent circadian timing supplies a strong biological reason to favor later starts over retaining an early schedule. It also explains why simply demanding earlier bedtimes may fail. Biology supports the direction of change, while 8:30 is a policy recommendation rather than a universal biological cutoff.",
+      "sources": [
+        {
+          "label": "A Longitudinal Assessment of Sleep Timing, Circadian Phase, and Phase Angle of Entrainment across Human Adolescence",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4224451/"
+        },
+        {
+          "label": "School Start Times for Adolescents",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8194457/"
+        }
+      ],
+      "side": 0,
+      "headline": "Adolescent sleep timing",
+      "detail": "Let wake times better fit teen sleep cycles.",
+      "magnitude": 83,
+      "reach": 90,
+      "duration": 84,
+      "confidence": "high",
+      "impact": 85,
+      "pick": 2,
+      "rank": 2
+    },
+    {
+      "id": "A03",
+      "title": "Bus routes may need additional vehicles",
+      "argument": "A district using the same buses for several school levels may need extra buses and drivers to preserve all routes.",
+      "analysis": "Additional buses and drivers are a substantial implementation constraint that can favor keeping the current schedule in some districts. The conditional wording is sound: costs depend on tier arrangements, and redesign can sometimes accommodate later starts without additional vehicles.",
+      "sources": [
+        {
+          "label": "Greenwich School Start Time Steering Committee Meeting Notes, September 17, 2015",
+          "url": "https://www.greenwichschools.org/uploaded/district/School_Start_Times/SST_Steering_Committee_Meeting_Notes_9-17-15.pdf"
+        },
+        {
+          "label": "Bell Time Study and Transportation Impact Analysis",
+          "url": "https://www.bethlehemschools.org/wp-content/uploads/2021/11/Bell-Time-Study-and-Transportation-Impact.pdf"
+        }
+      ],
+      "side": 1,
+      "headline": "Bus capacity",
+      "detail": "Staggered routes may require extra buses.",
+      "magnitude": 78,
+      "reach": 71,
+      "duration": 78,
+      "confidence": "medium",
+      "impact": 76,
+      "pick": 1,
+      "rank": 5
+    },
+    {
+      "id": "A04",
+      "title": "Lower daytime fatigue",
+      "argument": "Reducing chronic sleep loss could help students stay awake during classes throughout the day.",
+      "analysis": "Reduced daytime fatigue directly affects students' ability to participate throughout the school day and supports delaying an early bell. The claim appropriately describes a potential benefit rather than promising universal improvement.",
+      "sources": [
+        {
+          "label": "Impact of delaying school start time on adolescent sleep, mood, and behavior",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/20603459/"
+        },
+        {
+          "label": "Sleepmore in Seattle: Later school start times are associated with more sleep and better performance in high school students",
+          "url": "https://www.science.org/doi/pdf/10.1126/sciadv.aau6200"
+        }
+      ],
+      "side": 0,
+      "headline": "Daytime fatigue",
+      "detail": "Help students stay awake in class.",
+      "magnitude": 78,
+      "reach": 76,
+      "duration": 76,
+      "confidence": "medium",
+      "impact": 77,
+      "pick": 3,
+      "rank": 3
+    },
+    {
+      "id": "A05",
+      "title": "Some students may just go to bed later",
+      "argument": "A later bell delivers fewer sleep benefits for students who respond by moving their bedtime later as well.",
+      "analysis": "Bedtime adaptation directly qualifies the main sleep-benefit argument and merits monitoring. The conditional claim is reasonable, but evidence does not justify assuming that students generally offset the entire delay or that keeping an early start produces better sleep.",
+      "sources": [
+        {
+          "label": "Effects of school time on sleep duration and sleepiness in adolescents",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6157849/"
+        },
+        {
+          "label": "Impact of delaying school start time on adolescent sleep, mood, and behavior",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/20603459/"
+        }
+      ],
+      "side": 1,
+      "headline": "Later bedtimes",
+      "detail": "Some teens may also fall asleep later.",
+      "magnitude": 65,
+      "reach": 48,
+      "duration": 74,
+      "confidence": "medium",
+      "impact": 62,
+      "pick": 2,
+      "rank": 12
+    },
+    {
+      "id": "A06",
+      "title": "Better attention in first period",
+      "argument": "A later first lesson may help students concentrate on new material when they would otherwise still be drowsy.",
+      "analysis": "Attention directly affects the educational value of the first lesson and favors delaying an early bell. Experimental evidence supports improved attention, but does not establish the precise benefit for high-school first-period learning.",
+      "sources": [
+        {
+          "label": "Delaying School Starting Time by One Hour: Some Effects on Attention Levels in Adolescents",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3077340/"
+        }
+      ],
+      "side": 0,
+      "headline": "First-period focus",
+      "detail": "A later class may catch students more alert.",
+      "magnitude": 74,
+      "reach": 71,
+      "duration": 76,
+      "confidence": "medium",
+      "impact": 74,
+      "pick": 4,
+      "rank": 6
+    },
+    {
+      "id": "A07",
+      "title": "Safer morning driving",
+      "argument": "Teen drivers given more opportunity to sleep may be more alert on the morning trip to school.",
+      "analysis": "Avoiding crashes has potentially exceptional consequences and strengthens the case against very early starts. However, the available study concerns overall adolescent crashes and a delay to 8:10, not specifically morning alertness or the 8:30 threshold.",
+      "sources": [
+        {
+          "label": "School start time change and motor vehicle crashes in adolescent drivers",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/31992393/"
+        }
+      ],
+      "side": 0,
+      "headline": "Morning driving",
+      "detail": "More alert teen drivers may avoid crashes.",
+      "magnitude": 94,
+      "reach": 35,
+      "duration": 81,
+      "confidence": "medium",
+      "impact": 74,
+      "pick": 5,
+      "rank": 6
+    },
+    {
+      "id": "A08",
+      "title": "Neighboring districts control many events",
+      "argument": "Sports and academic competitions often involve several districts whose schedules cannot all be changed locally.",
+      "analysis": "External competition schedules create a genuine limit on unilateral changes and can increase missed afternoon instruction. This favors coordination or mitigation, and sometimes keeping the current schedule, but does not show that adopting 8:30 is infeasible.",
+      "sources": [
+        {
+          "label": "School Schedule FAQs — Lower Merion School District",
+          "url": "https://www.lmsd.org/all-forward/documents/schedule-faqs"
+        }
+      ],
+      "side": 1,
+      "headline": "Regional events",
+      "detail": "Other districts set competition times too.",
+      "magnitude": 60,
+      "reach": 43,
+      "duration": 69,
+      "confidence": "medium",
+      "impact": 57,
+      "pick": 3,
+      "rank": 17
+    },
+    {
+      "id": "A09",
+      "title": "After-school employment becomes harder",
+      "argument": "Later dismissal can reduce paid hours for students who need a job to cover family or personal expenses.",
+      "analysis": "Lost paid hours could materially affect students supporting themselves or their families. This is a credible equity consideration favoring the current schedule for some students, but the argument requires later dismissal and inflexible work hours; it does not establish net harm from later starts.",
+      "sources": [
+        {
+          "label": "Waking up to reality",
+          "url": "https://www.csba.org/-/media/Late-Start-Report_2024.ashx"
+        },
+        {
+          "label": "Changing school start times: Impact on extracurricular activities and employment",
+          "url": "https://public-pages-files-2025.frontiersin.org/journals/sleep/articles/10.3389/frsle.2022.1044457/pdf"
+        }
+      ],
+      "side": 1,
+      "headline": "After-school jobs",
+      "detail": "Later dismissal can cut paid hours.",
+      "magnitude": 83,
+      "reach": 41,
+      "duration": 76,
+      "confidence": "medium",
+      "impact": 69,
+      "pick": 4,
+      "rank": 8
+    },
+    {
+      "id": "A10",
+      "title": "Sibling pickup routines may break down",
+      "argument": "Older students may be unable to collect younger siblings when the two schools have overlapping dismissal times.",
+      "analysis": "Sibling-care conflicts can create real household costs and safety gaps. They can favor maintaining the present schedule, but depend on the relative dismissal times and available childcare, rather than on an 8:30 first bell alone.",
+      "sources": [
+        {
+          "label": "Results of the Community School Start Time Survey",
+          "url": "https://agenda.oneclay.net/content/files/results-of-the-community-school-start-time-survey.pdf"
+        },
+        {
+          "label": "New school time schedule beginning Aug. 12, 2026",
+          "url": "https://www.dpisd.org/apps/pages/index.jsp?uREC_ID=1564321&type=d&pREC_ID=2735423"
+        }
+      ],
+      "side": 1,
+      "headline": "Sibling pickups",
+      "detail": "Dismissal times may overlap.",
+      "magnitude": 73,
+      "reach": 36,
+      "duration": 71,
+      "confidence": "medium",
+      "impact": 62,
+      "pick": 5,
+      "rank": 12
+    },
+    {
+      "id": "A11",
+      "title": "Elementary schedules may move earlier",
+      "argument": "Rotating a district's bus timetable could shift the burden of very early starts onto younger children and families.",
+      "analysis": "Moving transportation tiers can redistribute burdens to younger children and families, making this a substantial district-wide consideration. Earlier elementary starts are not inevitable, however, and their effects cannot simply be assumed equivalent to adolescent sleep losses.",
+      "sources": [
+        {
+          "label": "Results of the Community School Start Time Survey",
+          "url": "https://agenda.oneclay.net/content/files/results-of-the-community-school-start-time-survey.pdf"
+        },
+        {
+          "label": "Changing school start times: Impact on sleep in primary and secondary school students",
+          "url": "https://www.cmhnetwork.org/wp-content/uploads/2022/07/Changing-School-Start-Times.pdf"
+        }
+      ],
+      "side": 1,
+      "headline": "Elementary schedules",
+      "detail": "Bus changes may shift younger pupils earlier.",
+      "magnitude": 82,
+      "reach": 67,
+      "duration": 78,
+      "confidence": "medium",
+      "impact": 77,
+      "pick": 6,
+      "rank": 3
+    },
+    {
+      "id": "A12",
+      "title": "More consistent weekday sleep",
+      "argument": "Changing the school schedule reaches students who cannot reliably adjust their sleep through advice alone.",
+      "analysis": "Changing a compulsory schedule can reach students whom advice alone does not help, strengthening the case for structural change rather than retaining an early bell with education alone. However, increased sleep opportunity does not itself establish more consistent night-to-night sleep.",
+      "sources": [
+        {
+          "label": "Evaluation of an interactive school-based sleep education program: a cluster-randomized controlled trial",
+          "url": "https://www.sleephealthjournal.org/article/S2352-7218(19)30220-7/pdf"
+        },
+        {
+          "label": "Sleepmore in Seattle: Later school start times are associated with more sleep and better performance in high school students",
+          "url": "https://www.science.org/doi/pdf/10.1126/sciadv.aau6200"
+        }
+      ],
+      "side": 0,
+      "headline": "Consistent sleep",
+      "detail": "Reach teens for whom advice alone falls short.",
+      "magnitude": 66,
+      "reach": 71,
+      "duration": 74,
+      "confidence": "low",
+      "impact": 69,
+      "pick": 6,
+      "rank": 8
+    },
+    {
+      "id": "A13",
+      "title": "Childcare may conflict with work shifts",
+      "argument": "Families whose adults start work early may need additional supervision before an older student can leave for school.",
+      "analysis": "Work-shift conflicts can impose meaningful supervision costs on affected families and support retaining the current schedule where alternatives are unavailable. However, high-school students do not universally require supervision, and early school access could mitigate the conflict.",
+      "sources": [
+        {
+          "label": "Waking up to reality",
+          "url": "https://www.csba.org/-/media/Late-Start-Report_2024.ashx"
+        }
+      ],
+      "side": 1,
+      "headline": "Childcare schedules",
+      "detail": "Early shifts may leave a supervision gap.",
+      "magnitude": 78,
+      "reach": 39,
+      "duration": 69,
+      "confidence": "medium",
+      "impact": 65,
+      "pick": 7,
+      "rank": 10
+    },
+    {
+      "id": "A14",
+      "title": "Later dismissal cuts into daylight practice",
+      "argument": "Fall sports teams may have fewer daylight hours to practice unless fields have lighting or competitions change.",
+      "analysis": "If dismissal also moves later, limited fall daylight creates a credible athletics constraint favoring the current schedule. The argument recognizes mitigation, so it supports planning and cost assessment rather than categorically rejecting an 8:30 start.",
+      "sources": [
+        {
+          "label": "Greenwich School Start Time Steering Committee Meeting Notes, September 17, 2015",
+          "url": "https://www.greenwichschools.org/uploaded/district/School_Start_Times/SST_Steering_Committee_Meeting_Notes_9-17-15.pdf"
+        },
+        {
+          "label": "Waking up to reality",
+          "url": "https://www.csba.org/-/media/Late-Start-Report_2024.ashx"
+        }
+      ],
+      "side": 1,
+      "headline": "Daylight for practice",
+      "detail": "Fall teams may lose outdoor practice time.",
+      "magnitude": 56,
+      "reach": 37,
+      "duration": 49,
+      "confidence": "medium",
+      "impact": 49,
+      "pick": 8,
+      "rank": 20
+    },
+    {
+      "id": "A15",
+      "title": "Fewer late arrivals",
+      "argument": "Students who struggle with very early alarms have a wider morning window for reaching the bus and arriving on time.",
+      "analysis": "Reduced tardiness would favor an 8:30-or-later start, but observed improvements vary across schools. Moving wake-up and bus times together does not necessarily create a wider preparation window; reduced sleepiness is the stronger mechanism.",
+      "sources": [
+        {
+          "label": "Sleepmore in Seattle: Later school start times are associated with more sleep and better performance in high school students",
+          "url": "https://www.science.org/doi/pdf/10.1126/sciadv.aau6200"
+        }
+      ],
+      "side": 0,
+      "headline": "Late arrivals",
+      "detail": "A later bell could reduce tardiness.",
+      "magnitude": 63,
+      "reach": 51,
+      "duration": 69,
+      "confidence": "low",
+      "impact": 61,
+      "pick": 7,
+      "rank": 14
+    },
+    {
+      "id": "A16",
+      "title": "Attendance for students with long commutes",
+      "argument": "A later bell can make it easier for students with a long bus trip to attend the first class consistently.",
+      "analysis": "Reliable first-class attendance matters especially for students facing transportation barriers. Later starts could help, but they do not shorten journeys, and benefits depend on actual pickup times. The commute-specific claim is less established than general attendance benefits.",
+      "sources": [
+        {
+          "label": "Do Long Bus Rides Drive Down Academic Outcomes?",
+          "url": "https://files.eric.ed.gov/fulltext/ED616857.pdf"
+        },
+        {
+          "label": "Sleepmore in Seattle: Later school start times are associated with more sleep and better performance in high school students",
+          "url": "https://www.science.org/doi/pdf/10.1126/sciadv.aau6200"
+        }
+      ],
+      "side": 0,
+      "headline": "Long bus trips",
+      "detail": "Pickup times shape first-class attendance.",
+      "magnitude": 66,
+      "reach": 35,
+      "duration": 72,
+      "confidence": "low",
+      "impact": 58,
+      "pick": 8,
+      "rank": 15
+    },
+    {
+      "id": "A17",
+      "title": "A reversible pilot can measure results",
+      "argument": "A district can test a later start for one term and compare attendance and sleep surveys before expanding it.",
+      "analysis": "A pilot could reduce uncertainty before permanent adoption, but it is a decision procedure rather than evidence that later starts outperform the current schedule. A simple before-and-after comparison risks seasonal confounding, and reversing transportation arrangements may be costly.",
+      "sources": [
+        {
+          "label": "Impact of delaying school start time on adolescent sleep, mood, and behavior",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/20603459/"
+        },
+        {
+          "label": "Bell Time Study and Transportation Impact Analysis",
+          "url": "https://www.bethlehemschools.org/wp-content/uploads/2021/11/Bell-Time-Study-and-Transportation-Impact.pdf"
+        }
+      ],
+      "side": 0,
+      "headline": "A trial term",
+      "detail": "Compare attendance and sleep before scaling.",
+      "magnitude": 54,
+      "reach": 70,
+      "duration": 44,
+      "confidence": "medium",
+      "impact": 57,
+      "pick": 9,
+      "rank": 17
+    },
+    {
+      "id": "A18",
+      "title": "Special transportation needs careful planning",
+      "argument": "Students receiving specialized transportation could face longer trips if a district combines different bus routes.",
+      "analysis": "Protecting students with specialized transportation needs is important under either policy. However, the argument assumes route consolidation that a later start does not require; no inspected evidence establishes that the proposed change would lengthen these students' trips.",
+      "sources": [
+        {
+          "label": "Bell Time Study and Transportation Impact Analysis",
+          "url": "https://www.bethlehemschools.org/wp-content/uploads/2021/11/Bell-Time-Study-and-Transportation-Impact.pdf"
+        },
+        {
+          "label": "Transportation Service Standards 2023–2024 — Seattle Public Schools",
+          "url": "https://www.seattleschools.org/wp-content/uploads/2024/06/TSS-Standards.pdf"
+        }
+      ],
+      "side": 1,
+      "headline": "Specialized transport",
+      "detail": "Route changes could lengthen some rides.",
+      "magnitude": 84,
+      "reach": 20,
+      "duration": 77,
+      "confidence": "low",
+      "impact": 63,
+      "pick": 9,
+      "rank": 11
+    },
+    {
+      "id": "A19",
+      "title": "Other sleep interventions may cost less",
+      "argument": "A district should compare the effects and costs of a later start with sleep education and homework scheduling changes.",
+      "analysis": "Comparing costs and effects is sensible, but lower spending is not equivalent to better cost-effectiveness. The argument does not demonstrate that education or homework changes can replace later starts, so it supports evaluation more strongly than keeping the current bell.",
+      "sources": [
+        {
+          "label": "Evaluation of an interactive school-based sleep education program: a cluster-randomized controlled trial",
+          "url": "https://www.sleephealthjournal.org/article/S2352-7218(19)30220-7/pdf"
+        }
+      ],
+      "side": 1,
+      "headline": "Other sleep options",
+      "detail": "Compare costs of sleep and homework changes.",
+      "magnitude": 52,
+      "reach": 64,
+      "duration": 66,
+      "confidence": "low",
+      "impact": 58,
+      "pick": 10,
+      "rank": 15
+    },
+    {
+      "id": "A20",
+      "title": "More time for breakfast",
+      "argument": "Some families could use a later morning schedule to make breakfast possible before the student leaves home.",
+      "analysis": "Breakfast access is a plausible secondary benefit, but additional morning time may instead become additional sleep. School breakfast provision could address the problem without changing the bell, so this argument only weakly distinguishes the two positions.",
+      "sources": [
+        {
+          "label": "School Start Times for Adolescents",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8194457/"
+        }
+      ],
+      "side": 0,
+      "headline": "Breakfast time",
+      "detail": "A later morning may leave time for a meal.",
+      "magnitude": 50,
+      "reach": 43,
+      "duration": 60,
+      "confidence": "low",
+      "impact": 50,
+      "pick": 10,
+      "rank": 19
+    }
+  ]
+}

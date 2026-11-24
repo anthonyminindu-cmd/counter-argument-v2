@@ -125,7 +125,7 @@ test('the infographic interface exposes the exact full topic in native accessibl
   const question='Should school districts change the first bell? '+ 'Consider staffing, transport, family schedules, and student needs. '.repeat(28);
   const jsx=(type,props)=>({type,props});
   const context={Xt:()=>({user:{id:'viewer'}}),Wf:'test-scene',G:'button',ag:'argument-list',
-    p:{useState:initial=>[initial,()=>{}],useEffect:()=>{},useRef:()=>({current:null})},i:{jsx,jsxs:jsx}};
+    p:{useState:initial=>[initial,()=>{}],useEffect:()=>{},useMemo:fn=>fn(),useRef:()=>({current:null}),createElement:(type,props,...children)=>jsx(type,{...props,children:children.length===1?children[0]:children})},i:{jsx,jsxs:jsx}};
   vm.createContext(context);
   const start=source.indexOf('function lg('),end=source.indexOf('function w_(',start);
   const tree=vm.runInContext(source.slice(start,end)+';lg({args:'+JSON.stringify(rows)+',topicTitle:'+JSON.stringify(question)+'})',context);

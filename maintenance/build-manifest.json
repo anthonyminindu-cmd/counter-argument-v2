@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "150627ed74f251dd3df99afaa44174ef8bd137d323845885af30cdbdc94bcd8f",
-  "generatedAsset": "assets/index-v2-150627ed74f251dd.js",
+  "generatedSha256": "e6957b839d42ca83ca7ae982b8124886b99791829bca64c37b97dc088729f603",
+  "generatedAsset": "assets/index-v2-e6957b839d42ca83.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -237,6 +237,20 @@
     "google-pkce-client",
     "google-login-route",
     "google-login-option",
-    "account-login-copy"
+    "account-login-copy",
+    "restore-versioned-impact-rankings",
+    "retain-actual-scoring-version",
+    "clarify-shared-impact-rubric",
+    "keep-research-details",
+    "recognize-portrait-history",
+    "point-shared-ranking",
+    "explain-personal-impact",
+    "show-impact-components",
+    "solo-submission-order",
+    "friend-ranking-description",
+    "remove-obsolete-completion-description",
+    "render-friend-details-once",
+    "validate-live-solo-impact-assessments",
+    "show-live-solo-scoring-version"
   ]
 }

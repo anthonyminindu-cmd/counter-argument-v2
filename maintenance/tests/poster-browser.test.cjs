@@ -36,6 +36,27 @@ test('Chromium verifies three poster subjects, full-size viewing and native PNG 
           };
           const readVector=async()=>new DOMParser().parseFromString(await vector.text(),'image/svg+xml').documentElement;
           HTMLAnchorElement.prototype.click=function(){};
+          const portraitRows=rows.map((row,index)=>({
+            id:row.id,side:Math.floor(index/10),pick:index%10+1,impact:70,rank:1,
+            headline:'Shorter commutes',detail:'Live closer to work.'
+          }));
+          main.innerHTML=renderImpactPoster({title:'Homes or a park?',sides:['Build homes','Create a park'],rows:portraitRows});
+          const portrait=main.querySelector('svg');
+          if(portrait.querySelectorAll('[data-hit]').length!==20)throw Error('Twenty point links are required');
+          for(const group of portrait.querySelectorAll('g[data-argument-id]')){
+            const bounds=group.querySelector('[data-hit]').getBBox();
+            for(const label of group.querySelectorAll('text')){
+              const box=label.getBBox();
+              if(box.x<bounds.x||box.x+box.width>bounds.x+bounds.width+1||box.y<bounds.y-1||box.y+box.height>bounds.y+bounds.height+1)throw Error('Point text crosses its row');
+            }
+          }
+          await downloadPoster(portrait,'impact.svg','svg');
+          const shared=await readVector();
+          if(shared.getAttribute('viewBox')!=='0 0 1080 1350'||shared.getAttribute('height')!=='1350')throw Error('Incorrect portrait vector size');
+          await downloadPoster(portrait,'impact.png','png');
+          const impactBitmap=await createImageBitmap(png);
+          if(impactBitmap.width!==1080||impactBitmap.height!==1350)throw Error('Incorrect portrait PNG size');
+          impactBitmap.close();
           const paths=[];
           for(const drawing of ['open_laptop','plug_in_energy_meter','robot_bust','alarm_clock','open_book_reader','side_view_car','street_tree']){
             const scene={title:'Which platform best fits the business?',overview:'Existing app requirements and different job needs shape the choice.',profile:'custom',objects:[{name:drawing,drawing,outline,details:[[outline[0],outline[1]]]}],summaries,sideTitles:['First position','Second position']};

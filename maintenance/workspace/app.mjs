@@ -1,5 +1,5 @@
 import {websitePosterSvg} from '../renderer/poster-finish.mjs';
-import {pointSnapshot,createPointReader,useAudiencePoster,createPuzzlePoster,reactionIntent} from './reader.mjs';
+import {pointSnapshot,createPointReader,useAudiencePoster,createPuzzlePoster,reactionIntent,withPosterActivity,posterPointData} from './reader.mjs';
 import {createFriendInvitations} from './invitations.mjs';
 import {createFriendExperience} from './friend.mjs';
 import {createGoogleLogin} from './google-login.mjs';
@@ -11,7 +11,7 @@ const friend = '/debate/start?mode=friend';
 const ai = '/debate/topic?mode=ai';
 const personalTabs = ['Table','Created','Liked','Pinned','Posters','People','Account'];
 const novemberPath = 'demo/november-2026/';
-const examplePoster = id => novemberPath+id+'.svg?v=5';
+const examplePoster = id => novemberPath+id+'.svg?v=impact2';
 const trending = feed+'&sort=trending';
 const exampleRoute = id => feed+'&example='+encodeURIComponent(id);
 const feedOrigins = {
@@ -291,7 +291,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function useNovemberEdition() {
     return useQuery('november-2026',async()=>{
-      const response=await fetch(novemberPath+'edition.json?v=7');
+      const response=await fetch(novemberPath+'edition.json?v=impact2');
       if(!response.ok)throw Error('The November edition is unavailable.');
       return {data:await response.json()};
     });
@@ -512,6 +512,9 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const points=useQuery('catalog-points:'+slug+':'+(user?.id||'guest'),()=>db.rpc('dk_points',{p_slug:slug}));
     const metrics=useContext(Engagement),comments=useRef(null);
     const row=q.data;
+    const art=React.useMemo(()=>withPosterActivity(websitePosterSvg(row?.artwork),metrics.data?.find(p=>p.slug===slug)),[row?.artwork,metrics.data,slug]);
+    const impactRows=React.useMemo(()=>posterPointData(art),[art]);
+    const [exportError,setExportError]=useState('');
     usePosterImpression(row?.slug);
     function openComments(){comments.current?.scrollIntoView({block:'start'});(comments.current?.querySelector('textarea')||comments.current)?.focus({preventScroll:true})}
     useEffect(()=>{if(row&&new URLSearchParams(loc.search).has('comments'))openComments()},[row?.slug,loc.search]);
@@ -520,14 +523,17 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     if(!row?.artwork)return status('This infographic is unavailable.');
     const entry={...(row.published?feature:null),id:row.slug,question:row.title,private:!row.published};
     const friendTopic=friend+'&suggested='+encodeURIComponent(row.title);
+    const artUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(art);
     return h('article',{className:'dk-example-debate'},h(BackToFeed,{id:slug}),
       h('header',null,h('small',null,row.published?row.category:'Private infographic',row.published&&h(PostedDate,{slug})),h('h1',null,row.title),
         entry.overview&&h('p',null,entry.overview),
         entry.sources?.length>0&&h('ul',null,...entry.sources.map(({label,url})=>h('li',{key:url},h('a',{className:'dk-link',href:url},label)))),
         row.published&&link(user?friendTopic:login(friendTopic),'Debate this with a friend','dk-primary')),
-      h(PuzzlePoster,{src:'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(websitePosterSvg(row.artwork)),alt:row.title,markup:websitePosterSvg(row.artwork),points:points.data||[]}),
+      h(PuzzlePoster,{src:artUrl,alt:row.title,markup:art,points:points.data||[]}),
+      h('div',{className:'dk-actions'},h('button',{className:'dk-primary',onClick:async()=>{try{await downloadStoredPoster(artUrl,'Differ-Kindly-impact.png');setExportError('');}catch{setExportError('PNG download failed. Try the SVG download.');}}},'Download PNG'),
+        h('a',{className:'dk-secondary',href:artUrl,download:'Differ-Kindly-impact.svg'},'Download SVG'),exportError&&status(exportError,true)),
       h(PosterActions,{entry,onComment:openComments}),h(Report,{kind:'poster',target:entry.id}),row.mine&&h(SharePoster,{row,refresh:()=>{q.refresh();metrics.refresh()}}),
-      h('section',null,h('h2',{id:'dk-example-points',tabIndex:-1},'Explore the points'),h(PointReader,{entry,provided:points})),
+      h('section',null,h('h2',{id:'dk-example-points',tabIndex:-1},'Explore the points'),h(PointReader,{entry,provided:points,impactRows})),
       h('section',{className:'dk-panel dk-example-discussion',ref:comments,tabIndex:-1},h('h2',null,'Comments'),h(MemberComments,{key:user?.id||'guest',entry}),
         entry.sampleActivity&&h(SampleDiscussion,{entry})));
   }
@@ -579,10 +585,11 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     }
     useEffect(()=>{if(new URLSearchParams(loc.search).has('comments'))openComments()},[loc.search]);
     const [exporting,setExporting]=useState(false),[exportError,setExportError]=useState('');
-    const hasAudienceExport=entry.id==='ai-data-centers';
+    const hasAudienceExport=true;
+    const liveCounts=useContext(Engagement).data?.find(r=>r.slug===entry.id);
     const [includeAudience,setIncludeAudience]=useState(false);
     const original=examplePoster(entry.id);
-    const audience=useAudiencePoster(React,db,hasAudienceExport&&includeAudience,entry.id,original);
+    const audience=useAudiencePoster(React,db,hasAudienceExport&&includeAudience,entry.id,original,liveCounts);
     const poster=audience.url||original;
     const friendTopic=friend+'&suggested='+encodeURIComponent(entry.question);
     function readPoints() {
@@ -614,8 +621,8 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
           h('h2',{id:'dk-example-points',ref:pointsHeading,tabIndex:-1},'All 20 debate points'),
           h(PointReader,{entry,fallback:h('div',{className:'dk-example-positions'},...entry.sideTitles.map((title,side)=>
             h('section',{className:'dk-panel',key:title},h('h3',null,(side===0?'A · ':'B · ')+title),
-              h('ul',null,...entry.arguments.slice(side*10,side*10+10).map(([label,explanation],i)=>
-                h('li',{key:label},h('h4',null,h('span',null,'#'+(i*2+side+1)+' '),label),h('p',null,explanation)))))))})),
+              h('ul',null,...entry.arguments.slice(side*10,side*10+10).map(([label,explanation,id,score],i)=>
+                h('li',{key:label},h('h4',null,h('span',null,'Editorial order '+(i+1)+' · '+(score?'AI '+score.impact+'/100 · #'+score.rank+' · ':'')),label),h('p',null,explanation)))))))})),
         h('section',{className:'dk-panel dk-example-discussion',ref:discussion,tabIndex:-1},h('h2',null,'Comments'),h('p',null,entry.followUp),
           h(MemberComments,{key:user?.id||'guest',entry}),
           entry.sampleActivity?h(React.Fragment,null,

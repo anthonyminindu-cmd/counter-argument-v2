@@ -222,7 +222,7 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
     return h('div',{className:'dk-friend-points'},
       h('section',{ref:stage,tabIndex:-1,'aria-labelledby':'dk-current-point'},
         h('h3',{id:'dk-current-point'},point?'Point '+(count+1)+' of '+total:'All '+total+' points submitted'),
-        count===0&&h('p',{className:'dk-point-instruction'},'Add a short title and explain your point.'),
+        count===0&&h('p',{className:'dk-point-instruction'},'Start with your most important point. Your submission order sets your personal picks from 1 to 10.'),
         point&&h('form',{onSubmit:e=>{e.preventDefault();void onSave(count);}},fields(count,'dk-point'),
           h('button',{type:'submit',className:'dk-primary',disabled:saving!==null||!point.title.trim()||!point.description.trim()},
             saving===count?'Submitting…':'Submit point '+(count+1)))),

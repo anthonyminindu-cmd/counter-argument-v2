@@ -385,7 +385,7 @@ function renderSilhouettePuzzle(rows,scene,question,measure,ownership){
   return {svg:websitePosterSvg(svg),storageSvg:svg,pieces};
 }
 
-function posterSvgBlob(svg, width = 1600, height = 900) {
+function posterSvgBlob(svg, width = svg.viewBox.baseVal.width, height = svg.viewBox.baseVal.height) {
   const copy=svg.cloneNode(true);
   copy.removeAttribute('style');
   copy.setAttribute('width',String(width));
@@ -404,7 +404,7 @@ function offerPosterFile(blob, filename) {
 }
 
 async function downloadPoster(svg, filename, format) {
-  if (!x_(svg)) throw Error('Label fit must be confirmed before export.');
+  if (svg.getAttribute('data-poster-format')!=='impact-v2' && !x_(svg)) throw Error('Label fit must be confirmed before export.');
   if (format==='svg') {
     offerPosterFile(posterSvgBlob(svg),filename);
     return;
@@ -417,7 +417,8 @@ async function savePosterPng(svg,filename) {
   if(!(ratio>0 && Number.isFinite(ratio)))throw Error('The poster is missing its dimensions.');
   // Decode the vector at the final pixel dimensions and draw at 1:1. Some
   // mobile browsers cannot allocate a 23 MP canvas; retain the previous size there.
-  for (const size of [6400,4480]) {
+  const portrait=svg.getAttribute('data-poster-format')==='impact-v2';
+  for (const size of portrait?[1350]:[6400,4480]) {
     const width=Math.min(size,Math.round(size/ratio)),height=Math.max(1,Math.round(width*ratio));
     const source=URL.createObjectURL(posterSvgBlob(svg,width,height));
     const canvas=document.createElement('canvas');
@@ -433,7 +434,7 @@ async function savePosterPng(svg,filename) {
       context.drawImage(picture,0,0);
       blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
     } catch (error) {
-      if (size===4480) throw error;
+      if (portrait||size===4480) throw error;
     } finally {
       URL.revokeObjectURL(source);
       canvas.width=canvas.height=1;
@@ -468,7 +469,7 @@ function openPosterDetail(svg) {
   viewport.style.cssText='overflow:auto;max-height:calc(94vh - 58px);overscroll-behavior:contain';
   const img=document.createElement('img');
   img.alt=svg.querySelector('title')?.textContent || 'Debate poster';
-  img.style.cssText='display:block;width:100%;min-width:1600px;max-width:none;height:auto';
+  img.style.cssText='display:block;width:100%;min-width:'+svg.viewBox.baseVal.width+'px;max-width:none;height:auto';
   const url=URL.createObjectURL(posterSvgBlob(svg));
   img.src=url;
   toolbar.append(close);viewport.append(img);dialog.append(toolbar,viewport);

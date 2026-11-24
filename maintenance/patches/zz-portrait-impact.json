@@ -1,0 +1,83 @@
+[
+  {
+    "id": "restore-versioned-impact-rankings",
+    "find": "const n=h_(e.points,t);if(n.some",
+    "replace": "if(t.some(r=>r.scoringVersion===\"impact-v2\"))return restoreImpactRanking(e,t);const n=h_(e.points,t);if(n.some",
+    "expectedCount": 1
+  },
+  {
+    "id": "retain-actual-scoring-version",
+    "find": "identity:e,scoringVersion:\"research-twenty-v1\",legacyVoteKeys",
+    "replace": "identity:e,scoringVersion:s[0]?.scoringVersion||\"research-twenty-v1\",legacyVoteKeys",
+    "expectedCount": 1
+  },
+  {
+    "id": "clarify-shared-impact-rubric",
+    "find": "children:e.scoringVersion===\"research-twenty-v1\"?\"All 20 arguments ranked together by researched impact on the topic.\"",
+    "replace": "children:e.scoringVersion===\"impact-v2\"?\"AI impact weighs magnitude (50%), reach (30%) and duration (20%). Equal scores share an overall rank.\":e.scoringVersion===\"research-twenty-v1\"?\"Archived research scores use the original assessment rubric.\"",
+    "expectedCount": 1
+  },
+  {
+    "id": "keep-research-details",
+    "find": "research:e.scoringVersion===\"research-twenty-v1\"",
+    "replace": "research:[\"research-twenty-v1\",\"impact-v2\"].includes(e.scoringVersion)",
+    "expectedCount": 1
+  },
+  {
+    "id": "recognize-portrait-history",
+    "find": "u.scoringVersion===\"research-twenty-v1\"",
+    "replace": "[\"research-twenty-v1\",\"impact-v2\"].includes(u.scoringVersion)",
+    "expectedCount": 1
+  },
+  {
+    "id": "point-shared-ranking",
+    "find": "children:[\"#\",n.rank]}),n.posterLabel||n.title",
+    "replace": "children:[\"#\",n.impactRank??n.rank]}),n.headline||n.posterLabel||n.title",
+    "expectedCount": 1
+  },
+  {
+    "id": "explain-personal-impact",
+    "find": "n.posterLabel&&n.posterLabel!==n.title&&i.jsx",
+    "replace": "n.scoringVersion===\"impact-v2\"&&i.jsxs(\"p\",{children:[\"Pick \",n.ordinal+1,\" \u00b7 AI impact \",n.impactScore,\"/100 \u00b7 \",n.confidence,\" confidence\"]}), (n.headline||n.posterLabel)&&(n.headline||n.posterLabel)!==n.title&&i.jsx",
+    "expectedCount": 1
+  },
+  {
+    "id": "show-impact-components",
+    "find": "[n.relevance,n.evidence,n.consequences,n.reasoning].every(Number.isFinite)&&",
+    "replace": "n.scoringVersion===\"impact-v2\"&&i.jsxs(\"p\",{children:[\"Magnitude \",n.magnitude,\" \u00b7 Reach \",n.reach,\" \u00b7 Duration \",n.duration]}),n.scoringVersion!==\"impact-v2\"&&[n.relevance,n.evidence,n.consequences,n.reasoning].every(Number.isFinite)&&",
+    "expectedCount": 1
+  },
+  {
+    "id": "solo-submission-order",
+    "find": "You can draft all ten arguments now. Submit them in order.",
+    "replace": "Submit your most important point first. The order you choose sets your personal picks from 1 to 10.",
+    "expectedCount": 1
+  },
+  {
+    "id": "friend-ranking-description",
+    "find": "AI ranked the points using the sources it found. Check those sources before relying on the scores.",
+    "replace": "Your picks follow submission order. Overall rank compares the AI estimates across both perspectives.",
+    "expectedCount": 1
+  },
+  {
+    "id": "remove-obsolete-completion-description",
+    "find": "AI rankings and puzzle complete",
+    "replace": "Rankings and portrait poster ready",
+    "expectedCount": 1
+  },
+  {
+    "id": "render-friend-details-once",
+    "find": "d&&o.session_id&&i.jsx(lg,{sessionId:o.session_id,topicTitle:v",
+    "replace": "d&&o.session_id&&i.jsx(lg,{showDetails:false,sessionId:o.session_id,topicTitle:v"
+  },
+  {
+    "id": "validate-live-solo-impact-assessments",
+    "find": "function LD(e,t,n,r){const s=h_(t,n);",
+    "replace": "function LD(e,t,n,r){const s=n?.some(row=>row.scoringVersion===\"impact-v2\")?restoreImpactRanking({points:t},n):h_(t,n);"
+  },
+  {
+    "id": "show-live-solo-scoring-version",
+    "find": "identity:e,scoringVersion:t5,legacyVoteKeys",
+    "replace": "identity:e,scoringVersion:s[0]?.scoringVersion||t5,legacyVoteKeys"
+  }
+]

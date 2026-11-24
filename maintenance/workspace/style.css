@@ -332,3 +332,6 @@ html{scroll-padding-top:198px}
 .dk-login-divider{display:flex;align-items:center;gap:.75rem;color:var(--dk-sub);font-size:.8125rem}
 .dk-login-divider::before,.dk-login-divider::after{content:"";height:1px;flex:1;background:currentColor;opacity:.35}
 .dk-login-message{font-size:.9375rem}
+
+.dk-impact-live, .dk-puzzle { max-width: 48rem; margin-inline: auto; }
+.dk-impact-live svg { display: block; width: 100%; height: auto; }
