@@ -12,7 +12,10 @@ test('both sides keep original picks and tied overall ranks after restore',async
   const start=runtime.indexOf('function restoreImpactRanking('),end=runtime.indexOf('function lg(',start);
   const context={n5:p=>assert.equal(p.length,20)};
   vm.runInNewContext(runtime.slice(start,end)+';globalThis.restore=restoreImpactRanking;globalThis.make=impactPosterData;',context);
-  const ranking=context.restore({points:rows},scores);
+  const originalRows=rows.map((r,i)=>i===15?{...r,sources:[{url:'https://example.org/submitted'}]}:r);
+  const reviewed=scores.map((r,i)=>i===15?{...r,sources:[{url:'https://example.org/reviewed'}]}:r);
+  const ranking=context.restore({points:originalRows},reviewed);
+  assert.equal(ranking[15].sources[0].url,'https://example.org/reviewed');
   const poster=context.make('School hours',['Keep hours','Shift the bell'],ranking);
   assert.equal(poster.rows.length,20);
   for(let i=0;i<20;i++)assert.deepEqual([poster.rows[i].impact,poster.rows[i].rank,poster.rows[i].pick,poster.rows[i].side],[70,1,rows[i].ordinal+1,Math.floor(i/10)]);

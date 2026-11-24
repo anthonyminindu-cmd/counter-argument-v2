@@ -102,7 +102,7 @@ export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQ
       h('button',{className:'dk-point-title',type:'button','aria-expanded':open,onClick:onToggle},
         h('span',{className:'dk-point-rank'},'#'+point.rank),h('strong',null,point.title),h('span',{'aria-hidden':true},open?'−':'+')),
       open&&h('div',{className:'dk-point-body'},h('p',null,point.detail),
-        point.impact!=null&&h('p',null,(point.editorial?'Editorial order ':'Pick ')+point.pick+' · AI impact '+point.impact+'/100 · Overall #'+point.rank+(point.confidence?' · '+point.confidence+' confidence':'')),
+        point.impact!=null&&h('p',null,(point.pickLabel+' ')+point.pick+' · AI impact '+point.impact+'/100 · Overall #'+point.rank+(point.confidence?' · '+point.confidence+' confidence':'')),
         point.explanation&&h('p',null,point.explanation),
         point.sources?.length>0&&h('div',null,h('h4',null,'Sources for this point'),h('ul',null,...point.sources.map(url=>h('li',{key:url},h('a',{href:url,rel:'noreferrer',target:'_blank'},sourceHost(url)||url))))),
         point.counterpoint&&h('div',null,h('h4',null,'Counterargument'),h('p',null,point.counterpoint)),
@@ -126,7 +126,7 @@ export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQ
     const local=useQuery(provided?null:entry.id+'|'+(user?.id||''),()=>db.rpc('dk_points',{p_slug:entry.id}));
     const q=provided||local;
     const scores=new Map((impactRows||entry.arguments?.map(item=>({id:item[2],...item[3]}))||[]).map(item=>[item.id,item]));
-    const rows=q.data?.map(point=>{const r=scores.get(point.id);return r?.impact!=null?{...point,rank:r.rank,impact:r.impact,pick:r.pick,confidence:r.confidence,editorial:!!entry.arguments,explanation:r.explanation||(Number.isInteger(r.magnitude)?'Magnitude '+r.magnitude+'/100 · Reach '+r.reach+'/100 · Duration '+r.duration+'/100.':'')}:point;});
+    const rows=q.data?.map(point=>{const r=scores.get(point.id);return r?.impact!=null?{...point,rank:r.rank,impact:r.impact,pick:r.pick,confidence:r.confidence,pickLabel:entry.arguments?'Editorial order':r.pickLabel||'Personal pick',explanation:r.explanation||(Number.isInteger(r.magnitude)?'Magnitude '+r.magnitude+'/100 · Reach '+r.reach+'/100 · Duration '+r.duration+'/100.':'')}:point;});
 
     const ready=!!q.data;
     React.useEffect(()=>{
@@ -150,9 +150,10 @@ export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQ
 export function posterPointData(markup){
   if(!markup?.includes('data-poster-format="impact-v2"'))return [];
   const doc=new DOMParser().parseFromString(markup,'image/svg+xml');
+  const pickLabel=markup.includes('>Submission order 1–10</text>')?'Submission order':'Personal pick';
   return [...doc.querySelectorAll('g[data-reader-id]')].map(g=>({id:g.getAttribute('data-reader-id'),
     rank:Number(g.dataset.rank),pick:Number(g.dataset.pick),impact:g.dataset.impact?Number(g.dataset.impact):null,
-    confidence:g.dataset.confidence,explanation:g.dataset.explanation}));
+    pickLabel,confidence:g.dataset.confidence,explanation:g.dataset.explanation}));
 }
 export function withPosterActivity(markup,metrics){
   if(!markup||!metrics)return markup;

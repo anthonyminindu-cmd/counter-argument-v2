@@ -13,7 +13,7 @@ export function restoreImpactRanking(snapshot, ranking) {
     const rank=sorted.findIndex(p=>p.score===score)+1;
     if(!point||r.scoringVersion!=='impact-v2'||components.some(v=>!Number.isInteger(v)||v<1||v>100)||score!==r.score||score!==r.impactScore||rank!==r.impactRank||
       r.rank!==i+1||ranking[i].id!==r.id||!Array.isArray(r.sources)||!r.headline?.trim()||!r.detail?.trim()||!r.explanation?.trim()||!['low','moderate','high'].includes(r.confidence))throw Error('Saved impact ranking failed validation.');
-    return {...r,...point,portraitSide:owners.indexOf(point.owner)};
+    return {...r,...point,sources:r.sources,portraitSide:owners.indexOf(point.owner)};
   });
 }
 export function impactPosterData(title,positions,points){
