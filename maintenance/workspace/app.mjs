@@ -190,13 +190,13 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     }
     return h('span',{className:'dk-save'},h('button',{type:'button',onClick:toggle,disabled:busy||c.loading||!!c.error,'aria-pressed':present,className:'dk-small',title:text+' · '+label},icon(kind==='poster'?'art':kind==='person'?'friends':'pin'),text),error&&status(error,true));
   }
-  function SavePoster({title,svg,points,positions}) {
+  function SavePoster({title,svg,points,positions,onActivity}) {
     const {user}=useAuth();
     const [identity,set]=useState(null);
     useEffect(()=>{let active=true;if(svg) crypto.subtle.digest('SHA-256',new TextEncoder().encode(svg)).then(hash=>{
       if(active)set({svg,key:Array.from(new Uint8Array(hash),v=>v.toString(16).padStart(2,'0')).join('')});
     }).catch(()=>{});return()=>{active=false}},[svg]);
-    return identity?.svg===svg&&svg&&user?h(React.Fragment,null,h(Save,{kind:'poster',target:identity.key,label:title,artwork:svg}),h(PersonalPoster,{key:user.id+identity.key,title,svg,points:pointSnapshot(points,positions),identity:identity.key,userId:user.id})):null;
+    return identity?.svg===svg&&svg&&user?h(React.Fragment,null,h(Save,{kind:'poster',target:identity.key,label:title,artwork:svg}),h(PersonalPoster,{key:user.id+identity.key,title,svg,points:pointSnapshot(points,positions),identity:identity.key,userId:user.id,onActivity})):null;
   }
   function Nav() {
     const {user,signOut}=useAuth(), loc=useLocation(), navigate=useNavigate();
@@ -488,15 +488,16 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     return h('div',{className:'dk-actions'},h('button',{type:'button',className:'dk-secondary',disabled:busy,onClick:change},
       row.published?'Make private':'Publish infographic and points to Latest and Trending'),failed&&status(failed,true));
   }
-  function PersonalPoster({title,svg,points,identity,userId}) {
+  function PersonalPoster({title,svg,points,identity,userId,onActivity}) {
     const q=useQuery(userId+':'+identity+':'+!!points,()=>points?db.rpc('dk_register_points',{p_title:title,p_svg:svg,p_points:points}):db.rpc('dk_register_personal_poster',{p_title:title,p_svg:svg}));
     return q.error?h('button',{className:'dk-small',onClick:q.refresh},'Retry loading infographic activity'):
-      q.data?h(PosterActivity,null,h(PersonalActions,{id:q.data,title})):null;
+      q.data?h(PosterActivity,null,h(PersonalActions,{id:q.data,title,svg,onActivity})):null;
   }
-  function PersonalActions({id,title}){
+  function PersonalActions({id,title,svg,onActivity}){
     const activity=useContext(Engagement);
     const row=activity.data?.find(item=>item.slug===id);
     usePosterImpression(id);
+    useEffect(()=>{onActivity?.({svg,row:row?.published?row:null});},[svg,row,onActivity]);
     return h('div',null,h(PosterActions,{entry:{id,question:title}}),row?.mine&&h(SharePoster,{row,refresh:activity.refresh}));
   }
   function CreatedPosters({user}){
@@ -737,16 +738,17 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       user?h('form',{className:'dk-form',onSubmit:reply},h('label',null,'Add a public perspective',h('textarea',{required:true,maxLength:1200,value:text,onChange:e=>set(e.target.value)})),h('button',{className:'dk-secondary',disabled:busy||!text.trim()},busy?'Posting…':'Post reply'),err&&status(err,true)):link(login(feed+'&question='+thread.id),'Sign in to reply','dk-secondary'));
   }
   function SavedArtwork({item}) {
+    const [activity,setActivity]=useState(null);
     const {id}=useContext(Collection),[open,setOpen]=useState(false),[url,setUrl]=useState(''),[error,setError]=useState('');
     const q=useQuery(open?id+item.target:null,()=>db.from('dk_collection').select('artwork').eq('owner_id',id).eq('kind','poster').eq('target',item.target).single());
-    useEffect(()=>{if(!open||!q.data?.artwork){setUrl('');return}const objectUrl=URL.createObjectURL(new Blob([websitePosterSvg(q.data.artwork)],{type:'image/svg+xml'}));setUrl(objectUrl);return()=>URL.revokeObjectURL(objectUrl)},[open,q.data]);
+    useEffect(()=>{if(!open||!q.data?.artwork){setUrl('');return}const objectUrl=URL.createObjectURL(new Blob([withPosterActivity(websitePosterSvg(q.data.artwork),activity?.svg===q.data.artwork?activity.row:null)],{type:'image/svg+xml'}));setUrl(objectUrl);return()=>URL.revokeObjectURL(objectUrl)},[open,q.data,activity]);
     async function downloadPng(){
       try{
         await downloadStoredPoster(url,'Differ-Kindly-poster.png');
       }catch{setError('The PNG could not be prepared. The vector download is available below.')}
     }
     return h('article',{className:'dk-card'},h('div',{className:'dk-sectionline'},h('button',{type:'button',className:'dk-titlelink','aria-expanded':open,onClick:()=>setOpen(!open)},item.label),h(Save,{kind:'poster',target:item.target,label:item.label})),
-      open&&q.data?.artwork&&h(PersonalPoster,{title:item.label,svg:q.data.artwork,identity:item.target,userId:id}),
+      open&&q.data?.artwork&&h(PersonalPoster,{title:item.label,svg:q.data.artwork,identity:item.target,userId:id,onActivity:setActivity}),
       open&&(q.error?status('Could not open this poster.',true):url?h(React.Fragment,null,h('img',{className:'dk-poster',src:url,alt:item.label}),h('div',{className:'dk-actions'},h('button',{className:'dk-primary',onClick:downloadPng},'Download PNG'),h('a',{className:'dk-secondary',href:url,download:'Differ-Kindly-poster.svg'},'Download SVG')),error&&status(error,true)):status('Loading your poster…')));
   }
   function People({user}) {
@@ -776,5 +778,5 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       tab==='Liked'?h(LikedPosters,{key:user.id,user}):tab==='Created'?h(CreatedPosters,{key:user.id,user}):tab==='Table'?h(Activity,{key:user.id}):tab==='Account'?h(Account,{key:user.id}):c.error?h('button',{className:'dk-secondary',onClick:c.refresh},'Retry loading collection'):c.loading&&!c.data?status('Loading your collection…'):tab==='People'?h(People,{user}):
       h('section',{className:'dk-collection'},!items.length?h('div',{className:'dk-panel'},h('h2',null,tab==='Posters'?'Your saved posters':'Your pinned discussions'),h('p',null,tab==='Posters'?'Open a finished infographic and choose Save poster.':'Pin a public question or an exploration from your table to return to it here.'),link(tab==='Posters'?profile:feed,tab==='Posters'?'Open your table':'Browse the feed','dk-secondary')):items.map(item=>tab==='Posters'?h(SavedArtwork,{key:item.target,item}):h('article',{key:item.kind+item.target,className:'dk-card'},h('small',null,item.kind==='question'?'Public question':'Your exploration'),h('div',{className:'dk-sectionline'},link(item.kind==='question'?feed+'&question='+item.target:'/debate/view/'+item.target,item.label,'dk-titlelink'),h(Save,{kind:item.kind,target:item.target,label:item.label}))))));
   }
-  return {...createGoogleLogin({React, db, useLocation, safeNext: afterLogin}),initialProfileName,checkContent,useCommenterMatches,ReactionLoginCopy,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
+  return {...createGoogleLogin({React, db, useLocation, safeNext: afterLogin}),withPosterActivity,initialProfileName,checkContent,useCommenterMatches,ReactionLoginCopy,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
 }

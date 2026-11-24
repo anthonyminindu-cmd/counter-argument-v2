@@ -32,7 +32,7 @@ export function renderImpactPoster({title,question,sides,rows,pickLabel='Persona
   rect(0,0,1080,1350,'#faf8f0');
   out.push('<g transform="translate(36 25) scale(1.30)"><rect width="32" height="32" rx="7" fill="#0d0e0d"/><path fill="white" fill-rule="evenodd" d="M16 4C23.9 4 30 8.9 30 15.2S23.9 26.4 16 26.4C13.6 26.4 11.3 26 9.3 25.1L4.1 28.5Q3.5 28.8 3.7 28.1L5.8 22.8C3.4 20.7 2 18.1 2 15.2C2 8.9 8.1 4 16 4ZM19 6.9L12.3 23.3C13.5 23.6 14.7 23.7 16 23.7C22.4 23.7 27.2 20 27.2 15.2C27.2 11.1 23.8 7.9 19 6.9Z"/></g>');
   txt(90,57,'Differ Kindly',30,700);txt(1044,55,'20 ARGUMENTS',22,700,muted,end);rect(36,82,1008,2,'#cad3ca');
-  const heading=String(title||question||'Debate results'),size=heading.length<=30?68:43;
+  const heading=String(title||question||'Debate results'),size=heading.length<=30&&impactLines(heading,1002,68,2).length===1?68:43;
   const titleLines=impactLines(heading,1002,size,2);
   titleLines.forEach((line,i)=>txt(36,94+size+i*(size+1),line,size,500,ink,'font-family="Georgia, serif"'));
   if(question&&question!==heading)txt(38,216,impactLines(question,1002,25,1)[0],25);

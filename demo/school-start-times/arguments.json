@@ -75,7 +75,7 @@
       "magnitude": 78,
       "reach": 71,
       "duration": 78,
-      "confidence": "medium",
+      "confidence": "moderate",
       "impact": 76,
       "pick": 1,
       "rank": 5
@@ -101,7 +101,7 @@
       "magnitude": 78,
       "reach": 76,
       "duration": 76,
-      "confidence": "medium",
+      "confidence": "moderate",
       "impact": 77,
       "pick": 3,
       "rank": 3
@@ -127,7 +127,7 @@
       "magnitude": 65,
       "reach": 48,
       "duration": 74,
-      "confidence": "medium",
+      "confidence": "moderate",
       "impact": 62,
       "pick": 2,
       "rank": 12
@@ -149,7 +149,7 @@
       "magnitude": 74,
       "reach": 71,
       "duration": 76,
-      "confidence": "medium",
+      "confidence": "moderate",
       "impact": 74,
       "pick": 4,
       "rank": 6
@@ -171,7 +171,7 @@
       "magnitude": 94,
       "reach": 35,
       "duration": 81,
-      "confidence": "medium",
+      "confidence": "moderate",
       "impact": 74,
       "pick": 5,
       "rank": 6
@@ -193,7 +193,7 @@
       "magnitude": 60,
       "reach": 43,
       "duration": 69,
-      "confidence": "medium",
+      "confidence": "moderate",
       "impact": 57,
       "pick": 3,
       "rank": 17
@@ -219,7 +219,7 @@
       "magnitude": 83,
       "reach": 41,
       "duration": 76,
-      "confidence": "medium",
+      "confidence": "moderate",
       "impact": 69,
       "pick": 4,
       "rank": 8
@@ -245,7 +245,7 @@
       "magnitude": 73,
       "reach": 36,
       "duration": 71,
-      "confidence": "medium",
+      "confidence": "moderate",
       "impact": 62,
       "pick": 5,
       "rank": 12
@@ -271,7 +271,7 @@
       "magnitude": 82,
       "reach": 67,
       "duration": 78,
-      "confidence": "medium",
+      "confidence": "moderate",
       "impact": 77,
       "pick": 6,
       "rank": 3
@@ -319,7 +319,7 @@
       "magnitude": 78,
       "reach": 39,
       "duration": 69,
-      "confidence": "medium",
+      "confidence": "moderate",
       "impact": 65,
       "pick": 7,
       "rank": 10
@@ -345,7 +345,7 @@
       "magnitude": 56,
       "reach": 37,
       "duration": 49,
-      "confidence": "medium",
+      "confidence": "moderate",
       "impact": 49,
       "pick": 8,
       "rank": 20
@@ -419,7 +419,7 @@
       "magnitude": 54,
       "reach": 70,
       "duration": 44,
-      "confidence": "medium",
+      "confidence": "moderate",
       "impact": 57,
       "pick": 9,
       "rank": 17

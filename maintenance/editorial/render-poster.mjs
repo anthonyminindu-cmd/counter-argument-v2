@@ -28,7 +28,7 @@ function validateRows(rows) {
   for (const point of rows) {
     const components = [point.magnitude, point.reach, point.duration];
     if (!components.every(n => Number.isInteger(n) && n >= 1 && n <= 100) ||
-        !['low','medium','high'].includes(point.confidence)) throw new Error('Invalid assessment for ' + point.id);
+        !['low','moderate','high'].includes(point.confidence)) throw new Error('Invalid assessment for ' + point.id);
     const impact = Math.round((50 * point.magnitude + 30 * point.reach + 20 * point.duration) / 100);
     const rank = 1 + rows.filter(other => other.impact > impact).length;
     if (impact !== point.impact || rank !== point.rank) throw new Error('Inconsistent impact/rank for ' + point.id);

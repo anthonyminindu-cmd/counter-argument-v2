@@ -30,6 +30,7 @@ export function impactPosterData(title,positions,points){
 // The dependency bindings below are provided by the maintained V2 runtime.
 function lg({args:points,topicTitle='Debate results',positions=[],onValidated,showDetails=true}){
   const ref=p.useRef(null),[error,setError]=p.useState(''),[busy,setBusy]=p.useState(false);
+  const [activity,setActivity]=p.useState(null);
   const poster=p.useMemo(()=>{try{return {svg:renderImpactPoster(impactPosterData(topicTitle,positions,points))};}
     catch(ex){return {error:ex.message};}},[topicTitle,positions,points]);
   p.useEffect(()=>{onValidated?.(!!poster.svg);},[poster.svg,onValidated]);
@@ -45,8 +46,8 @@ function lg({args:points,topicTitle='Debate results',positions=[],onValidated,sh
         h('button',{className:'dk-secondary',onClick:()=>openPosterDetail(ref.current?.querySelector('svg'))},'View full size'),
         h('button',{className:'dk-primary',disabled:busy,onClick:()=>download('png')},'Download PNG'),
         h('button',{className:'dk-secondary',disabled:busy,onClick:()=>download('svg')},'Download SVG'),
-        h(DK.SavePoster,{title:topicTitle,svg:poster.svg,points,positions})),
-      h('div',{ref,className:'dk-impact-live',dangerouslySetInnerHTML:{__html:poster.svg}}),
+        h(DK.SavePoster,{title:topicTitle,svg:poster.svg,points,positions,onActivity:setActivity})),
+      h('div',{ref,className:'dk-impact-live',dangerouslySetInnerHTML:{__html:DK.withPosterActivity(poster.svg,activity?.svg===poster.svg?activity.row:null)}}),
       points.some(row=>row.scoringVersion!=='impact-v2')&&h('p',null,'The original picks are available. Impact scores have not been assessed for this archive.')):h('p',{role:'alert'},poster.error),
     h('details',null,h('summary',null,'Original debate question'),h('p',null,topicTitle)),
     error&&h('p',{role:'alert'},error),
