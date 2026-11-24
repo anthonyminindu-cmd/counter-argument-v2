@@ -14,6 +14,20 @@ const novemberPath = 'demo/november-2026/';
 const examplePoster = id => novemberPath+id+'.svg?v=impact2';
 const trending = feed+'&sort=trending';
 const exampleRoute = id => feed+'&example='+encodeURIComponent(id);
+const questionRoute = id => feed+'&question='+encodeURIComponent(id);
+const isPinKind = kind => ['topic','question','debate'].includes(kind);
+function pinRoute(item) {
+  if(item.kind==='topic')return exampleRoute(item.target);
+  if(item.kind==='question')return questionRoute(item.target);
+  return '/debate/view/'+encodeURIComponent(item.target);
+}
+export function publicShareData(kind,id,title) {
+  const route=kind==='topic'?exampleRoute(id):kind==='question'?questionRoute(id):null;
+  if(!route||!id)throw Error('A public topic is required.');
+  const url=new URL(route,'https://www.differkindly.com');
+  url.pathname='/home/';
+  return {title,url:url.href};
+}
 const feedOrigins = {
   home: [home, 'Back to home'], latest: [feed+'&sort=latest', 'Back to Latest'],
   trending: [trending, 'Back to Trending'], people: [feed+'&sort=people', 'Back to Your people']
@@ -108,6 +122,7 @@ const glyphs = {
   friends:'M15 8a4 4 0 1 1-8 0 4 4 0 0 1 8 0M2 21v-2a8 8 0 0 1 16 0v2m0-15a3 3 0 0 1 0 6m2 3a5 5 0 0 1 2 4',
   trend:'M3 17l6-6 4 3 8-9m-6 0h6v6', ai:'M5 7h14v12H5zM12 3v4M9 12h.1m5.9 0h.1M9 16h6',
   pin:'m15 3 6 6-4 1-3 5v2l-2 1-7-7 1-2h3l5-4zM9 15l-5 5',
+  share:'M12 15V3m-4 4 4-4 4 4M6 10H4v11h16V10h-2',
   art:'M3 4h18v16H3zM4 17l5-6 4 4 3-3 4 4', message:'M3 4h18v12H9l-6 5zM7 8h10m-10 4h6',
   table:'M3 4h18v16H3zM3 10h18M10 10v10', settings:'M4 7h6m4 0h6M4 17h10m4 0h2M10 4v6m4 4v6',
   enter:'M4 12h14m-5-5 5 5-5 5', book:'M3 4h7l2 2 2-2h7v15h-7l-2 2-2-2H3zM12 6v15'
@@ -173,7 +188,8 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function Save({kind,target,label,artwork}) {
     const c=useContext(Collection), [busy,setBusy]=useState(false),[error,setError]=useState('');
     const present=c.items.some(row=>row.kind===kind&&row.target===target);
-    const text=kind==='person'?(present?'Remove saved person':'Save person'):kind==='poster'?(present?'Remove saved poster':'Save poster'):(present?'Unpin':'Pin');
+    const text=kind==='person'?(present?'Remove saved person':'Save person'):kind==='poster'?(present?'Remove saved poster':'Save poster'):(present?'Pinned':'Pin');
+    const hint=isPinKind(kind)?(present?'Unpin from profile':'Pin to profile'):text;
     if(!c.id||!target)return null;
     async function toggle() {
       setBusy(true);setError('');
@@ -188,7 +204,47 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         c.refresh();
       }catch{setError('Could not update your collection. Try again.')}finally{setBusy(false)}
     }
-    return h('span',{className:'dk-save'},h('button',{type:'button',onClick:toggle,disabled:busy||c.loading||!!c.error,'aria-pressed':present,className:'dk-small',title:text+' · '+label},icon(kind==='poster'?'art':kind==='person'?'friends':'pin'),text),error&&status(error,true));
+    return h('span',{className:'dk-save'},h('button',{type:'button',onClick:toggle,disabled:busy||c.loading||!!c.error,'aria-pressed':present,className:'dk-small',title:hint+' · '+label},icon(kind==='poster'?'art':kind==='person'?'friends':'pin'),text),error&&status(error,true));
+  }
+  function ShareTopic({kind,id,title}) {
+    const [open,setOpen]=useState(false),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
+    const dialog=useRef(null),trigger=useRef(null),input=useRef(null),heading=React.useId();
+    const data=publicShareData(kind,id,title);
+    useEffect(()=>{
+      if(open&&dialog.current&&!dialog.current.open){
+        if(typeof dialog.current.showModal==='function')dialog.current.showModal();
+        else dialog.current.setAttribute('open','');
+      }
+    },[open]);
+    function close(){setOpen(false);trigger.current?.focus();}
+    async function share(){
+      if(busy)return;
+      setMessage('');
+      if(typeof navigator.share==='function'){
+        setBusy(true);
+        try{await navigator.share(data);return;}
+        catch(error){if(error?.name==='AbortError')return;}
+        finally{setBusy(false);}
+      }
+      setOpen(true);
+    }
+    async function copy(){
+      try{await navigator.clipboard.writeText(data.url);setMessage('Link copied.');}
+      catch{input.current?.focus();input.current?.select();setMessage('Copy the selected link.');}
+    }
+    return h(React.Fragment,null,
+      h('button',{type:'button',ref:trigger,onClick:share,disabled:busy,className:'dk-small',title:'Share '+title},icon('share'),'Share'),
+      open&&h('dialog',{ref:dialog,'aria-labelledby':heading,className:'dk-share-dialog',onCancel:close,onClose:close,
+        onClick:e=>{if(e.target===dialog.current)close();}},
+        h('div',{className:'dk-share-content'},
+          h('div',{className:'dk-sectionline'},h('h2',{id:heading},'Share topic'),h('button',{type:'button',className:'dk-small',onClick:close},'Close')),
+          h('p',null,title),
+          h('div',{className:'dk-actions'},
+            h('a',{className:'dk-secondary',href:'sms:?body='+encodeURIComponent(title+'\n'+data.url)},'Text message'),
+            h('a',{className:'dk-secondary',href:'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(data.url),target:'_blank',rel:'noopener noreferrer'},'Facebook'),
+            h('button',{type:'button',className:'dk-primary',onClick:copy},'Copy link')),
+          h('input',{ref:input,'aria-label':'Public topic link',readOnly:true,value:data.url,onFocus:e=>e.target.select()}),
+          message&&status(message))));
   }
   function SavePoster({title,svg,points,positions,onActivity}) {
     const {user}=useAuth();
@@ -259,7 +315,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('ul',{className:'dk-list'},...rows.slice(0,compact?2:30).map(row=>h('li',{key:row.id},h('div',null,link('/debate/view/'+row.id,titleOf(row),'dk-titlelink'),h('small',null,({waiting:'Waiting for a friend',active:'In progress',completed:'Complete',cancelled:'Invitation closed'})[row.status]||'In progress')),!compact&&h(Save,{kind:'debate',target:row.id,label:titleOf(row)})))):
         h('p',null,'Your first exploration will appear here.'),
         compact&&link(profile,'Open your profile','dk-secondary'),
-        compact&&h('div',{className:'dk-shortcuts'},...['Pinned','Posters','People'].map(tab=>h(Link,{key:tab,to:profileRoute(tab)},tab,c.loading?'':' '+c.items.filter(row=>tab==='Pinned'?['question','debate'].includes(row.kind):row.kind===(tab==='People'?'person':'poster')).length)))));
+        compact&&h('div',{className:'dk-shortcuts'},...['Pinned','Posters','People'].map(tab=>h(Link,{key:tab,to:profileRoute(tab)},tab,c.loading?'':' '+c.items.filter(row=>tab==='Pinned'?isPinKind(row.kind):row.kind===(tab==='People'?'person':'poster')).length)))));
   }
   function Setup(){
     const loc=useLocation();
@@ -358,6 +414,8 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     return h('div',{className:'dk-topic-metrics dk-social',title:entry.sampleActivity?'Totals include editorial persona activity and member activity.':undefined},
       h('button',{type:'button',className:'dk-small',onClick:like,disabled:busy||(!!user&&(!row||metrics.loading)),'aria-pressed':!!row?.liked},icon('heart'),row?.liked?'Liked':'Like',' · ',row?.likes??'…'),
       h('button',{type:'button',className:'dk-small','data-opens-debate':true,onClick:onComment||(()=>navigate(url+'&comments=1'))},icon('message'),'Comments · ',comments),
+      row?.published&&h(Save,{kind:'topic',target:entry.id,label:entry.question}),
+      row?.published&&h(ShareTopic,{kind:'topic',id:entry.id,title:entry.question}),
       h('span',null,icon('eye'),row?.impressions??'…',Number(row?.impressions)===1?' impression':' impressions'),
       entry.kind==='member'&&entry.sampleActivity&&h('small',null,'Includes ',entry.sampleActivity.reactions,' sample likes and ',discussionCount(entry.sampleActivity.comments),' sample comments'),
       failed&&status('Could not update your like. Try again.',true),
@@ -686,14 +744,15 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('div',{className:'dk-grid'},h(Feed,{full:false,landing:true,publicList:list}),h(Activity,{compact:true}))));
   }
   function QuestionCard({row,landing}) {
-    const url=withOrigin(feed+'&question='+row.id,'people');
+    const url=withOrigin(questionRoute(row.id),'people');
     const [tone,glyph]=topicStyle({id:row.id,category:row.category});
     const replies=row.replies+' '+(Number(row.replies)===1?'reply':'replies');
     return h('article',{className:'dk-card dk-people-card dk-tone-'+tone,id:'dk-card-'+row.id,onClickCapture:e=>rememberCard(e,'people',row.id)},
-      h('div',{className:'dk-sectionline'},h('div',{className:'dk-topic-meta'},h('span',{className:'dk-topic-label'},icon(glyph),row.category||'Community question'),h(PostedDate,{at:row.published_at,standalone:true})),h(Save,{kind:'question',target:row.id,label:row.question})),
+      h('div',{className:'dk-topic-meta'},h('span',{className:'dk-topic-label'},icon(glyph),row.category||'Community question'),h(PostedDate,{at:row.published_at,standalone:true})),
       h('h3',null,h(Link,{to:url,className:'dk-titlelink'},row.question,landing&&icon('enter'))),
       landing?(Number(row.replies)>0&&h('small',null,replies)):
-        h('div',{className:'dk-cardfoot'},link(url,'Open discussion'),h('small',null,replies+(Number(row.contributors)>0?' · '+row.contributors+' active in 24h':''))));
+        h('div',{className:'dk-cardfoot'},link(url,'Open discussion'),h('small',null,replies+(Number(row.contributors)>0?' · '+row.contributors+' active in 24h':''))),
+      h('div',{className:'dk-actions'},h(Save,{kind:'question',target:row.id,label:row.question}),h(ShareTopic,{kind:'question',id:row.id,title:row.question})));
   }
   function Feed({full,landing,publicList}) {
     const loc=useLocation(), {user}=useAuth(), c=useContext(Collection);
@@ -733,7 +792,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       catch(e){setErr(e.communitySafety?e.message:'Your reply could not be published. Please try again.')}finally{setBusy(false)}}
     const next=topicRoute(thread.question);
     return h('article',{className:'dk-panel dk-thread'},h('small',null,thread.is_starter?'Starter question':'Public question',h(PostedDate,{at:thread.published_at})),h('h1',null,thread.question),h(Report,{kind:'question',target:thread.id}),
-      h('div',{className:'dk-actions'},link(user?next:login(next),'Explore with AI','dk-primary'),h(Save,{kind:'question',target:thread.id,label:thread.question})),
+      h('div',{className:'dk-actions'},link(user?next:login(next),'Explore with AI','dk-primary'),h(Save,{kind:'question',target:thread.id,label:thread.question}),h(ShareTopic,{kind:'question',id:thread.id,title:thread.question})),
       h('h2',null,'Perspectives'),q.error?h('button',{className:'dk-secondary',onClick:q.refresh},'Retry loading replies'):q.loading&&!q.data?status('Loading replies…'):q.data?.length?h('ul',{className:'dk-replies'},...q.data.map(row=>h('li',{key:row.id},h('p',null,row.perspective),h('small',null,new Date(row.created_at).toLocaleDateString()),h(Report,{kind:'reply',target:row.id})))):h('p',null,'What should someone on the other side consider?'),
       user?h('form',{className:'dk-form',onSubmit:reply},h('label',null,'Add a public perspective',h('textarea',{required:true,maxLength:1200,value:text,onChange:e=>set(e.target.value)})),h('button',{className:'dk-secondary',disabled:busy||!text.trim()},busy?'Posting…':'Post reply'),err&&status(err,true)):link(login(feed+'&question='+thread.id),'Sign in to reply','dk-secondary'));
   }
@@ -769,14 +828,35 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         ...commenters.matches.map(person=>h('li',{key:person.user_id},h('div',null,
           link(person.profileUrl,person.display_name),h('small',null,'@'+person.username))))));
   }
+  function PinnedList({items,owner}) {
+    const topics=items.filter(item=>item.kind==='topic').map(item=>item.target).sort();
+    const published=useQuery(topics.length?JSON.stringify([owner,topics]):null,async()=>{
+      const slugs=[];
+      for(let start=0;start<topics.length;start+=40){
+        const {data,error}=await db.rpc('dk_ranked_posters').select('slug').eq('published',true).in('slug',topics.slice(start,start+40));
+        if(error)throw error;
+        slugs.push(...data.map(row=>row.slug));
+      }
+      return {data:slugs};
+    });
+    const publicSlugs=new Set(published.data);
+    if(!items.length)return h('div',{className:'dk-panel'},h('h2',null,'Your pinned topics'),
+      h('p',null,'Choose Pin on a topic to save it here.'),link(feed,'Browse the feed','dk-secondary'));
+    return items.map(item=>h('article',{key:item.kind+item.target,className:'dk-card'},
+      h('small',null,item.kind==='topic'?'Debate topic':item.kind==='question'?'Public question':'Your exploration'),
+      h('h2',null,link(pinRoute(item),item.label,'dk-titlelink')),
+      h('div',{className:'dk-actions'},h(Save,{kind:item.kind,target:item.target,label:item.label}),
+        (item.kind==='question'||(item.kind==='topic'&&publicSlugs.has(item.target)))&&h(ShareTopic,{kind:item.kind,id:item.target,title:item.label}))));
+  }
   function Profile(){
     const {user,loading}=useAuth(),loc=useLocation(),c=useContext(Collection);
     const tab=personalTabs.find(value=>value.toLowerCase()===new URLSearchParams(loc.search).get('tab'))||'Table';
     if(!user)return h('main',{className:'dk-main'},h('h1',null,'Your profile'),loading?status('Loading account…'):link(login(profile+loc.search),'Sign in to open your profile','dk-primary'));
-    const items=c.items.filter(row=>tab==='Posters'?row.kind==='poster':['debate','question'].includes(row.kind));
+    const items=c.items.filter(row=>tab==='Posters'?row.kind==='poster':isPinKind(row.kind));
     return h('main',{className:'dk-main dk-profile'},h('div',{className:'dk-kicker'},'Personal workspace'),h('h1',null,'Your profile'),h('nav',{className:'dk-filters','aria-label':'Profile sections'},...personalTabs.map(key=>h(Link,{key,to:profileRoute(key),'aria-current':tab===key?'page':undefined},key==='Table'?'Your table':key))),
       tab==='Liked'?h(LikedPosters,{key:user.id,user}):tab==='Created'?h(CreatedPosters,{key:user.id,user}):tab==='Table'?h(Activity,{key:user.id}):tab==='Account'?h(Account,{key:user.id}):c.error?h('button',{className:'dk-secondary',onClick:c.refresh},'Retry loading collection'):c.loading&&!c.data?status('Loading your collection…'):tab==='People'?h(People,{user}):
-      h('section',{className:'dk-collection'},!items.length?h('div',{className:'dk-panel'},h('h2',null,tab==='Posters'?'Your saved posters':'Your pinned discussions'),h('p',null,tab==='Posters'?'Open a finished infographic and choose Save poster.':'Pin a public question or an exploration from your table to return to it here.'),link(tab==='Posters'?profile:feed,tab==='Posters'?'Open your table':'Browse the feed','dk-secondary')):items.map(item=>tab==='Posters'?h(SavedArtwork,{key:item.target,item}):h('article',{key:item.kind+item.target,className:'dk-card'},h('small',null,item.kind==='question'?'Public question':'Your exploration'),h('div',{className:'dk-sectionline'},link(item.kind==='question'?feed+'&question='+item.target:'/debate/view/'+item.target,item.label,'dk-titlelink'),h(Save,{kind:item.kind,target:item.target,label:item.label}))))));
+      h('section',{className:'dk-collection'},tab==='Pinned'?h(PinnedList,{items,owner:user.id}):
+        items.length?items.map(item=>h(SavedArtwork,{key:item.target,item})):h('div',{className:'dk-panel'},h('h2',null,'Your saved posters'),h('p',null,'Open a finished infographic and choose Save poster.'),link(profile,'Open your table','dk-secondary'))));
   }
   return {...createGoogleLogin({React, db, useLocation, safeNext: afterLogin}),withPosterActivity,initialProfileName,checkContent,useCommenterMatches,ReactionLoginCopy,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
 }

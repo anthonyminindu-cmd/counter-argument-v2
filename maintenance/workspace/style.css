@@ -335,3 +335,16 @@ html{scroll-padding-top:198px}
 
 .dk-impact-live, .dk-puzzle { max-width: 48rem; margin-inline: auto; }
 .dk-impact-live svg { display: block; width: 100%; height: auto; }
+
+.dk-share-dialog {
+  margin:auto; padding:0; width:min(28rem,calc(100% - 2rem)); max-height:85vh;
+  overflow:auto; border:1px solid var(--dk-line); border-radius:14px;
+  background:var(--dk-panel); color:var(--dk-text); box-shadow:0 12px 48px #0005;
+}
+.dk-share-dialog::backdrop { background:rgb(0 0 0 / .6); }
+.dk-share-content { padding:20px; display:grid; gap:14px; }
+.dk-share-content h2,.dk-share-content p { margin:0; }
+.dk-share-content h2 { font-size:1.25rem; }
+.dk-share-content p { overflow-wrap:anywhere; }
+.dk-share-content input { width:100%; min-width:0; padding:9px; font:inherit; color:var(--dk-text); background:var(--dk-soft); border:1px solid var(--dk-line); border-radius:8px; }
+.dk-share-content .dk-actions { flex-wrap:wrap; }
