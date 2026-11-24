@@ -72,7 +72,7 @@ export function pointSnapshot(rows,positions=[]) {
     const urls=[row.sourceUrl,...(Array.isArray(row.sources)?row.sources:[])].map(source=>typeof source==='string'?source:source?.url);
     const right=row.submissionSide?row.submissionSide==='right':row.side==='oppose';
     return {
-      id:row.id,rank:row.rank,side:row.positionLabel||positions[right?1:0]||(right?'Second perspective':'First perspective'),
+      id:row.id,rank:row.rank,...(Number.isInteger(row.impactRank)?{impact_rank:row.impactRank}:{}),side:row.positionLabel||positions[right?1:0]||(right?'Second perspective':'First perspective'),
       title:row.title,detail:row.description||row.explanation||'',
       sources:[...new Set(urls.filter(url=>typeof url==='string'&&/^https?:\/\/\S+$/i.test(url)&&url.length<=1000&&sourceHost(url)))].slice(0,4),
       counterpoint:typeof row.counterargument==='string'?row.counterargument:null
