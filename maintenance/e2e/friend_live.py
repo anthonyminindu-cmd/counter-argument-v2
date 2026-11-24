@@ -154,16 +154,18 @@ def check_rankings_and_poster(pages, expected_titles):
         exports.append(rankings)
         if button(page, "View infographic").is_visible():
             button(page, "View infographic").click()
-        expect(page.locator("svg [data-label]")).to_have_count(20, timeout=210000)
-        labels = page.locator("svg [data-label]").evaluate_all("(nodes) => nodes.map(node => node.textContent.trim())")
-        assert len(set(labels)) == 20
+        cells = page.locator('svg[data-poster-format="impact-v2"] g[data-argument-id]')
+        expect(cells).to_have_count(20, timeout=60000)
+        observed = cells.evaluate_all("(nodes) => nodes.map(n => [n.dataset.argumentId, Number(n.dataset.pick), Number(n.dataset.impact), Number(n.dataset.rank)])")
+        expected = [[row["id"], row["ordinal"] + 1, row["impactScore"], row["impactRank"]] for row in records]
+        assert sorted(observed) == sorted(expected)
         capture(page, "12-" + side + "-poster")
         with page.expect_download() as download:
             button(page, "Download PNG").click()
         png = Path(download.value.path()).read_bytes()
         assert png[:8] == b"\x89PNG\r\n\x1a\n"
         size = struct.unpack(">II", png[16:24])
-        assert size in {(6400, 3600), (4480, 2520)}, size
+        assert size == (1080, 1350), size
         dimensions.append(size)
         posters.append(png)
     assert exports[0] == exports[1]
