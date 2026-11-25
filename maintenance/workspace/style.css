@@ -402,3 +402,11 @@ html{scroll-padding-top:198px}
   .dk-header-stat{display:grid;grid-template-columns:auto auto;align-content:center;justify-content:center;gap:0 5px;padding:3px 0}
   .dk-header-stat span{grid-column:1/-1;text-align:center;line-height:1.2}
 }
+@media(min-width:651px) and (max-width:1200px){
+  .dk-member-bar{display:grid;grid-template-columns:auto 1fr auto;gap:0 18px;padding-bottom:0}
+  .dk-member-bar .dk-brand{grid-area:1/1}
+  .dk-member-bar .dk-account{grid-area:1/3;justify-self:end}
+  .dk-header-stats{grid-area:2/1/3/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:0;border-top:1px solid var(--dk-line);margin-top:5px;padding:0}
+  .dk-header-stat{justify-content:center}
+}
+@media(max-width:370px){.dk-member-bar .dk-notify b{position:absolute;top:-4px;right:0}}
