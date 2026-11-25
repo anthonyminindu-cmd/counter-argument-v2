@@ -51,7 +51,7 @@ def login(page, member):
     page.get_by_placeholder("Enter your email", exact=True).fill(member["email"])
     page.get_by_placeholder("Enter your password", exact=True).fill(member["password"])
     page.get_by_role("button", name="Sign In", exact=True).click()
-    expect(page.get_by_role("button", name="Sign out", exact=True)).to_be_visible()
+    expect(page.get_by_role("button", name=re.compile("^Notifications"))).to_be_visible()
 
 
 def send(page, sender, receiver):
@@ -338,6 +338,7 @@ if __name__ == "__main__":
         expect(sender.get_by_role("region",name="Your activity").get_by_text(
             re.compile(r"^(cancelled|Invitation closed)$",re.I))).to_be_visible()
         check("Declined invitation closed the waiting debate in the sender's table")
+        receiver.get_by_role("link",name="Profile",exact=True).click()
         receiver.get_by_role("button",name="Sign out",exact=True).click()
         expect(receiver.get_by_role("link",name="Sign in",exact=True)).to_be_visible()
         send(sender, a, b)
