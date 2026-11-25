@@ -11,4 +11,4 @@ jobs:
       - run: python maintenance/e2e/dashboard_live.py
         env:
           DK_QA_PUBLIC_POSTER: poster-0f7ba5510ebec28c5dd1d6ba811dfb8a5a2c74357aeefa417f7ff983bcc596e2
-          DK_QA_PUBLIC_COMMENT: 93d0a0d2-bd57-41e9-9bc0-adaa3778ff96
+          DK_QA_PUBLIC_COMMENT: 93d0a0d2-bd57-41e9-9fba-c5cab88aac05
