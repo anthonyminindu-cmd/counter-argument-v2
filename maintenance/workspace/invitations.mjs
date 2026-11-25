@@ -54,7 +54,7 @@ export function createFriendInvitations({React,db,useAuth,useNavigate,useQuery,l
         navigate('/debate/topic?session='+encodeURIComponent(data.session),{replace:true});
       }catch(e){setError(e.message||'Could not accept the invitation.');setBusy(false)}
     }
-    return h('main',{className:'dk-main'},h('section',{className:'dk-panel'},h('h1',null,'Join a private debate'),
+    return h('div',{className:'dk-main'},h('section',{className:'dk-panel'},h('h1',null,'Join a private debate'),
       !token?status('Open the full invitation link from your email or text.',true):loading?status('Checking account…'):user?button('Accept invitation',join,busy):link(login('/home?join=1'),'Sign in or create an account','dk-primary'),error&&status(error,true)));
   }
   return {JoinLink,InviteTools};

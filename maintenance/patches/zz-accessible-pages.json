@@ -1,0 +1,260 @@
+[
+  {
+    "id": "accessible-route-start",
+    "find": "i.jsx(DK.Nav,{}),i.jsxs(KA,{children:[",
+    "replace": "i.jsx(DK.Nav,{}),i.jsx(DK.RouteContent,{children:i.jsxs(KA,{children:["
+  },
+  {
+    "id": "accessible-route-end",
+    "find": "path:\"*\",element:i.jsx(sM,{})})]})",
+    "replace": "path:\"*\",element:i.jsx(sM,{})})]})})"
+  },
+  {
+    "id": "accessible-route-landmark-2",
+    "find": "i.jsx(\"main\",{className:\"container",
+    "replace": "i.jsx(\"div\",{className:\"container"
+  },
+  {
+    "id": "accessible-route-landmark-3",
+    "find": "i.jsxs(\"main\",{className:\"container",
+    "replace": "i.jsxs(\"div\",{className:\"container",
+    "expectedCount": 3
+  },
+  {
+    "id": "accessible-card-headings",
+    "find": "Ae=p.forwardRef(({className:e,...t},n)=>i.jsx(\"h3\"",
+    "replace": "Ae=p.forwardRef(({className:e,...t},n)=>i.jsx(\"h2\""
+  },
+  {
+    "id": "accessible-account-heading",
+    "find": "i.jsx(\"h1\",{className:\"text-2xl font-bold\",children:\"Profile Settings\"",
+    "replace": "i.jsx(\"h2\",{className:\"text-2xl font-bold\",children:\"Profile Settings\""
+  },
+  {
+    "id": "accessible-label-theme",
+    "find": "value:t.theme,onValueChange:o=>r(\"theme\",o),children:[i.jsx(ba,{className:\"w-32\"",
+    "replace": "value:t.theme,onValueChange:o=>r(\"theme\",o),children:[i.jsx(ba,{id:\"theme\",\"aria-labelledby\":\"theme-label\",className:\"w-32\""
+  },
+  {
+    "id": "accessible-select-theme",
+    "find": "htmlFor:\"theme\",children:",
+    "replace": "id:\"theme-label\",htmlFor:\"theme\",children:"
+  },
+  {
+    "id": "accessible-label-font-size",
+    "find": "value:t.fontSize,onValueChange:o=>r(\"fontSize\",o),children:[i.jsx(ba,{className:\"w-32\"",
+    "replace": "value:t.fontSize,onValueChange:o=>r(\"fontSize\",o),children:[i.jsx(ba,{id:\"font-size\",\"aria-labelledby\":\"font-size-label\",className:\"w-32\""
+  },
+  {
+    "id": "accessible-select-font-size",
+    "find": "htmlFor:\"font-size\",children:",
+    "replace": "id:\"font-size-label\",htmlFor:\"font-size\",children:"
+  },
+  {
+    "id": "accessible-label-profile-visibility",
+    "find": "value:t.profileVisibility,onValueChange:o=>r(\"profileVisibility\",o),children:[i.jsx(ba,{className:\"w-32\"",
+    "replace": "value:t.profileVisibility,onValueChange:o=>r(\"profileVisibility\",o),children:[i.jsx(ba,{id:\"profile-visibility\",\"aria-labelledby\":\"profile-visibility-label\",className:\"w-32\""
+  },
+  {
+    "id": "accessible-select-profile-visibility",
+    "find": "htmlFor:\"profile-visibility\",children:",
+    "replace": "id:\"profile-visibility-label\",htmlFor:\"profile-visibility\",children:"
+  },
+  {
+    "id": "accessible-label-data-usage",
+    "find": "value:t.dataUsageMode,onValueChange:o=>r(\"dataUsageMode\",o),children:[i.jsx(ba,{className:\"w-32\"",
+    "replace": "value:t.dataUsageMode,onValueChange:o=>r(\"dataUsageMode\",o),children:[i.jsx(ba,{id:\"data-usage\",\"aria-labelledby\":\"data-usage-label\",className:\"w-32\""
+  },
+  {
+    "id": "accessible-select-data-usage",
+    "find": "htmlFor:\"data-usage\",children:",
+    "replace": "id:\"data-usage-label\",htmlFor:\"data-usage\",children:"
+  },
+  {
+    "id": "accessible-shared-preferences",
+    "find": ",p.useEffect(()=>{const o=document.documentElement;t.theme===\"dark\"?o.classList.add(\"dark\"):t.theme===\"light\"?o.classList.remove(\"dark\"):window.matchMedia(\"(prefers-color-scheme: dark)\").matches?o.classList.add(\"dark\"):o.classList.remove(\"dark\")},[t.theme]),p.useEffect(()=>{const o=document.documentElement,a={small:\"14px\",medium:\"16px\",large:\"18px\",\"extra-large\":\"20px\"};o.style.fontSize=a[t.fontSize]},[t.fontSize])",
+    "replace": ""
+  },
+  {
+    "id": "accessible-apply-preferences-l",
+    "find": "localStorage.setItem(\"debateai-settings\",JSON.stringify(l))",
+    "replace": "DK.applyReadingPreferences(l),localStorage.setItem(\"debateai-settings\",JSON.stringify(l))"
+  },
+  {
+    "id": "accessible-apply-preferences-o",
+    "find": "localStorage.setItem(\"debateai-settings\",JSON.stringify(o))",
+    "replace": "DK.applyReadingPreferences(o),localStorage.setItem(\"debateai-settings\",JSON.stringify(o))"
+  },
+  {
+    "id": "accessible-toast-close",
+    "find": "\"toast-close\":\"\"",
+    "replace": "\"toast-close\":\"\",\"aria-label\":\"Dismiss notification\""
+  },
+  {
+    "id": "accessible-toast-list",
+    "find": "oe.li,{role:\"status\",\"aria-live\":\"off\",\"aria-atomic\":!0,",
+    "replace": "oe.li,{"
+  },
+  {
+    "id": "accessible-toast-proxies",
+    "find": "return i.jsx(_l,{\"aria-hidden\":!0,tabIndex:0,...s,ref:t",
+    "replace": "return i.jsx(_l,{children:\"Notification navigation\",tabIndex:0,...s,ref:t"
+  },
+  {
+    "id": "accessible-autocomplete-Enter-your-email",
+    "find": "name:\"email\",type:\"email\",placeholder:\"Enter your email\"",
+    "replace": "name:\"email\",type:\"email\",placeholder:\"Enter your email\",autoComplete:\"username\""
+  },
+  {
+    "id": "accessible-autocomplete-Enter-your-password",
+    "find": "name:\"password\",type:\"password\",placeholder:\"Enter your password\"",
+    "replace": "name:\"password\",type:\"password\",placeholder:\"Enter your password\",autoComplete:\"current-password\""
+  },
+  {
+    "id": "accessible-autocomplete-your-email.com",
+    "find": "name:\"signupEmail\",type:\"email\",placeholder:\"your@email.com\"",
+    "replace": "name:\"signupEmail\",type:\"email\",placeholder:\"your@email.com\",autoComplete:\"email\""
+  },
+  {
+    "id": "accessible-autocomplete-Create-a-strong-password",
+    "find": "name:\"signupPassword\",type:\"password\",placeholder:\"Create a strong password\"",
+    "replace": "name:\"signupPassword\",type:\"password\",placeholder:\"Create a strong password\",autoComplete:\"new-password\""
+  },
+  {
+    "id": "accessible-autocomplete-Confirm-your-password",
+    "find": "name:\"confirmPassword\",type:\"password\",placeholder:\"Confirm your password\"",
+    "replace": "name:\"confirmPassword\",type:\"password\",placeholder:\"Confirm your password\",autoComplete:\"new-password\""
+  },
+  {
+    "id": "accessible-autocomplete-Enter-your-new-password",
+    "find": "name:\"password\",type:\"password\",placeholder:\"Enter your new password\"",
+    "replace": "name:\"password\",type:\"password\",placeholder:\"Enter your new password\",autoComplete:\"new-password\""
+  },
+  {
+    "id": "accessible-autocomplete-Confirm-your-new-password",
+    "find": "name:\"confirmPassword\",type:\"password\",placeholder:\"Confirm your new password\"",
+    "replace": "name:\"confirmPassword\",type:\"password\",placeholder:\"Confirm your new password\",autoComplete:\"new-password\""
+  },
+  {
+    "id": "accessible-topic-choice-name",
+    "find": "size:\"sm\",onClick:S=>{S.stopPropagation(),v(x.title)}",
+    "replace": "size:\"sm\",\"aria-pressed\":n===x.title,\"aria-label\":(n===x.title?\"Selected\":\"Use This Topic\")+\" · \"+x.title,onClick:S=>{S.stopPropagation(),v(x.title)}"
+  },
+  {
+    "id": "accessible-mode-choice-name",
+    "find": "className:\"w-full\",children:\"Select This Mode\"",
+    "replace": "className:\"w-full\",\"aria-label\":\"Select This Mode · \"+R.title,children:\"Select This Mode\""
+  },
+  {
+    "id": "accessible-keyboard-topic-highlight",
+    "find": "onMouseUp:X_,children:eN()})",
+    "replace": "onMouseUp:X_,children:eN()}),i.jsx(DK.TopicHighlight,{topic:u,onSelect:(text,start)=>{Me([...ae,{id:crypto.randomUUID(),text,start,end:start+text.length}]);_e(text)}})"
+  },
+  {
+    "id": "accessible-single-navigation-action-30",
+    "find": "i.jsx(Qe,{to:\"/settings\",children:i.jsx(G,{variant:\"ghost\",size:\"icon\",title:\"App Settings\",children:i.jsx(gu,{className:\"w-5 h-5\"})})})",
+    "replace": "i.jsx(G,{asChild:!0,variant:\"ghost\",size:\"icon\",title:\"App Settings\",children:i.jsx(Qe,{to:\"/settings\",children:i.jsx(gu,{className:\"w-5 h-5\"})})})"
+  },
+  {
+    "id": "accessible-single-navigation-action-31",
+    "find": "i.jsx(Qe,{to:\"/profile\",children:i.jsxs(G,{variant:\"ghost\",className:\"flex items-center space-x-2 hover:bg-muted/50\",children:[i.jsxs(Tn,{className:\"w-8 h-8\",children:[i.jsx(Pn,{src:(s==null?void 0:s.avatar_url)||\"\"}),i.jsx(An,{className:\"bg-primary text-primary-foreground\",children:l().charAt(0).toUpperCase()})]}),i.jsx(\"span\",{className:\"hidden sm:inline text-sm font-medium\",children:l()})]})})",
+    "replace": "i.jsx(G,{asChild:!0,variant:\"ghost\",className:\"flex items-center space-x-2 hover:bg-muted/50\",children:i.jsxs(Qe,{to:\"/profile\",children:[i.jsxs(Tn,{className:\"w-8 h-8\",children:[i.jsx(Pn,{src:(s==null?void 0:s.avatar_url)||\"\"}),i.jsx(An,{className:\"bg-primary text-primary-foreground\",children:l().charAt(0).toUpperCase()})]}),i.jsx(\"span\",{className:\"hidden sm:inline text-sm font-medium\",children:l()})]})})"
+  },
+  {
+    "id": "accessible-single-navigation-action-32",
+    "find": "i.jsx(Qe,{to:\"/login\",children:i.jsxs(G,{size:\"lg\",className:\"px-12 py-4 text-lg h-14\",children:[i.jsx(gr,{className:\"w-6 h-6 mr-3\"}),\"Start Debating Now\"]})})",
+    "replace": "i.jsx(G,{asChild:!0,size:\"lg\",className:\"px-12 py-4 text-lg h-14\",children:i.jsxs(Qe,{to:\"/login\",children:[i.jsx(gr,{className:\"w-6 h-6 mr-3\"}),\"Start Debating Now\"]})})"
+  },
+  {
+    "id": "accessible-single-navigation-action-33",
+    "find": "i.jsx(Qe,{to:\"/login\",children:i.jsxs(G,{variant:\"outline\",size:\"sm\",children:[i.jsx(bo,{className:\"w-4 h-4 mr-2\"}),\"Start your own debate\"]})})",
+    "replace": "i.jsx(G,{asChild:!0,variant:\"outline\",size:\"sm\",children:i.jsxs(Qe,{to:\"/login\",children:[i.jsx(bo,{className:\"w-4 h-4 mr-2\"}),\"Start your own debate\"]})})"
+  },
+  {
+    "id": "accessible-single-navigation-action-34",
+    "find": "i.jsx(Qe,{to:\"/home\",children:i.jsxs(G,{variant:\"ghost\",size:\"sm\",children:[i.jsx(Ts,{className:\"w-4 h-4 mr-2\"}),\"Back to Home\"]})})",
+    "replace": "i.jsx(G,{asChild:!0,variant:\"ghost\",size:\"sm\",children:i.jsxs(Qe,{to:\"/home\",children:[i.jsx(Ts,{className:\"w-4 h-4 mr-2\"}),\"Back to Home\"]})})"
+  },
+  {
+    "id": "accessible-single-navigation-action-35",
+    "find": "i.jsx(Qe,{to:\"/debate/start\",children:i.jsx(G,{children:\"Start a Debate\"})})",
+    "replace": "i.jsx(G,{asChild:!0,children:i.jsx(Qe,{to:\"/debate/start\",children:\"Start a Debate\"})})"
+  },
+  {
+    "id": "accessible-single-navigation-action-36",
+    "find": "i.jsx(Qe,{to:\"/home\",children:i.jsx(G,{variant:\"ghost\",size:\"icon\",children:i.jsx(Ts,{className:\"w-5 h-5\"})})})",
+    "replace": "i.jsx(G,{asChild:!0,variant:\"ghost\",size:\"icon\",\"aria-label\":\"Back to home\",children:i.jsx(Qe,{to:\"/home\",children:i.jsx(Ts,{className:\"w-5 h-5\"})})})",
+    "expectedCount": 2
+  },
+  {
+    "id": "accessible-single-navigation-action-37",
+    "find": "i.jsx(Qe,{to:\"/profile\",children:i.jsx(G,{children:\"Return to profile\"})})",
+    "replace": "i.jsx(G,{asChild:!0,children:i.jsx(Qe,{to:\"/profile\",children:\"Return to profile\"})})"
+  },
+  {
+    "id": "accessible-single-navigation-action-38",
+    "find": "i.jsx(Qe,{to:\"/profile\",children:i.jsxs(G,{variant:\"outline\",children:[i.jsx(Ts,{}),\"Back to profile\"]})})",
+    "replace": "i.jsx(G,{asChild:!0,variant:\"outline\",children:i.jsxs(Qe,{to:\"/profile\",children:[i.jsx(Ts,{}),\"Back to profile\"]})})"
+  },
+  {
+    "id": "accessible-single-navigation-action-39",
+    "find": "i.jsx(Qe,{to:\"/debate/start\",children:i.jsx(G,{children:\"Start a new debate\"})})",
+    "replace": "i.jsx(G,{asChild:!0,children:i.jsx(Qe,{to:\"/debate/start\",children:\"Start a new debate\"})})",
+    "expectedCount": 2
+  },
+  {
+    "id": "accessible-single-navigation-action-40",
+    "find": "i.jsx(Qe,{to:\"/debate/start?mode=friend\",children:i.jsx(G,{variant:\"ghost\",size:\"icon\",children:i.jsx(Ts,{className:\"w-5 h-5\"})})})",
+    "replace": "i.jsx(G,{asChild:!0,variant:\"ghost\",size:\"icon\",\"aria-label\":\"Back to friend invitations\",children:i.jsx(Qe,{to:\"/debate/start?mode=friend\",children:i.jsx(Ts,{className:\"w-5 h-5\"})})})"
+  },
+  {
+    "id": "accessible-single-navigation-action-41",
+    "find": "i.jsx(Qe,{to:f?\"/debate/start?mode=friend\":\"/debate/start\",children:i.jsx(G,{variant:\"ghost\",size:\"icon\",children:i.jsx(Ts,{className:\"w-5 h-5\"})})})",
+    "replace": "i.jsx(G,{asChild:!0,variant:\"ghost\",size:\"icon\",\"aria-label\":\"Back to debate setup\",children:i.jsx(Qe,{to:f?\"/debate/start?mode=friend\":\"/debate/start\",children:i.jsx(Ts,{className:\"w-5 h-5\"})})})"
+  },
+  {
+    "id": "accessible-single-navigation-action-42",
+    "find": "i.jsx(Qe,{to:\"/profile\",children:i.jsx(G,{variant:\"outline\",children:\"Return to debate history\"})})",
+    "replace": "i.jsx(G,{asChild:!0,variant:\"outline\",children:i.jsx(Qe,{to:\"/profile\",children:\"Return to debate history\"})})"
+  },
+  {
+    "id": "accessible-single-navigation-action-43",
+    "find": "i.jsx(Qe,{to:\"/debate/topic\",children:i.jsx(G,{variant:\"ghost\",size:\"icon\",children:i.jsx(Ts,{className:\"w-5 h-5\"})})})",
+    "replace": "i.jsx(G,{asChild:!0,variant:\"ghost\",size:\"icon\",\"aria-label\":\"Back to topic selection\",children:i.jsx(Qe,{to:\"/debate/topic\",children:i.jsx(Ts,{className:\"w-5 h-5\"})})})"
+  },
+  {
+    "id": "accessible-position-heading",
+    "find": "i.jsxs(\"h4\",{className:\"font-bold text-lg text-success",
+    "replace": "i.jsxs(\"h3\",{className:\"font-bold text-lg text-success"
+  },
+  {
+    "id": "accessible-account-subsection-1",
+    "find": "i.jsx(\"h4\",{className:\"font-medium\",children:\"Password\"})",
+    "replace": "i.jsx(\"h3\",{className:\"font-medium\",children:\"Password\"})"
+  },
+  {
+    "id": "accessible-account-subsection-2",
+    "find": "i.jsx(\"h4\",{className:\"font-medium\",children:\"Two-Factor Authentication\"})",
+    "replace": "i.jsx(\"h3\",{className:\"font-medium\",children:\"Two-Factor Authentication\"})"
+  },
+  {
+    "id": "accessible-account-subsection-3",
+    "find": "i.jsx(\"h4\",{className:\"font-medium\",children:\"Friends\"})",
+    "replace": "i.jsx(\"h3\",{className:\"font-medium\",children:\"Friends\"})"
+  },
+  {
+    "id": "accessible-account-subsection-4",
+    "find": "i.jsx(\"h4\",{className:\"font-medium\",children:\"Blocked Users\"})",
+    "replace": "i.jsx(\"h3\",{className:\"font-medium\",children:\"Blocked Users\"})"
+  },
+  {
+    "id": "accessible-account-subsection-5",
+    "find": "i.jsx(\"h4\",{className:\"font-medium group-hover:text-primary transition-colors\",children:_.topic})",
+    "replace": "i.jsx(\"h3\",{className:\"font-medium group-hover:text-primary transition-colors\",children:_.topic})"
+  },
+  {
+    "id": "accessible-saved-debate-heading",
+    "find": "i.jsx(Ae,{className:\"text-2xl break-words\",children:l})",
+    "replace": "i.jsx(\"h1\",{className:\"text-2xl font-semibold break-words\",children:l})"
+  }
+]
