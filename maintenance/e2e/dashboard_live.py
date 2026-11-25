@@ -59,13 +59,12 @@ def run():
             expect(bell).to_be_visible()
             expect(profile_button).to_be_visible()
             layout_errors = []
-            for width in [320, 390, 768, 1280]:
+            for width in [320, 390, 650, 651, 768, 940, 941, 1024, 1200, 1201, 1280]:
                 page.set_viewport_size({"width": width, "height": 844})
                 page.evaluate("() => new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))")
                 layout = header.evaluate("""el => ({client:el.clientWidth, scroll:el.scrollWidth,
                     controls:[...el.querySelectorAll('nav,a,button,.dk-mark,.dk-bell-label')].filter(n=>n.offsetWidth).map(n=>[
                       n.className,Math.round(n.getBoundingClientRect().left),Math.round(n.getBoundingClientRect().right)])})""")
-                print("HEADER LAYOUT", width, layout, flush=True)
                 if layout["scroll"] > layout["client"]:
                     layout_errors.append((width,layout))
                 for control in [header.locator(".dk-mark"), header.locator(".dk-bell-label"), profile_button]:
@@ -105,6 +104,10 @@ def run():
             api("/rest/v1/rpc/dk_change_friend", {"p_peer": session["user"]["id"], "p_action": "request"}, peer["access_token"])
             page.reload()
             bell = page.get_by_role("button", name="Notifications, 1 unread", exact=True)
+            page.set_viewport_size({"width": 320, "height": 844})
+            expect(bell).to_be_visible()
+            mark_box = header.locator(".dk-mark").bounding_box()
+            assert mark_box["x"] + mark_box["width"] <= bell.bounding_box()["x"]
             bell.click()
             dialog = page.get_by_role("dialog", name="Notifications")
             expect(dialog.get_by_role("heading", name="Debate invitations")).to_be_visible()
