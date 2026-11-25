@@ -437,3 +437,18 @@ html{scroll-padding-top:198px}
   .dk-header-stat{justify-content:center}
 }
 @media(max-width:370px){.dk-member-bar .dk-notify b{position:absolute;top:-4px;right:0}}
+
+.dk-photo-heading,.dk-person-name{display:flex;align-items:center;gap:.8rem}
+.dk-portrait{display:inline-grid;place-items:center;flex:none;overflow:hidden;border-radius:50%;background:var(--dk-soft);color:var(--dk-text)}
+.dk-portrait img{display:block;width:100%;height:100%;object-fit:cover}
+.dk-portrait-small{width:26px;height:26px}
+.dk-profile-button .dk-portrait{width:22px;height:22px;background:transparent;color:inherit}
+.dk-portrait-profile{width:50px;height:50px;border:1px solid var(--dk-line)}
+.dk-portrait-profile .dk-icon{width:24px;height:24px}
+.dk-portrait-preview{width:118px;height:118px;justify-self:center;border:1px solid var(--dk-line)}
+.dk-portrait-preview .dk-icon{width:50px;height:50px}
+.dk-photo-trigger{display:grid;justify-items:center;gap:.2rem;min-width:58px;min-height:44px;font-weight:650;font-size:.82rem;color:var(--dk-mint)}
+.dk-photo-trigger:hover span:last-child{text-decoration:underline}
+.dk-photo-trigger:focus-visible{outline:2px solid currentColor;outline-offset:3px;border-radius:4px}
+.dk-photo-trigger:disabled{opacity:.7}
+.dk-photo-dialog input[hidden]{display:none}

@@ -30,7 +30,7 @@ export function dashboardDestination(row) {
   if(row.kind==='friend')return '/debate/start?mode=friend&person='+encodeURIComponent(row.label);
   return feed+'&example='+topic+(row.point_id?'&point='+encodeURIComponent(row.point_id):'&comments=1')+'&comment='+item;
 }
-export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuery,link,icon,status,login,profileRoute,ProfileControls}) {
+export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuery,link,icon,status,login,profileRoute,ProfileControls,PhotoEditor}) {
   const h=React.createElement,{useState,useEffect,useRef}=React;
   function useChanges(refresh) {
     useEffect(()=>{
@@ -144,7 +144,7 @@ export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuer
           key==='friends'&&summary?.incoming>0?h('small',null,summary.incoming+' pending'):null);
     }
     return h('main',{className:'dk-main dk-profile dk-dashboard',id:'dk-main'},
-      h('header',{className:'dk-dashboard-heading'},h('div',null,h('h1',null,'Your dashboard')),
+      h('header',{className:'dk-dashboard-heading'},h('div',{className:'dk-photo-heading'},h(PhotoEditor),h('h1',null,'Your dashboard')),
         h(ProfileControls)),
       h('nav',{className:'dk-dashboard-metrics','aria-label':'Your engagement'},
         h('div',{className:'dk-support-pair'},...dashboardMetrics.slice(0,2).map(metricCard)),

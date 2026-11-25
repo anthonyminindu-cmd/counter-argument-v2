@@ -43,9 +43,9 @@ export function compile() {
   output = output.replace('function posterSvgBlob(',()=>portraitSource('portrait.mjs')+'\nfunction posterSvgBlob(');
   const mount = 'Zw(document.getElementById("root")).render(i.jsx(aM,{}));';
   if (output.split(mount).length !== 2) throw new Error('Review the V2 mount before integrating the workspace');
-  const workspace = ['friend.mjs','reader.mjs','invitations.mjs','dashboard.mjs','social-header.mjs','impressions.mjs','app.mjs'].map(file => fs.readFileSync(path.join(root, 'maintenance/workspace',file), 'utf8')
+  const workspace = ['friend.mjs','reader.mjs','invitations.mjs','dashboard.mjs','social-header.mjs','impressions.mjs','profile-photo.mjs','app.mjs'].map(file => fs.readFileSync(path.join(root, 'maintenance/workspace',file), 'utf8')
     .replace(/^import .* from '\.\.\/renderer\/(?:poster-finish|portrait)\.mjs';$/gm, '')
-    .replace(/^import .* from '\.\/(?:friend|reader|invitations|dashboard|social-header|impressions|google-login)\.mjs';$/gm, '').replace(/^export /gm, '')).join('\n');
+    .replace(/^import .* from '\.\/(?:friend|reader|invitations|dashboard|social-header|impressions|profile-photo|google-login)\.mjs';$/gm, '').replace(/^export /gm, '')).join('\n');
   const adapter = 'const DK=(()=>{' + workspace + '\nreturn {...createWorkspace({React:p,Link:Qe,useAuth:Xt,useLocation:Vi,useNavigate:Mn,db:$,Account:y3,OriginalTopic:vD,OriginalStart:nD,Directory:V5}),afterLogin,visibleFriendProfile};})();\n';
   output = output.replace(mount, () => adapter + mount);
   if (!output.includes('bqhyropctavxjdnogmor.supabase.co')) throw new Error('V2 backend identity missing');

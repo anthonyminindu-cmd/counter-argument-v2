@@ -1,0 +1,17 @@
+[
+  {
+    "id": "share-profile-picture-editor",
+    "find": "i.jsxs(\"div\",{className:\"flex items-center space-x-4\",children:[i.jsxs(Tn,{className:\"w-20 h-20\",children:[i.jsx(Pn,{src:(e==null?void 0:e.avatar_url)||\"\"}),i.jsx(An,{className:\"text-lg\",children:((N=g.display_name)==null?void 0:N.charAt(0))||((E=g.username)==null?void 0:E.charAt(0))||\"U\"})]}),i.jsxs(\"div\",{children:[i.jsx(\"input\",{ref:f,type:\"file\",accept:\"image/*\",onChange:j,className:\"hidden\"}),i.jsxs(G,{variant:\"outline\",size:\"sm\",onClick:()=>{var _;return(_=f.current)==null?void 0:_.click()},disabled:a,children:[i.jsx(IC,{className:\"w-4 h-4 mr-2\"}),a?\"Uploading...\":\"Change Picture\"]}),i.jsx(\"p\",{className:\"text-sm text-muted-foreground mt-1\",children:\"JPG, PNG, GIF, or WebP. Max size 2MB\"})]})]})",
+    "replace": "i.jsx(DK.PhotoEditor,{})"
+  },
+  {
+    "id": "retire-old-profile-picture-upload",
+    "find": ",j=async _=>{var I;const C=(I=_.target.files)==null?void 0:I[0];if(!C)return;if(![\"image/jpeg\",\"image/png\",\"image/gif\",\"image/webp\"].includes(C.type)){m({title:\"Invalid file type\",description:\"Please upload a JPG, PNG, GIF, or WebP image\",variant:\"destructive\"});return}if(C.size>2*1024*1024){m({title:\"File too large\",description:\"Please upload an image smaller than 2MB\",variant:\"destructive\"});return}l(!0);try{const{data:{user:k}}=await $.auth.getUser();if(!k)return;const P=C.name.split(\".\").pop(),A=`${k.id}/avatar.${P}`;if(e!=null&&e.avatar_url){const T=e.avatar_url.split(\"/\").pop();T&&T!==A&&await $.storage.from(\"avatars\").remove([`${k.id}/${T}`])}const{error:O}=await $.storage.from(\"avatars\").upload(A,C,{upsert:!0});if(O)throw O;const{data:{publicUrl:L}}=$.storage.from(\"avatars\").getPublicUrl(A),{error:W}=await $.from(\"profiles\").update({avatar_url:L}).eq(\"user_id\",k.id);if(W)throw W;t(T=>T?{...T,avatar_url:L}:null),m({title:\"Success\",description:\"Profile picture updated successfully\"})}catch(k){console.error(\"Error uploading avatar:\",k),m({title:\"Error\",description:\"Failed to upload profile picture\",variant:\"destructive\"})}finally{l(!1),f.current&&(f.current.value=\"\")}}",
+    "replace": ""
+  },
+  {
+    "id": "remove-old-picture-editor-state",
+    "find": "y3=()=>{var N,E;const[e,t]=p.useState(null),[n,r]=p.useState(!0),[s,o]=p.useState(!1),[a,l]=p.useState(!1),[c,u]=p.useState([]),[d,h]=p.useState(\"\"),f=p.useRef(null),",
+    "replace": "y3=()=>{const[e,t]=p.useState(null),[n,r]=p.useState(!0),[s,o]=p.useState(!1),[c,u]=p.useState([]),[d,h]=p.useState(\"\"),"
+  }
+]

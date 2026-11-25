@@ -1,3 +1,4 @@
+import {createProfilePhotos} from './profile-photo.mjs';
 import {watchContentImpressions} from './impressions.mjs';
 import {createMemberHeader} from './social-header.mjs';
 import {createSocialDashboard} from './dashboard.mjs';
@@ -168,6 +169,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function Icon({name}) {return h('svg',{className:'dk-icon',viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:1.7,strokeLinecap:'round',strokeLinejoin:'round','aria-hidden':true},h('path',{d:glyphs[name]}));}
   const icon=name=>h(Icon,{name});
+  const {PhotoProvider,PhotoEditor,HeaderPortrait,Portrait}=createProfilePhotos({React,db,useQuery,icon});
   const {SocialProvider,HeaderStats,SocialActivity,useSocial}=createMemberHeader({React,db,Link,useQuery,icon});
   const {InboxProvider,Notifications,FriendSetup,FriendPointEditor,useFriendTopic,useFriendPreparationSync}=createFriendExperience({React,db,Link,useLocation,useNavigate,Directory,icon,SocialActivity,useSocial,ExternalInvites:()=>h(InviteTools)});
   const link=(to,label,cls='dk-link')=>h(Link,{to,className:cls},label);
@@ -185,7 +187,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       loading:key!==null&&(value?.key!==key||value.version!==version),refresh:()=>refresh(v=>v+1)};
   }
   const {ProfileDashboard,CommentLike,useCommentLikes,useFocusedRows,useFocusComment,useFriends,FriendButton,Requests}=createSocialDashboard({
-    React,db,useAuth,useLocation,Link,useQuery,link,icon,status,login,profileRoute,ProfileControls
+    React,db,useAuth,useLocation,Link,useQuery,link,icon,status,login,profileRoute,ProfileControls,PhotoEditor
   });
   function Provider({children}) {
     const {user,loading}=useAuth(),id=user?.id,root=useRef(null);
@@ -198,7 +200,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       });
     },[id,loading]);
     const query=useQuery(id||null,()=>db.from('dk_collection').select('kind,target,label,created_at').eq('owner_id',id).order('created_at',{ascending:false}));
-    return h(Collection.Provider,{value:{id,...query,items:query.data||[]}},h(SocialProvider,{key:id||'guest',owner:id},h(InboxProvider,{owner:id},h('div',{ref:root,className:'dk-shell min-h-screen'},children))));
+    return h(Collection.Provider,{value:{id,...query,items:query.data||[]}},h(PhotoProvider,{key:id||'guest',owner:id},h(SocialProvider,{key:id||'guest',owner:id},h(InboxProvider,{owner:id},h('div',{ref:root,className:'dk-shell min-h-screen'},children)))));
   }
   function Save({kind,target,label,artwork}) {
     const c=useContext(Collection), [busy,setBusy]=useState(false),[error,setError]=useState('');
@@ -301,7 +303,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         user&&h(HeaderStats),
         h('div',{className:'dk-account'},user?[
           h(Notifications,{key:'inbox'}),
-          h(Link,{key:'profile',to:profile,className:'dk-profile-button','aria-current':active==='Profile'?'page':undefined,onClick:scrollToStart},icon('person'),'Profile')
+          h(Link,{key:'profile',to:profile,className:'dk-profile-button','aria-current':active==='Profile'?'page':undefined,onClick:scrollToStart},h(HeaderPortrait),'Profile')
         ]:link(login(home),'Sign in','dk-small'))),
       h('nav',{'aria-label':'Start and discover',className:'dk-launch'},
         h('div',{role:'group','aria-labelledby':'dk-start-label',className:'dk-launch-group dk-start-group'},
@@ -830,7 +832,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const commenters=useCommenterMatches(search);
     const friends=useFriends(user.id);
     const saved=c.items.filter(row=>row.kind==='person');
-    const rows=search.length>=2?(q.data||[]).filter(row=>row.user_id!==user.id && visibleFriendProfile(row)).map(row=>({target:row.user_id,label:row.display_name||row.username||'Community member',query:row.username||row.display_name})):saved;
+    const rows=search.length>=2?(q.data||[]).filter(row=>row.user_id!==user.id && visibleFriendProfile(row)).map(row=>({target:row.user_id,label:row.display_name||row.username||'Community member',query:row.username||row.display_name,photo:row.avatar_url})):saved;
     return h('section',{className:'dk-panel'},h('h2',null,'Your people'),h(Requests,{friends}),h('label',{className:'dk-form'},'Find a friend',h('input',{value:input,type:'search',placeholder:'Search by name or username',onChange:e=>setInput(e.target.value)})),
       q.error&&status('Could not search member accounts.',true),
       commenters.error&&h('button',{type:'button',onClick:commenters.refresh},'Retry loading commenter profiles'),
@@ -838,7 +840,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       !q.error&&!commenters.error&&!q.loading&&!commenters.loading&&!rows.length&&!commenters.matches.length&&
         h('p',null,search.length>=2?'No matching people. Try another name.':'Save a friend to quickly start your next exploration.'),
       (rows.length>0||commenters.matches.length>0)&&h('ul',{className:'dk-list'},
-        ...rows.map(row=>h('li',{key:row.target},h('div',null,h('strong',null,row.label),link(friend+'&person='+encodeURIComponent(row.query||row.label),'Invite to debate')),h('div',{className:'dk-actions'},h(FriendButton,{peer:row.target,relation:friends.data?.find(f=>f.peer===row.target)?.status,ready:!!friends.data&&!friends.loading}),h(Save,{kind:'person',target:row.target,label:row.label})))),
+        ...rows.map(row=>h('li',{key:row.target},h('div',null,h('strong',{className:'dk-person-name'},row.photo&&h(Portrait,{url:row.photo}),row.label),link(friend+'&person='+encodeURIComponent(row.query||row.label),'Invite to debate')),h('div',{className:'dk-actions'},h(FriendButton,{peer:row.target,relation:friends.data?.find(f=>f.peer===row.target)?.status,ready:!!friends.data&&!friends.loading}),h(Save,{kind:'person',target:row.target,label:row.label})))),
         ...commenters.matches.map(person=>h('li',{key:person.user_id},h('div',null,
           link(person.profileUrl,person.display_name),h('small',null,'@'+person.username))))));
   }
@@ -873,5 +875,5 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       h('section',{className:'dk-collection'},tab==='Pinned'?h(PinnedList,{items,owner:user.id}):
         items.length?items.map(item=>h(SavedArtwork,{key:item.target,item})):h('div',{className:'dk-panel'},h('h2',null,'Your saved posters'),h('p',null,'Open a finished infographic and choose Save poster.'),link(profile,'Open your table','dk-secondary'))));
   }
-  return {...createGoogleLogin({React, db, useLocation, safeNext: afterLogin}),withPosterActivity,initialProfileName,checkContent,useCommenterMatches,ReactionLoginCopy,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
+  return {...createGoogleLogin({React, db, useLocation, safeNext: afterLogin}),withPosterActivity,initialProfileName,checkContent,useCommenterMatches,ReactionLoginCopy,PhotoEditor,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
 }
