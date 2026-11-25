@@ -35,7 +35,7 @@ async function readInbox(db, owner, waiting) {
   return rows.map(row=>({...row, person:names.get(row.sender_id===owner?row.receiver_id:row.sender_id)||'Your friend'}));
 }
 
-export function createFriendExperience({React,db,Link,useLocation,useNavigate,Directory,icon,ExternalInvites}) {
+export function createFriendExperience({React,db,Link,useLocation,useNavigate,Directory,icon,SocialActivity,useSocial,ExternalInvites}) {
   const h=React.createElement;
   const {useState,useRef,useEffect,useContext}=React;
   const Inbox=React.createContext(null);
@@ -143,7 +143,8 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
   }
 
   function Notifications(){
-    const inbox=useContext(Inbox), dialog=useRef(null);
+    const inbox=useContext(Inbox),social=useSocial(),dialog=useRef(null);
+    const unread=inbox.pendingCount+(social.summary?.unread||0);
     const open=!!inbox.panel;
     useEffect(()=>{
       const el=dialog.current;
@@ -164,12 +165,14 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
     }
     const selected=inbox.rows.find(row=>row.id===inbox.panel?.id);
     const displayed=inbox.panel?.all?inbox.rows:selected?[selected]:[];
-    return h(React.Fragment,null,h('button',{type:'button',className:'dk-notify','aria-label':'Notifications'+(inbox.pendingCount?', '+inbox.pendingCount+' unread':''),'aria-haspopup':'dialog',onClick:inbox.open},
-      icon('bell'),h('span',{className:'dk-bell-label'},'Notifications'),inbox.pendingCount>0&&h('b',null,inbox.pendingCount)),
+    return h(React.Fragment,null,h('button',{type:'button',className:'dk-notify','aria-label':'Notifications'+(unread?', '+unread+' unread':''),'aria-haspopup':'dialog','aria-expanded':open,onClick:()=>{social.open();inbox.open()}},
+      icon('bell'),h('span',{className:'dk-bell-label'},'Notifications'),unread>0&&h('b',null,unread>99?'99+':unread)),
       h('dialog',{ref:dialog,className:'dk-inbox','aria-labelledby':'dk-inbox-title',onCancel:e=>{e.preventDefault();inbox.close();}},
         h('div',{className:'dk-sectionline'},h('h2',{id:'dk-inbox-title'},selected&&!inbox.panel?.all?'Debate invitation':'Notifications'),action('Close',inbox.close)),
         (inbox.panel?.error||inbox.error)&&h('p',{role:'alert'},inbox.panel?.error||inbox.error,' ',action('Refresh',inbox.refresh)),
-        displayed.length?h('ul',null,...displayed.map(rowView)):h('p',null,inbox.loaded?'No invitations yet.':'Loading notifications…')));
+        inbox.panel?.all&&h(SocialActivity,{close:inbox.close}),
+        inbox.panel?.all&&h('h3',null,'Debate invitations'),
+        displayed.length?h('ul',null,...displayed.map(rowView)):h('p',null,inbox.loaded?'No invitations yet.':'Loading invitations…')));
   }
   function FriendSetup(){
     const inbox=useContext(Inbox),navigate=useNavigate(), loc=useLocation();

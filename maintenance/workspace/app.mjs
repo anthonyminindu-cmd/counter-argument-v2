@@ -1,3 +1,4 @@
+import {createMemberHeader} from './social-header.mjs';
 import {createSocialDashboard} from './dashboard.mjs';
 import {websitePosterSvg} from '../renderer/poster-finish.mjs';
 import {pointSnapshot,createPointReader,useAudiencePoster,createPuzzlePoster,reactionIntent,withPosterActivity,posterPointData} from './reader.mjs';
@@ -166,7 +167,8 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function Icon({name}) {return h('svg',{className:'dk-icon',viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:1.7,strokeLinecap:'round',strokeLinejoin:'round','aria-hidden':true},h('path',{d:glyphs[name]}));}
   const icon=name=>h(Icon,{name});
-  const {InboxProvider,Notifications,FriendSetup,FriendPointEditor,useFriendTopic,useFriendPreparationSync}=createFriendExperience({React,db,Link,useLocation,useNavigate,Directory,icon,ExternalInvites:()=>h(InviteTools)});
+  const {SocialProvider,HeaderStats,SocialActivity,useSocial}=createMemberHeader({React,db,Link,useQuery,icon});
+  const {InboxProvider,Notifications,FriendSetup,FriendPointEditor,useFriendTopic,useFriendPreparationSync}=createFriendExperience({React,db,Link,useLocation,useNavigate,Directory,icon,SocialActivity,useSocial,ExternalInvites:()=>h(InviteTools)});
   const link=(to,label,cls='dk-link')=>h(Link,{to,className:cls},label);
   const status=(message,alert=false)=>h('p',{className:'dk-note',role:alert?'alert':'status'},message);
   function useQuery(key,load) {
@@ -182,12 +184,12 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       loading:key!==null&&(value?.key!==key||value.version!==version),refresh:()=>refresh(v=>v+1)};
   }
   const {ProfileDashboard,CommentLike,useCommentLikes,useFocusedRows,useFocusComment,useFriends,FriendButton,Requests}=createSocialDashboard({
-    React,db,useAuth,useLocation,Link,useQuery,link,icon,status,login,profileRoute
+    React,db,useAuth,useLocation,Link,useQuery,link,icon,status,login,profileRoute,ProfileControls
   });
   function Provider({children}) {
     const {user}=useAuth(), id=user?.id;
     const query=useQuery(id||null,()=>db.from('dk_collection').select('kind,target,label,created_at').eq('owner_id',id).order('created_at',{ascending:false}));
-    return h(Collection.Provider,{value:{id,...query,items:query.data||[]}},h(InboxProvider,{key:id||'guest',owner:id},h('div',{className:'dk-shell min-h-screen'},children)));
+    return h(Collection.Provider,{value:{id,...query,items:query.data||[]}},h(SocialProvider,{key:id||'guest',owner:id},h(InboxProvider,{owner:id},h('div',{className:'dk-shell min-h-screen'},children))));
   }
   function Save({kind,target,label,artwork}) {
     const c=useContext(Collection), [busy,setBusy]=useState(false),[error,setError]=useState('');
@@ -258,13 +260,19 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     }).catch(()=>{});return()=>{active=false}},[svg]);
     return identity?.svg===svg&&svg&&user?h(React.Fragment,null,h(Save,{kind:'poster',target:identity.key,label:title,artwork:svg}),h(PersonalPoster,{key:user.id+identity.key,title,svg,points:pointSnapshot(points,positions),identity:identity.key,userId:user.id,onActivity})):null;
   }
+  function ProfileControls(){
+    const {signOut}=useAuth(),navigate=useNavigate(),[error,setError]=useState('');
+    return h('div',{className:'dk-profile-controls'},link(profileRoute('Account'),'Account settings'),link('/settings','Appearance'),
+      h('button',{className:'dk-small',type:'button',onClick:async()=>{try{await signOut();navigate('/')}catch{setError('Sign-out failed. Try again.')}}},'Sign out'),
+      error&&status(error,true));
+  }
   function Nav() {
-    const {user,signOut}=useAuth(), loc=useLocation(), navigate=useNavigate();
-    const [error,setError]=useState('');
+    const {user}=useAuth(),loc=useLocation();
     const onHome=['/','/home','/home/'].includes(loc.pathname);
     const inFeed=onHome&&new URLSearchParams(loc.search).get('view')==='feed';
     const active=loc.pathname.startsWith('/profile')?'Profile':inFeed?'Feed':onHome?'Home':'';
-    const destinations=[[home,'Home','home'],[feed,'Feed','feed'],[user?profile:login(profile),'Profile','person']];
+    const destinations=[[home,'Home','home'],[feed,'Feed','feed']];
+    if(!user)destinations.push([login(profile),'Profile','person']);
     function action(to,label,glyph) {
       return h(Link,{to,className:'dk-choice dk-'+glyph,onClick:scrollToStart},
         h('span',{className:'dk-symbol'},icon(glyph)),h('span',null,label));
@@ -275,16 +283,16 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     return h('header',{className:'dk-header'},
       onHome&&!['example','question','commenter','join'].some(key=>new URLSearchParams(loc.search).has(key))&&
         h('a',{className:'dk-skip',href:'#dk-debates',onClick:e=>{const el=document.getElementById('dk-debates');if(el){e.preventDefault();el.focus();el.scrollIntoView({block:'start'});}}},'Skip to debates'),
-      h('div',{className:'dk-bar'},
+      h('div',{className:user?'dk-bar dk-member-bar':'dk-bar'},
         h(Link,{to:home,className:'dk-brand','aria-label':'Differ Kindly home',onClick:scrollToStart},
           h('img',{className:'dk-mark',src:brandMark,width:817,height:670,alt:''}),
-          !isWelcomeLocation(loc)&&h('small',{className:'dk-brand-tagline'},'Two views. One table.')),
+          !user&&!isWelcomeLocation(loc)&&h('small',{className:'dk-brand-tagline'},'Two views. One table.')),
         h('nav',{'aria-label':'Primary',className:'dk-nav'},...destinations.map(([to,name,g])=>
           h(Link,{key:name,to,onClick:scrollToStart,'aria-current':active===name?'page':undefined},icon(g),name))),
+        user&&h(HeaderStats),
         h('div',{className:'dk-account'},user?[
           h(Notifications,{key:'inbox'}),
-          h(Link,{key:'settings',to:'/settings',className:'dk-small','aria-label':'Settings'},icon('settings')),
-          h('button',{key:'out',className:'dk-small',onClick:async()=>{try{await signOut();navigate('/')}catch{setError('Sign-out failed. Try again.')}}},'Sign out')
+          h(Link,{key:'profile',to:profile,className:'dk-profile-button','aria-current':active==='Profile'?'page':undefined,onClick:scrollToStart},icon('person'),'Profile')
         ]:link(login(home),'Sign in','dk-small'))),
       h('nav',{'aria-label':'Start and discover',className:'dk-launch'},
         h('div',{role:'group','aria-labelledby':'dk-start-label',className:'dk-launch-group dk-start-group'},
@@ -293,8 +301,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
           action(user?ai:login(ai),'Debate with AI','ai')),
         h('div',{role:'group','aria-labelledby':'dk-discover-label',className:'dk-launch-group dk-discover-group'},
           h('span',{id:'dk-discover-label',className:'dk-launch-label'},'Discover'),
-          action(trending,'Trending topics','trend'))),
-      error&&status(error,true));
+          action(trending,'Trending topics','trend'))));
   }
   function useActivity(id) {
     const activity=useQuery(id||null,()=>db.from('debates').select('id,status,updated_at,topics(title)').or('participant_a.eq.'+id+',participant_b.eq.'+id).order('updated_at',{ascending:false}).limit(30));
@@ -421,7 +428,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       try{
         const {error}=await db.rpc('dk_poster_like',{p_slug:entry.id,p_liked:!row.liked});
         if(error)throw error;
-        metrics.refresh();
+        metrics.refresh();window.dispatchEvent(new Event('dk-dashboard-changed'));
       }catch{setFailed(true)}finally{setBusy(false)}
     }
     const comments=row?Number(row.comments)+discussionCount(entry.sampleActivity?.comments??[]):'…';
@@ -524,7 +531,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         await checkContent('comment',point?entry.id+':'+point:entry.id,[body.trim()]);
         const {error}=await db.rpc('dk_add_point_comment',{p_slug:entry.id,p_point:point,p_id:request.current.id,p_body:body.trim()});
         if(error)throw error;
-        request.current=null;saveDraft('');setBody('');setPosted(true);q.refresh();metrics.refresh();
+        request.current=null;saveDraft('');setBody('');setPosted(true);q.refresh();metrics.refresh();window.dispatchEvent(new Event('dk-dashboard-changed'));
       }catch(e){setFailed(e.communitySafety?e.message:'Could not post your comment. Your draft is here to retry.')}finally{setBusy(false)}
     }
     return h(React.Fragment,null,
@@ -806,7 +813,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const states=useCommentLikes('reply',rows);
     async function reply(e){e.preventDefault();if(!user||busy||!text.trim())return;setBusy(true);setErr('');
       try {await checkContent('reply',thread.id,[text.trim()]);
-        const {error}=await db.from('dk_replies').insert({question_id:thread.id,author_id:user.id,perspective:text.trim()});if(error)throw error;set('');q.refresh();refresh();}
+        const {error}=await db.from('dk_replies').insert({question_id:thread.id,author_id:user.id,perspective:text.trim()});if(error)throw error;set('');q.refresh();refresh();window.dispatchEvent(new Event('dk-dashboard-changed'));}
       catch(e){setErr(e.communitySafety?e.message:'Your reply could not be published. Please try again.')}finally{setBusy(false)}}
     const next=topicRoute(thread.question);
     return h('article',{className:'dk-panel dk-thread'},h('small',null,thread.is_starter?'Starter question':'Public question',h(PostedDate,{at:thread.published_at})),h('h1',null,thread.question),h(Report,{kind:'question',target:thread.id}),
