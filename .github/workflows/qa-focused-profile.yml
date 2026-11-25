@@ -1,0 +1,14 @@
+name: Verify focused member profile
+on: [push]
+permissions:
+  contents: read
+jobs:
+  members:
+    if: github.ref_name == 'qa/focused-member-profile'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - run: python -m pip install playwright==1.55.0
+      - run: python maintenance/e2e/dashboard_live.py
+      - run: python maintenance/e2e/profile_photo_live.py
