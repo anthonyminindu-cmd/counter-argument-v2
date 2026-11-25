@@ -116,7 +116,8 @@ def simultaneous(*buttons):
 
 def resume_from_table(page, room, topic):
     page.get_by_role("link", name="Profile", exact=True).click()
-    activity = page.get_by_role("region", name="Your activity")
+    page.get_by_role("link", name=re.compile(r"Posts & debates")).click()
+    activity = page.get_by_role("region", name="Your posts and debates")
     activity.get_by_role("link", name=re.compile(re.escape(topic) + r"|Friend debate(?: session)?", re.I)).first.click()
     button_or_link = page.get_by_role("link", name=re.compile(r"^Resume (friend )?debate$", re.I))
     button_or_link.click()

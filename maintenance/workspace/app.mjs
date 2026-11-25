@@ -1,3 +1,4 @@
+import {createSocialDashboard} from './dashboard.mjs';
 import {websitePosterSvg} from '../renderer/poster-finish.mjs';
 import {pointSnapshot,createPointReader,useAudiencePoster,createPuzzlePoster,reactionIntent,withPosterActivity,posterPointData} from './reader.mjs';
 import {createFriendInvitations} from './invitations.mjs';
@@ -106,7 +107,7 @@ function isWelcomeLocation(location) {
 }
 function login(next) { return '/login?next='+encodeURIComponent(next); }
 function topicRoute(title) { return '/debate/active?mode=ai&topic='+encodeURIComponent(title); }
-function profileRoute(tab) { return tab==='Table'?profile:profile+'?tab='+tab.toLowerCase(); }
+function profileRoute(tab) { return profile+'?tab='+tab.toLowerCase(); }
 const glyphs = {
   server:'M3 4h18v6H3zM3 14h18v6H3zM7 7h.1M7 17h.1m5.9-10h4m-4 10h4',
   cloud:'M6 18a4 4 0 0 1-1-7.9 7 7 0 0 1 13.3-1.3A4.7 4.7 0 0 1 18 18z',
@@ -180,6 +181,9 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     return {data:value?.key===key?value.data:null,error:value?.key===key?value.error:null,
       loading:key!==null&&(value?.key!==key||value.version!==version),refresh:()=>refresh(v=>v+1)};
   }
+  const {ProfileDashboard,CommentLike,useCommentLikes,useFocusedRows,useFocusComment,useFriends,FriendButton,Requests}=createSocialDashboard({
+    React,db,useAuth,useLocation,Link,useQuery,link,icon,status,login,profileRoute
+  });
   function Provider({children}) {
     const {user}=useAuth(), id=user?.id;
     const query=useQuery(id||null,()=>db.from('dk_collection').select('kind,target,label,created_at').eq('owner_id',id).order('created_at',{ascending:false}));
@@ -347,7 +351,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function useNovemberEdition() {
     return useQuery('november-2026',async()=>{
-      const response=await fetch(novemberPath+'edition.json?v=impact2');
+      const response=await fetch(novemberPath+'edition.json?v=comment-ids');
       if(!response.ok)throw Error('The November edition is unavailable.');
       return {data:await response.json()};
     });
@@ -377,11 +381,21 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function discussionCount(comments) {
     return comments.reduce((total, comment) => total + 1 + discussionCount(comment.replies ?? []), 0);
   }
-  function renderDiscussion(comments, personas, nested = false) {
-    return h('ul', {className: nested ? 'dk-discussion-replies' : undefined}, ...comments.map((comment, index) =>
-      h('li', {key: index}, h(Link, {to:personaRoute(comment.profileId), className:'dk-link'}, personas[comment.profileId].name),
-        ...comment.body.split('\n\n').map((paragraph, i) => h('p', {key: i}, paragraph)),
-        comment.replies?.length ? renderDiscussion(comment.replies, personas, true) : null)));
+  function EditorialDiscussion({comments,personas}) {
+    const loc=useLocation();
+    const flatten=rows=>rows.flatMap(row=>[{id:row.commentId},...flatten(row.replies||[])]);
+    const all=flatten(comments),states=useCommentLikes('editorial',all);
+    const selected=new URLSearchParams(loc.search).get('comment');
+    useFocusComment(selected,all.some(row=>row.id===selected));
+    function render(rows,nested=false){
+      return h('ul',{className:nested?'dk-discussion-replies':undefined},...rows.map(comment=>
+        h('li',{key:comment.commentId,id:'dk-comment-'+comment.commentId,tabIndex:-1},
+          h(Link,{to:personaRoute(comment.profileId),className:'dk-link'},personas[comment.profileId].name),
+          ...comment.body.split('\n\n').map((paragraph,i)=>h('p',{key:i},paragraph)),
+          h(CommentLike,{id:comment.commentId,kind:'editorial',states}),
+          comment.replies?.length?render(comment.replies,true):null)));
+    }
+    return render(comments);
   }
   const Engagement=createContext(null);
   function PosterActivity({children,order,editorialIds,wait=false}) {
@@ -493,6 +507,8 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       }catch{}
     }
     const q=useQuery(JSON.stringify([entry.id,point,user?.id,limit]),()=>db.rpc('dk_point_comments',{p_slug:entry.id,p_point:point}).range(0,limit));
+    const rows=useFocusedRows({rows:q.data,parent:entry.id,point,kind:'comment',limit,ready:!!q.data,userId:user?.id});
+    const states=useCommentLikes('comment',rows);
     useEffect(()=>{
       if(request.current&&q.data?.some(row=>row.id===request.current.id)){
         request.current=null;saveDraft('');setBody('');setPosted(true);
@@ -520,7 +536,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         failed&&status(failed,true)):
         link(login(exampleRoute(entry.id)+(point?'&point='+encodeURIComponent(point):'&comments=1')),'Sign in to comment','dk-secondary'),
       q.error?h('button',{className:'dk-small',onClick:q.refresh},'Retry loading comments'):q.loading&&!q.data?status('Loading comments…'):
-      h(React.Fragment,null,h('ul',{className:'dk-replies'},...(q.data||[]).slice(0,limit).map(c=>h('li',{key:c.id},h('strong',null,c.author),h('p',null,c.body),h(Report,{kind:'comment',target:c.id})))),
+      h(React.Fragment,null,h('ul',{className:'dk-replies'},...rows.map(c=>h('li',{key:c.id,id:'dk-comment-'+c.id,tabIndex:-1},h('strong',null,c.author),h('p',null,c.body),h('div',{className:'dk-actions'},h(CommentLike,{id:c.id,kind:'comment',states}),h(Report,{kind:'comment',target:c.id}))))),
         q.data?.length>limit&&h('button',{className:'dk-small',onClick:()=>setLimit(limit+30)},'Show older comments')));
   }
   const PointReader=createPointReader({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,exampleRoute,MemberComments,status});
@@ -576,7 +592,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const [exportError,setExportError]=useState('');
     usePosterImpression(row?.slug);
     function openComments(){comments.current?.scrollIntoView({block:'start'});(comments.current?.querySelector('textarea')||comments.current)?.focus({preventScroll:true})}
-    useEffect(()=>{if(row&&new URLSearchParams(loc.search).has('comments'))openComments()},[row?.slug,loc.search]);
+    useEffect(()=>{if(row&&new URLSearchParams(loc.search).has('comments')&&!new URLSearchParams(loc.search).has('comment'))openComments()},[row?.slug,loc.search]);
     if(q.error)return h('button',{className:'dk-secondary',onClick:q.refresh},'Retry loading infographic');
     if(q.loading&&!row)return status('Loading infographic…');
     if(!row?.artwork)return status('This infographic is unavailable.');
@@ -599,7 +615,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function SampleDiscussion({entry}){
     const personas=usePersonas();
     return h('section',null,h('h3',null,'Sample discussion'),h('p',null,'Fictional community profiles contributed these examples.'),
-      personas.data?renderDiscussion(entry.sampleActivity.comments,personas.data):
+      personas.data?h(EditorialDiscussion,{comments:entry.sampleActivity.comments,personas:personas.data}):
         personas.error?h('button',{onClick:personas.refresh},'Retry loading commenters'):status('Loading discussion…'));
   }
   function PostedDate({at,slug,standalone}) {
@@ -642,7 +658,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       discussion.current?.scrollIntoView({block:'start'});
       (discussion.current?.querySelector('textarea')||discussion.current)?.focus({preventScroll:true});
     }
-    useEffect(()=>{if(new URLSearchParams(loc.search).has('comments'))openComments()},[loc.search]);
+    useEffect(()=>{if(new URLSearchParams(loc.search).has('comments')&&!new URLSearchParams(loc.search).has('comment'))openComments()},[loc.search]);
     const [exporting,setExporting]=useState(false),[exportError,setExportError]=useState('');
     const hasAudienceExport=true;
     const liveCounts=useContext(Engagement).data?.find(r=>r.slug===entry.id);
@@ -685,7 +701,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('section',{className:'dk-panel dk-example-discussion',ref:discussion,tabIndex:-1},h('h2',null,'Comments'),h('p',null,entry.followUp),
           h(MemberComments,{key:user?.id||'guest',entry}),
           entry.sampleActivity?h(React.Fragment,null,
-            personas.data ? renderDiscussion(entry.sampleActivity.comments, personas.data) :
+            personas.data ? h(EditorialDiscussion,{comments:entry.sampleActivity.comments,personas:personas.data}) :
               personas.error ? h('button',{onClick:personas.refresh},'Retry loading commenters') : status('Loading discussion…')):
             h('ul',null,...entry.comments.map((comment,i)=>h('li',{key:i},comment)))),
         h('section',{className:'dk-example-sources'},h('h2',null,'November context'),h('p',null,entry.context),
@@ -786,6 +802,8 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function Thread({thread,refresh}) {
     const {user}=useAuth(),[text,set]=useState(''),[busy,setBusy]=useState(false),[err,setErr]=useState('');
     const q=useQuery(thread.id,()=>db.from('dk_replies').select('id,perspective,created_at').eq('question_id',thread.id).order('created_at',{ascending:false}).limit(100));
+    const rows=useFocusedRows({rows:q.data,parent:thread.id,kind:'reply',limit:100,ready:!!q.data,userId:user?.id});
+    const states=useCommentLikes('reply',rows);
     async function reply(e){e.preventDefault();if(!user||busy||!text.trim())return;setBusy(true);setErr('');
       try {await checkContent('reply',thread.id,[text.trim()]);
         const {error}=await db.from('dk_replies').insert({question_id:thread.id,author_id:user.id,perspective:text.trim()});if(error)throw error;set('');q.refresh();refresh();}
@@ -793,7 +811,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const next=topicRoute(thread.question);
     return h('article',{className:'dk-panel dk-thread'},h('small',null,thread.is_starter?'Starter question':'Public question',h(PostedDate,{at:thread.published_at})),h('h1',null,thread.question),h(Report,{kind:'question',target:thread.id}),
       h('div',{className:'dk-actions'},link(user?next:login(next),'Explore with AI','dk-primary'),h(Save,{kind:'question',target:thread.id,label:thread.question}),h(ShareTopic,{kind:'question',id:thread.id,title:thread.question})),
-      h('h2',null,'Perspectives'),q.error?h('button',{className:'dk-secondary',onClick:q.refresh},'Retry loading replies'):q.loading&&!q.data?status('Loading replies…'):q.data?.length?h('ul',{className:'dk-replies'},...q.data.map(row=>h('li',{key:row.id},h('p',null,row.perspective),h('small',null,new Date(row.created_at).toLocaleDateString()),h(Report,{kind:'reply',target:row.id})))):h('p',null,'What should someone on the other side consider?'),
+      h('h2',null,'Perspectives'),q.error?h('button',{className:'dk-secondary',onClick:q.refresh},'Retry loading replies'):q.loading&&!q.data?status('Loading replies…'):rows.length?h('ul',{className:'dk-replies'},...rows.map(row=>h('li',{key:row.id,id:'dk-comment-'+row.id,tabIndex:-1},h('p',null,row.perspective),h('small',null,new Date(row.created_at).toLocaleDateString()),h('div',{className:'dk-actions'},h(CommentLike,{id:row.id,kind:'reply',states}),h(Report,{kind:'reply',target:row.id}))))):h('p',null,'What should someone on the other side consider?'),
       user?h('form',{className:'dk-form',onSubmit:reply},h('label',null,'Add a public perspective',h('textarea',{required:true,maxLength:1200,value:text,onChange:e=>set(e.target.value)})),h('button',{className:'dk-secondary',disabled:busy||!text.trim()},busy?'Posting…':'Post reply'),err&&status(err,true)):link(login(feed+'&question='+thread.id),'Sign in to reply','dk-secondary'));
   }
   function SavedArtwork({item}) {
@@ -815,16 +833,17 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     useEffect(()=>{const timer=setTimeout(()=>setSearch(input.trim()),260);return()=>clearTimeout(timer)},[input]);
     const q=useQuery(search.length>=2?user.id+':'+search:null,()=>db.rpc('search_debate_partners',{p_query:search}));
     const commenters=useCommenterMatches(search);
+    const friends=useFriends(user.id);
     const saved=c.items.filter(row=>row.kind==='person');
     const rows=search.length>=2?(q.data||[]).filter(row=>row.user_id!==user.id && visibleFriendProfile(row)).map(row=>({target:row.user_id,label:row.display_name||row.username||'Community member',query:row.username||row.display_name})):saved;
-    return h('section',{className:'dk-panel'},h('h2',null,'Your people'),h('label',{className:'dk-form'},'Find a friend',h('input',{value:input,type:'search',placeholder:'Search by name or username',onChange:e=>setInput(e.target.value)})),
+    return h('section',{className:'dk-panel'},h('h2',null,'Your people'),h(Requests,{friends}),h('label',{className:'dk-form'},'Find a friend',h('input',{value:input,type:'search',placeholder:'Search by name or username',onChange:e=>setInput(e.target.value)})),
       q.error&&status('Could not search member accounts.',true),
       commenters.error&&h('button',{type:'button',onClick:commenters.refresh},'Retry loading commenter profiles'),
       (q.loading||commenters.loading)&&status('Searching…'),
       !q.error&&!commenters.error&&!q.loading&&!commenters.loading&&!rows.length&&!commenters.matches.length&&
         h('p',null,search.length>=2?'No matching people. Try another name.':'Save a friend to quickly start your next exploration.'),
       (rows.length>0||commenters.matches.length>0)&&h('ul',{className:'dk-list'},
-        ...rows.map(row=>h('li',{key:row.target},h('div',null,h('strong',null,row.label),link(friend+'&person='+encodeURIComponent(row.query||row.label),'Invite to debate')),h(Save,{kind:'person',target:row.target,label:row.label}))),
+        ...rows.map(row=>h('li',{key:row.target},h('div',null,h('strong',null,row.label),link(friend+'&person='+encodeURIComponent(row.query||row.label),'Invite to debate')),h('div',{className:'dk-actions'},h(FriendButton,{peer:row.target,relation:friends.data?.find(f=>f.peer===row.target)?.status,ready:!!friends.data&&!friends.loading}),h(Save,{kind:'person',target:row.target,label:row.label})))),
         ...commenters.matches.map(person=>h('li',{key:person.user_id},h('div',null,
           link(person.profileUrl,person.display_name),h('small',null,'@'+person.username))))));
   }
@@ -850,10 +869,11 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function Profile(){
     const {user,loading}=useAuth(),loc=useLocation(),c=useContext(Collection);
-    const tab=personalTabs.find(value=>value.toLowerCase()===new URLSearchParams(loc.search).get('tab'))||'Table';
+    const tab=personalTabs.find(value=>value.toLowerCase()===new URLSearchParams(loc.search).get('tab'));
     if(!user)return h('main',{className:'dk-main'},h('h1',null,'Your profile'),loading?status('Loading account…'):link(login(profile+loc.search),'Sign in to open your profile','dk-primary'));
+    if(!tab)return h(ProfileDashboard,{key:user.id,user});
     const items=c.items.filter(row=>tab==='Posters'?row.kind==='poster':isPinKind(row.kind));
-    return h('main',{className:'dk-main dk-profile'},h('div',{className:'dk-kicker'},'Personal workspace'),h('h1',null,'Your profile'),h('nav',{className:'dk-filters','aria-label':'Profile sections'},...personalTabs.map(key=>h(Link,{key,to:profileRoute(key),'aria-current':tab===key?'page':undefined},key==='Table'?'Your table':key))),
+    return h('main',{className:'dk-main dk-profile'},h('div',{className:'dk-kicker'},'Personal workspace'),h('h1',null,'Your profile'),h('nav',{className:'dk-filters','aria-label':'Profile sections'},link(profile,'Dashboard'),...personalTabs.map(key=>h(Link,{key,to:profileRoute(key),'aria-current':tab===key?'page':undefined},key==='Table'?'Your table':key))),
       tab==='Liked'?h(LikedPosters,{key:user.id,user}):tab==='Created'?h(CreatedPosters,{key:user.id,user}):tab==='Table'?h(Activity,{key:user.id}):tab==='Account'?h(Account,{key:user.id}):c.error?h('button',{className:'dk-secondary',onClick:c.refresh},'Retry loading collection'):c.loading&&!c.data?status('Loading your collection…'):tab==='People'?h(People,{user}):
       h('section',{className:'dk-collection'},tab==='Pinned'?h(PinnedList,{items,owner:user.id}):
         items.length?items.map(item=>h(SavedArtwork,{key:item.target,item})):h('div',{className:'dk-panel'},h('h2',null,'Your saved posters'),h('p',null,'Open a finished infographic and choose Save poster.'),link(profile,'Open your table','dk-secondary'))));
