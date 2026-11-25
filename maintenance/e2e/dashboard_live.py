@@ -79,28 +79,56 @@ def run():
             cards = page.locator(".dk-dashboard-metrics a")
             expect(cards).to_have_count(5)
             expect(cards.first.locator("strong")).to_have_text("0")
+            for width in [320, 390, 768, 1280]:
+                page.set_viewport_size({"width":width,"height":844})
+                left,right=cards.first.bounding_box(),cards.nth(1).bounding_box()
+                assert abs(left["y"]-right["y"])<2 and left["x"]+left["width"]<=right["x"]
+                assert right["x"]+right["width"]<=width
+            page.set_viewport_size({"width":390,"height":844})
+            reach=page.get_by_role("navigation",name="Impressions by content type")
+            for label,heading in [("Comments","Comment impressions"),("Posts & debates","Post and debate impressions")]:
+                reach.get_by_role("link",name=re.compile(re.escape(label))).click()
+                expect(page.get_by_role("heading",name=heading,exact=True)).to_be_visible()
             assert cards.nth(4).bounding_box()["y"] < 844
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
             for section, title in [(2,"Your posts and debates"),(3,"Your comments"),(4,"Your friends")]:
                 cards.nth(section).click()
                 expect(page.get_by_role("heading", name=title, exact=True)).to_be_visible()
             page.set_viewport_size({"width": 1280, "height": 900})
-            assert abs(cards.first.bounding_box()["y"] - cards.nth(4).bounding_box()["y"]) < 2
+            assert abs(cards.first.bounding_box()["y"] - cards.nth(1).bounding_box()["y"]) < 2
             page.goto(base + "/home/?view=feed&example=" + example["id"] + "&comments=1&comment=" + comment)
             row = page.locator("#dk-comment-" + comment)
-            row.get_by_role("button", name="Like comment", exact=True).click()
-            expect(row.get_by_role("button", name="Unlike comment", exact=True)).to_be_enabled()
+            row.get_by_role("button", name="Support comment", exact=True).click()
+            expect(row.get_by_role("button", name="Remove support from comment", exact=True)).to_be_enabled()
             page.get_by_role("link", name="Profile", exact=True).click()
             expect(cards.first.locator("strong")).to_have_text("1")
             page.reload()
             expect(cards.first.locator("strong")).to_have_text("1")
             page.locator(".dk-dashboard-list a").first.click()
             expect(row).to_be_focused()
-            row.get_by_role("button", name="Unlike comment", exact=True).click()
-            expect(row.get_by_role("button", name="Like comment", exact=True)).to_be_enabled()
+            row.get_by_role("button", name="Remove support from comment", exact=True).click()
+            expect(row.get_by_role("button", name="Support comment", exact=True)).to_be_enabled()
             page.get_by_role("link", name="Profile", exact=True).click()
             expect(cards.first.locator("strong")).to_have_text("0")
-            expect(shortcuts.get_by_role("link", name="Likes given, 0")).to_be_visible()
+            expect(shortcuts.get_by_role("link", name="Support given, 0")).to_be_visible()
+            # Optional live fixture is an already-published member comment. Read it only.
+            slug, target = os.getenv("DK_QA_PUBLIC_POSTER"), os.getenv("DK_QA_PUBLIC_COMMENT")
+            if slug and target:
+                endpoint = "/rest/v1/rpc/dk_record_public_impressions"
+                def records(kind, item):
+                    def matches(resp):
+                        if not resp.url.endswith(endpoint) or resp.request.method != "POST":
+                            return False
+                        payload = resp.request.post_data_json
+                        return payload.get("p_kind") == kind and item in payload.get("p_items",[])
+                    return matches
+                with page.expect_response(records("poster",slug)) as view:
+                    page.goto(base+"/home/?view=feed&example="+slug)
+                assert view.value.ok
+                with page.expect_response(records("comment",target)) as comment_view:
+                    page.locator("#dk-comment-"+target+" p").first.evaluate("(el)=>el.scrollIntoView({block:'center'})")
+                assert comment_view.value.ok
+                page.get_by_role("link",name="Profile",exact=True).click()
             api("/rest/v1/rpc/dk_change_friend", {"p_peer": session["user"]["id"], "p_action": "request"}, peer["access_token"])
             page.reload()
             bell = page.get_by_role("button", name="Notifications, 1 unread", exact=True)

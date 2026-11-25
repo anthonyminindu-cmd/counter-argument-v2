@@ -9,7 +9,7 @@ test('one header Profile shortcut opens the dashboard and the three counts link 
   const header=w.Nav().children.find(el=>el?.props.className==='dk-bar dk-member-bar');
   const stats=header.children.find(el=>el?.type?.name==='HeaderStats').type();
   assert.deepEqual(stats.children.map(el=>el.props.to),['given','comments','friends'].map(k=>'/profile?section='+k));
-  assert.deepEqual(stats.children.map(el=>el.props['aria-label']),['Likes given, 18','Comments, 3','Friends, 2']);
+  assert.deepEqual(stats.children.map(el=>el.props['aria-label']),['Support given, 18','Comments, 3','Friends, 2']);
   const controls=header.children.find(el=>el?.props.className==='dk-account').children;
   assert.equal(controls.length,2);assert.equal(controls[0].type.name,'Notifications');
   assert.equal(controls[1].props.to,'/profile');assert.ok(controls[1].children.includes('Profile'));
@@ -17,8 +17,8 @@ test('one header Profile shortcut opens the dashboard and the three counts link 
 test('social notifications distinguish friend requests and aggregate distinct likes on the same contribution',async()=>{
   const {socialActivityTitle}=await import('../workspace/social-header.mjs');
   const row={actor:'Maya',activity:'comment_like',amount:1};
-  assert.equal(socialActivityTitle(row),'Maya liked your comment');
-  assert.equal(socialActivityTitle({...row,amount:3}),'Maya and 2 others liked your comment');
+  assert.equal(socialActivityTitle(row),'Maya supported your comment');
+  assert.equal(socialActivityTitle({...row,amount:3}),'Maya and 2 others supported your comment');
   assert.equal(socialActivityTitle({...row,activity:'friend_request'}),'Maya sent you a friend request');
   assert.equal(socialActivityTitle({...row,activity:'friend_accepted'}),'Maya accepted your friend request');
 });

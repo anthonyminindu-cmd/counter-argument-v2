@@ -14,7 +14,9 @@ test('opening Profile exposes all five totals, including zero, before selecting 
   }).ProfileDashboard({user:{id:'member'}});
   for(const [response,values] of [[{data},['21','7','0','4','2']],[{loading:true},Array(5).fill('—')]]){
     const page=setup(response);
-    const cards=page.children.find(node=>node.props?.['aria-label']==='Your engagement').children;
+    const [support,activity]=page.children.find(node=>node.props?.['aria-label']==='Your engagement').children;
+    assert.deepEqual(support.children.map(x=>x.children[0].children[1]),['Support given','Support received']);
+    const cards=[...support.children,...activity.children];
     assert.deepEqual(cards.map(node=>node.props.to),['given','received','work','comments','friends'].map(s=>'/profile?section='+s));
     assert.deepEqual(cards.map(node=>node.children[1].children[0]),values);
     assert.equal(cards[0].props['aria-current'],'page');

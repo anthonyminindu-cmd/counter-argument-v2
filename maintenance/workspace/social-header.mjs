@@ -1,9 +1,9 @@
 import {dashboardDestination} from './dashboard.mjs';
 
-const headerStats=[['given','Likes given','heart'],['comments','Comments','message'],['friends','Friends','friends']];
+const headerStats=[['given','Support given','thumb'],['comments','Comments','message'],['friends','Friends','friends']];
 export function socialActivityTitle(row) {
   const others=row.amount>1?' and '+(row.amount-1)+(row.amount===2?' other':' others'):'';
-  const action={poster_like:'liked your infographic',comment_like:'liked your comment',poster_comment:'commented on your infographic',
+  const action={poster_like:'supported your infographic',comment_like:'supported your comment',poster_comment:'commented on your infographic',
     question_reply:'replied to your question',friend_request:'sent you a friend request',friend_accepted:'accepted your friend request'};
   return row.actor+others+' '+action[row.activity];
 }
@@ -66,7 +66,7 @@ export function createMemberHeader({React,db,Link,useQuery,icon}) {
           row.unread&&h('span',{className:'dk-unread-dot','aria-label':'Unread'}),
           h('span',null,h('strong',null,socialActivityTitle(row)),row.label&&h('span',{className:'dk-notice-excerpt'},row.label),
             h('time',{dateTime:row.happened_at},new Date(row.happened_at).toLocaleDateString(undefined,{month:'short',day:'numeric'}))))))):
-      h('p',null,social.page?'No more activity on this page.':'New likes, comments, replies, and friend requests appear here.'),
+      h('p',null,social.page?'No more activity on this page.':'New support, comments, replies, and friend requests appear here.'),
       (social.page>0||(social.page+1)*20<data?.total)&&h('nav',{className:'dk-actions','aria-label':'Notification pages'},
         social.page>0&&h('button',{className:'dk-small',onClick:()=>social.setPage(social.page-1)},'Newer activity'),
         (social.page+1)*20<data?.total&&h('button',{className:'dk-small',onClick:()=>social.setPage(social.page+1)},'Older activity')));
