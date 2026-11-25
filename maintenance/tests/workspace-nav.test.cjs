@@ -23,9 +23,10 @@ test('The launch bar stays available outside the compact member profile', async 
       }),['Start a debate with a friend or AI','Discover']);
       const [withFriend,withAI]=debate.children.slice(1);
       assert.deepEqual([withFriend.type,withAI.type],['link','link']);
-      const [trending]=discover.children.slice(1);
+      const [trending,weekly]=discover.children.slice(1);
       assert.equal(debate.children.length,3);
-      assert.equal(discover.children.length,2);
+      assert.equal(discover.children.length,3);
+      assert.equal(weekly.props.to,'/home?view=weekly');
       assert.deepEqual([withFriend,withAI,trending].map(link=>link.children[1].children[0]),
         ['Debate with a friend','Debate with AI','Trending topics']);
       for(const [link,mode] of [[withFriend,'/debate/start?mode=friend'],[withAI,'/debate/topic?mode=ai']]){

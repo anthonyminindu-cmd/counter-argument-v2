@@ -457,3 +457,11 @@ a.dk-header-stat:hover,.dk-notice-link:hover{color:var(--dk-mint);text-decoratio
 .dk-photo-trigger:focus-visible{outline:2px solid currentColor;outline-offset:3px;border-radius:4px}
 .dk-photo-trigger:disabled{opacity:.7}
 .dk-photo-dialog input[hidden]{display:none}
+
+.dk-weekly-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,17rem),1fr));gap:1rem;align-items:start}
+.dk-weekly .dk-filters,.dk-weekly-card h3,.dk-ask-friend,.dk-invited-answer{margin-block:1rem}
+.dk-weekly-card .dk-sectionline{align-items:baseline;gap:.5rem;flex-wrap:wrap}
+.dk-weekly-card .dk-titlelink{white-space:normal}
+.dk-first-comment{display:block;font-weight:600}
+.dk-ask-friend .dk-form,.dk-weekly-card .dk-form{margin-top:.75rem}
+.dk-ask-friend select{font:inherit;color:inherit;background:var(--dk-card,Canvas);padding:.55rem;max-width:100%}

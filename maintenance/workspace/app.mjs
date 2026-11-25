@@ -1,3 +1,4 @@
+import {createParticipation,weeklyRoute,askedPointRoute} from './participation.mjs';
 import {createProfilePhotos} from './profile-photo.mjs';
 import {watchContentImpressions} from './impressions.mjs';
 import {createMemberHeader} from './social-header.mjs';
@@ -106,7 +107,7 @@ const brandMark = 'maintenance/workspace/mark.svg?v=lettered-bubble';
 function isWelcomeLocation(location) {
   const params=new URLSearchParams(location.search);
   return ['/','/home','/home/'].includes(location.pathname) &&
-    params.get('view')!=='feed' && !params.has('sort') && !params.has('question') && !params.has('example') && !params.has('edition');
+    !['feed','weekly'].includes(params.get('view')) && !params.has('sort') && !params.has('question') && !params.has('example') && !params.has('edition');
 }
 function login(next) { return '/login?next='+encodeURIComponent(next); }
 function topicRoute(title) { return '/debate/active?mode=ai&topic='+encodeURIComponent(title); }
@@ -138,6 +139,9 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   const PuzzlePoster=createPuzzlePoster({React,Link,useLocation});
   function ReactionLoginCopy(){
     const loc=useLocation(),intent=reactionIntent(afterLogin(loc.search));
+    const target=new URL(afterLogin(loc.search),'https://differ.invalid');
+    if(target.searchParams.has('point')&&target.searchParams.has('ask'))return 'Sign in to answer your friend at this exact point.';
+    if(target.searchParams.get('view')==='weekly')return 'Sign in to follow a topic or host its weekly question.';
     if(!intent)return 'Start a debate with a friend or AI.';
     const title=new URLSearchParams(loc.search).get('argument');
     return h(React.Fragment,null,h('strong',null,'Sign in to mark this point as '+intent+'.'),
@@ -189,6 +193,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   const {ProfileDashboard,CommentLike,useCommentLikes,useFocusedRows,useFocusComment,FriendButton}=createSocialDashboard({
     React,db,useAuth,useLocation,Link,useQuery,link,icon,status,login,profileRoute,ProfileControls,PhotoEditor,FindFriends:People
   });
+  const {AskFriend,WeeklyTopics,FirstCommentProvider,FirstCommentHint}=createParticipation({React,db,useAuth,useLocation,useQuery,link,login,status,checkContent,questionRoute});
   function Provider({children}) {
     const {user,loading}=useAuth(),id=user?.id,root=useRef(null);
     useEffect(()=>{
@@ -200,7 +205,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       });
     },[id,loading]);
     const query=useQuery(id||null,()=>db.from('dk_collection').select('kind,target,label,created_at').eq('owner_id',id).order('created_at',{ascending:false}));
-    return h(Collection.Provider,{value:{id,...query,items:query.data||[]}},h(PhotoProvider,{key:id||'guest',owner:id},h(SocialProvider,{key:id||'guest',owner:id},h(InboxProvider,{owner:id},h('div',{ref:root,className:'dk-shell min-h-screen'},children)))));
+    return h(Collection.Provider,{value:{id,...query,items:query.data||[]}},h(PhotoProvider,{key:id||'guest',owner:id},h(SocialProvider,{key:id||'guest',owner:id},h(InboxProvider,{owner:id},h(FirstCommentProvider,{key:id||'guest',owner:id},h('div',{ref:root,className:'dk-shell min-h-screen'},children))))));
   }
   function Save({kind,target,label,artwork}) {
     const c=useContext(Collection), [busy,setBusy]=useState(false),[error,setError]=useState('');
@@ -293,7 +298,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       if(event.button===0&&!event.metaKey&&!event.ctrlKey&&!event.shiftKey&&!event.altKey)window.scrollTo(0,0);
     }
     return h('header',{className:'dk-header'},
-      onHome&&!['example','question','commenter','join'].some(key=>new URLSearchParams(loc.search).has(key))&&
+      onHome&&new URLSearchParams(loc.search).get('view')!=='weekly'&&!['example','question','commenter','join'].some(key=>new URLSearchParams(loc.search).has(key))&&
         h('a',{className:'dk-skip',href:'#dk-debates',onClick:e=>{const el=document.getElementById('dk-debates');if(el){e.preventDefault();el.focus();el.scrollIntoView({block:'start'});}}},'Skip to debates'),
       h('div',{className:user?'dk-bar dk-member-bar':'dk-bar'},
         h(Link,{to:home,className:'dk-brand','aria-label':'Differ Kindly home',onClick:scrollToStart},
@@ -313,7 +318,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
           action(user?ai:login(ai),'Debate with AI','ai')),
         h('div',{role:'group','aria-labelledby':'dk-discover-label',className:'dk-launch-group dk-discover-group'},
           h('span',{id:'dk-discover-label',className:'dk-launch-label'},'Discover'),
-          action(trending,'Trending topics','trend'))));
+          action(trending,'Trending topics','trend'),action(weeklyRoute,'Weekly topics','book'))));
   }
   function useActivity(id) {
     const activity=useQuery(id||null,()=>db.from('debates').select('id,status,updated_at,topics(title)').or('participant_a.eq.'+id+',participant_b.eq.'+id).order('updated_at',{ascending:false}).limit(30));
@@ -492,9 +497,12 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     return h('button',{className:'dk-small',type:'button',disabled:state==='sending'||state==='sent',onClick:report},
       state==='sent'?'Reported':state==='error'?'Retry report':state==='sending'?'Reporting…':'Report');
   }
-  function MemberComments({entry,point=null}) {
+  function MemberComments({entry,point=null,ask=null}) {
     const {user}=useAuth(),metrics=useContext(Engagement);
-    const draftKey=JSON.stringify(['dk-comment',user?.id,entry.id,point]);
+    const direct=ask&&ask!=='friend';
+    const invitation=useQuery(user&&direct?JSON.stringify([user.id,ask]):null,()=>db.rpc('dk_read_point_ask',{p_id:ask}).maybeSingle());
+    const context=invitation.data?.slug===entry.id&&invitation.data?.point_id===point?invitation.data:null;
+    const draftKey=JSON.stringify(ask?['dk-point-answer',user?.id,entry.id,point,ask]:['dk-comment',user?.id,entry.id,point]);
     const [saved]=useState(()=>{
       try{return JSON.parse(sessionStorage.getItem(draftKey))||{}}catch{return {}}
     });
@@ -517,30 +525,34 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     },[q.data]);
     async function post(event){
       event.preventDefault();
-      if(!user||busy||!body.trim())return;
+      if(!user||busy||!body.trim()||(direct&&!context?.can_answer))return;
       if(request.current?.body!==body)request.current={id:crypto.randomUUID(),body};
       saveDraft(body,request.current.id);
       setBusy(true);setFailed(false);
       try{
         await checkContent('comment',point?entry.id+':'+point:entry.id,[body.trim()]);
-        const {error}=await db.rpc('dk_add_point_comment',{p_slug:entry.id,p_point:point,p_id:request.current.id,p_body:body.trim()});
+        const {error}=direct?await db.rpc('dk_answer_point_ask',{p_id:ask,p_comment:request.current.id,p_body:body.trim()}):await db.rpc('dk_add_point_comment',{p_slug:entry.id,p_point:point,p_id:request.current.id,p_body:body.trim()});
         if(error)throw error;
-        request.current=null;saveDraft('');setBody('');setPosted(true);q.refresh();metrics.refresh();window.dispatchEvent(new Event('dk-dashboard-changed'));
+        request.current=null;saveDraft('');setBody('');setPosted(true);q.refresh();if(direct)invitation.refresh();metrics.refresh();window.dispatchEvent(new Event('dk-member-contributed'));window.dispatchEvent(new Event('dk-dashboard-changed'));
       }catch(e){setFailed(e.communitySafety?e.message:'Could not post your comment. Your draft is here to retry.')}finally{setBusy(false)}
     }
     return h(React.Fragment,null,
-      user?h('form',{className:'dk-form',onSubmit:post},h('label',null,point?'Ask a question or respond to this point':entry.private?'Add a comment':'Add a public comment',h('textarea',{maxLength:1200,value:body,disabled:busy,required:true,onChange:e=>{
+      context&&h('blockquote',null,context.note),
+      direct&&user&&(invitation.error?h('button',{className:'dk-small',onClick:invitation.refresh},'Retry loading invitation'):
+        !context?status(invitation.loading?'Loading invitation…':'This invitation is unavailable for this account.'):null),
+      user?(!direct||context?.can_answer)&&h('form',{className:'dk-form',onSubmit:post},h('label',null,ask?'Your public answer':point?'Ask a question or respond to this point':entry.private?'Add a comment':'Add a public comment',h('textarea',{rows:ask?2:undefined,maxLength:1200,value:body,disabled:busy,required:true,onChange:e=>{
           const text=e.target.value;request.current=null;setPosted(false);setBody(text);saveDraft(text);
         }})),
-        h('button',{className:'dk-primary',disabled:busy||!body.trim()},busy?'Posting…':'Post comment'),
-        posted&&status('Comment posted.'),
+        h(FirstCommentHint),h('button',{className:'dk-primary',disabled:busy||!body.trim()},busy?'Posting…':ask?'Post answer':'Post comment'),
         failed&&status(failed,true)):
-        link(login(exampleRoute(entry.id)+(point?'&point='+encodeURIComponent(point):'&comments=1')),'Sign in to comment','dk-secondary'),
+        link(login(ask?askedPointRoute(entry.id,point,ask):exampleRoute(entry.id)+(point?'&point='+encodeURIComponent(point):'&comments=1')),ask?'Sign in to answer':'Sign in to comment','dk-secondary'),
+      (posted||context?.answer)&&status(ask?'Answer posted.':'Comment posted.'),
+      ask&&(posted||context?.answer)&&link(friend+'&suggested='+encodeURIComponent(entry.question)+(context?.peer_name?'&person='+encodeURIComponent(context.peer_name):''),'Continue as a full friend debate','dk-secondary'),
       q.error?h('button',{className:'dk-small',onClick:q.refresh},'Retry loading comments'):q.loading&&!q.data?status('Loading comments…'):
       h(React.Fragment,null,h('ul',{className:'dk-replies'},...rows.map(c=>h('li',{key:c.id,id:'dk-comment-'+c.id,tabIndex:-1},h('strong',null,c.author),h('p',entry.private?null:{'data-dk-view':'comment','data-dk-item':c.id},c.body),h('div',{className:'dk-actions'},h(CommentLike,{id:c.id,kind:'comment',states}),h(Report,{kind:'comment',target:c.id}))))),
         q.data?.length>limit&&h('button',{className:'dk-small',onClick:()=>setLimit(limit+30)},'Show older comments')));
   }
-  const PointReader=createPointReader({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,exampleRoute,MemberComments,status});
+  const PointReader=createPointReader({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,exampleRoute,MemberComments,AskFriend,status});
   const {JoinLink,InviteTools}=createFriendInvitations({React,db,useAuth,useNavigate,useQuery,link,login,status});
   function SharePoster({row,refresh}) {
     const [busy,setBusy]=useState(false),[failed,setFailed]=useState(false);
@@ -736,6 +748,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const params=new URLSearchParams(loc.search), onFeed=params.get('view')==='feed'||params.has('edition');
     const example=params.get('example');
     const commenter=params.get('commenter');
+    if(params.get('view')==='weekly')return h(WeeklyTopics);
     if(params.has('join'))return h(JoinLink);
     if(commenter)return h(CommenterPage,{id:commenter});
     if(example)return h(PosterActivity,null,h(ExamplePage,{example}));
@@ -792,18 +805,26 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function Thread({thread,refresh}) {
     const {user}=useAuth(),[text,set]=useState(''),[busy,setBusy]=useState(false),[err,setErr]=useState('');
-    const q=useQuery(thread.id,()=>db.from('dk_replies').select('id,perspective,created_at').eq('question_id',thread.id).order('created_at',{ascending:false}).limit(100));
+    const weekly=useQuery('weekly-thread:'+thread.id+':'+(user?.id||'guest'),()=>db.rpc('dk_weekly_threads',{p_question:thread.id}).maybeSingle());
+    const host=weekly.data;
+    const [replyTo,setReplyTo]=useState(null),composer=useRef(null);
+    const q=useQuery(thread.id,()=>db.from('dk_replies').select('id,perspective,created_at,author_id,reply_to').eq('question_id',thread.id).order('created_at',{ascending:false}).limit(100));
     const rows=useFocusedRows({rows:q.data,parent:thread.id,kind:'reply',limit:100,ready:!!q.data,userId:user?.id});
     const states=useCommentLikes('reply',rows);
     async function reply(e){e.preventDefault();if(!user||busy||!text.trim())return;setBusy(true);setErr('');
       try {await checkContent('reply',thread.id,[text.trim()]);
-        const {error}=await db.from('dk_replies').insert({question_id:thread.id,author_id:user.id,perspective:text.trim()});if(error)throw error;set('');q.refresh();refresh();window.dispatchEvent(new Event('dk-dashboard-changed'));}
+        const {error}=await db.from('dk_replies').insert({question_id:thread.id,author_id:user.id,perspective:text.trim(),...(replyTo?{reply_to:replyTo.id}:{})});if(error)throw error;set('');setReplyTo(null);q.refresh();refresh();window.dispatchEvent(new Event('dk-member-contributed'));window.dispatchEvent(new Event('dk-dashboard-changed'));}
       catch(e){setErr(e.communitySafety?e.message:'Your reply could not be published. Please try again.')}finally{setBusy(false)}}
     const next=topicRoute(thread.question);
     return h('article',{className:'dk-panel dk-thread'},h('small',null,thread.is_starter?'Starter question':'Public question',h(PostedDate,{at:thread.published_at})),h('h1',{'data-dk-view':'question','data-dk-item':thread.id},thread.question),h(Report,{kind:'question',target:thread.id}),
+      host&&h('p',null,link(weeklyRoute+'&topic='+encodeURIComponent(host.area),'Weekly topics'),' · Hosted by '+host.host_name),
       h('div',{className:'dk-actions'},link(user?next:login(next),'Explore with AI','dk-primary'),h(Save,{kind:'question',target:thread.id,label:thread.question}),h(ShareTopic,{kind:'question',id:thread.id,title:thread.question})),
-      h('h2',null,'Perspectives'),q.error?h('button',{className:'dk-secondary',onClick:q.refresh},'Retry loading replies'):q.loading&&!q.data?status('Loading replies…'):rows.length?h('ul',{className:'dk-replies'},...rows.map(row=>h('li',{key:row.id,id:'dk-comment-'+row.id,tabIndex:-1},h('p',{'data-dk-view':'reply','data-dk-item':row.id},row.perspective),h('small',null,new Date(row.created_at).toLocaleDateString()),h('div',{className:'dk-actions'},h(CommentLike,{id:row.id,kind:'reply',states}),h(Report,{kind:'reply',target:row.id}))))):h('p',null,'What should someone on the other side consider?'),
-      user?h('form',{className:'dk-form',onSubmit:reply},h('label',null,'Add a public perspective',h('textarea',{required:true,maxLength:1200,value:text,onChange:e=>set(e.target.value)})),h('button',{className:'dk-secondary',disabled:busy||!text.trim()},busy?'Posting…':'Post reply'),err&&status(err,true)):link(login(feed+'&question='+thread.id),'Sign in to reply','dk-secondary'));
+      h('h2',null,'Perspectives'),q.error?h('button',{className:'dk-secondary',onClick:q.refresh},'Retry loading replies'):q.loading&&!q.data?status('Loading replies…'):rows.length?h('ul',{className:'dk-replies'},...rows.map(row=>h('li',{key:row.id,id:'dk-comment-'+row.id,tabIndex:-1},host&&row.author_id===host.host_id&&h('strong',null,host.host_name+' · Host'),
+        row.reply_to&&h(Link,{className:'dk-link',to:questionRoute(thread.id)+'&comment='+row.reply_to},'In reply to an earlier perspective'),
+        h('p',{'data-dk-view':'reply','data-dk-item':row.id},row.perspective),
+        host?.is_host&&row.author_id!==host.host_id&&h('button',{type:'button',className:'dk-small',onClick:()=>{setReplyTo(row);composer.current?.focus()}},'Reply as host'),h('small',null,new Date(row.created_at).toLocaleDateString()),h('div',{className:'dk-actions'},h(CommentLike,{id:row.id,kind:'reply',states}),h(Report,{kind:'reply',target:row.id}))))):h('p',null,'What should someone on the other side consider?'),
+      user?h('form',{className:'dk-form',onSubmit:reply},replyTo&&h('div',null,h('blockquote',null,replyTo.perspective),h('button',{type:'button',className:'dk-small',onClick:()=>setReplyTo(null)},'Cancel direct reply')),
+        h('label',null,replyTo?'Your reply as host':'Add a public perspective',h('textarea',{ref:composer,required:true,maxLength:1200,value:text,onChange:e=>set(e.target.value)})),h(FirstCommentHint),h('button',{className:'dk-secondary',disabled:busy||!text.trim()},busy?'Posting…':'Post reply'),err&&status(err,true)):link(login(feed+'&question='+thread.id),'Sign in to reply','dk-secondary'));
   }
   function SavedArtwork({item}) {
     const [activity,setActivity]=useState(null);
