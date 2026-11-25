@@ -351,7 +351,17 @@ html{scroll-padding-top:198px}
 
 .dk-dashboard-heading{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.4rem}
 .dk-dashboard-heading h1{margin:0}
-.dk-dashboard-metrics{display:grid;gap:.75rem;margin:0 0 1rem}
+.dk-dashboard,.dk-profile-page{max-width:58rem}
+.dk-backlink{display:inline-flex;align-items:center;min-height:44px}
+.dk-dashboard a.dk-link,.dk-profile-page a,.dk-backlink,.dk-profile-settings summary,.dk-photo-trigger span:last-child,.dk-header-stats a span{text-decoration:underline;text-underline-offset:.18em;font-weight:650}
+.dk-profile-settings summary{cursor:pointer;min-height:44px;line-height:44px;color:var(--dk-mint)}
+.dk-profile-settings[open] .dk-profile-controls{padding:.4rem 0}
+.dk-profile-page>.dk-panel{margin-block:.8rem}
+.dk-profile-page .dk-dashboard-list li{gap:.8rem;flex-wrap:wrap}
+.dk-profile-page h1:focus{outline:none}
+.dk-profile-page :is(a,button,input):focus-visible,.dk-dashboard :is(a,button,summary):focus-visible{outline:2px solid var(--dk-mint);outline-offset:3px}
+.dk-activity-link .dk-metric-label span{color:var(--dk-mint);font-weight:700;text-decoration:underline;text-underline-offset:.18em}
+.dk-support-pair,.dk-activity-totals{margin-bottom:.75rem}
 .dk-support-pair,.dk-activity-totals{display:grid;gap:.75rem}
 .dk-support-pair{grid-template-columns:repeat(2,minmax(0,1fr))}
 .dk-activity-totals{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -365,16 +375,12 @@ html{scroll-padding-top:198px}
 .dk-support-pair small{color:inherit;font-size:.86rem}
 .dk-activity-totals .dk-metric{gap:.25rem;padding:.8rem 1rem}
 .dk-activity-totals .dk-metric strong{font-size:1.75rem}
-.dk-reach{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.8fr);gap:.5rem 1rem;margin-bottom:1rem}
-.dk-reach-total h2{margin:0;font-size:1.15rem}
-.dk-reach-total strong{font-size:2rem;line-height:1.3;font-variant-numeric:tabular-nums}
-.dk-reach nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}
-.dk-reach nav a{display:flex;flex-direction:column;justify-content:center;border-inline-start:1px solid var(--dk-line);padding:.25rem .75rem;min-height:44px;color:var(--dk-text)}
-.dk-reach nav a[aria-current=page]{border-color:var(--dk-mint);background:var(--dk-soft)}
-.dk-reach nav strong{font-size:1.35rem;font-variant-numeric:tabular-nums}
-.dk-reach>p{grid-column:1/-1;margin:0;font-size:.85rem}
-.dk-metric[aria-current=page]{outline:2px solid var(--dk-mint);outline-offset:2px}
-.dk-metric:hover,.dk-metric:focus-visible{outline:3px solid var(--dk-text);outline-offset:2px}
+.dk-reach{margin-bottom:1rem}
+.dk-reach-total{display:flex;align-items:baseline;justify-content:space-between;gap:1rem}
+.dk-reach-total h2{margin:0;font-size:1.12rem}
+.dk-reach-total strong{font-size:1.65rem;font-variant-numeric:tabular-nums}
+.dk-reach>p{margin:.15rem 0 0;color:var(--dk-sub);font-size:.9rem}
+a.dk-metric:hover,a.dk-metric:focus-visible{outline:2px solid var(--dk-mint);outline-offset:2px}
 .dk-dashboard-detail h2{margin:0}
 .dk-dashboard-detail .dk-sectionline{flex-wrap:wrap;gap:.6rem}
 .dk-dashboard-list li>div:first-child{display:grid;gap:.25rem;min-width:0;overflow-wrap:anywhere}
@@ -387,7 +393,7 @@ html{scroll-padding-top:198px}
 .dk-comment-like[aria-pressed=true] .dk-icon{fill:currentColor}
 [id^=dk-comment-]:focus{outline:2px solid var(--dk-mint);outline-offset:3px}
 @media(max-width:540px){
-  .dk-support-pair,.dk-activity-totals,.dk-dashboard-metrics{gap:.55rem}
+  .dk-support-pair,.dk-activity-totals{gap:.55rem}
   .dk-support-pair .dk-metric{padding:.8rem;gap:.4rem}
   .dk-support-pair .dk-metric-label{align-items:flex-start;gap:.3rem}
   .dk-support-pair .dk-icon{width:17px;height:17px}
@@ -395,9 +401,8 @@ html{scroll-padding-top:198px}
   .dk-activity-totals .dk-metric{padding:.6rem}
   .dk-activity-totals .dk-metric-label{font-size:.86rem}
   .dk-activity-totals .dk-icon{display:none}
-  .dk-reach{grid-template-columns:1fr}
-  .dk-reach-total{display:flex;align-items:baseline;justify-content:space-between}
-  .dk-reach nav a{font-size:.87rem}
+  .dk-dashboard-heading h1{font-size:clamp(1.45rem,6vw,2rem)}
+  .dk-dashboard-heading{gap:.25rem .5rem}
   .dk-dashboard-heading{margin-bottom:1rem}.dk-dashboard-list li{flex-wrap:wrap}
 }
 
@@ -410,7 +415,7 @@ html{scroll-padding-top:198px}
 .dk-header-stat strong{font-size:1.02rem;font-variant-numeric:tabular-nums;color:var(--dk-text)}
 .dk-header-stat .dk-icon{width:16px;height:16px}
 .dk-header-stat:first-child .dk-icon{color:var(--dk-mint)}
-.dk-header-stat:hover,.dk-notice-link:hover{color:var(--dk-mint);text-decoration:underline}
+a.dk-header-stat:hover,.dk-notice-link:hover{color:var(--dk-mint);text-decoration:underline}
 .dk-profile-button{gap:6px;justify-content:center;min-height:44px;padding:6px 14px;border:1px solid var(--dk-line);border-radius:9px;background:var(--dk-mint);color:var(--dk-on);font-weight:700}
 .dk-profile-controls{gap:.6rem 1rem;flex-wrap:wrap}
 .dk-member-bar .dk-notify{border-color:var(--dk-sub)}

@@ -49,7 +49,8 @@ export function createMemberHeader({React,db,Link,useQuery,icon}) {
     const social=useSocial();
     return h('nav',{className:'dk-header-stats','aria-label':'Your activity shortcuts'},...headerStats.map(([key,label,glyph])=>{
       const count=social.summary?social.summary.counts[key]||0:null;
-      return h(Link,{key,to:'/profile?section='+key,className:'dk-header-stat','aria-label':label+(count===null?'':', '+count)},
+      const target=key==='given'?null:'/profile?section='+key;
+      return h(target?Link:'span',{key,to:target||undefined,className:'dk-header-stat','aria-label':target?label+(count===null?'':', '+count):undefined},
         icon(glyph),h('strong',null,count===null?'—':Intl.NumberFormat(undefined,{notation:'compact'}).format(count)),h('span',null,label));
     }));
   }

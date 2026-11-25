@@ -14,18 +14,20 @@ test('opening Profile exposes all five totals, including zero, before selecting 
   }).ProfileDashboard({user:{id:'member'}});
   for(const [response,values] of [[{data},['21','7','0','4','2']],[{loading:true},Array(5).fill('—')]]){
     const page=setup(response);
-    const [support,activity]=page.children.find(node=>node.props?.['aria-label']==='Your engagement').children;
+    const support=page.children.find(n=>n?.props?.['aria-label']==='Support');
+    const activity=page.children.find(n=>n?.props?.['aria-label']==='Your activity');
     assert.deepEqual(support.children.map(x=>x.children[0].children[1]),['Support given','Support received']);
-    const cards=[...support.children,...activity.children];
-    assert.deepEqual(cards.map(node=>node.props.to),['given','received','work','comments','friends'].map(s=>'/profile?section='+s));
-    assert.deepEqual(cards.map(node=>node.children[1].children[0]),values);
-    assert.equal(cards[0].props['aria-current'],'page');
+    assert.ok(support.children.every(x=>x.type==='div'&&!x.props.to));
+    assert.deepEqual(activity.children.map(n=>n.props.to),['work','comments','friends'].map(s=>'/profile?section='+s));
+    assert.deepEqual([...support.children,...activity.children].map(node=>node.children[1].children[0]),values);
+    assert.ok(!JSON.stringify(page).includes('dk-dashboard-list'));
   }
 });
 
 test('dashboard links reopen exact comments, questions, debates and selected activity pages',async()=>{
   const {dashboardView,dashboardDestination}=await import('../workspace/dashboard.mjs');
-  assert.equal(dashboardView('?section=unknown&page=1e99').metric[0],'given');
+  for(const old of ['given','received','post_views','comment_views','unknown'])assert.equal(dashboardView('?section='+old).metric,null);
+  assert.equal(dashboardView('?tab=people').metric[0],'friends');
   assert.equal(dashboardView('?section=comments&page=-3').page,1);
   assert.equal(dashboardView('?section=comments&page=2').page,2);
   const row={item:'abc',topic:'tax debate',label:'Maya Jones'};
@@ -56,4 +58,32 @@ test('every published sample comment and nested reply has a unique, registered l
   }
   for(const entry of edition)check(entry.id,entry.sampleActivity?.comments||[]);
   assert.ok(ids.size>200);
+});
+
+test('comment history loads the requested page and links each entry back to its discussion',async()=>{
+  const {createSocialDashboard}=await import('../workspace/dashboard.mjs');
+  const h=(type,props,...children)=>({type,props:props||{},children:children.flat()});
+  const React={createElement:h,useRef:()=>({}),useEffect(){}};
+  const calls=[];
+  const rows=[
+    {kind:'reply',item:'reply-id',topic:'question-id',label:'My reply',occurred:'2026-11-25'},
+    {kind:'comment',item:'comment-id',topic:'published-id',point_id:'B.2',label:'My comment',occurred:'2026-11-25'}
+  ];
+  const {ProfileDashboard}=createSocialDashboard({React,Link:'a',useLocation:()=>({search:'?section=comments&page=2'}),
+    db:{rpc:(name,args)=>calls.push([name,args])},useQuery:(_,fetch)=>{fetch();return {data:{items:rows,item_count:46}};},
+    link:(to,label)=>h('a',{to},label)});
+  const {children}=ProfileDashboard({user:{id:'member'}});
+  assert.deepEqual(calls,[['dk_profile_dashboard',{p_metric:'comments',p_offset:20}]]);
+  const links=[];
+  function visit(node){
+    if(!node?.children)return;
+    if(node.type==='a')links.push([node.children[0],node.props.to]);
+    node.children.forEach(visit);
+  }
+  children.forEach(visit);
+  for(const pair of [
+    ['My reply','/home?view=feed&question=question-id&comment=reply-id'],
+    ['My comment','/home?view=feed&example=published-id&point=B.2&comment=comment-id'],
+    ['Previous','/profile?section=comments'],['Next','/profile?section=comments&page=3']
+  ])assert.ok(links.some(([label,to])=>label===pair[0]&&to===pair[1]),pair[0]);
 });

@@ -55,7 +55,7 @@ def run():
             bell = header.get_by_role("button", name=re.compile("^Notifications"))
             profile_button = header.get_by_role("link", name="Profile", exact=True)
             shortcuts = header.get_by_role("navigation", name="Your activity shortcuts")
-            expect(shortcuts.get_by_role("link")).to_have_count(3)
+            expect(shortcuts.get_by_role("link")).to_have_count(2)
             expect(bell).to_be_visible()
             expect(profile_button).to_be_visible()
             layout_errors = []
@@ -76,41 +76,53 @@ def run():
             expect(page.get_by_role("heading", name="Your comments", exact=True)).to_be_visible()
             page.get_by_role("link", name="Profile", exact=True).click()
             expect(page.get_by_role("heading", name="Your dashboard")).to_be_visible()
-            cards = page.locator(".dk-dashboard-metrics a")
-            expect(cards).to_have_count(5)
-            expect(cards.first.locator("strong")).to_have_text("0")
-            for width in [320, 390, 768, 1280]:
+            support = page.locator(".dk-support-pair .dk-metric")
+            given = support.first.locator("strong")
+            cards = page.get_by_role("navigation", name="Your activity", exact=True).get_by_role("link")
+            expect(cards).to_have_count(3)
+            expect(shortcuts).to_have_count(0)
+            expect(page.get_by_role("navigation", name="Start and discover")).to_have_count(0)
+            expect(given).to_have_text("0")
+            for width in [320,390,768,1280]:
                 page.set_viewport_size({"width":width,"height":844})
-                left,right=cards.first.bounding_box(),cards.nth(1).bounding_box()
+                left,right=support.first.bounding_box(),support.nth(1).bounding_box()
                 assert abs(left["y"]-right["y"])<2 and left["x"]+left["width"]<=right["x"]
                 assert right["x"]+right["width"]<=width
+                assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
             page.set_viewport_size({"width":390,"height":844})
-            reach=page.get_by_role("navigation",name="Impressions by content type")
-            for label,heading in [("Comments","Comment impressions"),("Posts & debates","Post and debate impressions")]:
-                reach.get_by_role("link",name=re.compile(re.escape(label))).click()
-                expect(page.get_by_role("heading",name=heading,exact=True)).to_be_visible()
-            assert cards.nth(4).bounding_box()["y"] < 844
-            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
-            for section, title in [(2,"Your posts and debates"),(3,"Your comments"),(4,"Your friends")]:
-                cards.nth(section).click()
-                expect(page.get_by_role("heading", name=title, exact=True)).to_be_visible()
-            page.set_viewport_size({"width": 1280, "height": 900})
-            assert abs(cards.first.bounding_box()["y"] - cards.nth(1).bounding_box()["y"]) < 2
+            expect(page.locator(".dk-support-pair a, .dk-reach a, .dk-dashboard-list")).to_have_count(0)
+            for index, title in enumerate(["Your posts and debates","Your comments","Your friends"]):
+                cards.nth(index).click()
+                expect(page.get_by_role("heading",name=title,exact=True)).to_be_visible()
+                expect(page.locator(".dk-support-pair")).to_have_count(0)
+                page.reload()
+                expect(page.get_by_role("heading",name=title,exact=True)).to_be_visible()
+                if index==2:
+                    search=page.get_by_role("searchbox",name="Find a friend")
+                    search.fill("Avery Brooks")
+                    expect(page.get_by_role("link",name="Avery Brooks",exact=True).first).to_be_visible()
+                page.get_by_role("link",name="Back to profile").click()
+            for retired in ["?section=given","?section=received","?section=post_views","?section=comment_views","?tab=liked"]:
+                page.goto(base+"/profile/"+retired)
+                expect(page.get_by_role("heading",name="Your dashboard")).to_be_visible()
+                expect(page.locator(".dk-dashboard-list")).to_have_count(0)
+            page.set_viewport_size({"width":1280,"height":900})
             page.goto(base + "/home/?view=feed&example=" + example["id"] + "&comments=1&comment=" + comment)
             row = page.locator("#dk-comment-" + comment)
             row.get_by_role("button", name="Support comment", exact=True).click()
             expect(row.get_by_role("button", name="Remove support from comment", exact=True)).to_be_enabled()
             page.get_by_role("link", name="Profile", exact=True).click()
-            expect(cards.first.locator("strong")).to_have_text("1")
+            expect(given).to_have_text("1")
             page.reload()
-            expect(cards.first.locator("strong")).to_have_text("1")
-            page.locator(".dk-dashboard-list a").first.click()
+            expect(given).to_have_text("1")
+            expect(page.locator(".dk-dashboard-list")).to_have_count(0)
+            page.goto(base + "/home/?view=feed&example=" + example["id"] + "&comments=1&comment=" + comment)
             expect(row).to_be_focused()
             row.get_by_role("button", name="Remove support from comment", exact=True).click()
             expect(row.get_by_role("button", name="Support comment", exact=True)).to_be_enabled()
             page.get_by_role("link", name="Profile", exact=True).click()
-            expect(cards.first.locator("strong")).to_have_text("0")
-            expect(shortcuts.get_by_role("link", name="Support given, 0")).to_be_visible()
+            expect(given).to_have_text("0")
+            expect(support.first).to_contain_text("Support given")
             # Optional live fixture is an already-published member comment. Read it only.
             slug, target = os.getenv("DK_QA_PUBLIC_POSTER"), os.getenv("DK_QA_PUBLIC_COMMENT")
             if slug and target:
@@ -144,7 +156,9 @@ def run():
             dialog.get_by_role("link", name=re.compile("sent you a friend request")).click()
             expect(page.get_by_role("heading", name="Your friends", exact=True)).to_be_visible()
             page.get_by_role("button", name="Accept request").click()
-            expect(shortcuts.get_by_role("link", name="Friends, 1")).to_be_visible()
+            expect(page.get_by_role("button",name="Remove friend")).to_be_visible()
+            page.get_by_role("link",name="Back to profile").click()
+            expect(cards.nth(2).locator("strong")).to_have_text("1")
             page.reload()
             expect(page.locator(".dk-notify")).to_have_attribute("aria-label","Notifications")
             with browser.new_context() as peer_context:
@@ -155,6 +169,7 @@ def run():
                 peer_page.get_by_role("button", name="Notifications, 1 unread", exact=True).click()
                 peer_page.get_by_role("dialog").get_by_role("link", name=re.compile("accepted your friend request")).click()
                 expect(peer_page.get_by_role("heading", name="Your friends", exact=True)).to_be_visible()
+            page.locator(".dk-profile-settings summary").click()
             expect(page.get_by_role("link", name="Appearance",exact=True)).to_be_visible()
             assert not layout_errors, layout_errors
             browser.close()

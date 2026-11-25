@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-test('Friend and AI are direct header links across feed and account routes', async () => {
+test('The launch bar stays available outside the compact member profile', async () => {
   const {createWorkspace, afterLogin} = await import('../workspace/app.mjs');
   const React = {
     createElement: (type, props, ...children) => ({type, props, children}),
@@ -13,6 +13,7 @@ test('Friend and AI are direct header links across feed and account routes', asy
       const workspace = createWorkspace({React, Link:'link', useAuth:()=>({user}), useLocation:()=>new URL(url,'https://example.test'), useNavigate:()=>()=>{}});
       const header = workspace.Nav();
       const nav = header.children.find(child=>child?.props?.['aria-label']==='Start and discover');
+      if(user&&url==='/profile'){assert.ok(!nav);continue}
       assert.ok(nav,url);
       const [debate,discover]=nav.children;
       assert.deepEqual([debate,discover].map(group=>{

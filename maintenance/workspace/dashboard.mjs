@@ -1,22 +1,16 @@
-// The order is part of the profile experience. Appreciation given leads the dashboard.
-export const dashboardMetrics = [
-  ['given','Support given','thumb','Support you’ve given','Use the thumbs-up beside a comment or published debate to support it.'],
-  ['received','Support received','thumb','Support you’ve received','When someone supports your comment or published debate, it appears here.'],
-  ['work','Posts & debates','book','Your posts and debates','Your public questions and debates with a friend or AI appear here.'],
-  ['comments','Comments','message','Your comments','Your comments and replies appear here when you join a discussion.'],
-  ['friends','Friends','friends','Your friends','Find a member and send a friend request to start your network.']
-];
-
-const reachMetrics=[
-  ['comment_views','Comments','eye','Comment impressions','Your public comments and replies will appear here.'],
-  ['post_views','Posts & debates','eye','Post and debate impressions','Your public questions and published debates will appear here.']
+const supportMetrics=[['given','Support given'],['received','Support received']];
+const activityMetrics=[
+  ['work','Posts & debates','book','Your posts and debates','You haven’t posted a question or started a debate yet.'],
+  ['comments','Comments','message','Your comments','Your comments and replies will appear here when you join a discussion.'],
+  ['friends','Friends','friends','Your friends','You haven’t added any friends yet.']
 ];
 
 export function dashboardView(search) {
   const params=new URLSearchParams(search);
-  const metric=[...dashboardMetrics,...reachMetrics].find(([key])=>key===params.get('section'))||dashboardMetrics[0];
+  const section=params.get('tab')==='people'?'friends':params.get('section');
+  const metric=activityMetrics.find(([key])=>key===section)||null;
   const page=Number(params.get('page')||1);
-  return {metric,page:Number.isInteger(page)&&page>=1&&page<=1000000?page:1};
+  return {metric,page:metric&&Number.isInteger(page)&&page>=1&&page<=1000000?page:1};
 }
 function dashboardUrl(section,page=1) {
   return '/profile?section='+section+(page>1?'&page='+page:'');
@@ -30,7 +24,7 @@ export function dashboardDestination(row) {
   if(row.kind==='friend')return '/debate/start?mode=friend&person='+encodeURIComponent(row.label);
   return feed+'&example='+topic+(row.point_id?'&point='+encodeURIComponent(row.point_id):'&comments=1')+'&comment='+item;
 }
-export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuery,link,icon,status,login,profileRoute,ProfileControls,PhotoEditor}) {
+export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuery,link,icon,status,login,profileRoute,ProfileControls,PhotoEditor,FindFriends}) {
   const h=React.createElement,{useState,useEffect,useRef}=React;
   function useChanges(refresh) {
     useEffect(()=>{
@@ -124,51 +118,58 @@ export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuer
         h(FriendButton,{peer:row.peer,relation:row.status,ready:!friends.loading})))));
   }
   function ProfileDashboard({user}){
-    const loc=useLocation(),{metric:[section,,,title,empty],page}=dashboardView(loc.search);
+    const {metric,page}=dashboardView(useLocation().search);
+    const section=metric?.[0]||'overview';
     const q=useQuery(JSON.stringify([user.id,section,page]),()=>db.rpc('dk_profile_dashboard',{p_metric:section,p_offset:(page-1)*20}));
     useChanges(q.refresh);
-    const friends=useFriends(section==='friends'?user.id:null);
-    const previous=useRef(null);
-    useEffect(()=>{if(q.data)previous.current=q.data},[q.data]);
-    const summary=q.data||previous.current,items=q.data?.items||[];
-    const labels={poster:'Infographic',editorial:'Sample comment',comment:'Comment',reply:'Reply',question:'Public question',debate:'Debate',friend:'Friends since'};
-    const count=q.data?.item_count??summary?.counts?.[section]??0;
-    const totalReach=summary?(summary.reach?.comment_views||0)+(summary.reach?.post_views||0):null;
-    const formatted=n=>n==null?'—':Number(n).toLocaleString();
-    function metricCard([key,label,glyph]){
-      const n=summary?summary.counts?.[key]||0:null;
-      const support=key==='given'||key==='received',onComments=summary?.support_comments?.[key]||0;
-      return h(Link,{key,to:dashboardUrl(key),className:'dk-metric dk-metric-'+key,'aria-current':key===section?'page':undefined},
-        h('span',{className:'dk-metric-label'},icon(glyph),label),h('strong',null,formatted(n)),
-        support&&summary?h('small',null,formatted(onComments)+' on comments · '+formatted(n-onComments)+' on debates'):
-          key==='friends'&&summary?.incoming>0?h('small',null,summary.incoming+' pending'):null);
+    const heading=useRef(null);
+    useEffect(()=>{
+      if(metric){heading.current?.focus({preventScroll:true});window.scrollTo(0,0)}
+    },[section,page]);
+    const data=q.data,formatted=n=>n==null?'—':Number(n).toLocaleString();
+    const count=key=>formatted(data?data.counts?.[key]||0:null);
+    const retry=q.error&&h('div',{role:'alert'},'Could not load your activity. ',h('button',{className:'dk-small',type:'button',onClick:q.refresh},'Try again'));
+    if(metric){
+      const title=metric[3],friends=section==='friends';
+      return h('main',{id:'dk-main',className:'dk-main dk-profile dk-profile-page'},
+        link('/profile','Back to profile','dk-backlink'),
+        h('h1',{ref:heading,tabIndex:-1},title),
+        friends&&h(FriendDirectory,{user}),
+        h('section',{className:'dk-panel dk-dashboard-detail','aria-label':title,'aria-busy':q.loading},
+          friends&&h('h2',null,'Friends list'),
+          retry||(!data?status('Loading…'):h(React.Fragment,null,
+            data.items.length?h('ul',{className:'dk-list dk-dashboard-list'},...data.items.map(row=>
+              h('li',{key:row.kind+':'+row.item},
+                h('div',null,h('small',null,({friend:'Friends since',debate:'Debate',question:'Public question',comment:'Comment',reply:'Reply'})[row.kind],' · ',
+                  new Date(row.occurred).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})),
+                  friends?h('strong',null,row.label):link(dashboardDestination(row),row.label,'dk-titlelink')),
+                friends&&h('div',{className:'dk-actions'},link(dashboardDestination(row),'Invite to debate'),h(FriendButton,{peer:row.item,relation:'friends'}))))):
+              h('p',{className:'dk-dashboard-empty'},page===1?metric[4]:'No more items on this page.'),
+            (page>1||page*20<data.item_count)&&h('nav',{className:'dk-actions','aria-label':'Activity pages'},
+              page>1&&link(dashboardUrl(section,page-1),'Previous'),page*20<data.item_count&&link(dashboardUrl(section,page+1),'Next'))))),
+        section==='comments'&&link('/home?view=feed','Explore discussions'),
+        section==='work'&&h('nav',{className:'dk-actions','aria-label':'Start a debate'},link('/debate/start?mode=friend','Debate with a friend'),link('/debate/topic?mode=ai','Debate with AI')));
     }
+    const reach=key=>formatted(data?data.reach?.[key]||0:null);
     return h('main',{className:'dk-main dk-profile dk-dashboard',id:'dk-main'},
-      h('header',{className:'dk-dashboard-heading'},h('div',{className:'dk-photo-heading'},h(PhotoEditor),h('h1',null,'Your dashboard')),
-        h(ProfileControls)),
-      h('nav',{className:'dk-dashboard-metrics','aria-label':'Your engagement'},
-        h('div',{className:'dk-support-pair'},...dashboardMetrics.slice(0,2).map(metricCard)),
-        h('div',{className:'dk-activity-totals'},...dashboardMetrics.slice(2).map(metricCard))),
+      h('header',{className:'dk-dashboard-heading'},h('div',{className:'dk-photo-heading'},h(PhotoEditor),h('h1',null,'Your dashboard')),h(ProfileControls)),
+      retry,
+      h('section',{className:'dk-support-pair','aria-label':'Support'},...supportMetrics.map(([key,label])=>
+        h('div',{key,className:'dk-metric dk-metric-'+key},h('span',{className:'dk-metric-label'},icon('thumb'),label),h('strong',null,count(key))))),
+      h('nav',{className:'dk-activity-totals','aria-label':'Your activity'},...activityMetrics.map(([key,label,glyph])=>
+        h(Link,{key,to:dashboardUrl(key),className:'dk-metric dk-activity-link'},
+          h('span',{className:'dk-metric-label'},icon(glyph),h('span',null,label)),h('strong',null,count(key)),
+          key==='friends'&&data?.incoming>0&&h('small',null,data.incoming+' pending')))),
       h('section',{className:'dk-panel dk-reach','aria-labelledby':'dk-reach-title'},
-        h('div',{className:'dk-reach-total'},h('h2',{id:'dk-reach-title'},'Impressions'),h('strong',null,formatted(totalReach))),
-        h('nav',{'aria-label':'Impressions by content type'},...reachMetrics.map(([key,label])=>
-          h(Link,{key,to:dashboardUrl(key),'aria-current':section===key?'page':undefined},
-            h('strong',null,formatted(summary?(summary.reach?.[key]||0):null)),label))),
-        h('p',null,'One view per item per account or guest browser each day. Your signed-in views are excluded.')),
-      h('section',{className:'dk-panel dk-dashboard-detail','aria-label':title,'aria-busy':q.loading},
-        h('div',{className:'dk-sectionline'},h('h2',null,title),section==='friends'?link(profileRoute('People'),'Find friends'):section==='given'?link('/home?view=feed','Explore discussions'):null),
-        section==='friends'&&h(Requests,{friends}),
-        q.error?h(React.Fragment,null,status('Your activity could not load.',true),h('button',{className:'dk-secondary',onClick:q.refresh},'Try again')):
-        !q.data?status('Loading your activity…'):
-        items.length?h('ul',{className:'dk-list dk-dashboard-list'},...items.map((row,index)=>
-          h('li',{key:[row.kind,row.item,row.occurred,index].join('|')},
-            h('div',null,h('small',null,row.impressions!=null?formatted(row.impressions)+(row.impressions===1?' impression · ':' impressions · '):'',labels[row.kind],' · ',new Date(row.occurred).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})),
-              row.kind==='friend'?h('strong',null,row.label):h(Link,{className:'dk-titlelink',to:dashboardDestination(row)},row.label)),
-            row.kind==='friend'?h('div',{className:'dk-actions'},link(dashboardDestination(row),'Invite to debate'),h(FriendButton,{peer:row.item,relation:'friends',ready:!friends.loading})):null))):
-        h('p',{className:'dk-dashboard-empty'},page===1?empty:'There’s no more activity on this page.'),
-        (page>1||page*20<count)&&h('nav',{className:'dk-actions','aria-label':'Activity pages'},page>1&&link(dashboardUrl(section,page-1),'Previous'),page*20<count&&link(dashboardUrl(section,page+1),'Next'))),
-      h('nav',{className:'dk-dashboard-tools','aria-label':'Profile tools'},...['Pinned','Posters','Created','People','Table'].map((tab,index)=>
-        h(Link,{key:tab,to:profileRoute(tab),className:'dk-link'},['Pinned topics','Saved posters','Created posters','People','Your table'][index]))));
+        h('div',{className:'dk-reach-total'},h('h2',{id:'dk-reach-title'},'Impressions'),
+          h('strong',null,formatted(data?(data.reach?.comment_views||0)+(data.reach?.post_views||0):null))),
+        h('p',null,reach('comment_views')+' on comments · '+reach('post_views')+' on posts & debates')),
+      h('nav',{className:'dk-dashboard-tools','aria-label':'Profile tools'},...['Pinned','Posters','Created','Table'].map((tab,index)=>
+        h(Link,{key:tab,to:profileRoute(tab),className:'dk-link'},['Pinned topics','Saved posters','Created posters','Your table'][index]))));
   }
-  return {ProfileDashboard,useCommentLikes,CommentLike,useFocusedRows,useFocusComment,useFriends,FriendButton,Requests};
+  function FriendDirectory({user}){
+    const friends=useFriends(user.id);
+    return h('section',{className:'dk-panel'},h(FindFriends,{user,friends}),h(Requests,{friends}));
+  }
+  return {ProfileDashboard,useCommentLikes,CommentLike,useFocusedRows,useFocusComment,FriendButton};
 }

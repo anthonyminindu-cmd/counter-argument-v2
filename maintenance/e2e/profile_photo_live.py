@@ -68,6 +68,7 @@ def run():
             page.set_viewport_size({"width": 320, "height": 844})
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
             page.set_viewport_size({"width": 1280, "height": 900})
+            page.locator(".dk-profile-settings summary").click()
             page.get_by_role("link", name="Account settings").click()
             page.get_by_role("button", name="Edit photo").click()
             second = upload(72, 160, 110)
