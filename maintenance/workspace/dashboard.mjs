@@ -66,7 +66,7 @@ export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuer
       }catch{setError(true)}finally{setBusy(false)}
     }
     return h(React.Fragment,null,h('button',{className:'dk-small dk-comment-like',type:'button','aria-pressed':!!state?.liked,
-      'aria-label':state?.mine?'Support for your comment':state?.liked?'Remove support from comment':label,disabled:busy||!state||states.loading||state.mine,onClick:toggle},
+      title:state?.mine?'Support for your comment':state?.liked?'Remove support from comment':label,disabled:busy||!state||states.loading||state.mine,onClick:toggle},
       icon('thumb'),state?.mine?'Support':state?.liked?'Supported':'Support',' · ',state?.likes??'…'),error&&status('Could not save support. Try again.',true));
   }
   function useFocusedRows({rows,parent,point=null,kind,limit,ready,userId}) {
