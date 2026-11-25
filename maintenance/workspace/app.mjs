@@ -1,4 +1,5 @@
 import {createParticipation,weeklyRoute,askedPointRoute} from './participation.mjs';
+import {applyReadingPreferences,createRouteContent} from './accessibility.mjs';
 import {createProfilePhotos} from './profile-photo.mjs';
 import {watchContentImpressions} from './impressions.mjs';
 import {createMemberHeader} from './social-header.mjs';
@@ -238,7 +239,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         else dialog.current.setAttribute('open','');
       }
     },[open]);
-    function close(){setOpen(false);trigger.current?.focus();}
+    function close(){dialog.current?.close();setOpen(false);requestAnimationFrame(()=>trigger.current?.focus());}
     async function share(){
       if(busy)return;
       setMessage('');
@@ -256,7 +257,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     }
     return h(React.Fragment,null,
       h('button',{type:'button',ref:trigger,onClick:share,disabled:busy,className:'dk-small',title:'Share '+title},icon('share'),'Share'),
-      open&&h('dialog',{ref:dialog,'aria-labelledby':heading,className:'dk-share-dialog',onCancel:close,onClose:close,
+      open&&h('dialog',{ref:dialog,'aria-labelledby':heading,className:'dk-share-dialog',onCancel:e=>{e.preventDefault();close();},
         onClick:e=>{if(e.target===dialog.current)close();}},
         h('div',{className:'dk-share-content'},
           h('div',{className:'dk-sectionline'},h('h2',{id:heading},'Share topic'),h('button',{type:'button',className:'dk-small',onClick:close},'Close')),
@@ -275,6 +276,20 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       if(active)set({svg,key:Array.from(new Uint8Array(hash),v=>v.toString(16).padStart(2,'0')).join('')});
     }).catch(()=>{});return()=>{active=false}},[svg]);
     return identity?.svg===svg&&svg&&user?h(React.Fragment,null,h(Save,{kind:'poster',target:identity.key,label:title,artwork:svg}),h(PersonalPoster,{key:user.id+identity.key,title,svg,points:pointSnapshot(points,positions),identity:identity.key,userId:user.id,onActivity})):null;
+  }
+  function TopicHighlight({topic,onSelect}) {
+    const [phrase,setPhrase]=useState(''), [message,setMessage]=useState('');
+    const id=React.useId();
+    function highlight() {
+      const text=phrase.trim(), start=topic.indexOf(text);
+      if(!text || start<0){setMessage('Enter a phrase that appears in the topic.');return;}
+      onSelect(text,start);setMessage('Highlighted “'+text+'”.');setPhrase('');
+    }
+    return h('details',{className:'dk-highlight-tool'},h('summary',null,'Highlight a phrase'),
+      h('label',{htmlFor:id},'Phrase from the topic'),
+      h('input',{id,value:phrase,onChange:e=>setPhrase(e.target.value)}),
+      h('button',{type:'button',className:'dk-small',onClick:highlight},'Highlight'),
+      h('span',{role:'status'},message));
   }
   function ProfileControls(){
     const {signOut}=useAuth(),navigate=useNavigate(),[error,setError]=useState('');
@@ -298,11 +313,10 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       if(event.button===0&&!event.metaKey&&!event.ctrlKey&&!event.shiftKey&&!event.altKey)window.scrollTo(0,0);
     }
     return h('header',{className:'dk-header'},
-      onHome&&new URLSearchParams(loc.search).get('view')!=='weekly'&&!['example','question','commenter','join'].some(key=>new URLSearchParams(loc.search).has(key))&&
-        h('a',{className:'dk-skip',href:'#dk-debates',onClick:e=>{const el=document.getElementById('dk-debates');if(el){e.preventDefault();el.focus();el.scrollIntoView({block:'start'});}}},'Skip to debates'),
+      h('a',{className:'dk-skip',href:'#dk-route-content',onClick:e=>{const el=document.getElementById('dk-route-content');if(el){e.preventDefault();el.focus();el.scrollIntoView({block:'start'});}}},'Skip to main content'),
       h('div',{className:user?'dk-bar dk-member-bar':'dk-bar'},
-        h(Link,{to:home,className:'dk-brand','aria-label':'Differ Kindly home',onClick:scrollToStart},
-          h('img',{className:'dk-mark',src:brandMark,width:817,height:670,alt:''}),
+        h(Link,{to:home,className:'dk-brand',onClick:scrollToStart},
+          h('img',{className:'dk-mark',src:brandMark,width:817,height:670,alt:'Differ Kindly home'}),
           !user&&!isWelcomeLocation(loc)&&h('small',{className:'dk-brand-tagline'},'Two views. One table.')),
         h('nav',{'aria-label':'Primary',className:'dk-nav'},...destinations.map(([to,name,g])=>
           h(Link,{key:name,to,onClick:scrollToStart,'aria-current':active===name?'page':undefined},icon(g),name))),
@@ -353,7 +367,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function Topic(){
     const loc=useLocation(),{user,loading}=useAuth(),navigate=useNavigate(),[question,set]=useState('');
     if(new URLSearchParams(loc.search).get('mode')!=='ai')return h(OriginalTopic);
-    return h('main',{className:'dk-main dk-topic'},h('div',{className:'dk-kicker'},'AI exploration'),h('h1',null,'What would you like to explore?'),
+    return h('div',{className:'dk-main dk-topic'},h('div',{className:'dk-kicker'},'AI exploration'),h('h1',null,'What would you like to explore?'),
       h('form',{className:'dk-form dk-panel',onSubmit:e=>{e.preventDefault();const value=question.trim();if(value){const next=topicRoute(value);navigate(user?next:login(next))}}},
         h('label',null,'Your question',h('textarea',{autoFocus:true,required:true,maxLength:320,value:question,onChange:e=>set(e.target.value),placeholder:'Should every team use the same operating system?'})),
         h('button',{className:'dk-primary',disabled:loading||!question.trim()},'Continue with AI')),
@@ -633,7 +647,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       h('div',{className:'dk-example-card-text'},
         h('div',{className:'dk-topic-meta'},h('span',{className:'dk-topic-label'},icon(glyph),entry.category||'Community debate'),
           h(PostedDate,{at:entry.published_at,slug:entry.id,standalone:true})),
-        h('h3',{'data-dk-view':'poster','data-dk-item':entry.id},h(Link,{to:url,className:'dk-example-link'},entry.question)),
+        h(origin==='home'?'h3':'h2',{'data-dk-view':'poster','data-dk-item':entry.id},h(Link,{to:url,className:'dk-example-link'},entry.question)),
         link(url+'&points=1','Explore the points')),
       h(PosterActions,{entry,origin}));
   }
@@ -714,7 +728,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const november=useNovemberEdition();
     useEffect(()=>{window.scrollTo(0,0)},[example]);
     const entry=november.data?.find(item=>item.id===example);
-    return h('main',{className:'dk-main',id:'dk-main'},
+    return h('div',{className:'dk-main',id:'dk-main'},
       november.error?h('div',{className:'dk-panel'},status('Could not load the November debates.',true),h('button',{className:'dk-secondary',onClick:november.refresh},'Try again')):
       november.loading?status('Loading the November debates…'):entry&&entry.kind!=='member'?h(ExampleDebate,{key:entry.id,entry}):
         h(CatalogPoster,{key:example,slug:example,feature:entry}));
@@ -733,7 +747,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       const comments = authored(entry.sampleActivity?.comments ?? []);
       return comments.length ? [{entry, comments}] : [];
     });
-    return h('main',{className:'dk-main',id:'dk-main'},link(trending,'Back to Trending'),
+    return h('div',{className:'dk-main',id:'dk-main'},link(trending,'Back to Trending'),
       personas.error || edition.error ? h('button',{onClick:()=>{personas.refresh();edition.refresh();}},'Retry loading profile') :
       !personas.data ? status('Loading profile…') : !person ? h('h1',null,'Profile unavailable') :
       h('section',{className:'dk-panel'},h('h1',null,person.name),
@@ -752,7 +766,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     if(params.has('join'))return h(JoinLink);
     if(commenter)return h(CommenterPage,{id:commenter});
     if(example)return h(PosterActivity,null,h(ExamplePage,{example}));
-    return landing?h(HomeFeed):h('main',{className:'dk-main',id:'dk-main'},
+    return landing?h(HomeFeed):h('div',{className:'dk-main',id:'dk-main'},
       h('div',{className:'dk-grid'},h(Feed,{full:onFeed,landing:false}),h(Activity,{compact:true})));
   }
   function HomeFeed() {
@@ -760,7 +774,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const list=edition.error?h('button',{className:'dk-secondary',onClick:edition.refresh},'Retry loading topics'):
       edition.data?h(PosterFeedCards,{edition:edition.data}):status('Loading topics…');
     return h(PosterActivity,{order:'trending',editorialIds:edition.data?.filter(entry=>entry.kind!=='member').map(entry=>entry.id),wait:!edition.data},
-      h('main',{className:'dk-main dk-home',id:'dk-main'},h(Welcome),
+      h('div',{className:'dk-main dk-home',id:'dk-main'},h(Welcome),
         h('div',{className:'dk-grid'},h(Feed,{full:false,landing:true,publicList:list}),h(Activity,{compact:true}))));
   }
   function QuestionCard({row,landing}) {
@@ -769,7 +783,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const replies=row.replies+' '+(Number(row.replies)===1?'reply':'replies');
     return h('article',{className:'dk-card dk-people-card dk-tone-'+tone,id:'dk-card-'+row.id,onClickCapture:e=>rememberCard(e,'people',row.id)},
       h('div',{className:'dk-topic-meta'},h('span',{className:'dk-topic-label'},icon(glyph),row.category||'Community question'),h(PostedDate,{at:row.published_at,standalone:true})),
-      h('h3',{'data-dk-view':'question','data-dk-item':row.id},h(Link,{to:url,className:'dk-titlelink'},row.question,landing&&icon('enter'))),
+      h(landing?'h3':'h2',{'data-dk-view':'question','data-dk-item':row.id},h(Link,{to:url,className:'dk-titlelink'},row.question,landing&&icon('enter'))),
       landing?(Number(row.replies)>0&&h('small',null,replies)):
         h('div',{className:'dk-cardfoot'},link(url,'Open discussion'),h('small',null,replies+(Number(row.contributors)>0?' · '+row.contributors+' active in 24h':''))),
       h('div',{className:'dk-actions'},h(Save,{kind:'question',target:row.id,label:row.question}),h(ShareTopic,{kind:'question',id:row.id,title:row.question})));
@@ -882,13 +896,13 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function Profile(){
     const {user,loading}=useAuth(),loc=useLocation(),c=useContext(Collection);
     const tab=personalTabs.find(value=>value.toLowerCase()===new URLSearchParams(loc.search).get('tab'));
-    if(!user)return h('main',{className:'dk-main'},h('h1',null,'Your profile'),loading?status('Loading account…'):link(login(profile+loc.search),'Sign in to open your profile','dk-primary'));
+    if(!user)return h('div',{className:'dk-main'},h('h1',null,'Your profile'),loading?status('Loading account…'):link(login(profile+loc.search),'Sign in to open your profile','dk-primary'));
     if(!tab||tab==='People')return h(ProfileDashboard,{key:user.id,user});
     const items=c.items.filter(row=>tab==='Posters'?row.kind==='poster':isPinKind(row.kind));
-    return h('main',{className:'dk-main dk-profile'},h('div',{className:'dk-kicker'},'Personal workspace'),h('h1',null,'Your profile'),h('nav',{className:'dk-filters','aria-label':'Profile sections'},link(profile,'Dashboard'),...personalTabs.map(key=>h(Link,{key,to:profileRoute(key),'aria-current':tab===key?'page':undefined},key==='Table'?'Your table':key==='People'?'Friends':key))),
+    return h('div',{className:'dk-main dk-profile'},h('div',{className:'dk-kicker'},'Personal workspace'),h('h1',null,'Your profile'),h('nav',{className:'dk-filters','aria-label':'Profile sections'},link(profile,'Dashboard'),...personalTabs.map(key=>h(Link,{key,to:profileRoute(key),'aria-current':tab===key?'page':undefined},key==='Table'?'Your table':key==='People'?'Friends':key))),
       tab==='Created'?h(CreatedPosters,{key:user.id,user}):tab==='Table'?h(Activity,{key:user.id}):tab==='Account'?h(Account,{key:user.id}):c.error?h('button',{className:'dk-secondary',onClick:c.refresh},'Retry loading collection'):c.loading&&!c.data?status('Loading your collection…'):
       h('section',{className:'dk-collection'},tab==='Pinned'?h(PinnedList,{items,owner:user.id}):
         items.length?items.map(item=>h(SavedArtwork,{key:item.target,item})):h('div',{className:'dk-panel'},h('h2',null,'Your saved posters'),h('p',null,'Open a finished infographic and choose Save poster.'),link(profile,'Open your table','dk-secondary'))));
   }
-  return {...createGoogleLogin({React, db, useLocation, safeNext: afterLogin}),withPosterActivity,initialProfileName,checkContent,useCommenterMatches,ReactionLoginCopy,PhotoEditor,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
+  return {TopicHighlight,RouteContent:createRouteContent(React,useLocation),applyReadingPreferences,...createGoogleLogin({React, db, useLocation, safeNext: afterLogin}),withPosterActivity,initialProfileName,checkContent,useCommenterMatches,ReactionLoginCopy,PhotoEditor,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
 }

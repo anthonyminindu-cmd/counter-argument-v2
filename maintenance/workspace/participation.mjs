@@ -95,7 +95,7 @@ export function createParticipation({React,db,useAuth,useLocation,useQuery,link,
     return h('article',{className:'dk-panel dk-weekly-card'},
       h('div',{className:'dk-sectionline'},h('h2',null,selected?area.title:link(route,area.title,'dk-titlelink')),
         user?h('button',{className:'dk-small',type:'button',disabled:!!pending,'aria-pressed':following,
-          'aria-label':(following?'Unfollow ':'Follow ')+area.title,onClick:follow},following?'Following':'Follow'):
+          'aria-label':(following?'Unfollow ':'Follow ')+area.title,onClick:follow},following?'Unfollow':'Follow'):
           link(login(route),'Follow','dk-small')),
       h('small',null,'Week of '+new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(area.week_start+'T12:00:00Z'))),
       current?h(React.Fragment,null,h('h3',null,link(questionRoute(current.id),current.question,'dk-titlelink')),h('p',null,'Hosted by '+current.host_name)):
@@ -123,7 +123,7 @@ export function createParticipation({React,db,useAuth,useLocation,useQuery,link,
     },[selected,user?.id]);
     const data=query.data;
     const areas=(data?.areas||[]).filter(area=>(!selected||selected===area.slug)&&(!onlyFollowing||data.follows.includes(area.slug)));
-    return h('main',{id:'dk-main',className:'dk-main dk-weekly'},
+    return h('div',{id:'dk-main',className:'dk-main dk-weekly'},
       h('h1',null,'Weekly topics'),
       h('nav',{className:'dk-filters','aria-label':'Weekly topics'},link(weeklyRoute,'All topics'),
         user&&link(weeklyRoute+'&filter=following','Following')),

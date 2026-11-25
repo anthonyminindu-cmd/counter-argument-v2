@@ -67,7 +67,7 @@ export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuer
       }catch{setError(true)}finally{setBusy(false)}
     }
     return h(React.Fragment,null,h('button',{className:'dk-small dk-comment-like',type:'button','aria-pressed':!!state?.liked,
-      'aria-label':state?.mine?'Support for your comment':state?.liked?'Remove support from comment':label,disabled:busy||!state||states.loading||state.mine,onClick:toggle},
+      title:state?.mine?'Support for your comment':state?.liked?'Remove support from comment':label,disabled:busy||!state||states.loading||state.mine,onClick:toggle},
       icon('thumb'),state?.mine?'Support':state?.liked?'Supported':'Support',' · ',state?.likes??'…'),error&&status('Could not save support. Try again.',true));
   }
   function useFocusedRows({rows,parent,point=null,kind,limit,ready,userId}) {
@@ -132,7 +132,7 @@ export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuer
     const retry=q.error&&h('div',{role:'alert'},'Could not load your activity. ',h('button',{className:'dk-small',type:'button',onClick:q.refresh},'Try again'));
     if(metric){
       const title=metric[3],friends=section==='friends';
-      return h('main',{id:'dk-main',className:'dk-main dk-profile dk-profile-page'},
+      return h('div',{id:'dk-main',className:'dk-main dk-profile dk-profile-page'},
         link('/profile','Back to profile','dk-backlink'),
         h('h1',{ref:heading,tabIndex:-1},title),
         friends&&h(FriendDirectory,{user}),
@@ -152,7 +152,7 @@ export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuer
         section==='work'&&h('nav',{className:'dk-actions','aria-label':'Start a debate'},link('/debate/start?mode=friend','Debate with a friend'),link('/debate/topic?mode=ai','Debate with AI')));
     }
     const reach=key=>formatted(data?data.reach?.[key]||0:null);
-    return h('main',{className:'dk-main dk-profile dk-dashboard',id:'dk-main'},
+    return h('div',{className:'dk-main dk-profile dk-dashboard',id:'dk-main'},
       h('header',{className:'dk-dashboard-heading'},h('div',{className:'dk-photo-heading'},h(PhotoEditor),h('h1',null,'Your dashboard')),h(ProfileControls)),
       retry,
       h('section',{className:'dk-support-pair','aria-label':'Support'},...supportMetrics.map(([key,label])=>

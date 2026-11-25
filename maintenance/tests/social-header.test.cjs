@@ -10,7 +10,7 @@ test('one header Profile shortcut opens the dashboard and the three counts link 
   const stats=header.children.find(el=>el?.type?.name==='HeaderStats').type();
   assert.equal(stats.children[0].type,'span');
   assert.deepEqual(stats.children.slice(1).map(el=>el.props.to),['comments','friends'].map(k=>'/profile?section='+k));
-  assert.deepEqual(stats.children.slice(1).map(el=>el.props['aria-label']),['Comments, 3','Friends, 2']);
+  assert.deepEqual(stats.children.slice(1).map(el=>el.children.slice(-2).map(child=>child.children.join('')).join(' ')),['3 Comments','2 Friends']);
   const controls=header.children.find(el=>el?.props.className==='dk-account').children;
   assert.equal(controls.length,2);assert.equal(controls[0].type.name,'Notifications');
   assert.equal(controls[1].props.to,'/profile');assert.ok(controls[1].children.includes('Profile'));
