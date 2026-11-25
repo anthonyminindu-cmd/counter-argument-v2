@@ -508,3 +508,17 @@ html{scroll-padding-block:1rem}
   .dk-nav a{padding-inline:.25rem}
   .dk-discover-group{grid-template-columns:minmax(0,1fr)}
 }
+
+.dk-feed-interests .dk-panel { max-width:48rem; margin-inline:auto; }
+.dk-feed-interests h1 { margin-block:.5rem; }
+.dk-feed-interests form { display:grid; gap:.85rem; margin-top:1rem; }
+.dk-interest-options,.dk-interest-selected { display:flex; flex-wrap:wrap; gap:.55rem; padding:0; }
+.dk-interest-choice { min-height:44px; padding:.5rem .85rem; border:1px solid hsl(var(--input)); border-radius:.7rem; text-align:left; background:var(--dk-panel); color:var(--dk-text); }
+.dk-interest-choice[aria-pressed=true] { border-color:var(--dk-mint); background:var(--dk-soft); font-weight:700; }
+.dk-interest-more { justify-self:start; min-height:44px; text-decoration:underline; }
+.dk-interest-catalog { display:grid; gap:.85rem; margin-top:.85rem; }
+.dk-interest-group { display:grid; gap:.35rem; border-top:1px solid var(--dk-line); padding-top:.6rem; }
+.dk-interest-group summary { cursor:pointer; padding-block:.45rem; }
+.dk-interest-group .dk-interest-options { padding-block:.3rem; }
+.dk-feed-interests input[type=search] { min-height:44px; }
+.dk-interest-selected { list-style:none; margin:0; }

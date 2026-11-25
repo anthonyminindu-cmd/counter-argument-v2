@@ -22,7 +22,7 @@ export function routeTitle(path, params, heading) {
   if (path === '/login') return 'Sign in or create an account';
   if (path === '/reset-password') return 'Reset your password';
   if (path === '/profile') return profilePages[params.get('section') || params.get('tab')] || heading || 'Your profile';
-  if (path === '/settings') return 'Settings';
+  if (path === '/settings') return params.get('section') === 'feed-interests' ? 'Feed interests' : 'Settings';
   if (path === '/debate/active') return params.get('topic') || heading || 'Active debate';
   if (path.startsWith('/debate/view/')) return heading || 'Saved debate';
   if (path === '/debate/start') return params.get('mode') === 'friend' ? 'Debate with a friend' : 'Start a debate';
@@ -32,7 +32,7 @@ export function routeTitle(path, params, heading) {
     if (params.has('example') || params.has('question')) return heading || 'Debate discussion';
     if (params.has('commenter')) return heading || 'Community profile';
     if (params.has('view') || params.has('sort') || params.has('edition')) return heading || 'Debate feed';
-    return 'Home';
+    return heading === 'What would you like to see more of?' ? 'Choose your interests' : 'Home';
   }
   return 'Page not found';
 }
