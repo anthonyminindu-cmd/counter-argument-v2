@@ -165,8 +165,8 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
     }
     const selected=inbox.rows.find(row=>row.id===inbox.panel?.id);
     const displayed=inbox.panel?.all?inbox.rows:selected?[selected]:[];
-    return h(React.Fragment,null,h('button',{type:'button',className:'dk-notify','aria-label':'Notifications'+(unread?', '+unread+' unread':''),'aria-haspopup':'dialog','aria-expanded':open,onClick:()=>{social.open();inbox.open()}},
-      icon('bell'),h('span',{className:'dk-bell-label'},'Notifications'),unread>0&&h('b',null,unread>99?'99+':unread)),
+    return h(React.Fragment,null,h('button',{type:'button',className:'dk-notify','aria-haspopup':'dialog','aria-expanded':open,onClick:()=>{social.open();inbox.open()}},
+      icon('bell'),h('span',{className:'dk-bell-label'},'Notifications'),unread>0&&h('b',null,' ',unread>99?'99+':unread,h('span',{className:'sr-only'},' unread'))),
       h('dialog',{ref:dialog,className:'dk-inbox','aria-labelledby':'dk-inbox-title',onCancel:e=>{e.preventDefault();inbox.close();}},
         h('div',{className:'dk-sectionline'},h('h2',{id:'dk-inbox-title'},selected&&!inbox.panel?.all?'Debate invitation':'Notifications'),action('Close',inbox.close)),
         (inbox.panel?.error||inbox.error)&&h('p',{role:'alert'},inbox.panel?.error||inbox.error,' ',action('Refresh',inbox.refresh)),
@@ -179,8 +179,8 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
     const suggested=new URLSearchParams(loc.search).get('suggested')?.trim().slice(0,320);
     const waiting=inbox.rows.find(row=>row.id===inbox.waitId);
     const state=waiting&&inviteStatus(waiting);
-    if(!inbox.owner)return h('main',{className:'dk-main'},h(Link,{to:'/login?next='+encodeURIComponent(searchRoute),className:'dk-primary'},'Sign in to debate with a friend'));
-    return h('main',{className:'dk-main dk-friend'},h('h1',null,inbox.waitId?'Invitation sent':'Debate with a friend'),
+    if(!inbox.owner)return h('div',{className:'dk-main'},h(Link,{to:'/login?next='+encodeURIComponent(searchRoute),className:'dk-primary'},'Sign in to debate with a friend'));
+    return h('div',{className:'dk-main dk-friend'},h('h1',null,inbox.waitId?'Invitation sent':'Debate with a friend'),
       inbox.waitId?h('section',{className:'dk-panel','aria-live':'polite'},h('h2',null,waiting?
         ({pending:'Waiting for '+waiting.person,accepted:waiting.person+' accepted',declined:waiting.person+' declined',expired:'Invitation expired'}[state]||'Invitation updated'):
         inbox.error?'Could not check the invitation':inbox.loaded?'Invitation not found':'Loading invitation…'),

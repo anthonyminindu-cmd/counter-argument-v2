@@ -104,7 +104,7 @@ export function createGoogleLogin({React, db, useLocation, safeNext}) {
         .catch(() => { if (active) setError(true); });
       return () => { active = false; };
     }, [step]);
-    return h('main', {className: 'dk-main'},
+    return h('div', {className: 'dk-main'},
       h('p', {role: 'status'}, error ? 'Google sign-in could not be completed.' : 'Connecting to Google…'),
       h('a', {href: new URL('login/', document.baseURI).href}, 'Back to sign in'));
   }
