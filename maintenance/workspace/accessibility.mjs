@@ -28,6 +28,10 @@ export function routeTitle(path, params, heading) {
   if (path === '/debate/start') return params.get('mode') === 'friend' ? 'Debate with a friend' : 'Start a debate';
   if (path === '/debate/topic') return heading || 'Choose a debate topic';
   if (path === '/' || path === '/home') {
+    if (params.get('view') === 'weekly') {
+      const areas = {'local-decisions':'Local Decisions','tech-at-work':'Tech at Work','sports-everyday':'Sports & Everyday Debates'};
+      return areas[params.get('topic')] || (params.get('filter') === 'following' ? 'Weekly topics you follow' : 'Weekly topics');
+    }
     if (params.has('join')) return 'Join a private debate';
     if (params.has('example') || params.has('question')) return heading || 'Debate discussion';
     if (params.has('commenter')) return heading || 'Community profile';
@@ -44,7 +48,7 @@ export function createRouteContent(React, useLocation) {
     const params = new URLSearchParams(location.search);
     // Point links and return-to-card navigation manage their own focus.
     const focal = location.state?.dkReturn || ['point','comment','points','react'].some(key=>params.has(key));
-    const key = [path,...['view','sort','example','commenter','question','section','tab','mode','session','join','area'].map(k=>params.get(k))].join('|');
+    const key = [path,...['view','sort','example','commenter','question','section','tab','mode','session','join','topic','filter'].map(k=>params.get(k))].join('|');
     React.useLayoutEffect(()=>{
       syncReadingPreferences();
       const media = window.matchMedia('(prefers-color-scheme: dark)');

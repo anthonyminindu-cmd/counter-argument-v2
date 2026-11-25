@@ -3,7 +3,7 @@ import {dashboardDestination} from './dashboard.mjs';
 const headerStats=[['given','Support given','thumb'],['comments','Comments','message'],['friends','Friends','friends']];
 export function socialActivityTitle(row) {
   const others=row.amount>1?' and '+(row.amount-1)+(row.amount===2?' other':' others'):'';
-  const action={poster_like:'supported your infographic',comment_like:'supported your comment',poster_comment:'commented on your infographic',
+  const action={point_ask:'asked you about a point',point_answer:'answered your point invitation',host_reply:'replied to your perspective',poster_like:'supported your infographic',comment_like:'supported your comment',poster_comment:'commented on your infographic',
     question_reply:'replied to your question',friend_request:'sent you a friend request',friend_accepted:'accepted your friend request'};
   return row.actor+others+' '+action[row.activity];
 }

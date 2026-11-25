@@ -17,6 +17,7 @@ function dashboardUrl(section,page=1) {
 }
 export function dashboardDestination(row) {
   const feed='/home?view=feed',topic=encodeURIComponent(row.topic),item=encodeURIComponent(row.item);
+  if(row.kind==='ask')return '/home?'+new URLSearchParams({view:'feed',example:row.topic,point:row.point_id,ask:row.item});
   if(row.kind==='debate')return '/debate/view/'+item;
   if(row.kind==='question')return feed+'&question='+topic;
   if(row.kind==='reply')return feed+'&question='+topic+'&comment='+item;
@@ -76,7 +77,7 @@ export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuer
     const listed=(rows||[]).slice(0,limit);
     const missing=focus&&ready&&!listed.some(row=>row.id===focus);
     const extra=useQuery(missing?JSON.stringify([kind,parent,point,focus,userId]):null,()=>kind==='reply'
-      ?db.from('dk_replies').select('id,perspective,created_at').eq('question_id',parent).eq('id',focus).maybeSingle()
+      ?db.from('dk_replies').select('id,perspective,created_at,author_id,reply_to').eq('question_id',parent).eq('id',focus).maybeSingle()
       :db.rpc('dk_point_comments',{p_slug:parent,p_point:point}).eq('id',focus).maybeSingle());
     if(missing&&extra.data)listed.push(extra.data);
     useFocusComment(focus,listed.some(row=>row.id===focus));

@@ -12,6 +12,7 @@ export function reactionIntent(route) {
 function pointDestination(loc,id,kind){
   const params=new URLSearchParams(loc.search);
   params.delete('comments');
+  params.delete('ask');
   params.delete('points');
   if(id)params.set('point',id);else params.delete('point');
   if(kind)params.set('react',kind);else params.delete('react');
@@ -81,11 +82,14 @@ export function pointSnapshot(rows,positions=[]) {
   return points.every(p=>typeof p.id==='string'&&p.title&&Number.isInteger(p.rank))?points:null;
 }
 
-export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,exampleRoute,MemberComments,status}){
+export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,exampleRoute,MemberComments,AskFriend,status}){
   const h=React.createElement;
   function Point({entry,point,open,onToggle,refresh,showCounts,intent,loading}){
     const {user}=useAuth(),navigate=useNavigate(),loc=useLocation();
     const [busy,setBusy]=React.useState(false),[error,setError]=React.useState(''),[copied,setCopied]=React.useState(false),[notice,setNotice]=React.useState('');
+    const ask=open&&!entry.private?new URLSearchParams(loc.search).get('ask'):null;
+    const validAsk=ask==='friend'||/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(ask||'');
+    const invitation=validAsk?ask:null;
     const route=exampleRoute(entry.id)+'&point='+encodeURIComponent(point.id);
     async function react(kind,enabled){
       if(!user){navigate(login(pointDestination(loc,point.id,kind))+'&argument='+encodeURIComponent(point.title));return}
@@ -102,6 +106,7 @@ export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQ
       h('button',{className:'dk-point-title',type:'button','aria-expanded':open,onClick:onToggle},
         h('span',{className:'dk-point-rank'},'#'+point.rank),h('strong',null,point.title),h('span',{'aria-hidden':true},open?'−':'+')),
       open&&h('div',{className:'dk-point-body'},h('p',null,point.detail),
+        invitation&&h('section',{className:'dk-invited-answer'},h('h4',null,'A friend asked for your take'),h(MemberComments,{key:(user?.id||'guest')+point.id+invitation,entry,point:point.id,ask:invitation})),
         point.impact!=null&&h('p',null,(point.pickLabel+' ')+point.pick+' · AI impact '+point.impact+'/100 · Overall #'+point.rank+(point.confidence?' · '+point.confidence+' confidence':'')),
         point.explanation&&h('p',null,point.explanation),
         point.sources?.length>0&&h('div',null,h('h4',null,'Sources for this point'),h('ul',null,...point.sources.map(url=>h('li',{key:url},h('a',{href:url,rel:'noreferrer',target:'_blank'},sourceHost(url)||url))))),
@@ -117,7 +122,7 @@ export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQ
         h('div',{className:'dk-actions'},h('a',{className:'dk-link',href:location.pathname+route.slice(route.indexOf('?')),onClick:async e=>{
           if(navigator.clipboard){e.preventDefault();try{await navigator.clipboard.writeText(e.currentTarget.href);setCopied(true)}catch{navigate(route)}}
         }},copied?'Point link copied':'Share this point')),
-        error&&status(error,true),h('h4',null,'Discuss this point'),h(MemberComments,{key:(user?.id||'guest')+point.id,entry,point:point.id})));
+        !entry.private&&h(AskFriend,{entry,point}),error&&status(error,true),!invitation&&h('h4',null,'Discuss this point'),!invitation&&h(MemberComments,{key:(user?.id||'guest')+point.id,entry,point:point.id})));
   }
   return function PointReader({entry,fallback,provided,impactRows}){
     const {user}=useAuth(),loc=useLocation(),navigate=useNavigate();
