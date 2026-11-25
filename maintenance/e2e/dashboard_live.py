@@ -58,15 +58,20 @@ def run():
             expect(shortcuts.get_by_role("link")).to_have_count(3)
             expect(bell).to_be_visible()
             expect(profile_button).to_be_visible()
+            layout_errors = []
             for width in [320, 390, 768, 1280]:
                 page.set_viewport_size({"width": width, "height": 844})
+                page.evaluate("() => new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))")
+                layout = header.evaluate("""el => ({client:el.clientWidth, scroll:el.scrollWidth,
+                    controls:[...el.querySelectorAll('nav,a,button,.dk-mark,.dk-bell-label')].filter(n=>n.offsetWidth).map(n=>[
+                      n.className,Math.round(n.getBoundingClientRect().left),Math.round(n.getBoundingClientRect().right)])})""")
+                print("HEADER LAYOUT", width, layout, flush=True)
+                if layout["scroll"] > layout["client"]:
+                    layout_errors.append((width,layout))
                 for control in [header.locator(".dk-mark"), header.locator(".dk-bell-label"), profile_button]:
                     box = control.bounding_box()
-                    assert box and box["width"] > 15 and box["x"] >= 0 and box["x"] + box["width"] <= width
-                layout = header.evaluate("""el => ({client:el.clientWidth, scroll:el.scrollWidth,
-                    controls:[...el.querySelectorAll('nav,a,button')].filter(n=>n.offsetWidth).map(n=>[
-                      n.className,Math.round(n.getBoundingClientRect().left),Math.round(n.getBoundingClientRect().right)])})""")
-                assert layout["scroll"] <= layout["client"], (width, layout)
+                    if not box or box["width"] < 15 or box["x"] < 0 or box["x"] + box["width"] > width:
+                        layout_errors.append((width, str(control), box))
             page.set_viewport_size({"width": 390, "height": 844})
             shortcuts.get_by_role("link", name=re.compile("^Comments")).click()
             expect(page.get_by_role("heading", name="Your comments", exact=True)).to_be_visible()
@@ -120,6 +125,7 @@ def run():
                 peer_page.get_by_role("dialog").get_by_role("link", name=re.compile("accepted your friend request")).click()
                 expect(peer_page.get_by_role("heading", name="Your friends", exact=True)).to_be_visible()
             expect(page.get_by_role("link", name="Appearance",exact=True)).to_be_visible()
+            assert not layout_errors, layout_errors
             browser.close()
             print("PASS signed-in mobile and desktop dashboard, drilldowns, persistent like, exact comment and unlike", flush=True)
     finally:
