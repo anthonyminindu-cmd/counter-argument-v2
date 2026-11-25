@@ -63,7 +63,10 @@ def run():
                 for control in [header.locator(".dk-mark"), header.locator(".dk-bell-label"), profile_button]:
                     box = control.bounding_box()
                     assert box and box["width"] > 15 and box["x"] >= 0 and box["x"] + box["width"] <= width
-                assert header.evaluate("(el) => el.scrollWidth <= el.clientWidth")
+                layout = header.evaluate("""el => ({client:el.clientWidth, scroll:el.scrollWidth,
+                    controls:[...el.querySelectorAll('nav,a,button')].filter(n=>n.offsetWidth).map(n=>[
+                      n.className,Math.round(n.getBoundingClientRect().left),Math.round(n.getBoundingClientRect().right)])})""")
+                assert layout["scroll"] <= layout["client"], (width, layout)
             page.set_viewport_size({"width": 390, "height": 844})
             shortcuts.get_by_role("link", name=re.compile("^Comments")).click()
             expect(page.get_by_role("heading", name="Your comments", exact=True)).to_be_visible()
