@@ -51,7 +51,7 @@ deliver(new URL('poster.svg', schoolDir), schoolPoster);
 const escape = value => String(value).replace(/[&<>"']/g, chr => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[chr]));
 const fullPoints = [...school.rows].sort((a,b) => a.rank-b.rank || a.id.localeCompare(b.id)).map(row => {
   const links = row.sources.map(source => '<a href="' + escape(source.url) + '" rel="noopener">' + escape(source.label) + '</a>');
-  return '<li><details><summary>' + escape(row.title) + ' <span>· Differ Rank #' + row.rank + ' · Weighted score ' + row.impact + '/100' + '</span></summary><p>' +
+  return '<li><details><summary>' + escape(row.title) + ' <span>· Differ Impact ' + row.impact + '/100 · Differ Rank #' + row.rank + '</span></summary><p>' +
     escape(row.argument) + '</p><p>' + escape(row.analysis) + '</p><p>' + links.join(' · ') + '</p></details></li>';
 }).join('\n');
 const schoolPage = fs.readFileSync(new URL('school-template.html', import.meta.url), 'utf8')

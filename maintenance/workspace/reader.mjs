@@ -24,7 +24,7 @@ export function puzzleGeometry(markup){
   const svg=new DOMParser().parseFromString(markup,'image/svg+xml');
   if(svg.documentElement.getAttribute('data-poster-format')==='impact-v2'){
     const pieces=[...svg.querySelectorAll('g[data-argument-id]')].map(g=>({
-      id:g.getAttribute('data-reader-id')||g.getAttribute('data-argument-id'),rank:g.getAttribute('data-rank'),
+      id:g.getAttribute('data-reader-id')||g.getAttribute('data-argument-id'),rank:g.getAttribute('data-rank'),impact:g.getAttribute('data-impact'),
       title:g.querySelector('title')?.textContent,d:g.querySelector('[data-hit]')?.getAttribute('d')
     }));
     return pieces.length===20&&pieces.every(p=>p.id&&p.d)?{pieces,portrait:true}:null;
@@ -62,7 +62,7 @@ export function createPuzzlePoster({React,Link,useLocation}){
       geometry&&h('svg',{className:'dk-piece-map',viewBox:geometry.portrait?'0 0 1080 1350':'0 0 1600 900',role:'group','aria-label':'Open a debate point'},
         geometry.outline&&h('defs',null,h('clipPath',{id:clipId},h('path',geometry.outline))),
         ...geometry.pieces.filter(p=>!points||points.some(point=>point.id===p.id)).map(p=>h(Link,{key:p.id,to:pointDestination(loc,p.id),replace:true,state:loc.state,
-          'aria-label':'Point '+p.rank+': '+p.title,className:'dk-piece-hit'},
+          'aria-label':'Point '+p.rank+': '+p.title+(p.impact?' · Differ Impact '+p.impact+'/100':''),className:'dk-piece-hit'},
           h('path',{d:p.d,clipPath:p.clipped?'url(#'+clipId+')':undefined})))));
   };
 }
@@ -101,9 +101,10 @@ export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQ
     }
     return h('li',{className:'dk-reader-point',id:'point-'+point.id},
       h('button',{className:'dk-point-title',type:'button','aria-expanded':open,onClick:onToggle},
-        h('span',{className:'dk-point-rank'},'#'+point.rank),h('strong',null,point.title),h('span',{'aria-hidden':true},open?'−':'+')),
+        h('span',{className:'dk-point-rank'},'#'+point.rank),h('span',null,h('strong',null,point.title),
+          point.impact!=null&&h('small',{className:'dk-point-impact'},'Differ Impact '+point.impact+'/100')),h('span',{'aria-hidden':true},open?'−':'+')),
       open&&h('div',{className:'dk-point-body'},h('p',null,point.detail),
-        point.impact!=null&&h('p',null,(point.pickLabel+' ')+point.pick+' · Differ Rank #'+point.rank+' of 20 · Weighted score '+point.impact+'/100'+(point.confidence?' · '+point.confidence+' confidence':'')),
+        point.impact!=null&&h('p',null,(point.pickLabel+' ')+point.pick+' · Differ Rank #'+point.rank+' of 20'+(point.confidence?' · '+point.confidence+' confidence':'')),
         point.explanation&&h('p',null,point.explanation),
         point.sources?.length>0&&h('div',null,h('h4',null,'Sources for this point'),h('ul',null,...point.sources.map(url=>h('li',{key:url},h('a',{href:url,rel:'noreferrer',target:'_blank'},sourceHost(url)||url))))),
         point.counterpoint&&h('div',null,h('h4',null,'Counterargument'),h('p',null,point.counterpoint)),
@@ -141,7 +142,7 @@ export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQ
     if(!q.data.length)return fallback||null;
     return h('div',null,
       rows.some(p=>p.impact!=null)&&h('details',null,h('summary',null,'How Differ Rank works'),
-        h('p',null,'The score uses estimated magnitude (50%), reach (30%) and duration (20%). The app sorts all 20 scores at full precision. Exact ties go to the earlier pick, then the permanent argument ID.')),
+        h('p',null,'Differ Impact combines estimated magnitude (50%), reach (30%) and duration (20%) into a score out of 100. The highest score earns Differ Rank #1. Exact ties go to the earlier pick, then the permanent argument ID.')),
       h('label',{className:'dk-audience-toggle'},h('input',{type:'checkbox',checked:counts,onChange:e=>setCounts(e.target.checked)}),'Show audience responses'),
       h('div',{className:'dk-example-positions'},...[...new Set(rows.map(p=>p.side))].map(side=>{
         const picks=rows.filter(p=>p.side===side).sort((a,b)=>(a.pick??a.rank)-(b.pick??b.rank));
