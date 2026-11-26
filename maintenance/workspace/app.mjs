@@ -393,7 +393,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function usePersonas(enabled = true) {
     return useQuery(enabled ? 'trending-personas' : null, async () => {
-      const response = await fetch(novemberPath+'personas.json?v=fictional-profiles');
+      const response = await fetch(novemberPath+'personas.json?v=profile-privacy');
       if (!response.ok) throw Error('The commenter profiles are unavailable.');
       return {data: await response.json()};
     });
@@ -774,7 +774,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('p',{className:'dk-note'},'Fictional profile for sample debates'),
         h('h1',null,person.name),
         h('p',null,'@'+person.handle),
-        person.location&&h('p',{className:'dk-persona-background'},person.age+' years old · '+person.location.city+', '+person.location.state+' · '+person.occupation),
+        person.location&&h('p',{className:'dk-persona-background'},person.location.city+', '+person.location.state+' · '+person.occupation),
         h('p',null,person.bio),
         h('section',null,h('h2',null,'Sample activity'),
           h('dl',{className:'dk-sample-profile-totals'},

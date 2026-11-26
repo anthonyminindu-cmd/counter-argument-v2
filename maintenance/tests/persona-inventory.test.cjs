@@ -3,7 +3,7 @@ const test = require('node:test');
 const profiles = require('../../demo/november-2026/personas.json');
 const edition = require('../../demo/november-2026/edition.json');
 
-test('the fictional persona inventory covers each age, state and region with distinct bios', () => {
+test('the fictional persona inventory covers all states and regions with distinct bios and no age data', () => {
   const people = Object.values(profiles);
   const unique = selector => new Set(people.map(selector)).size;
   assert.equal(people.length, 300);
@@ -11,10 +11,6 @@ test('the fictional persona inventory covers each age, state and region with dis
   assert.equal(unique(person => person.handle), 300);
   assert.equal(unique(person => person.location.state), 50);
   assert.equal(unique(person => person.location.city + ', ' + person.location.state), 100);
-  assert.equal(unique(person => person.age), 41);
-  const ages = Array.from({length:41}, (_,index) => people.filter(person => person.age === index + 25).length);
-  assert.ok(ages.slice(0,20).every((count,index) => count <= ages[index + 1]));
-  assert.deepEqual(ages.slice(0,20), ages.slice(21).reverse());
   const regions = new Set(people.map(person => person.location.region));
   assert.deepEqual([...regions].sort(), ['Midwest','Northeast','South','West']);
   for (const region of regions) {
@@ -24,7 +20,9 @@ test('the fictional persona inventory covers each age, state and region with dis
   for (const [id,person] of Object.entries(profiles)) {
     assert.match(id, /^person-\d{3}$/);
     assert.equal(person.fictional, true, id);
-    assert.ok(person.age >= 25 && person.age <= 65, id);
+    for (const field of ['age','birthdate','dob','birthYear','dateOfBirth']) {
+      assert.equal(Object.hasOwn(person, field), false, id + ' exposes ' + field);
+    }
     assert.equal(new Set(person.politics.positions).size, 2, id);
     assert.equal(new Set(person.interests).size, 3, id);
     assert.ok(person.discussion.voice && person.discussion.persuadedBy, id);
