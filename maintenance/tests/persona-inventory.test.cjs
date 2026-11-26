@@ -40,3 +40,17 @@ test('every published sample comment still links to its persona', () => {
   }
   for (const item of edition) check(item.sampleActivity?.comments ?? []);
 });
+
+test('the Iowa sample debate gives each fictional friend two distinct comments and ten scored points', () => {
+  const debate = edition.find(item => item.id === 'iowa-army-detonation');
+  const friends = debate.sampleDebate.friends;
+  assert.equal(new Set(friends).size, 2);
+  assert.ok(friends.every(id=>profiles[id]?.fictional));
+  const walk = comments => comments.flatMap(comment => [comment,...walk(comment.replies ?? [])]);
+  const comments = walk(debate.sampleActivity.comments);
+  assert.equal(comments.length, 4);
+  for (const id of friends) assert.equal(comments.filter(comment=>comment.profileId===id).length, 2);
+  assert.equal(debate.sampleActivity.reactions, 0);
+  assert.equal(debate.sampleActivity.impressions, 0);
+  assert.equal(new Set(debate.arguments.map(([, , id])=>id)).size, 20);
+});

@@ -45,14 +45,19 @@ test('dashboard links reopen exact comments, questions, debates and selected act
 test('every published sample comment and nested reply has a unique, registered like target',()=>{
   const root=path.resolve(__dirname,'../..');
   const edition=require(path.join(root,'demo/november-2026/edition.json'));
-  const migration=fs.readFileSync(path.join(root,'supabase/migrations/20261125123811_member_engagement_dashboard.sql'),'utf8');
+  const migrations=path.join(root,'supabase/migrations');
+  const registrations=fs.readdirSync(migrations).filter(file=>file.endsWith('.sql'))
+    .flatMap(file=>[...fs.readFileSync(path.join(migrations,file),'utf8')
+      .matchAll(/\(\s*'([a-f\d-]{36})'\s*,\s*'([a-z\d-]+)'\s*,/g)]
+      .map(([,id,slug])=>slug+':'+id));
+  const registered=new Set(registrations);
   const ids=new Set();
   function check(slug,comments){
     for(const c of comments){
       assert.match(c.commentId,/^[a-f\d-]{36}$/);
       assert.ok(!ids.has(c.commentId));
       ids.add(c.commentId);
-      assert.ok(migration.includes("('"+c.commentId+"','"+slug+"',"));
+      assert.ok(registered.has(slug+':'+c.commentId));
       check(slug,c.replies||[]);
     }
   }
