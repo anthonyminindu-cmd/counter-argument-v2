@@ -1,3 +1,4 @@
+import {readPosterDebate,normalizeDebateSearch} from './debate-links.mjs';
 import {impactMetricText} from '../renderer/portrait.mjs';
 function sourceHost(url){
   try{const parsed=new URL(url);return ['https:','http:'].includes(parsed.protocol)?parsed.hostname:null}catch{return null}
@@ -7,10 +8,10 @@ const responseKinds=['informative','convincing'];
 export function reactionIntent(route) {
   const url=new URL(route,'https://differ.invalid');
   const kind=url.searchParams.get('react');
-  return /^\/home\/?$/.test(url.pathname)&&url.searchParams.get('example')&&url.searchParams.get('point')&&responseKinds.includes(kind)?kind:null;
+  return /^\/home\/?$/.test(url.pathname)&&readPosterDebate(url.searchParams)&&url.searchParams.get('point')&&responseKinds.includes(kind)?kind:null;
 }
 function pointDestination(loc,id,kind){
-  const params=new URLSearchParams(loc.search);
+  const params=new URLSearchParams(normalizeDebateSearch(loc.search));
   params.delete('comments');
   params.delete('points');
   if(id)params.set('point',id);else params.delete('point');
@@ -81,12 +82,12 @@ export function pointSnapshot(rows,positions=[]) {
   return points.every(p=>typeof p.id==='string'&&p.title&&Number.isInteger(p.rank))?points:null;
 }
 
-export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,exampleRoute,MemberComments,status}){
+export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,posterDebateRoute,MemberComments,status}){
   const h=React.createElement;
   function Point({entry,point,open,onToggle,refresh,showCounts,intent,loading}){
     const {user}=useAuth(),navigate=useNavigate(),loc=useLocation();
     const [busy,setBusy]=React.useState(false),[error,setError]=React.useState(''),[copied,setCopied]=React.useState(false),[notice,setNotice]=React.useState('');
-    const route=exampleRoute(entry.id)+'&point='+encodeURIComponent(point.id);
+    const route=posterDebateRoute(entry.id)+'&point='+encodeURIComponent(point.id);
     async function react(kind,enabled){
       if(!user){navigate(login(pointDestination(loc,point.id,kind))+'&argument='+encodeURIComponent(point.title));return}
       if(busy||loading)return;

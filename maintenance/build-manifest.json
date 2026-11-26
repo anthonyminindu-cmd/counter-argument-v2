@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "78d194a55207ab9d0349ebafbf94c7195786466181edea15a0f6eb32c429ea3f",
-  "generatedAsset": "assets/index-v2-78d194a55207ab9d.js",
+  "generatedSha256": "c8b909064340211c39fefd9ed3b2903564c5cb45cfe3d05393938cb4ffe6fba1",
+  "generatedAsset": "assets/index-v2-c8b909064340211c.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -309,6 +309,7 @@
     "render-friend-details-once",
     "validate-live-solo-impact-assessments",
     "show-live-solo-scoring-version",
+    "remove-sample-address-from-profile-email",
     "feed-interest-settings-route",
     "feed-interest-settings-link"
   ]

@@ -1,3 +1,4 @@
+import {posterDebateRoute,readPosterDebate,normalizeDebateSearch} from './debate-links.mjs';
 import {createFeedInterests,feedRankingRequest} from './feed-interests.mjs';
 import {applyReadingPreferences,createRouteContent} from './accessibility.mjs';
 import {createProfilePhotos} from './profile-photo.mjs';
@@ -19,16 +20,15 @@ const personalTabs = ['Table','Created','Pinned','Posters','People','Account'];
 const novemberPath = 'demo/november-2026/';
 const examplePoster = id => novemberPath+id+'.svg?v=impact2';
 const trending = feed+'&sort=trending';
-const exampleRoute = id => feed+'&example='+encodeURIComponent(id);
 const questionRoute = id => feed+'&question='+encodeURIComponent(id);
 const isPinKind = kind => ['topic','question','debate'].includes(kind);
 function pinRoute(item) {
-  if(item.kind==='topic')return exampleRoute(item.target);
+  if(item.kind==='topic')return posterDebateRoute(item.target);
   if(item.kind==='question')return questionRoute(item.target);
   return '/debate/view/'+encodeURIComponent(item.target);
 }
 export function publicShareData(kind,id,title) {
-  const route=kind==='topic'?exampleRoute(id):kind==='question'?questionRoute(id):null;
+  const route=kind==='topic'?posterDebateRoute(id):kind==='question'?questionRoute(id):null;
   if(!route||!id)throw Error('A public topic is required.');
   const url=new URL(route,'https://www.differkindly.com');
   url.pathname='/home/';
@@ -80,7 +80,9 @@ function visibleFriendProfile(person) {
 export function afterLogin(search) {
   const next = new URLSearchParams(search).get('next') || '';
   if (!/^\/(?:home|profile|settings|debate\/(?:start|topic|active))\/?(?:\?[^#\\]*)?$/.test(next)) return home;
-  return next;
+  const questionMark = next.indexOf('?');
+  if (questionMark < 0 || !/^\/home\/?$/.test(next.slice(0,questionMark))) return next;
+  return next.slice(0,questionMark) + normalizeDebateSearch(next.slice(questionMark));
 }
 const feedDateFormat=new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'America/Chicago'});
 
@@ -108,7 +110,7 @@ const brandMark = 'maintenance/workspace/mark.svg?v=lettered-bubble';
 function isWelcomeLocation(location) {
   const params=new URLSearchParams(location.search);
   return ['/','/home','/home/'].includes(location.pathname) &&
-    params.get('view')!=='feed' && !params.has('sort') && !params.has('question') && !params.has('example') && !params.has('edition');
+    params.get('view')!=='feed' && !params.has('sort') && !params.has('question') && !readPosterDebate(params) && !params.has('edition');
 }
 function login(next) { return '/login?next='+encodeURIComponent(next); }
 function topicRoute(title) { return '/debate/active?mode=ai&topic='+encodeURIComponent(title); }
@@ -395,7 +397,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function usePersonas(enabled = true) {
     return useQuery(enabled ? 'trending-personas' : null, async () => {
-      const response = await fetch(novemberPath+'personas.json?v=profile-privacy');
+      const response = await fetch(novemberPath+'personas.json?v=debate-links');
       if (!response.ok) throw Error('The commenter profiles are unavailable.');
       return {data: await response.json()};
     });
@@ -469,7 +471,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const metrics=useContext(Engagement), {user}=useAuth(), navigate=useNavigate();
     const [busy,setBusy]=useState(false),[failed,setFailed]=useState(false);
     const row=metrics.data?.find(item=>item.slug===entry.id);
-    const url=withOrigin(exampleRoute(entry.id),origin);
+    const url=withOrigin(posterDebateRoute(entry.id),origin);
     async function like(){
       if(!user){navigate(login(url));return}
       if(!row||busy)return;
@@ -571,12 +573,12 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('button',{className:'dk-primary',disabled:busy||!body.trim()},busy?'Posting…':'Post comment'),
         posted&&status('Comment posted.'),
         failed&&status(failed,true)):
-        link(login(exampleRoute(entry.id)+(point?'&point='+encodeURIComponent(point):'&comments=1')),'Sign in to comment','dk-secondary'),
+        link(login(posterDebateRoute(entry.id)+(point?'&point='+encodeURIComponent(point):'&comments=1')),'Sign in to comment','dk-secondary'),
       q.error?h('button',{className:'dk-small',onClick:q.refresh},'Retry loading comments'):q.loading&&!q.data?status('Loading comments…'):
       h(React.Fragment,null,h('ul',{className:'dk-replies'},...rows.map(c=>h('li',{key:c.id,id:'dk-comment-'+c.id,tabIndex:-1},h('strong',null,c.author),h('p',entry.private?null:{'data-dk-view':'comment','data-dk-item':c.id},c.body),h('div',{className:'dk-actions'},h(CommentLike,{id:c.id,kind:'comment',states}),h(Report,{kind:'comment',target:c.id}))))),
         q.data?.length>limit&&h('button',{className:'dk-small',onClick:()=>setLimit(limit+30)},'Show older comments')));
   }
-  const PointReader=createPointReader({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,exampleRoute,MemberComments,status});
+  const PointReader=createPointReader({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,posterDebateRoute,MemberComments,status});
   const {JoinLink,InviteTools}=createFriendInvitations({React,db,useAuth,useNavigate,useQuery,link,login,status});
   function SharePoster({row,refresh}) {
     const [busy,setBusy]=useState(false),[failed,setFailed]=useState(false);
@@ -642,7 +644,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function SampleDiscussion({entry}){
     const personas=usePersonas();
-    return h('section',null,h('h3',null,'Sample discussion'),h('p',null,'Fictional community profiles contributed these examples.'),
+    return h('section',null,h('h3',null,'Fictional discussion'),
       personas.data?h(EditorialDiscussion,{comments:entry.sampleActivity.comments,personas:personas.data}):
         personas.error?h('button',{onClick:personas.refresh},'Retry loading commenters'):status('Loading discussion…'));
   }
@@ -652,7 +654,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     return date?h(React.Fragment,null,!standalone&&' · ',h('time',{dateTime:date},feedDateFormat.format(new Date(date)))):null;
   }
   function ExampleCard({entry,origin}) {
-    const [tone,glyph]=topicStyle(entry), url=withOrigin(exampleRoute(entry.id),origin);
+    const [tone,glyph]=topicStyle(entry), url=withOrigin(posterDebateRoute(entry.id),origin);
     return h('article',{className:'dk-card dk-example-card dk-tone-'+tone,id:'dk-card-'+entry.id,onClickCapture:e=>rememberCard(e,origin,entry.id)},
       h('div',{className:'dk-example-card-text'},
         h('div',{className:'dk-topic-meta'},h('span',{className:'dk-topic-label'},icon(glyph),entry.category||'Community debate'),
@@ -679,7 +681,6 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       h('p',null,'No debates have been published yet.');
   }
   function ExampleDebate({entry}) {
-    const personas = usePersonas();
     const {user}=useAuth();
     const pointsHeading=useRef(null), discussion=useRef(null),loc=useLocation();
     function openComments(){
@@ -734,9 +735,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
                 h('li',{key:label},h('h4',null,h('span',null,'Editorial order '+(i+1)+' · '+(score?'AI '+score.impact+'/100 · #'+score.rank+' · ':'')),label),h('p',null,explanation)))))))})),
         h('section',{className:'dk-panel dk-example-discussion',ref:discussion,tabIndex:-1},h('h2',null,'Comments'),h('p',null,entry.followUp),
           h(MemberComments,{key:user?.id||'guest',entry}),
-          entry.sampleActivity?h(React.Fragment,null,
-            personas.data ? h(EditorialDiscussion,{comments:entry.sampleActivity.comments,personas:personas.data}) :
-              personas.error ? h('button',{onClick:personas.refresh},'Retry loading commenters') : status('Loading discussion…')):
+          entry.sampleActivity?h(SampleDiscussion,{entry}):
             h('ul',null,...entry.comments.map((comment,i)=>h('li',{key:i},comment)))),
         h('section',{className:'dk-example-sources'},h('h2',null,entry.research?'Sources and reporting date':'November context'),h('p',null,entry.context),
           h('ul',null,...entry.sources.map(({label,url})=>h('li',{key:url},h('a',{href:url,className:'dk-link'},label)))))));
@@ -799,17 +798,27 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('section',null,h('h2',null,'Sample discussion history'),
           edition.loading?status('Loading discussion history…'):discussions.length===0?h('p',null,'No sample contributions yet.'):null,
           ...discussions.map(({entry,comments})=>h('article',{key:entry.id,className:'dk-card'},
-            h('h3',null,link(exampleRoute(entry.id),entry.question,'dk-link')),
+            h('h3',null,link(posterDebateRoute(entry.id),entry.question,'dk-link')),
             ...comments.map(({body},i)=>h('blockquote',{key:i},...body.split('\n\n').map((part,j)=>h('p',{key:j},part)))))))));
+  }
+  function ReplaceDebateUrl({location, search}) {
+    const navigate = useNavigate();
+    const {pathname, hash, state} = location;
+    useEffect(()=>{
+      navigate({pathname, search, hash},{replace:true,state});
+    },[navigate,pathname,search,hash,state]);
+    return null;
   }
   function Start() {
     const loc=useLocation(), landing=isWelcomeLocation(loc), interests=useFeedInterests();
     const params=new URLSearchParams(loc.search), onFeed=params.get('view')==='feed'||params.has('edition');
-    const example=params.get('example');
+    const debate=readPosterDebate(params);
+    const search=normalizeDebateSearch(loc.search);
+    if(search!==loc.search)return h(ReplaceDebateUrl,{location:loc,search});
     const commenter=params.get('commenter');
     if(params.has('join'))return h(JoinLink);
     if(commenter)return h(CommenterPage,{id:commenter});
-    if(example)return h(PosterActivity,null,h(ExamplePage,{example}));
+    if(debate)return h(PosterActivity,null,h(ExamplePage,{example:debate}));
     if(landing&&interests?.offer&&!loc.search)return h(InterestPicker,{onboarding:true});
     return landing?h(HomeFeed):h('div',{className:'dk-main',id:'dk-main'},
       h('div',{className:'dk-grid'},h(Feed,{full:onFeed,landing:false}),h(Activity,{compact:true})));

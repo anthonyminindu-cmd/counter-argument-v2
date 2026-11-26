@@ -107,7 +107,7 @@ def run():
                 expect(page.get_by_role("heading",name="Your dashboard")).to_be_visible()
                 expect(page.locator(".dk-dashboard-list")).to_have_count(0)
             page.set_viewport_size({"width":1280,"height":900})
-            page.goto(base + "/home/?view=feed&example=" + example["id"] + "&comments=1&comment=" + comment)
+            page.goto(base + "/home/?view=feed&debate=" + example["id"] + "&comments=1&comment=" + comment)
             row = page.locator("#dk-comment-" + comment)
             row.get_by_role("button", name=re.compile(r"^Support ·"), pressed=False).click()
             expect(row.get_by_role("button", name=re.compile(r"^Supported ·"), pressed=True)).to_be_enabled()
@@ -116,7 +116,7 @@ def run():
             page.reload()
             expect(given).to_have_text("1")
             expect(page.locator(".dk-dashboard-list")).to_have_count(0)
-            page.goto(base + "/home/?view=feed&example=" + example["id"] + "&comments=1&comment=" + comment)
+            page.goto(base + "/home/?view=feed&debate=" + example["id"] + "&comments=1&comment=" + comment)
             expect(row).to_be_focused()
             row.get_by_role("button", name=re.compile(r"^Supported ·"), pressed=True).click()
             expect(row.get_by_role("button", name=re.compile(r"^Support ·"), pressed=False)).to_be_enabled()
@@ -135,7 +135,7 @@ def run():
                         return payload.get("p_kind") == kind and item in payload.get("p_items",[])
                     return matches
                 with page.expect_response(records("poster",slug)) as view:
-                    page.goto(base+"/home/?view=feed&example="+slug)
+                    page.goto(base+"/home/?view=feed&debate="+slug)
                 assert view.value.ok
                 with page.expect_response(records("comment",target)) as comment_view:
                     page.locator("#dk-comment-"+target+" p").first.evaluate("(el)=>el.scrollIntoView({block:'center'})")

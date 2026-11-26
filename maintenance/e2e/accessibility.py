@@ -9,7 +9,7 @@ from playwright.sync_api import expect, sync_playwright
 
 SITE = os.environ["DK_TEST_URL"].rstrip("/")
 AXE = str(Path(os.environ["AXE_JS"]).resolve(strict=True))
-PUBLIC = ["/", "/home/?view=feed", "/home/?view=feed&example=ai-data-centers",
+PUBLIC = ["/", "/home/?view=feed", "/home/?view=feed&debate=ai-data-centers",
           "/home/?commenter=person-033", "/login/", "/reset-password/",
           "/missing-page", "/demo/school-start-times/"]
 MEMBER = ["/profile/", "/profile/?section=friends", "/profile/?section=comments",
@@ -38,7 +38,7 @@ def check_routes(browser, width, theme, session=None):
     for route in MEMBER if session else PUBLIC:
         page.goto(SITE + route)
         page.get_by_role("heading", level=1).first.wait_for()
-        if "example=" in route:
+        if "debate=" in route:
             page.locator(".dk-point-title").first.wait_for()
         scan(page, (route, width, theme))
     if not session:

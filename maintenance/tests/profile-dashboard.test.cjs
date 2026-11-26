@@ -34,7 +34,7 @@ test('dashboard links reopen exact comments, questions, debates and selected act
   for(const kind of ['editorial','comment','reply']){
     const url=new URL(dashboardDestination({...row,kind}),'https://example.com');
     assert.equal(url.searchParams.get('comment'),'abc');
-    assert.equal(url.searchParams.get(kind==='reply'?'question':'example'),'tax debate');
+    assert.equal(url.searchParams.get(kind==='reply'?'question':'debate'),'tax debate');
   }
   assert.match(dashboardDestination({...row,kind:'comment',point_id:'A.4'}),/&point=A\.4&comment=abc$/);
   assert.equal(dashboardDestination({...row,kind:'debate'}),'/debate/view/abc');
@@ -88,7 +88,7 @@ test('comment history loads the requested page and links each entry back to its 
   children.forEach(visit);
   for(const pair of [
     ['My reply','/home?view=feed&question=question-id&comment=reply-id'],
-    ['My comment','/home?view=feed&example=published-id&point=B.2&comment=comment-id'],
+    ['My comment','/home?view=feed&debate=published-id&point=B.2&comment=comment-id'],
     ['Previous','/profile?section=comments'],['Next','/profile?section=comments&page=3']
   ])assert.ok(links.some(([label,to])=>label===pair[0]&&to===pair[1]),pair[0]);
 });
