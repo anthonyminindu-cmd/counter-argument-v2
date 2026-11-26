@@ -53,9 +53,48 @@ test('new research carries unique Differ Ranks alongside compatible snapshot fie
 
 test('partial results, bad criteria, duplicate IDs, malformed citations and missing review fail validation', () => {
   assert.throws(()=>validateResearchResponse(points,'{"ass'),/arguments are saved/i);
-  for(const bad of [{magnitude:1.5},{reach:0},{duration:101},{id:assessments[1].id},{confidence:'certain'},{sources:[{title:'invalid', url:'https://'}]},{evidenceAssessment:null},{sources:[],evidenceLimitation:''}]){
+  for(const bad of [{magnitude:1.5},{reach:0},{duration:101},{id:assessments[1].id},{confidence:'certain'},{sources:[{title:'invalid', url:'https://'}]},{evidenceAssessment:null},{sources:null}]){
     assert.throws(()=>validate([{...assessments[0],...bad},...assessments.slice(1)]));
   }
+});
+
+test('an uncited finding becomes unclear without changing the twenty ranked arguments', () => {
+  const original = validate(assessments);
+  for (const support of ['supports', 'partly-supports', 'contradicts']) {
+    for (const sources of [[], assessments[0].sources]) {
+      const input = {...assessments[0], sources, confidence:'high',
+        evidenceAssessment:{...evidenceAssessment, support, sourceUrls:[]}};
+      const result = validate([input, ...assessments.slice(1)]);
+      const row = result[0];
+      assert.equal(row.evidenceAssessment.support, 'unclear');
+      assert.deepEqual(row.evidenceAssessment.sourceUrls, []);
+      assert.deepEqual(row.sources, sources);
+      assert.match(row.evidenceAssessment.rationale, /could not link its finding/);
+      assert.equal(row.evidenceLimitation, row.evidenceAssessment.rationale);
+      assert.equal(row.confidence, 'low');
+      for (const key of ['id','owner','ordinal','score','differRank']) assert.equal(row[key], original[0][key]);
+      assert.deepEqual(result.slice(1), original.slice(1));
+    }
+  }
+});
+
+test('unattached citations cannot substantiate a verdict, including a mixture of attached and foreign URLs', () => {
+  for (const sourceUrls of [['https://submitted.example'], [...evidenceAssessment.sourceUrls, 'https://foreign.example']]) {
+    const input = {...assessments[0], evidenceAssessment:{...evidenceAssessment, sourceUrls}};
+    const [row] = validate([input, ...assessments.slice(1)]);
+    assert.equal(row.evidenceAssessment.support, 'unclear');
+    assert.deepEqual(row.evidenceAssessment.sourceUrls, []);
+    assert.deepEqual(row.sources, assessments[0].sources);
+    assert.equal(row.confidence, 'low');
+  }
+});
+
+test('repeated valid references collapse to one and malformed reference lists fail validation', () => {
+  const input = sourceUrls => [{...assessments[0], evidenceAssessment:{...evidenceAssessment, sourceUrls}}, ...assessments.slice(1)];
+  const [row] = validate(input([...evidenceAssessment.sourceUrls, ...evidenceAssessment.sourceUrls]));
+  assert.deepEqual(row.evidenceAssessment, evidenceAssessment);
+  assert.equal(row.confidence, 'moderate');
+  for (const invalid of [null, [4]]) assert.throws(() => validate(input(invalid)), /array of strings/);
 });
 test('only grandfathered responses may complete using validated original-rubric scores', () => {
   const legacy=JSON.stringify({assessments:points.map(p=>({id:p.id,relevance:3,evidence:2,consequences:4,reasoning:4,explanation:'Earlier assessment.',sources:[],evidenceLimitation:'No verified source.'}))});
