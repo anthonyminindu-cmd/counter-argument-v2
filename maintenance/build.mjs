@@ -49,8 +49,10 @@ export function compile() {
     .replace(/^import .* from '\.\/(?:debate-links|feed-interests|accessibility|friend|reader|invitations|dashboard|social-header|impressions|profile-photo|google-login|support-choices)\.mjs';$/gm, '').replace(/^export /gm, '')).join('\n');
   // Public profiles need the participant IDs without fetching an edition's discussions.
   const edition = JSON.parse(fs.readFileSync(path.join(root, 'demo/november-2026/edition.json'), 'utf8'));
+  const profiles = JSON.parse(fs.readFileSync(path.join(root, 'demo/november-2026/personas.json'), 'utf8'));
+  const publicProfileNames = Object.fromEntries(Object.entries(profiles).map(([id,profile])=>[id,profile.name]));
   const editorialFriendGroups = edition.filter(entry => entry.sampleDebate).map(entry => entry.sampleDebate.friends);
-  const adapter = 'const DK=(()=>{' + workspace + '\nreturn {...createWorkspace({React:p,Link:Qe,useAuth:Xt,useLocation:Vi,useNavigate:Mn,db:$,Account:y3,OriginalTopic:vD,OriginalStart:nD,Directory:V5,editorialFriendGroups:' + JSON.stringify(editorialFriendGroups) + '}),afterLogin,visibleFriendProfile};})();\n';
+  const adapter = 'const DK=(()=>{' + workspace + '\nreturn {...createWorkspace({React:p,Link:Qe,useAuth:Xt,useLocation:Vi,useNavigate:Mn,db:$,Account:y3,OriginalTopic:vD,OriginalStart:nD,Directory:V5,publicProfileNames:' + JSON.stringify(publicProfileNames) + ',editorialFriendGroups:' + JSON.stringify(editorialFriendGroups) + '}),afterLogin,visibleFriendProfile};})();\n';
   output = output.replace(mount, () => adapter + mount);
   if (!output.includes('bqhyropctavxjdnogmor.supabase.co')) throw new Error('V2 backend identity missing');
   if (output.includes('jgmkhntqfffkwggqzxql')) throw new Error('Legacy backend identity is forbidden');

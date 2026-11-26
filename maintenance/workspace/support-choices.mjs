@@ -52,12 +52,11 @@ function compactSupportCaptions(positions,slug){
 export function positionButtons(positions,slug,names){
   const captions=compactSupportCaptions(positions,slug);
   return positions.map((side,i)=>{
-    const name=String(names?.[side.persona]?.name||side.author||'').trim();
+    const name=String(names?.[side.persona]||side.author||'').trim();
     const publicName=name.includes('@') && !/^@[\p{L}\p{N}_.-]+$/u.test(name)?'':name;
     let byline=supportWords(publicName)[0];
     if(publicName==='Differ Kindly AI')byline='DK AI';
-    if(publicName==='Differ Kindly Editorial' || (!publicName && Object.hasOwn(editorialSupportCaptions,slug)))byline='Editorial';
-    return {key:side.key??side.label,byline:byline||'Debater',caption:captions[i],
+    return {...side,key:side.key??side.label,byline:byline||'Debater',caption:captions[i],
       fullName:publicName||byline||'Debater',statement:side.label,count:side.count};
   });
 }
