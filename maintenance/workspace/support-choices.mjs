@@ -54,8 +54,8 @@ export function positionButtons(positions,slug,names){
   return positions.map((side,i)=>{
     const name=String(names?.[side.persona]||side.author||'').trim();
     const publicName=name.includes('@') && !/^@[\p{L}\p{N}_.-]+$/u.test(name)?'':name;
-    let byline=supportWords(publicName)[0];
-    if(publicName==='Differ Kindly AI')byline='DK AI';
+    let byline=side.is_alias?publicName:supportWords(publicName)[0];
+    if(!side.is_alias&&publicName==='Differ Kindly AI')byline='DK AI';
     return {...side,key:side.key??side.label,byline:byline||'Debater',caption:captions[i],
       fullName:publicName||byline||'Debater',statement:side.label,count:side.count};
   });

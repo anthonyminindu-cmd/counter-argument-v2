@@ -155,8 +155,13 @@ export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuer
   }
   function AccountIdentity({user}) {
     const profile=useQuery(user.id,()=>db.from('profiles').select('display_name,username').eq('user_id',user.id).maybeSingle());
-    const metadata=user.user_metadata||{};
-    const name=[profile.data?.display_name,metadata.display_name,metadata.full_name,metadata.name]
+    useEffect(()=>{
+      const refresh=()=>profile.refresh();
+      window.addEventListener('dk-profile-name-changed',refresh);
+      return ()=>window.removeEventListener('dk-profile-name-changed',refresh);
+    },[user.id]);
+    const metadata=profile.loading||profile.error?{}:user.user_metadata||{};
+    const name=[profile.data?.display_name,metadata.full_name,metadata.name,metadata.display_name]
       .find(value=>typeof value==='string'&&value.trim())?.trim();
     const username=profile.data?.username?.trim().replace(/^@+/,'');
     const handle=username?'@'+username:null;
@@ -164,7 +169,7 @@ export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuer
       h('h1',null,name||handle||'Your profile'),
       name&&handle&&name!==handle&&h('p',null,handle),
       user.email&&h('p',null,'Signed in as ',h('bdi',null,user.email)),
-      !name&&!profile.loading&&!profile.error&&link(profileRoute('Account'),'Add a display name'));
+      link(profileRoute('Account'),'Edit name or alias','dk-link'));
   }
   function ProfileDashboard({user}){
     const {metric,page}=dashboardView(useLocation().search);

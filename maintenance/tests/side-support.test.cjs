@@ -98,3 +98,13 @@ test('new and open-question choices keep the reply ID and distinguish similar po
   assert.deepEqual(anonymous.map(b=>[b.byline,b.caption]),[['Debater','Position 1'],['Debater','Position 2']]);
   assert.equal(positionButtons([{...a,label:'Do not ban books'}])[0].caption,'Do not ban…');
 });
+
+test('support shows a whole member alias while ordinary member bylines use the first name',async()=>{
+  const {positionButtons}=await import('../workspace/support-choices.mjs');
+  const position={label:'Keep the park',count:4,author:'Civic Owl'};
+  const [aliased]=positionButtons([{...position,is_alias:true}]);
+  assert.equal(aliased.byline,'Civic Owl');
+  assert.equal(aliased.fullName,'Civic Owl');
+  assert.equal(positionButtons([{...position,author:'Casey Rivera',is_alias:false}])[0].byline,'Casey');
+  assert.equal(aliased.key,position.label);
+});

@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "061dfd7e1f777f8277b18b81db2466b916a740d1842da4ecef8fb01ed07e109c",
-  "generatedAsset": "assets/index-v2-061dfd7e1f777f82.js",
+  "generatedSha256": "fbfa33419a9f6231d4e2f63af93dee63fae7538748800874847a9f64ea40ff7a",
+  "generatedAsset": "assets/index-v2-fbfa33419a9f6231.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -321,6 +321,19 @@
     "remove-sample-address-from-profile-email",
     "propagate-session-logout-errors",
     "feed-interest-settings-route",
-    "feed-interest-settings-link"
+    "feed-interest-settings-link",
+    "account-load-private-name",
+    "account-name-and-alias-fields",
+    "save-profile-name-and-alias",
+    "report-alias-save-errors",
+    "disable-account-save-until-loaded",
+    "signup-first-and-last-name",
+    "signup-read-name-parts",
+    "signup-store-default-name",
+    "initialize-name-after-any-sign-in",
+    "online-status-carries-only-member-identity",
+    "online-status-log-uses-member-id",
+    "member-header-public-name-fallback",
+    "member-page-public-name-fallback"
   ]
 }
