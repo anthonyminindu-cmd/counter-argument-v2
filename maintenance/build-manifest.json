@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "8ec88a21c8179a58f8b01a605c84b7220c096371c7d700ac33b27a1acb993b99",
-  "generatedAsset": "assets/index-v2-8ec88a21c8179a58.js",
+  "generatedSha256": "855a0333bb699e8db0a2d6f858a7f95aa361a9140e90331dc9fd728f39fc0085",
+  "generatedAsset": "assets/index-v2-855a0333bb699e8d.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -295,6 +295,7 @@
     "accessible-account-subsection-4",
     "accessible-account-subsection-5",
     "accessible-saved-debate-heading",
+    "use-debateai-name-in-legacy-participant-lists",
     "restore-versioned-impact-rankings",
     "retain-actual-scoring-version",
     "clarify-shared-impact-rubric",

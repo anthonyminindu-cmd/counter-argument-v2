@@ -1,0 +1,8 @@
+[
+  {
+    "id": "use-debateai-name-in-legacy-participant-lists",
+    "find": "\"DebateAI Bot\"",
+    "replace": "\"DebateAI\"",
+    "expectedCount": 2
+  }
+]

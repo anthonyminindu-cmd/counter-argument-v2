@@ -442,7 +442,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function BotDebaters({entry}) {
     const personas=usePersonas();
     const friends=entry.sampleDebate.friends;
-    return h('div',{className:'dk-sample-debaters'},h('strong',null,'Bot friends debate'),
+    return h('div',{className:'dk-sample-debaters'},h('strong',null,'Participants'),
       personas.data&&h('ul',null,...friends.map((id,side)=>
         h('li',{key:id},link(personaRoute(id),personas.data[id].name),' · '+entry.sideTitles[side]))));
   }
@@ -467,8 +467,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       if(!rows?.length)return null;
       return h('ul',{className:parent?'dk-discussion-replies':undefined},...rows.map(comment=>
         h('li',{key:comment.id,id:'dk-comment-'+comment.id,tabIndex:-1},
-          link(personaRoute(comment.persona),personas.data[comment.persona]?.name??'Bot account'),
-          h('small',null,' · Bot'),
+          link(personaRoute(comment.persona),personas.data[comment.persona]?.name??'Commenter'),
           ...comment.body.split('\n\n').map((paragraph,i)=>h('p',{key:i},paragraph)),
           h(CommentLike,{id:comment.id,kind:'editorial',states}),
           render(comment.id))));
@@ -514,7 +513,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         metrics.refresh();window.dispatchEvent(new Event('dk-dashboard-changed'));
       }catch{setFailed(true)}finally{setBusy(false)}
     }
-    return h('div',{className:'dk-topic-metrics dk-social',title:entry.sampleActivity?'Totals include bot and member activity.':undefined},
+    return h('div',{className:'dk-topic-metrics dk-social',title:entry.sampleActivity?'Totals include automated and member activity.':undefined},
       h('button',{type:'button',className:'dk-small',onClick:like,disabled:busy||(!!user&&(!row||metrics.loading)),'aria-pressed':!!row?.liked},icon('thumb'),row?.liked?'Supported':'Support',' · ',row?.likes??'…'),
       h('button',{type:'button',className:'dk-small','data-opens-debate':true,onClick:onComment||(()=>navigate(url+'&comments=1'))},icon('message'),'Comments · ',row?.comments??'…'),
       row?.published&&h(Save,{kind:'topic',target:entry.id,label:entry.question}),
@@ -691,7 +690,6 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('div',{className:'dk-topic-meta'},h('span',{className:'dk-topic-label'},icon(glyph),entry.category||'Community debate'),
           h(PostedDate,{at:entry.published_at,slug:entry.id,standalone:true})),
         h(origin==='home'?'h3':'h2',{'data-dk-view':'poster','data-dk-item':entry.id},h(Link,{to:url,className:'dk-example-link'},entry.question)),
-        entry.sampleDebate&&h('p',{className:'dk-note'},'Bot friends debate'),
         link(url+'&points=1','Explore the points')),
       h(PosterActions,{entry,origin}));
   }
@@ -800,7 +798,6 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       personas.error || edition.error ? h('button',{onClick:()=>{personas.refresh();edition.refresh();}},'Retry loading profile') :
       !personas.data ? status('Loading profile…') : !person ? h('h1',null,'Profile unavailable') :
       h('section',{className:'dk-panel dk-persona-profile'},
-        h('p',{className:'dk-note'},'Bot account'),
         h('h1',null,person.name),
         h('p',null,'@'+person.handle),
         person.location&&h('p',{className:'dk-persona-background'},person.location.city+', '+person.location.state+' · '+person.occupation),
@@ -812,7 +809,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
             h('div',null,h('dt',null,'Support received'),h('dd',null,activity.data?.support_received??unavailable)),
             h('div',null,h('dt',null,'Comment points'),h('dd',null,activity.data&&edition.data?points:unavailable))),
           activity.error&&h('button',{type:'button',className:'dk-small',onClick:activity.refresh},'Retry loading activity'),
-          friends.length>0&&h('ul',{'aria-label':'Bot friends'},...friends.map(peer=>
+          friends.length>0&&h('ul',{'aria-label':'Friends'},...friends.map(peer=>
             h('li',{key:peer},link(personaRoute(peer),personas.data[peer].name))))),
         h('section',null,h('h2',null,'Comment history'),
           activity.loading?status('Loading comment history…'):activity.data&&comments.length===0?h('p',null,'No comments yet.'):null,
@@ -936,7 +933,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       (rows.length>0||commenters.matches.length>0)&&h('ul',{className:'dk-list'},
         ...rows.map(row=>h('li',{key:row.target},h('div',null,h('strong',{className:'dk-person-name'},row.photo&&h(Portrait,{url:row.photo}),row.label),link(friend+'&person='+encodeURIComponent(row.query||row.label),'Invite to debate')),h('div',{className:'dk-actions'},h(FriendButton,{peer:row.target,relation:friends.data?.find(f=>f.peer===row.target)?.status,ready:!!friends.data&&!friends.loading}),h(Save,{kind:'person',target:row.target,label:row.label})))),
         ...commenters.matches.map(person=>h('li',{key:person.user_id},h('div',null,
-          link(person.profileUrl,person.display_name),h('small',null,'@'+person.username+' · Bot account'))))));
+          link(person.profileUrl,person.display_name),h('small',null,'@'+person.username))))));
   }
   function PinnedList({items,owner}) {
     const topics=items.filter(item=>item.kind==='topic').map(item=>item.target).sort();
