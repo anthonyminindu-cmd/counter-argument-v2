@@ -23,3 +23,12 @@ test('social notifications distinguish friend requests and aggregate distinct li
   assert.equal(socialActivityTitle({...row,activity:'friend_request'}),'Maya sent you a friend request');
   assert.equal(socialActivityTitle({...row,activity:'friend_accepted'}),'Maya accepted your friend request');
 });
+test('a signed-in viewer does not see their own counts beside a public commenter’s history',async()=>{
+  const {createWorkspace}=await import('../workspace/app.mjs');
+  const React={createElement:(type,props,...children)=>({type,props,children}),createContext:()=>({})};
+  for(const [route,showViewerStats] of [['/home?view=feed',true],['/home/?view=feed&commenter=person-188',false],['/profile',false]]){
+    const page=createWorkspace({React,Link:'link',useAuth:()=>({user:{id:'viewer'}}),useLocation:()=>new URL(route,'https://example.test')});
+    const bar=page.Nav().children.find(el=>el?.props?.className==='dk-bar dk-member-bar');
+    assert.equal(bar.children.some(el=>el?.type?.name==='HeaderStats'),showViewerStats,route);
+  }
+});

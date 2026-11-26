@@ -322,7 +322,9 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const {user}=useAuth(),loc=useLocation();
     const onHome=['/','/home','/home/'].includes(loc.pathname);
     const compactProfile=!!user&&loc.pathname.startsWith('/profile');
-    const inFeed=onHome&&new URLSearchParams(loc.search).get('view')==='feed';
+    const params=new URLSearchParams(loc.search);
+    const viewingCommenter=onHome&&Boolean(params.get('commenter'));
+    const inFeed=onHome&&params.get('view')==='feed';
     const active=loc.pathname.startsWith('/profile')?'Profile':inFeed?'Feed':onHome?'Home':'';
     const destinations=[[home,'Home','home'],[feed,'Feed','feed']];
     if(!user)destinations.push([login(profile),'Profile','person']);
@@ -341,7 +343,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
           !user&&!isWelcomeLocation(loc)&&h('small',{className:'dk-brand-tagline'},'Two views. One table.')),
         h('nav',{'aria-label':'Primary',className:'dk-nav'},...destinations.map(([to,name,g])=>
           h(Link,{key:name,to,onClick:scrollToStart,'aria-current':active===name?'page':undefined},icon(g),name))),
-        user&&!compactProfile&&h(HeaderStats),
+        user&&!compactProfile&&!viewingCommenter&&h(HeaderStats),
         h('div',{className:'dk-account'},user?[
           h(Notifications,{key:'inbox'}),
           h(Link,{key:'profile',to:profile,className:'dk-profile-button','aria-current':active==='Profile'?'page':undefined,onClick:scrollToStart},h(HeaderPortrait),'Profile')
@@ -788,14 +790,12 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       window.addEventListener('dk-dashboard-changed',refresh);
       return ()=>{window.removeEventListener('focus',refresh);window.removeEventListener('dk-dashboard-changed',refresh);};
     },[id]);
-    const comments=activity.data?.comments??[];
+    const comments=activity.data?.comments;
     const friendDebates=(edition.data??[]).filter(entry=>entry.sampleDebate?.friends.includes(id));
     const friends=[...new Set(friendDebates.flatMap(entry=>entry.sampleDebate.friends).filter(peer=>peer!==id))];
-    const friendTopics=new Set(friendDebates.map(entry=>entry.id));
-    const points=comments.filter(comment=>friendTopics.has(comment.slug)).length;
     const unavailable=activity.error?'Unavailable':'…';
     return h('div',{className:'dk-main',id:'dk-main'},link(trending,'Back to Trending'),
-      personas.error || edition.error ? h('button',{onClick:()=>{personas.refresh();edition.refresh();}},'Retry loading profile') :
+      personas.error ? h('button',{onClick:personas.refresh},'Retry loading profile') :
       !personas.data ? status('Loading profile…') : !person ? h('h1',null,'Profile unavailable') :
       h('section',{className:'dk-panel dk-persona-profile'},
         h('h1',null,person.name),
@@ -804,16 +804,17 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('p',null,person.bio),
         h('section',null,h('h2',null,'Activity'),
           h('dl',{className:'dk-sample-profile-totals'},
-            h('div',null,h('dt',null,'Friends'),h('dd',null,edition.loading?'…':friends.length)),
+            h('div',null,h('dt',null,'Friends'),h('dd',null,edition.data?friends.length:edition.error?'Unavailable':'…')),
             h('div',null,h('dt',null,'Support given'),h('dd',null,activity.data?.support_given??unavailable)),
             h('div',null,h('dt',null,'Support received'),h('dd',null,activity.data?.support_received??unavailable)),
-            h('div',null,h('dt',null,'Comment points'),h('dd',null,activity.data&&edition.data?points:unavailable))),
+            h('div',null,h('dt',null,'Comments'),h('dd',null,comments?.length??unavailable))),
           activity.error&&h('button',{type:'button',className:'dk-small',onClick:activity.refresh},'Retry loading activity'),
+          edition.error&&h('button',{type:'button',className:'dk-small',onClick:edition.refresh},'Retry loading friends'),
           friends.length>0&&h('ul',{'aria-label':'Friends'},...friends.map(peer=>
             h('li',{key:peer},link(personaRoute(peer),personas.data[peer].name))))),
         h('section',null,h('h2',null,'Comment history'),
-          activity.loading?status('Loading comment history…'):activity.data&&comments.length===0?h('p',null,'No comments yet.'):null,
-          ...comments.map(comment=>h('article',{key:comment.id,className:'dk-card'},
+          !comments&&activity.loading?status('Loading comment history…'):comments?.length===0?h('p',null,'No comments yet.'):activity.error?status('Comment history is unavailable.',true):null,
+          ...(comments??[]).map(comment=>h('article',{key:comment.id,className:'dk-card'},
             h('h3',null,link(posterDebateRoute(comment.slug)+'&comments=1&comment='+comment.id,comment.title)),
             h('blockquote',null,...comment.body.split('\n\n').map((part,i)=>h('p',{key:i},part))))))));
   }
