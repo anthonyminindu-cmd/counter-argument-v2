@@ -60,50 +60,48 @@ test('even a cached older profile only renders the public bio and activity', asy
     discussion:{voice:'test-voice',persuadedBy:'test-evidence'},
     politics:{label:'test-politics',values:['test-value'],positions:['test-position']}};
   const render = runInNewContext(output.slice(start,end)+'\nCommenterPage', {
-    usePersonas:()=>({data:{[id]:person}}), useNovemberEdition:()=>({data:[]}),
-    useQuery:()=>({data:{support_given:2,support_received:1,comments:[]}}), useEffect:()=>{},
+    usePersonas:()=>({data:{[id]:person}}), editorialFriendGroups:[],
+    useQuery:()=>({data:{support_given:2,support_received:1,comment_count:4}}), useEffect:()=>{},
     h:(tag,props,...children)=>({tag,children}), link:(_url,label)=>label, trending:'/home'
   });
   const text=JSON.stringify(render({id}));
-  for (const visible of [person.name,person.handle,person.bio,'Activity','Comment history']) {
+  for (const visible of [person.name,person.handle,person.bio,'Activity','Comments']) {
     assert.ok(text.includes(visible),visible);
   }
   assert.doesNotMatch(text,/\bbots?\b|test-(style|interest|voice|evidence|politics|value|position)|Political outlook|How I debate|What might change my mind|Interests/);
 });
 
-test('profile totals count every history entry including replies and comments on other debates', async () => {
+
+test('public profiles show a plain comment count and never render or link to history', async () => {
   const {compile}=await import('../build.mjs');
   const {runInNewContext}=require('node:vm');
   const {output}=compile();
   const source=output.slice(output.indexOf('  function CommenterPage('),output.indexOf('  function ReplaceDebateUrl('));
-  const id='person-188', peer='person-001';
+  const id='person-193';
+  const editorialFriendGroups=edition.filter(entry=>entry.sampleDebate).map(entry=>entry.sampleDebate.friends);
   const state={};
-  const directory=[{id:'own',sampleDebate:{friends:[id,peer]}}];
   const render=runInNewContext(source+'\nCommenterPage',{
-    usePersonas:()=>({data:profiles}),useNovemberEdition:()=>state.edition,useQuery:()=>state.activity,
+    usePersonas:()=>({data:profiles}),editorialFriendGroups,useQuery:()=>state.activity,
     useEffect:()=>{},h:(tag,props,...children)=>({tag,props,children}),
-    link:(url,label)=>({url,label}),status:message=>message,trending:'/home',
-    personaRoute:id=>'/home?commenter='+id,posterDebateRoute:slug=>'/home?debate='+slug
+    link:(url,label)=>({tag:'a',url,children:[label]}),trending:'/home',personaRoute:id=>'/home?commenter='+id
   });
-  const entry=(key,slug)=>({id:key,slug,title:'Discussion '+slug,body:'Comment '+key});
-  for (const [activity,editionResult,expected,count,empty] of [
-    [{data:{comments:[entry('1','other'),entry('2','other')]}},{data:directory},2,2,false],
-    [{data:{comments:[entry('1','own'),entry('2','other'),entry('3','third')]}},{error:true},3,3,false],
-    [{data:{comments:[]}},{data:directory},0,0,true],
-    [{loading:true},{data:directory},'…',0,false],
-    [{error:true},{data:directory},'Unavailable',0,false],
+  function flatten(node){
+    return node&&typeof node==='object'?[node,...(node.children||[]).flatMap(flatten)]:[];
+  }
+  const cachedHistory=[{id:'private-id',slug:'private-slug',body:'private-body',title:'private-title'}];
+  for(const [activity,expected] of [
+    [{data:{comment_count:2,comments:cachedHistory}},2],
+    [{data:{comment_count:0}},0],
+    [{data:{comments:cachedHistory}},'…'],
+    [{loading:true},'…'],
+    [{error:true},'Unavailable']
   ]){
-    state.activity=activity; state.edition=editionResult;
-    const tree=render({id});
-    function flatten(node){
-      return node&&typeof node==='object'?[node,...(node.children||[]).flatMap(flatten)]:[];
-    }
-    const nodes=flatten(tree);
+    state.activity=activity;
+    const tree=render({id}),nodes=flatten(tree);
     const metric=nodes.find(node=>node.children?.[0]?.tag==='dt'&&node.children[0].children[0]==='Comments');
-    assert.equal(metric.children[1].children[0],expected);
-    const articles=nodes.filter(node=>node.tag==='article');
-    assert.equal(articles.length,count);
-    assert.deepEqual(articles.map(a=>a.props.key),activity.data?.comments?.map(c=>c.id)??[]);
-    assert.equal(JSON.stringify(tree).includes('No comments yet.'),empty);
+    assert.equal(metric.children[1].tag,'dd');
+    assert.deepEqual(Array.from(metric.children[1].children),[expected]);
+    assert.deepEqual(nodes.filter(node=>node.tag==='a').map(node=>node.url),['/home','/home?commenter=person-121']);
+    assert.doesNotMatch(JSON.stringify(tree),/private-|Comment history|No comments yet|blockquote|"article"/i);
   }
 });

@@ -47,7 +47,10 @@ export function compile() {
   const workspace = ['debate-links.mjs','feed-interests.mjs','accessibility.mjs','friend.mjs','reader.mjs','invitations.mjs','dashboard.mjs','social-header.mjs','impressions.mjs','profile-photo.mjs','app.mjs'].map(file => fs.readFileSync(path.join(root, 'maintenance/workspace',file), 'utf8')
     .replace(/^import .* from '\.\.\/renderer\/(?:poster-finish|portrait)\.mjs';$/gm, '')
     .replace(/^import .* from '\.\/(?:debate-links|feed-interests|accessibility|friend|reader|invitations|dashboard|social-header|impressions|profile-photo|google-login)\.mjs';$/gm, '').replace(/^export /gm, '')).join('\n');
-  const adapter = 'const DK=(()=>{' + workspace + '\nreturn {...createWorkspace({React:p,Link:Qe,useAuth:Xt,useLocation:Vi,useNavigate:Mn,db:$,Account:y3,OriginalTopic:vD,OriginalStart:nD,Directory:V5}),afterLogin,visibleFriendProfile};})();\n';
+  // Public profiles need the participant IDs without fetching an edition's discussions.
+  const edition = JSON.parse(fs.readFileSync(path.join(root, 'demo/november-2026/edition.json'), 'utf8'));
+  const editorialFriendGroups = edition.filter(entry => entry.sampleDebate).map(entry => entry.sampleDebate.friends);
+  const adapter = 'const DK=(()=>{' + workspace + '\nreturn {...createWorkspace({React:p,Link:Qe,useAuth:Xt,useLocation:Vi,useNavigate:Mn,db:$,Account:y3,OriginalTopic:vD,OriginalStart:nD,Directory:V5,editorialFriendGroups:' + JSON.stringify(editorialFriendGroups) + '}),afterLogin,visibleFriendProfile};})();\n';
   output = output.replace(mount, () => adapter + mount);
   if (!output.includes('bqhyropctavxjdnogmor.supabase.co')) throw new Error('V2 backend identity missing');
   if (output.includes('jgmkhntqfffkwggqzxql')) throw new Error('Legacy backend identity is forbidden');
