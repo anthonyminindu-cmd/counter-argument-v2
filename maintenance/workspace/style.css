@@ -522,3 +522,12 @@ html{scroll-padding-block:1rem}
 .dk-interest-group .dk-interest-options { padding-block:.3rem; }
 .dk-feed-interests input[type=search] { min-height:44px; }
 .dk-interest-selected { list-style:none; margin:0; }
+
+.dk-persona-profile { max-width:48rem; }
+.dk-persona-profile > .dk-note { margin:0 0 .55rem; }
+.dk-persona-background { color:var(--dk-sub); }
+.dk-persona-profile section { border-top:1px solid var(--dk-line); margin-top:1.25rem; padding-top:1.15rem; }
+.dk-persona-profile section > h2 { font-size:1.22rem; margin-bottom:.6rem; }
+.dk-persona-profile section > p + p { margin-top:.35rem; }
+.dk-persona-profile section > ul { padding-inline-start:1.3em; margin-block:.55rem 0; list-style:disc; }
+.dk-persona-profile li + li { margin-top:.3rem; }

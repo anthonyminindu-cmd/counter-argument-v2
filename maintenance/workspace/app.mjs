@@ -393,7 +393,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function usePersonas(enabled = true) {
     return useQuery(enabled ? 'trending-personas' : null, async () => {
-      const response = await fetch(novemberPath+'personas.json');
+      const response = await fetch(novemberPath+'personas.json?v=fictional-profiles');
       if (!response.ok) throw Error('The commenter profiles are unavailable.');
       return {data: await response.json()};
     });
@@ -751,12 +751,26 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     return h('div',{className:'dk-main',id:'dk-main'},link(trending,'Back to Trending'),
       personas.error || edition.error ? h('button',{onClick:()=>{personas.refresh();edition.refresh();}},'Retry loading profile') :
       !personas.data ? status('Loading profile…') : !person ? h('h1',null,'Profile unavailable') :
-      h('section',{className:'dk-panel'},h('h1',null,person.name),
-        h('p',null,'@'+person.handle),h('p',null,person.bio),h('p',null,'Debate style · '+person.style),
-        h('h2',null,'Discussion history'),
-        ...discussions.map(({entry,comments})=>h('article',{key:entry.id,className:'dk-card'},
-          h('h3',null,link(exampleRoute(entry.id),entry.question,'dk-link')),
-          ...comments.map(({body},i)=>h('blockquote',{key:i},...body.split('\n\n').map((part,j)=>h('p',{key:j},part))))))));
+      h('section',{className:'dk-panel dk-persona-profile'},
+        h('p',{className:'dk-note'},'Fictional profile for sample debates'),
+        h('h1',null,person.name),
+        h('p',null,'@'+person.handle),
+        person.location&&h('p',{className:'dk-persona-background'},person.age+' years old · '+person.location.city+', '+person.location.state+' · '+person.occupation),
+        h('p',null,person.bio),
+        person.politics&&h('section',null,h('h2',null,'Political outlook'),
+          h('p',null,person.politics.label),
+          h('p',null,'Values '+person.politics.values.map(value=>value.toLowerCase()).join(', ')+'.'),
+          h('ul',null,...person.politics.positions.map(position=>h('li',{key:position},position)))),
+        person.discussion&&h('section',null,h('h2',null,'How I debate'),
+          h('p',null,person.style+'. '+person.discussion.voice),
+          h('p',null,'What might change my mind? '+person.discussion.persuadedBy+'.')),
+        person.interests?.length>0&&h('section',null,h('h2',null,'Interests'),
+          h('ul',{className:'dk-persona-interests'},...person.interests.map(interest=>h('li',{key:interest},interest)))),
+        h('section',null,h('h2',null,'Sample discussion history'),
+          edition.loading?status('Loading discussion history…'):discussions.length===0?h('p',null,'No sample contributions yet.'):null,
+          ...discussions.map(({entry,comments})=>h('article',{key:entry.id,className:'dk-card'},
+            h('h3',null,link(exampleRoute(entry.id),entry.question,'dk-link')),
+            ...comments.map(({body},i)=>h('blockquote',{key:i},...body.split('\n\n').map((part,j)=>h('p',{key:j},part)))))))));
   }
   function Start() {
     const loc=useLocation(), landing=isWelcomeLocation(loc), interests=useFeedInterests();
@@ -864,7 +878,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       (rows.length>0||commenters.matches.length>0)&&h('ul',{className:'dk-list'},
         ...rows.map(row=>h('li',{key:row.target},h('div',null,h('strong',{className:'dk-person-name'},row.photo&&h(Portrait,{url:row.photo}),row.label),link(friend+'&person='+encodeURIComponent(row.query||row.label),'Invite to debate')),h('div',{className:'dk-actions'},h(FriendButton,{peer:row.target,relation:friends.data?.find(f=>f.peer===row.target)?.status,ready:!!friends.data&&!friends.loading}),h(Save,{kind:'person',target:row.target,label:row.label})))),
         ...commenters.matches.map(person=>h('li',{key:person.user_id},h('div',null,
-          link(person.profileUrl,person.display_name),h('small',null,'@'+person.username))))));
+          link(person.profileUrl,person.display_name),h('small',null,'@'+person.username+' · Fictional profile'))))));
   }
   function PinnedList({items,owner}) {
     const topics=items.filter(item=>item.kind==='topic').map(item=>item.target).sort();
