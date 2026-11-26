@@ -13,19 +13,15 @@ test('the fictional persona inventory covers all states and regions with distinc
   assert.equal(unique(person => person.location.city + ', ' + person.location.state), 100);
   const regions = new Set(people.map(person => person.location.region));
   assert.deepEqual([...regions].sort(), ['Midwest','Northeast','South','West']);
-  for (const region of regions) {
-    const views = people.filter(person => person.location.region === region).map(person => person.politics.id);
-    assert.equal(new Set(views).size, 12, region);
-  }
   for (const [id,person] of Object.entries(profiles)) {
     assert.match(id, /^person-\d{3}$/);
     assert.equal(person.fictional, true, id);
     for (const field of ['age','birthdate','dob','birthYear','dateOfBirth']) {
       assert.equal(Object.hasOwn(person, field), false, id + ' exposes ' + field);
     }
-    assert.equal(new Set(person.politics.positions).size, 2, id);
-    assert.equal(new Set(person.interests).size, 3, id);
-    assert.ok(person.discussion.voice && person.discussion.persuadedBy, id);
+    assert.deepEqual(Object.keys(person).sort(), ['bio','fictional','handle','location','name','occupation'], id);
+    assert.deepEqual(Object.keys(person.location).sort(), ['city','region','setting','state'], id);
+    assert.match(person.bio, /\b(I|my|me|mine|I'm|I've|I'll|we|we're|our)\b/i, id);
   }
 });
 
@@ -51,4 +47,26 @@ test('the Iowa sample debate gives each fictional friend two distinct comments a
   assert.equal(debate.sampleActivity.reactions, 0);
   assert.equal(debate.sampleActivity.impressions, 0);
   assert.equal(new Set(debate.arguments.map(([, , id])=>id)).size, 20);
+});
+
+test('even a cached older profile only renders the public bio and activity', async () => {
+  const {compile} = await import('../build.mjs');
+  const {runInNewContext} = require('node:vm');
+  const {output} = compile();
+  const start = output.indexOf('  function CommenterPage(');
+  const end = output.indexOf('  function ReplaceDebateUrl(', start);
+  const id = 'person-188';
+  const person = {...profiles[id], style:'test-style', interests:['test-interest'],
+    discussion:{voice:'test-voice',persuadedBy:'test-evidence'},
+    politics:{label:'test-politics',values:['test-value'],positions:['test-position']}};
+  const render = runInNewContext(output.slice(start,end)+'\nCommenterPage', {
+    usePersonas:()=>({data:{[id]:person}}), useNovemberEdition:()=>({data:[]}),
+    useQuery:()=>({data:{support_given:2,support_received:1,comments:[]}}), useEffect:()=>{},
+    h:(tag,props,...children)=>({tag,children}), link:(_url,label)=>label, trending:'/home'
+  });
+  const text=JSON.stringify(render({id}));
+  for (const visible of ['Bot account',person.name,person.handle,person.bio,'Activity','Comment history']) {
+    assert.ok(text.includes(visible),visible);
+  }
+  assert.doesNotMatch(text,/test-(style|interest|voice|evidence|politics|value|position)|Political outlook|How I debate|What might change my mind|Interests/);
 });

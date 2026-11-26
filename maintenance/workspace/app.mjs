@@ -419,7 +419,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function usePersonas(enabled = true) {
     return useQuery(enabled ? 'trending-personas' : null, async () => {
-      const response = await fetch(novemberPath+'personas.json?v=debate-links');
+      const response = await fetch(novemberPath+'personas.json?v=public-bios-1');
       if (!response.ok) throw Error('The commenter profiles are unavailable.');
       return {data: await response.json()};
     });
@@ -814,15 +814,6 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
           activity.error&&h('button',{type:'button',className:'dk-small',onClick:activity.refresh},'Retry loading activity'),
           friends.length>0&&h('ul',{'aria-label':'Bot friends'},...friends.map(peer=>
             h('li',{key:peer},link(personaRoute(peer),personas.data[peer].name))))),
-        person.politics&&h('section',null,h('h2',null,'Political outlook'),
-          h('p',null,person.politics.label),
-          h('p',null,'Values '+person.politics.values.map(value=>value.toLowerCase()).join(', ')+'.'),
-          h('ul',null,...person.politics.positions.map(position=>h('li',{key:position},position)))),
-        person.discussion&&h('section',null,h('h2',null,'How I debate'),
-          h('p',null,person.style+'. '+person.discussion.voice),
-          h('p',null,'What might change my mind? '+person.discussion.persuadedBy+'.')),
-        person.interests?.length>0&&h('section',null,h('h2',null,'Interests'),
-          h('ul',{className:'dk-persona-interests'},...person.interests.map(interest=>h('li',{key:interest},interest)))),
         h('section',null,h('h2',null,'Comment history'),
           activity.loading?status('Loading comment history…'):activity.data&&comments.length===0?h('p',null,'No comments yet.'):null,
           ...comments.map(comment=>h('article',{key:comment.id,className:'dk-card'},
