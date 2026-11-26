@@ -1,0 +1,67 @@
+[
+  {
+    "id": "account-load-private-name",
+    "find": "$.from(\"profiles\").select(\"*\").eq(\"user_id\",_.id).single();if(R&&R.code!==\"PGRST116\")throw R;C&&(t(C),b({display_name:C.display_name||\"\",username:",
+    "replace": "$.rpc(\"dk_my_profile_identity\");if(R||!C)throw R||Error(\"Profile unavailable\");C&&(t(C),b({full_name:C.full_name||\"\",alias:C.alias||\"\",username:"
+  },
+  {
+    "id": "account-name-and-alias-fields",
+    "find": "i.jsxs(\"div\",{className:\"space-y-2\",children:[i.jsx(ke,{htmlFor:\"display_name\",children:\"Display Name\"}),i.jsx(Je,{id:\"display_name\",value:g.display_name,onChange:_=>b(C=>({...C,display_name:_.target.value})),placeholder:\"Your display name\"})]}),",
+    "replace": "i.jsx(DK.ProfileNameFields,{value:g,onChange:fields=>b(current=>({...current,...fields}))}),"
+  },
+  {
+    "id": "save-profile-name-and-alias",
+    "find": "await DK.checkContent(\"profile\",\"\",[g.display_name||\"\",g.username||\"\",g.bio||\"\"]);const{error:C}=await $.from(\"profiles\").update({display_name:g.display_name,username:g.username,bio:g.bio}).eq(\"user_id\",_.id);if(C)throw C;",
+    "replace": "t(await DK.saveProfileIdentity(e,g));"
+  },
+  {
+    "id": "report-alias-save-errors",
+    "find": "description:_?.communitySafety?_.message:\"Failed to update profile\"",
+    "replace": "description:(_?.communitySafety||_?.profileEdit)?_.message:\"Failed to update profile\""
+  },
+  {
+    "id": "disable-account-save-until-loaded",
+    "find": "onClick:x,disabled:s,children:s?\"Saving...\":\"Save Changes\"",
+    "replace": "onClick:x,disabled:s||!e,children:s?\"Saving...\":\"Save Changes\""
+  },
+  {
+    "id": "signup-first-and-last-name",
+    "find": "i.jsxs(\"div\",{className:\"space-y-2\",children:[i.jsx(ke,{htmlFor:\"displayName\",children:\"Display Name\"}),i.jsx(Je,{id:\"displayName\",name:\"displayName\",type:\"text\",placeholder:\"How others will see you\",required:!0,className:\"transition-all duration-300 focus:ring-2 focus:ring-primary/20\"})]}),",
+    "replace": "i.jsxs(\"div\",{className:\"space-y-2\",children:[i.jsx(ke,{htmlFor:\"givenName\",children:\"First name\"}),i.jsx(Je,{id:\"givenName\",name:\"givenName\",type:\"text\",autoComplete:\"given-name\",maxLength:159,required:!0})]}),i.jsxs(\"div\",{className:\"space-y-2\",children:[i.jsx(ke,{htmlFor:\"familyName\",children:\"Last name\"}),i.jsx(Je,{id:\"familyName\",name:\"familyName\",type:\"text\",autoComplete:\"family-name\",maxLength:159,required:!0})]}),"
+  },
+  {
+    "id": "signup-read-name-parts",
+    "find": "y=d.get(\"displayName\");if(!h||!f||!m||!y)",
+    "replace": "first=String(d.get(\"givenName\")||\"\").trim(),last=String(d.get(\"familyName\")||\"\").trim(),y=first+\" \"+last;if(y.length>160){r(\"Use a name of up to 160 characters\"),t(!1);return}if(!h||!f||!m||!first||!last)"
+  },
+  {
+    "id": "signup-store-default-name",
+    "find": "data:{display_name:y}",
+    "replace": "data:{given_name:first,family_name:last,full_name:y}"
+  },
+  {
+    "id": "initialize-name-after-any-sign-in",
+    "find": "await DK.initialProfileName(g.user.id,y),o({title:\"Account created successfully!\"",
+    "replace": "o({title:\"Account created successfully!\""
+  },
+  {
+    "id": "online-status-carries-only-member-identity",
+    "find": ",display_name:((l=t.user_metadata)==null?void 0:l.display_name)||((c=t.email)==null?void 0:c.split(\"@\")[0])||\"Anonymous\",online_at:",
+    "replace": ",online_at:"
+  },
+  {
+    "id": "online-status-log-uses-member-id",
+    "find": "console.log(\"✅ PRESENCE: User online:\",u.user_id,u.display_name)",
+    "replace": "console.log(\"✅ PRESENCE: User online:\",u.user_id)"
+  },
+  {
+    "id": "member-header-public-name-fallback",
+    "find": "s!=null&&s.username?s.username:e!=null&&e.email?e.email.split(\"@\")[0]:\"User\"",
+    "replace": "s!=null&&s.username?s.username:\"Member\""
+  },
+  {
+    "id": "member-page-public-name-fallback",
+    "find": "n!=null&&n.username?n.username:e!=null&&e.email?e.email.split(\"@\")[0]:\"User\"",
+    "replace": "n!=null&&n.username?n.username:\"Member\""
+  }
+]

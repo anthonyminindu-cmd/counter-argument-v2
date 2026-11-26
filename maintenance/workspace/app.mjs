@@ -212,6 +212,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         if(kind==='poster')window.dispatchEvent(new Event('dk-poster-viewed'));
       });
     },[id,loading]);
+    useEffect(()=>{if(id&&!loading)initializeProfileName(id)},[id,loading]);
     const query=useQuery(id||null,()=>db.from('dk_collection').select('kind,target,label,created_at').eq('owner_id',id).order('created_at',{ascending:false}));
     return h(Collection.Provider,{value:{id,...query,items:query.data||[]}},h(PhotoProvider,{key:id||'guest',owner:id},h(SocialProvider,{key:id||'guest',owner:id},h(InboxProvider,{owner:id},h('div',{ref:root,className:'dk-shell min-h-screen'},h(InterestProvider,{key:id||'guest'},children))))));
   }
@@ -581,12 +582,42 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     failure.communitySafety=true;
     throw failure;
   }
-  async function initialProfileName(id,name){
-    if(!name)return;
+  function ProfileNameFields({value,onChange}) {
+    return h(React.Fragment,null,
+      h('div',{className:'space-y-2'},h('label',{htmlFor:'dk-full-name'},'First and last name'),
+        h('input',{id:'dk-full-name',className:'dk-name-input',autoComplete:'name',maxLength:160,
+          value:value.full_name||'',onChange:e=>onChange({full_name:e.target.value})})),
+      h('div',{className:'space-y-2'},h('label',{htmlFor:'dk-alias'},'Alias (optional)'),
+        h('input',{id:'dk-alias',className:'dk-name-input',autoComplete:'nickname',maxLength:160,
+          'aria-describedby':'dk-alias-help',value:value.alias||'',onChange:e=>onChange({alias:e.target.value})}),
+        h('p',{id:'dk-alias-help',className:'dk-note'},'Your alias appears as your public name. Leave it blank to use your first and last name.')));
+  }
+  async function saveProfileIdentity(previous,values){
+    const full=(values.full_name||'').trim(),alias=(values.alias||'').trim();
+    const name=alias||full,username=values.username||'',bio=values.bio||'';
+    function invalid(message){const error=new Error(message);error.profileEdit=true;throw error}
+    if(!full&&(alias||previous.full_name||previous.display_name))
+      invalid('Enter your first and last name so your profile has a default name.');
+    if(full.length>160||alias.length>160||/[^\s@]+@[^\s@]+/.test(full)||/[^\s@]+@[^\s@]+/.test(alias))
+      invalid('Use a name of up to 160 characters without an email address.');
+    if(name!==(previous.display_name||'')||username!==(previous.username||'')||bio!==(previous.bio||''))
+      await checkContent('profile','',[name,username,bio]);
+    const {data,error}=await db.rpc('dk_save_profile_identity',{
+      p_full_name:full,p_alias:alias,p_username:username,p_bio:bio,p_revision:previous.revision
+    });
+    if(error){
+      if(error.message?.startsWith('Profile changed.'))invalid('Your profile changed in another tab. Reload this page before saving.');
+      throw error;
+    }
+    window.dispatchEvent(new Event('dk-profile-name-changed'));
+    return data;
+  }
+  async function initializeProfileName(member){
     try{
-      await checkContent('profile','',[name,'','']);
-      await db.from('profiles').update({display_name:name}).eq('user_id',id).is('display_name',null).is('username',null).is('bio',null);
-    }catch{ /* The account is usable; the member can choose a name in Account. */ }
+      const {data,error}=await db.rpc('dk_my_profile_identity');
+      if(!error&&data?.user_id===member&&!data.display_name&&data.full_name)
+        await saveProfileIdentity(data,data);
+    }catch{ /* The member can save the name from their account if screening is unavailable. */ }
   }
   function Report({kind,target}) {
     const {user}=useAuth(),[state,setState]=useState('');
@@ -1028,5 +1059,5 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       h('section',{className:'dk-collection'},tab==='Pinned'?h(PinnedList,{items,owner:user.id}):
         items.length?items.map(item=>h(SavedArtwork,{key:item.target,item})):h('div',{className:'dk-panel'},h('h2',null,'Your saved posters'),h('p',null,'Open a finished infographic and choose Save poster.'),link(profile,'Open your table','dk-secondary'))));
   }
-  return {useDebateAuthors,TopicHighlight,SettingsRoute,FeedInterestLink,RouteContent:createRouteContent(React,useLocation),applyReadingPreferences,...createGoogleLogin({React, db, useLocation, useNavigate, safeNext: afterLogin}),withPosterActivity,initialProfileName,checkContent,useCommenterMatches,ReactionLoginCopy,PhotoEditor,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
+  return {useDebateAuthors,TopicHighlight,SettingsRoute,FeedInterestLink,RouteContent:createRouteContent(React,useLocation),applyReadingPreferences,...createGoogleLogin({React, db, useLocation, useNavigate, safeNext: afterLogin}),withPosterActivity,ProfileNameFields,saveProfileIdentity,checkContent,useCommenterMatches,ReactionLoginCopy,PhotoEditor,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
 }
