@@ -531,3 +531,11 @@ html{scroll-padding-block:1rem}
 .dk-persona-profile section > p + p { margin-top:.35rem; }
 .dk-persona-profile section > ul { padding-inline-start:1.3em; margin-block:.55rem 0; list-style:disc; }
 .dk-persona-profile li + li { margin-top:.3rem; }
+
+.dk-sample-debaters,.dk-sample-research { margin-block-start:1rem; }
+.dk-sample-debaters ul,.dk-sample-research ul { list-style:disc; padding-inline-start:1.25em; }
+.dk-sample-research h3 { font-size:1.1rem; margin-block-end:.4rem; }
+.dk-sample-research ul { margin-block-start:.35rem; }
+.dk-sample-profile-totals { display:flex; flex-wrap:wrap; gap:.75rem 1.5rem; }
+.dk-sample-profile-totals dt { color:var(--dk-sub); }
+.dk-sample-profile-totals dd { font-weight:700; margin:0; }

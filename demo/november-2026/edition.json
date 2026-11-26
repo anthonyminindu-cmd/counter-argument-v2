@@ -4745,5 +4745,478 @@
       ],
       "impressions": 8
     }
+  },
+  {
+    "id": "iowa-army-detonation",
+    "title": "The Iowa Army detonation",
+    "overview": "Two fictional friends debate whether a planned blast was the least risky choice and what the Army still owes nearby communities.",
+    "sideTitles": [
+      "Proceed with safeguards",
+      "Require stronger review"
+    ],
+    "arguments": [
+      [
+        "Reduce the no-warning risk",
+        "The Army reported that inspection found a severely degraded stockpile and concluded that an uncontrolled explosion could occur. A planned event gave responders a chance to protect people in advance. That was the strongest case for acting on November 25.",
+        "ccd224e2-6e19-5671-aa29-c261f06b53bd",
+        {
+          "headline": "Reduce the no-warning risk",
+          "detail": "Reduce the risk of a surprise blast.",
+          "magnitude": 98,
+          "reach": 87,
+          "duration": 87,
+          "confidence": "moderate",
+          "impact": 93,
+          "pick": 1,
+          "rank": 1
+        }
+      ],
+      [
+        "Avoid moving the stockpile",
+        "The Army’s technical review considered off-site transport and other options unsafe under the conditions it identified. Moving the hazard would also have exposed workers and places beyond the installation to a risk they did not face while it stayed on site.",
+        "226622f9-1791-58cd-80bd-9cdf7a820f71",
+        {
+          "headline": "Avoid moving the stockpile",
+          "detail": "Keep the hazard at the site.",
+          "magnitude": 95,
+          "reach": 79,
+          "duration": 85,
+          "confidence": "moderate",
+          "impact": 88,
+          "pick": 2,
+          "rank": 5
+        }
+      ],
+      [
+        "Use the better weather window",
+        "The operation was delayed until November 25. The government told the court the revised date offered more favorable weather and time for additional protections. A planned event could use that window. An accidental blast would not.",
+        "e20f4108-4c85-5ed0-bbb0-638453e5fd9a",
+        {
+          "headline": "Use the better weather window",
+          "detail": "Wait for conditions that reduce risk.",
+          "magnitude": 89,
+          "reach": 90,
+          "duration": 76,
+          "confidence": "high",
+          "impact": 87,
+          "pick": 3,
+          "rank": 9
+        }
+      ],
+      [
+        "Prepare people before the event",
+        "A planned operation made it possible to issue alerts, arrange lodging or transport, and advise people in the nearest areas before the blast. Even imperfect advance warning is valuable when the alternative may arrive without warning.",
+        "fb83a53c-62ab-5540-91f4-4e63412351d9",
+        {
+          "headline": "Prepare people before the event",
+          "detail": "Give nearby households advance notice.",
+          "magnitude": 82,
+          "reach": 87,
+          "duration": 71,
+          "confidence": "high",
+          "impact": 81,
+          "pick": 4,
+          "rank": 16
+        }
+      ],
+      [
+        "Coordinate agencies and responders",
+        "The military, EPA and local agencies coordinated ahead of the operation. Prepared monitors and responders could be in place as it happened. With a sudden incident, those teams might have to organize while dealing with the incident itself.",
+        "4968ab58-a8a7-5902-bcd9-6d9217e85945",
+        {
+          "headline": "Coordinate agencies and responders",
+          "detail": "Put responders on the same plan.",
+          "magnitude": 79,
+          "reach": 81,
+          "duration": 67,
+          "confidence": "high",
+          "impact": 77,
+          "pick": 5,
+          "rank": 18
+        }
+      ],
+      [
+        "Measure against a baseline",
+        "EPA collected 1,216 samples across soil, dust, water and air before the operation. Those samples give investigators a comparison for later results. Starting only after an unplanned event would make it harder to tell what changed.",
+        "15d2abb5-2e2f-5aed-a54b-80cb54b237d1",
+        {
+          "headline": "Measure against a baseline",
+          "detail": "Compare post-event results with earlier samples.",
+          "magnitude": 85,
+          "reach": 80,
+          "duration": 89,
+          "confidence": "high",
+          "impact": 84,
+          "pick": 6,
+          "rank": 11
+        }
+      ],
+      [
+        "Separate the two risks",
+        "The choice was between a scheduled disposal with safeguards and allowing a known hazard to remain while other options were considered. Judging the operation against a world with no blast risk would miss why the Army acted.",
+        "786cfeba-4ad0-5448-9e40-e35f9c2ce08e",
+        {
+          "headline": "Separate the two risks",
+          "detail": "Compare planned action with waiting.",
+          "magnitude": 92,
+          "reach": 81,
+          "duration": 82,
+          "confidence": "moderate",
+          "impact": 87,
+          "pick": 7,
+          "rank": 9
+        }
+      ],
+      [
+        "End the stockpile hazard",
+        "The Army told AP that both detonations destroyed all 68 barrels and that it saw no secondary explosions. That addresses whether the immediate stockpile hazard was removed. It is one part of evaluating the outcome.",
+        "6cd83dbb-0bac-5f94-a983-0160f6429787",
+        {
+          "headline": "End the stockpile hazard",
+          "detail": "Verify the material was destroyed.",
+          "magnitude": 87,
+          "reach": 76,
+          "duration": 85,
+          "confidence": "high",
+          "impact": 83,
+          "pick": 8,
+          "rank": 14
+        }
+      ],
+      [
+        "Respect the early evidence",
+        "EPA reported no airborne lead detected by its real-time monitors in its initial release. That is useful evidence about what those instruments detected around the event, and it belongs in any assessment of whether the precautions helped.",
+        "d99e1c48-f402-5f77-a5c3-390710d18877",
+        {
+          "headline": "Respect the early evidence",
+          "detail": "Treat early air readings as evidence.",
+          "magnitude": 77,
+          "reach": 80,
+          "duration": 63,
+          "confidence": "high",
+          "impact": 75,
+          "pick": 9,
+          "rank": 20
+        }
+      ],
+      [
+        "Keep the follow-up commitment",
+        "Acting in an emergency and staying accountable afterward are compatible. The Army and EPA could defend the timing while committing to release measured results, remediate any attributable contamination, and investigate how storage became a crisis.",
+        "8a0ea2db-25f7-5742-96c8-bfb5d033b5cf",
+        {
+          "headline": "Keep the follow-up commitment",
+          "detail": "Own any verified harm after the event.",
+          "magnitude": 81,
+          "reach": 84,
+          "duration": 92,
+          "confidence": "moderate",
+          "impact": 84,
+          "pick": 10,
+          "rank": 11
+        }
+      ],
+      [
+        "Show why another day was unsafe",
+        "Experts cited by local reporting disputed the government’s assessment of imminence. They did not show that storage was safe indefinitely. Their challenge was whether the Army demonstrated that a short, independently reviewed delay would be riskier than proceeding.",
+        "993b1935-71d5-55e1-84ca-87ce53bfeb2d",
+        {
+          "headline": "Show why another day was unsafe",
+          "detail": "Publish the evidence for the deadline.",
+          "magnitude": 97,
+          "reach": 79,
+          "duration": 86,
+          "confidence": "moderate",
+          "impact": 89,
+          "pick": 1,
+          "rank": 3
+        }
+      ],
+      [
+        "Examine earlier intervention",
+        "Earthjustice pointed to the Army’s prior awareness of deterioration and asked why action came so late. Even if the November choice was warranted, an inquiry could ask when different options were still possible and who owned that decision.",
+        "44869e5e-7b1c-5f96-bb7c-107f76c59352",
+        {
+          "headline": "Examine earlier intervention",
+          "detail": "Ask why safer choices disappeared.",
+          "magnitude": 89,
+          "reach": 81,
+          "duration": 97,
+          "confidence": "moderate",
+          "impact": 88,
+          "pick": 2,
+          "rank": 5
+        }
+      ],
+      [
+        "Review alternatives in public",
+        "The Army said it evaluated other options and concluded that none were viable. An independent review could test which options were rejected because of the immediate hazard, which assumptions drove the judgment, and what the team still did not know.",
+        "d3236afd-d48b-5bbc-b6fe-6f4d9cfe472e",
+        {
+          "headline": "Review alternatives in public",
+          "detail": "Explain why other choices failed.",
+          "magnitude": 92,
+          "reach": 82,
+          "duration": 85,
+          "confidence": "moderate",
+          "impact": 88,
+          "pick": 3,
+          "rank": 5
+        }
+      ],
+      [
+        "Give communities earlier notice",
+        "The timeline changed repeatedly, and AP reported frustration about lack of information. Earlier outreach through local institutions could have given families, schools and employers more time to arrange transportation, childcare and time off.",
+        "86ef5988-a8ce-50b5-81c5-a044e2a163c7",
+        {
+          "headline": "Give communities earlier notice",
+          "detail": "Reach residents before plans change.",
+          "magnitude": 86,
+          "reach": 87,
+          "duration": 72,
+          "confidence": "high",
+          "impact": 84,
+          "pick": 4,
+          "rank": 11
+        }
+      ],
+      [
+        "Explain what delay improved",
+        "Court filings say the later date allowed additional protections. The challengers credit legal action and community pressure for changes. Whether or not litigation caused each change, the initial plan deserved scrutiny because the later operation differed.",
+        "ba85e709-704f-587e-843a-5e7d3fa5340c",
+        {
+          "headline": "Explain what delay improved",
+          "detail": "Account for safeguards added during delay.",
+          "magnitude": 86,
+          "reach": 84,
+          "duration": 76,
+          "confidence": "high",
+          "impact": 83,
+          "pick": 5,
+          "rank": 14
+        }
+      ],
+      [
+        "Test what may have settled",
+        "The EPA’s early statement was about real-time air monitoring. Scientists quoted by AP said lab analysis would still be necessary. Land, water, and surface dust are separate questions, especially for places in or near the suspected path.",
+        "23fa584e-64a7-5564-ae28-5bee5c2e45fa",
+        {
+          "headline": "Test what may have settled",
+          "detail": "Check soil, dust and water separately.",
+          "magnitude": 95,
+          "reach": 89,
+          "duration": 96,
+          "confidence": "high",
+          "impact": 93,
+          "pick": 6,
+          "rank": 1
+        }
+      ],
+      [
+        "Map gaps in the testing",
+        "Residents need to know where EPA tested, the limits of detection, and which properties or pathways were outside the monitoring network. A summary of online monitor readings is easier to interpret when that information is public.",
+        "365e950b-4907-5d17-9303-3d1019d1094e",
+        {
+          "headline": "Map gaps in the testing",
+          "detail": "Show what each measurement covers.",
+          "magnitude": 87,
+          "reach": 88,
+          "duration": 89,
+          "confidence": "high",
+          "impact": 88,
+          "pick": 7,
+          "rank": 5
+        }
+      ],
+      [
+        "Plan for uneven disruption",
+        "AP reported that schools and businesses closed and some residents were advised to leave or stay indoors. A plan deserves scrutiny over who could follow it, which wages or appointments were lost, and how assistance reached people.",
+        "d4d4c8b3-3142-5a6f-868a-444fc5cb56b3",
+        {
+          "headline": "Plan for uneven disruption",
+          "detail": "Identify households bearing the cost.",
+          "magnitude": 81,
+          "reach": 85,
+          "duration": 75,
+          "confidence": "high",
+          "impact": 81,
+          "pick": 8,
+          "rank": 16
+        }
+      ],
+      [
+        "Keep state oversight through cleanup",
+        "Illinois reported little to no expected impact but stayed on standby pending final federal data. The same cross-border information sharing matters after the operation as before it, so residents know which agency owns follow-up.",
+        "e3176d74-73e9-5254-9f0a-dcc48dcf8299",
+        {
+          "headline": "Keep state oversight through cleanup",
+          "detail": "Coordinate across state and county lines.",
+          "magnitude": 74,
+          "reach": 77,
+          "duration": 78,
+          "confidence": "high",
+          "impact": 76,
+          "pick": 9,
+          "rank": 19
+        }
+      ],
+      [
+        "Demand a public after-action review",
+        "Publish the storage timeline, how leaders weighed alternatives, and who pays for follow-up if lab work identifies contamination. The community should be able to judge the next emergency by the lessons from this one.",
+        "967d98ef-9764-5535-93c7-1aa99e173e6c",
+        {
+          "headline": "Demand a public after-action review",
+          "detail": "Publish findings and who owns cleanup.",
+          "magnitude": 86,
+          "reach": 89,
+          "duration": 98,
+          "confidence": "moderate",
+          "impact": 89,
+          "pick": 10,
+          "rank": 3
+        }
+      ]
+    ],
+    "comments": [],
+    "question": "Should the Army have detonated the unstable lead azide stockpile in Iowa?",
+    "category": "Public safety & environment",
+    "subject": "Iowa Army detonation impact comparison",
+    "followUp": "What evidence would change your mind about the Army’s timing?",
+    "context": "The reporting and initial monitoring cited here reflect what was publicly available on November 25, 2026.",
+    "sources": [
+      {
+        "label": "U.S. Army · Why it chose an in-place detonation",
+        "url": "https://www.army.mil/article/297069/army_announces_controlled_detonation_of_degraded_explosive_material_at_iowa_army_ammunition_plant"
+      },
+      {
+        "label": "Associated Press · What happened and what researchers still need to test",
+        "url": "https://apnews.com/article/iowa-lead-detonation-714e040baedc1cd90c2ba688be76cfc7"
+      },
+      {
+        "label": "U.S. EPA · Initial air monitoring after the detonation",
+        "url": "https://www.epa.gov/newsreleases/initial-air-monitoring-shows-zero-detection-airborne-lead-following-controlled"
+      },
+      {
+        "label": "U.S. EPA · Baseline sampling before the operation",
+        "url": "https://www.epa.gov/newsreleases/epa-collects-over-1200-air-land-and-water-samples-ahead-iowa-army-ammunition-plant"
+      },
+      {
+        "label": "Department of Justice · November 23 notice to the court",
+        "url": "https://earthjustice.org/wp-content/uploads/2026/11/2026-11-23-doj-notice-of-operation.pdf"
+      },
+      {
+        "label": "Earthjustice · Concerns raised by the groups that challenged the plan",
+        "url": "https://earthjustice.org/press/2026/army-detonates-nearly-five-tons-of-lead-azide-in-iowa-town"
+      },
+      {
+        "label": "Illinois EPA · Monitoring and continued standby",
+        "url": "https://epa.illinois.gov/about-us/illinois-epa-news/illinois-remains-on-standby-following-lead-azide-detonation-at-t.html"
+      },
+      {
+        "label": "KCRG · Competing expert assessments before the decision",
+        "url": "https://www.kcrg.com/2026/11/22/lead-explosion-experts-question-emergency-army-vows-blast-will-proceed/"
+      },
+      {
+        "label": "U.S. Army · Public safety advisory and assistance",
+        "url": "https://www.army.mil/article/297039/public_safety_advisory_controlled_mitigated_detonation_of_unstable_lead_azide_at_iowa_army_ammunition_plant"
+      }
+    ],
+    "research": [
+      {
+        "heading": "What happened",
+        "body": "On November 25, 2026, the U.S. Army carried out two controlled detonations at its ammunition plant in Middletown, Iowa. The Army told the Associated Press the operation destroyed all 68 barrels. EPA reported no airborne lead detected by its real-time monitors in its initial release.",
+        "sources": [
+          {
+            "label": "Associated Press · What happened and what researchers still need to test",
+            "url": "https://apnews.com/article/iowa-lead-detonation-714e040baedc1cd90c2ba688be76cfc7"
+          },
+          {
+            "label": "U.S. EPA · Initial air monitoring after the detonation",
+            "url": "https://www.epa.gov/newsreleases/initial-air-monitoring-shows-zero-detection-airborne-lead-following-controlled"
+          }
+        ]
+      },
+      {
+        "heading": "What could have happened",
+        "body": "The Army warned that the deteriorated stockpile could explode unexpectedly and judged moving it unsafe. Opponents argued that the urgency warranted more independent review and that a planned blast could still spread lead dust. A short delay could have bought time for additional safeguards, but would have left the unstable stockpile in place. Neither the odds of an accidental blast nor the effect of an additional delay was established by the outcome.",
+        "sources": [
+          {
+            "label": "U.S. Army · Why it chose an in-place detonation",
+            "url": "https://www.army.mil/article/297069/army_announces_controlled_detonation_of_degraded_explosive_material_at_iowa_army_ammunition_plant"
+          },
+          {
+            "label": "Department of Justice · November 23 notice to the court",
+            "url": "https://earthjustice.org/wp-content/uploads/2026/11/2026-11-23-doj-notice-of-operation.pdf"
+          },
+          {
+            "label": "KCRG · Competing expert assessments before the decision",
+            "url": "https://www.kcrg.com/2026/11/22/lead-explosion-experts-question-emergency-army-vows-blast-will-proceed/"
+          },
+          {
+            "label": "Earthjustice · Concerns raised by the groups that challenged the plan",
+            "url": "https://earthjustice.org/press/2026/army-detonates-nearly-five-tons-of-lead-azide-in-iowa-town"
+          }
+        ]
+      },
+      {
+        "heading": "What remained open",
+        "body": "Early air readings and the destruction of the stockpile answer different questions from whether lead settled beyond the site. The sources available on November 25 called for additional lab analysis of soil, dust, and water, comparison with EPA’s baseline, and transparency about monitoring and any cleanup. Illinois agencies remained on standby.",
+        "sources": [
+          {
+            "label": "U.S. EPA · Initial air monitoring after the detonation",
+            "url": "https://www.epa.gov/newsreleases/initial-air-monitoring-shows-zero-detection-airborne-lead-following-controlled"
+          },
+          {
+            "label": "U.S. EPA · Baseline sampling before the operation",
+            "url": "https://www.epa.gov/newsreleases/epa-collects-over-1200-air-land-and-water-samples-ahead-iowa-army-ammunition-plant"
+          },
+          {
+            "label": "Associated Press · What happened and what researchers still need to test",
+            "url": "https://apnews.com/article/iowa-lead-detonation-714e040baedc1cd90c2ba688be76cfc7"
+          },
+          {
+            "label": "Illinois EPA · Monitoring and continued standby",
+            "url": "https://epa.illinois.gov/about-us/illinois-epa-news/illinois-remains-on-standby-following-lead-azide-detonation-at-t.html"
+          }
+        ]
+      }
+    ],
+    "sampleDebate": {
+      "friends": [
+        "person-193",
+        "person-121"
+      ]
+    },
+    "sampleActivity": {
+      "reactions": 0,
+      "comments": [
+        {
+          "profileId": "person-193",
+          "commentId": "3da98a2a-0777-5388-9c42-d8eb8041b7cb",
+          "body": "I’d have gone ahead on Wednesday. At the help desk, waiting for the perfect diagnosis sometimes leaves everybody without a backup. Here the Army said the hazard could go off without warning and moving it was too risky. The better weather and people on the ground made the planned option easier for me to defend.",
+          "replies": [
+            {
+              "profileId": "person-121",
+              "commentId": "2d5bf75f-ff93-5ca1-beb2-d5c5f8ce48b0",
+              "body": "I’m glad the early monitors didn’t pick up lead. My question is why the case for a deadline was so hard to inspect until the last minute. If a short review and clearer instructions could have cut the risk, I’d have wanted them before signing off. I don’t think a no-detection reading settles what might have landed on a farm.",
+              "replies": [
+                {
+                  "profileId": "person-193",
+                  "commentId": "ffc557ff-8142-588b-90fa-b9a2a69fe871",
+                  "body": "Fair. An air monitor can’t tell you everything that happened at ground level. Compare the soils and surfaces to the EPA baseline, publish the map and limits, and say who handles cleanup. I can defend the response on Wednesday and still want answers about the years before it.",
+                  "replies": [
+                    {
+                      "profileId": "person-121",
+                      "commentId": "ef68e520-17f5-518c-9f62-260fd44f2078",
+                      "body": "We’re close on the cleanup. If an independent review shows those extra hours really raised the chance of a surprise explosion, I’ll give the Army more credit for the timing. I’d also like the residents who had to leave to tell us whether the support actually worked."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "impressions": 0
+    }
   }
 ]
