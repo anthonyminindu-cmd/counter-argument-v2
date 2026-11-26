@@ -7,7 +7,7 @@ test('friend search finds the existing commenter profile by name or @handle', as
   const {compile} = await import('../build.mjs');
   const {output} = compile();
   const filter = output.slice(output.indexOf('function visibleFriendProfile('), output.indexOf('function afterLogin('));
-  const match = output.slice(output.indexOf('  const personaRoute ='), output.indexOf('  function EditorialDiscussion('));
+  const match = output.slice(output.indexOf('  const personaRoute ='), output.indexOf('  function BotDebaters('));
   const search = vm.runInNewContext(filter + match + '\nuseCommenterMatches', {
     feed:'/home?view=feed', usePersonas:enabled=>({data:enabled ? personas : null}),
   });

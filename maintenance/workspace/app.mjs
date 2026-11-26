@@ -1,4 +1,3 @@
-import {fictionalComments,fictionalDebateStats,fictionalProfileSupport} from './fictional-engagement.mjs';
 import {posterDebateRoute,readPosterDebate,normalizeDebateSearch} from './debate-links.mjs';
 import {createFeedInterests,feedRankingRequest} from './feed-interests.mjs';
 import {applyReadingPreferences,createRouteContent} from './accessibility.mjs';
@@ -96,7 +95,7 @@ export function publicPosterEntries(ranked,edition) {
 }
 
 export function posterMetricsQuery(db,order,editorialIds=[],rpc='dk_ranked_posters') {
-  const ranked=db.rpc(rpc);
+  const ranked=db.rpc(rpc,{p_bot_comments:true});
   if(!order)return ranked;
   const published=ranked.eq('published',true);
   const available=editorialIds.length
@@ -433,28 +432,41 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
 
 
-  function SampleDebaters({entry}) {
+  function BotDebaters({entry}) {
     const personas=usePersonas();
     const friends=entry.sampleDebate.friends;
-    return h('div',{className:'dk-sample-debaters'},h('strong',null,'Fictional friends debate'),
+    return h('div',{className:'dk-sample-debaters'},h('strong',null,'Bot friends debate'),
       personas.data&&h('ul',null,...friends.map((id,side)=>
         h('li',{key:id},link(personaRoute(id),personas.data[id].name),' · '+entry.sideTitles[side]))));
   }
-  function EditorialDiscussion({comments,personas,fictionalSupport}) {
-    const loc=useLocation();
-    const all=fictionalComments(comments).map(comment=>({id:comment.commentId})),states=useCommentLikes('editorial',all);
+  function BotDiscussion({entry}) {
+    const loc=useLocation(), personas=usePersonas();
+    const discussion=useQuery(entry.private?null:entry.id,()=>db.rpc('dk_bot_comments',{p_slug:entry.id}));
+    const all=discussion.data??[], states=useCommentLikes('editorial',all);
     const selected=new URLSearchParams(loc.search).get('comment');
-    useFocusComment(selected,all.some(row=>row.id===selected));
-    function render(rows,nested=false){
-      return h('ul',{className:nested?'dk-discussion-replies':undefined},...rows.map(comment=>
-        h('li',{key:comment.commentId,id:'dk-comment-'+comment.commentId,tabIndex:-1},
-          h(Link,{to:personaRoute(comment.profileId),className:'dk-link'},personas[comment.profileId].name),
-          ...comment.body.split('\n\n').map((paragraph,i)=>h('p',{key:i},paragraph)),
-          h(CommentLike,{id:comment.commentId,kind:'editorial',states}),
-          fictionalSupport?.has(comment.commentId)&&h('small',{className:'dk-fictional-comment-support'},'Fictional support · '+fictionalSupport.get(comment.commentId)),
-          comment.replies?.length?render(comment.replies,true):null)));
+    useFocusComment(selected,!!personas.data&&all.some(row=>row.id===selected));
+    if(discussion.error)return h('button',{className:'dk-secondary',onClick:discussion.refresh},'Retry loading discussion');
+    if(discussion.loading)return status('Loading discussion…');
+    if(!all.length)return null;
+    if(personas.error)return h('button',{className:'dk-secondary',onClick:personas.refresh},'Retry loading commenters');
+    if(!personas.data)return status('Loading commenters…');
+    const children=new Map();
+    for(const comment of all){
+      if(!children.has(comment.parent_id))children.set(comment.parent_id,[]);
+      children.get(comment.parent_id).push(comment);
     }
-    return render(comments);
+    function render(parent=null){
+      const rows=children.get(parent);
+      if(!rows?.length)return null;
+      return h('ul',{className:parent?'dk-discussion-replies':undefined},...rows.map(comment=>
+        h('li',{key:comment.id,id:'dk-comment-'+comment.id,tabIndex:-1},
+          link(personaRoute(comment.persona),personas.data[comment.persona]?.name??'Bot account'),
+          h('small',null,' · Bot'),
+          ...comment.body.split('\n\n').map((paragraph,i)=>h('p',{key:i},paragraph)),
+          h(CommentLike,{id:comment.id,kind:'editorial',states}),
+          render(comment.id))));
+    }
+    return render();
   }
   const Engagement=createContext(null);
   function PosterActivity({children,order,editorialIds,wait=false}) {
@@ -495,16 +507,12 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         metrics.refresh();window.dispatchEvent(new Event('dk-dashboard-changed'));
       }catch{setFailed(true)}finally{setBusy(false)}
     }
-    const fictional=fictionalDebateStats(entry.sampleActivity);
-    const comments=row?Number(row.comments)+(fictional?0:fictionalComments(entry.sampleActivity?.comments??[]).length):'…';
-    return h('div',{className:'dk-topic-metrics dk-social',title:entry.sampleActivity&&!fictional?'Totals include editorial persona activity and member activity.':undefined},
+    return h('div',{className:'dk-topic-metrics dk-social',title:entry.sampleActivity?'Totals include bot and member activity.':undefined},
       h('button',{type:'button',className:'dk-small',onClick:like,disabled:busy||(!!user&&(!row||metrics.loading)),'aria-pressed':!!row?.liked},icon('thumb'),row?.liked?'Supported':'Support',' · ',row?.likes??'…'),
-      h('button',{type:'button',className:'dk-small','data-opens-debate':true,onClick:onComment||(()=>navigate(url+'&comments=1'))},icon('message'),'Comments · ',comments),
+      h('button',{type:'button',className:'dk-small','data-opens-debate':true,onClick:onComment||(()=>navigate(url+'&comments=1'))},icon('message'),'Comments · ',row?.comments??'…'),
       row?.published&&h(Save,{kind:'topic',target:entry.id,label:entry.question}),
       row?.published&&h(ShareTopic,{kind:'topic',id:entry.id,title:entry.question}),
       h('span',null,icon('eye'),row?.impressions??'…',Number(row?.impressions)===1?' impression':' impressions'),
-      fictional&&h('small',{className:'dk-fictional-activity'},'Fictional activity · '+fictional.views+' views · '+fictional.posterSupport+' debate likes · '+fictional.comments+' comments'),
-      entry.kind==='member'&&entry.sampleActivity&&!fictional&&h('small',null,'Includes ',entry.sampleActivity.reactions,' sample reactions and ',fictionalComments(entry.sampleActivity.comments).length,' sample comments'),
       failed&&status('Could not update support. Try again.',true),
       metrics.error&&h('button',{className:'dk-small',onClick:metrics.refresh},'Retry counts'));
   }
@@ -655,13 +663,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       h(PosterActions,{entry,onComment:openComments}),h(Report,{kind:'poster',target:entry.id}),row.mine&&h(SharePoster,{row,refresh:()=>{q.refresh();metrics.refresh()}}),
       h('section',null,h('h2',{id:'dk-example-points',tabIndex:-1},'Explore the points'),h(PointReader,{entry,provided:points,impactRows})),
       h('section',{className:'dk-panel dk-example-discussion',ref:comments,tabIndex:-1},h('h2',null,'Comments'),h(MemberComments,{key:user?.id||'guest',entry}),
-        entry.sampleActivity&&h(SampleDiscussion,{entry})));
-  }
-  function SampleDiscussion({entry}){
-    const personas=usePersonas();
-    return h('section',null,h('h3',null,'Fictional discussion'),
-      personas.data?h(EditorialDiscussion,{comments:entry.sampleActivity.comments,personas:personas.data,fictionalSupport:fictionalDebateStats(entry.sampleActivity)?.commentSupport}):
-        personas.error?h('button',{onClick:personas.refresh},'Retry loading commenters'):status('Loading discussion…'));
+        h(BotDiscussion,{entry})));
   }
   function PostedDate({at,slug,standalone}) {
     const metrics=useContext(Engagement);
@@ -675,7 +677,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('div',{className:'dk-topic-meta'},h('span',{className:'dk-topic-label'},icon(glyph),entry.category||'Community debate'),
           h(PostedDate,{at:entry.published_at,slug:entry.id,standalone:true})),
         h(origin==='home'?'h3':'h2',{'data-dk-view':'poster','data-dk-item':entry.id},h(Link,{to:url,className:'dk-example-link'},entry.question)),
-        entry.sampleDebate&&h('p',{className:'dk-note'},'Fictional friends debate'),
+        entry.sampleDebate&&h('p',{className:'dk-note'},'Bot friends debate'),
         link(url+'&points=1','Explore the points')),
       h(PosterActions,{entry,origin}));
   }
@@ -727,7 +729,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     return h(React.Fragment,null,h(BackToFeed,{id:entry.id}),
       h('article',{className:'dk-example-debate'},
         h('header',null,h('small',null,'By Differ Kindly',h(PostedDate,{slug:entry.id})),h('h1',{'data-dk-view':'poster','data-dk-item':entry.id},entry.question),h('p',null,entry.overview),
-          entry.sampleDebate&&h(SampleDebaters,{entry}),
+          entry.sampleDebate&&h(BotDebaters,{entry}),
           h('button',{type:'button',className:'dk-secondary dk-read-points',onClick:readPoints},'Read all 20 points')),
         entry.research&&h('section',{className:'dk-panel','aria-labelledby':'dk-research-summary'},
           h('h2',{id:'dk-research-summary'},'Research summary'),
@@ -750,8 +752,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
                 h('li',{key:label},h('h4',null,h('span',null,'Editorial order '+(i+1)+' · '+(score?'AI '+score.impact+'/100 · #'+score.rank+' · ':'')),label),h('p',null,explanation)))))))})),
         h('section',{className:'dk-panel dk-example-discussion',ref:discussion,tabIndex:-1},h('h2',null,'Comments'),h('p',null,entry.followUp),
           h(MemberComments,{key:user?.id||'guest',entry}),
-          entry.sampleActivity?h(SampleDiscussion,{entry}):
-            h('ul',null,...entry.comments.map((comment,i)=>h('li',{key:i},comment)))),
+          h(BotDiscussion,{entry})),
         h('section',{className:'dk-example-sources'},h('h2',null,entry.research?'Sources and reporting date':'November context'),h('p',null,entry.context),
           h('ul',null,...entry.sources.map(({label,url})=>h('li',{key:url},h('a',{href:url,className:'dk-link'},label)))))));
   }
@@ -767,32 +768,25 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function CommenterPage({id}) {
     const personas = usePersonas(), edition = useNovemberEdition();
     const person = personas.data && Object.hasOwn(personas.data, id) ? personas.data[id] : null;
-    const support=useQuery(person?id:null,()=>db.rpc('dk_sample_profile_support',{p_persona:id}).single());
-    const memberPosters=useQuery(edition.data?.some(entry=>entry.kind==='member')?'public-member-posters':null,()=>
-      db.rpc('dk_ranked_posters').eq('published',true).eq('has_artwork',true));
+    const activity=useQuery(person?id:null,()=>db.rpc('dk_bot_profile_activity',{p_persona:id}).single());
     useEffect(() => window.scrollTo(0,0), [id]);
     useEffect(()=>{
-      function refresh(){if(!document.hidden)support.refresh();}
+      function refresh(){if(!document.hidden)activity.refresh();}
       window.addEventListener('focus',refresh);
       window.addEventListener('dk-dashboard-changed',refresh);
       return ()=>{window.removeEventListener('focus',refresh);window.removeEventListener('dk-dashboard-changed',refresh);};
     },[id]);
-    const discussions = (edition.data ?? []).flatMap(entry => {
-      if(entry.kind==='member'&&!memberPosters.data?.some(row=>row.slug===entry.id))return [];
-      const comments = fictionalComments(entry.sampleActivity?.comments ?? []).filter(comment=>comment.profileId===id);
-      return comments.length ? [{entry, comments}] : [];
-    });
-    const fictionalSupport=fictionalProfileSupport(edition.data??[],id);
-    const supportGiven=support.data&&edition.data?Number(support.data.poster_sample_given)+fictionalSupport.given:null;
+    const comments=activity.data?.comments??[];
     const friendDebates=(edition.data??[]).filter(entry=>entry.sampleDebate?.friends.includes(id));
     const friends=[...new Set(friendDebates.flatMap(entry=>entry.sampleDebate.friends).filter(peer=>peer!==id))];
-    const samplePoints=new Set(discussions.filter(({entry})=>friendDebates.includes(entry))
-      .flatMap(({comments})=>comments.map(comment=>comment.commentId))).size;
+    const friendTopics=new Set(friendDebates.map(entry=>entry.id));
+    const points=comments.filter(comment=>friendTopics.has(comment.slug)).length;
+    const unavailable=activity.error?'Unavailable':'…';
     return h('div',{className:'dk-main',id:'dk-main'},link(trending,'Back to Trending'),
       personas.error || edition.error ? h('button',{onClick:()=>{personas.refresh();edition.refresh();}},'Retry loading profile') :
       !personas.data ? status('Loading profile…') : !person ? h('h1',null,'Profile unavailable') :
       h('section',{className:'dk-panel dk-persona-profile'},
-        h('p',{className:'dk-note'},'Fictional profile for sample debates'),
+        h('p',{className:'dk-note'},'Bot account'),
         h('h1',null,person.name),
         h('p',null,'@'+person.handle),
         person.location&&h('p',{className:'dk-persona-background'},person.location.city+', '+person.location.state+' · '+person.occupation),
@@ -800,14 +794,12 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('section',null,h('h2',null,'Activity'),
           h('dl',{className:'dk-sample-profile-totals'},
             h('div',null,h('dt',null,'Friends'),h('dd',null,edition.loading?'…':friends.length)),
-            h('div',null,h('dt',null,'Fictional support given'),h('dd',null,supportGiven??(support.error?'Unavailable':'…'))),
-            h('div',null,h('dt',null,'Fictional support received'),h('dd',null,edition.loading?'…':fictionalSupport.received)),
-            h('div',null,h('dt',null,'Member support received'),h('dd',null,support.data?.member_received??(support.error?'Unavailable':'…'))),
-            h('div',null,h('dt',null,'Comment points'),h('dd',null,edition.loading?'…':samplePoints))),
-          support.error&&h('button',{type:'button',className:'dk-small',onClick:support.refresh},'Retry support count'),
-          friends.length>0&&h('ul',{'aria-label':'Fictional friends'},...friends.map(peer=>
-            h('li',{key:peer},link(personaRoute(peer),personas.data[peer].name)))),
-          samplePoints>0&&h('p',{className:'dk-note'},'One sample point per comment in a fictional friends debate.')),
+            h('div',null,h('dt',null,'Support given'),h('dd',null,activity.data?.support_given??unavailable)),
+            h('div',null,h('dt',null,'Support received'),h('dd',null,activity.data?.support_received??unavailable)),
+            h('div',null,h('dt',null,'Comment points'),h('dd',null,activity.data&&edition.data?points:unavailable))),
+          activity.error&&h('button',{type:'button',className:'dk-small',onClick:activity.refresh},'Retry loading activity'),
+          friends.length>0&&h('ul',{'aria-label':'Bot friends'},...friends.map(peer=>
+            h('li',{key:peer},link(personaRoute(peer),personas.data[peer].name))))),
         person.politics&&h('section',null,h('h2',null,'Political outlook'),
           h('p',null,person.politics.label),
           h('p',null,'Values '+person.politics.values.map(value=>value.toLowerCase()).join(', ')+'.'),
@@ -817,11 +809,11 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
           h('p',null,'What might change my mind? '+person.discussion.persuadedBy+'.')),
         person.interests?.length>0&&h('section',null,h('h2',null,'Interests'),
           h('ul',{className:'dk-persona-interests'},...person.interests.map(interest=>h('li',{key:interest},interest)))),
-        h('section',null,h('h2',null,'Sample discussion history'),
-          edition.loading?status('Loading discussion history…'):discussions.length===0?h('p',null,'No sample contributions yet.'):null,
-          ...discussions.map(({entry,comments})=>h('article',{key:entry.id,className:'dk-card'},
-            h('h3',null,link(posterDebateRoute(entry.id),entry.question,'dk-link')),
-            ...comments.map(({body},i)=>h('blockquote',{key:i},...body.split('\n\n').map((part,j)=>h('p',{key:j},part)))))))));
+        h('section',null,h('h2',null,'Comment history'),
+          activity.loading?status('Loading comment history…'):activity.data&&comments.length===0?h('p',null,'No comments yet.'):null,
+          ...comments.map(comment=>h('article',{key:comment.id,className:'dk-card'},
+            h('h3',null,link(posterDebateRoute(comment.slug)+'&comments=1&comment='+comment.id,comment.title)),
+            h('blockquote',null,...comment.body.split('\n\n').map((part,i)=>h('p',{key:i},part))))))));
   }
   function ReplaceDebateUrl({location, search}) {
     const navigate = useNavigate();
@@ -939,7 +931,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       (rows.length>0||commenters.matches.length>0)&&h('ul',{className:'dk-list'},
         ...rows.map(row=>h('li',{key:row.target},h('div',null,h('strong',{className:'dk-person-name'},row.photo&&h(Portrait,{url:row.photo}),row.label),link(friend+'&person='+encodeURIComponent(row.query||row.label),'Invite to debate')),h('div',{className:'dk-actions'},h(FriendButton,{peer:row.target,relation:friends.data?.find(f=>f.peer===row.target)?.status,ready:!!friends.data&&!friends.loading}),h(Save,{kind:'person',target:row.target,label:row.label})))),
         ...commenters.matches.map(person=>h('li',{key:person.user_id},h('div',null,
-          link(person.profileUrl,person.display_name),h('small',null,'@'+person.username+' · Fictional profile'))))));
+          link(person.profileUrl,person.display_name),h('small',null,'@'+person.username+' · Bot account'))))));
   }
   function PinnedList({items,owner}) {
     const topics=items.filter(item=>item.kind==='topic').map(item=>item.target).sort();
