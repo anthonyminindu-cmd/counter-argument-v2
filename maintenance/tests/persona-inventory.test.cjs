@@ -46,7 +46,7 @@ test('the Iowa sample debate gives each fictional friend two distinct comments a
   assert.ok(friends.every(id=>profiles[id]?.fictional));
   const walk = comments => comments.flatMap(comment => [comment,...walk(comment.replies ?? [])]);
   const comments = walk(debate.sampleActivity.comments);
-  assert.equal(comments.length, 4);
+  assert.equal(comments.length, 10);
   for (const id of friends) assert.equal(comments.filter(comment=>comment.profileId===id).length, 2);
   assert.equal(debate.sampleActivity.reactions, 0);
   assert.equal(debate.sampleActivity.impressions, 0);

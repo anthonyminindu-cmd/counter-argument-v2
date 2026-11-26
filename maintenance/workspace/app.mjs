@@ -1,3 +1,4 @@
+import {fictionalComments,fictionalDebateStats,fictionalProfileSupport} from './fictional-engagement.mjs';
 import {posterDebateRoute,readPosterDebate,normalizeDebateSearch} from './debate-links.mjs';
 import {createFeedInterests,feedRankingRequest} from './feed-interests.mjs';
 import {applyReadingPreferences,createRouteContent} from './accessibility.mjs';
@@ -388,7 +389,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function useNovemberEdition() {
     return useQuery('november-2026',async()=>{
-      const response=await fetch(novemberPath+'edition.json?v=iowa-detonation');
+      const response=await fetch(novemberPath+'edition.json?v=iowa-followup-discussion');
       if(!response.ok)throw Error('The November edition is unavailable.');
       return {data:await response.json()};
     });
@@ -422,13 +423,9 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       personas.data&&h('ul',null,...friends.map((id,side)=>
         h('li',{key:id},link(personaRoute(id),personas.data[id].name),' · '+entry.sideTitles[side]))));
   }
-  function discussionCount(comments) {
-    return comments.reduce((total, comment) => total + 1 + discussionCount(comment.replies ?? []), 0);
-  }
-  function EditorialDiscussion({comments,personas}) {
+  function EditorialDiscussion({comments,personas,fictionalSupport}) {
     const loc=useLocation();
-    const flatten=rows=>rows.flatMap(row=>[{id:row.commentId},...flatten(row.replies||[])]);
-    const all=flatten(comments),states=useCommentLikes('editorial',all);
+    const all=fictionalComments(comments).map(comment=>({id:comment.commentId})),states=useCommentLikes('editorial',all);
     const selected=new URLSearchParams(loc.search).get('comment');
     useFocusComment(selected,all.some(row=>row.id===selected));
     function render(rows,nested=false){
@@ -437,6 +434,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
           h(Link,{to:personaRoute(comment.profileId),className:'dk-link'},personas[comment.profileId].name),
           ...comment.body.split('\n\n').map((paragraph,i)=>h('p',{key:i},paragraph)),
           h(CommentLike,{id:comment.commentId,kind:'editorial',states}),
+          fictionalSupport?.has(comment.commentId)&&h('small',{className:'dk-fictional-comment-support'},'Fictional support · '+fictionalSupport.get(comment.commentId)),
           comment.replies?.length?render(comment.replies,true):null)));
     }
     return render(comments);
@@ -480,14 +478,16 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         metrics.refresh();window.dispatchEvent(new Event('dk-dashboard-changed'));
       }catch{setFailed(true)}finally{setBusy(false)}
     }
-    const comments=row?Number(row.comments)+discussionCount(entry.sampleActivity?.comments??[]):'…';
-    return h('div',{className:'dk-topic-metrics dk-social',title:entry.sampleActivity?'Totals include editorial persona activity and member activity.':undefined},
+    const fictional=fictionalDebateStats(entry.sampleActivity);
+    const comments=row?Number(row.comments)+(fictional?0:fictionalComments(entry.sampleActivity?.comments??[]).length):'…';
+    return h('div',{className:'dk-topic-metrics dk-social',title:entry.sampleActivity&&!fictional?'Totals include editorial persona activity and member activity.':undefined},
       h('button',{type:'button',className:'dk-small',onClick:like,disabled:busy||(!!user&&(!row||metrics.loading)),'aria-pressed':!!row?.liked},icon('thumb'),row?.liked?'Supported':'Support',' · ',row?.likes??'…'),
       h('button',{type:'button',className:'dk-small','data-opens-debate':true,onClick:onComment||(()=>navigate(url+'&comments=1'))},icon('message'),'Comments · ',comments),
       row?.published&&h(Save,{kind:'topic',target:entry.id,label:entry.question}),
       row?.published&&h(ShareTopic,{kind:'topic',id:entry.id,title:entry.question}),
       h('span',null,icon('eye'),row?.impressions??'…',Number(row?.impressions)===1?' impression':' impressions'),
-      entry.kind==='member'&&entry.sampleActivity&&h('small',null,'Includes ',entry.sampleActivity.reactions,' sample reactions and ',discussionCount(entry.sampleActivity.comments),' sample comments'),
+      fictional&&h('small',{className:'dk-fictional-activity'},'Fictional activity · '+fictional.views+' views · '+fictional.posterSupport+' debate likes · '+fictional.comments+' comments'),
+      entry.kind==='member'&&entry.sampleActivity&&!fictional&&h('small',null,'Includes ',entry.sampleActivity.reactions,' sample reactions and ',fictionalComments(entry.sampleActivity.comments).length,' sample comments'),
       failed&&status('Could not update support. Try again.',true),
       metrics.error&&h('button',{className:'dk-small',onClick:metrics.refresh},'Retry counts'));
   }
@@ -643,7 +643,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function SampleDiscussion({entry}){
     const personas=usePersonas();
     return h('section',null,h('h3',null,'Fictional discussion'),
-      personas.data?h(EditorialDiscussion,{comments:entry.sampleActivity.comments,personas:personas.data}):
+      personas.data?h(EditorialDiscussion,{comments:entry.sampleActivity.comments,personas:personas.data,fictionalSupport:fictionalDebateStats(entry.sampleActivity)?.commentSupport}):
         personas.error?h('button',{onClick:personas.refresh},'Retry loading commenters'):status('Loading discussion…'));
   }
   function PostedDate({at,slug,standalone}) {
@@ -750,18 +750,23 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function CommenterPage({id}) {
     const personas = usePersonas(), edition = useNovemberEdition();
     const person = personas.data && Object.hasOwn(personas.data, id) ? personas.data[id] : null;
-    const support=useQuery(person?id:null,()=>db.rpc('dk_sample_support_given',{p_persona:id}));
+    const support=useQuery(person?id:null,()=>db.rpc('dk_sample_profile_support',{p_persona:id}).single());
     const memberPosters=useQuery(edition.data?.some(entry=>entry.kind==='member')?'public-member-posters':null,()=>
       db.rpc('dk_ranked_posters').eq('published',true).eq('has_artwork',true));
     useEffect(() => window.scrollTo(0,0), [id]);
-    const authored = comments => comments.flatMap(comment => [
-      ...(comment.profileId === id ? [comment] : []), ...authored(comment.replies ?? [])
-    ]);
+    useEffect(()=>{
+      function refresh(){if(!document.hidden)support.refresh();}
+      window.addEventListener('focus',refresh);
+      window.addEventListener('dk-dashboard-changed',refresh);
+      return ()=>{window.removeEventListener('focus',refresh);window.removeEventListener('dk-dashboard-changed',refresh);};
+    },[id]);
     const discussions = (edition.data ?? []).flatMap(entry => {
       if(entry.kind==='member'&&!memberPosters.data?.some(row=>row.slug===entry.id))return [];
-      const comments = authored(entry.sampleActivity?.comments ?? []);
+      const comments = fictionalComments(entry.sampleActivity?.comments ?? []).filter(comment=>comment.profileId===id);
       return comments.length ? [{entry, comments}] : [];
     });
+    const fictionalSupport=fictionalProfileSupport(edition.data??[],id);
+    const supportGiven=support.data&&edition.data?Number(support.data.poster_sample_given)+fictionalSupport.given:null;
     const friendDebates=(edition.data??[]).filter(entry=>entry.sampleDebate?.friends.includes(id));
     const friends=[...new Set(friendDebates.flatMap(entry=>entry.sampleDebate.friends).filter(peer=>peer!==id))];
     const samplePoints=new Set(discussions.filter(({entry})=>friendDebates.includes(entry))
@@ -775,10 +780,12 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('p',null,'@'+person.handle),
         person.location&&h('p',{className:'dk-persona-background'},person.location.city+', '+person.location.state+' · '+person.occupation),
         h('p',null,person.bio),
-        h('section',null,h('h2',null,'Sample activity'),
+        h('section',null,h('h2',null,'Activity'),
           h('dl',{className:'dk-sample-profile-totals'},
             h('div',null,h('dt',null,'Friends'),h('dd',null,edition.loading?'…':friends.length)),
-            h('div',null,h('dt',null,'Support given'),h('dd',null,support.data??(support.error?'Unavailable':'…'))),
+            h('div',null,h('dt',null,'Fictional support given'),h('dd',null,supportGiven??(support.error?'Unavailable':'…'))),
+            h('div',null,h('dt',null,'Fictional support received'),h('dd',null,edition.loading?'…':fictionalSupport.received)),
+            h('div',null,h('dt',null,'Member support received'),h('dd',null,support.data?.member_received??(support.error?'Unavailable':'…'))),
             h('div',null,h('dt',null,'Comment points'),h('dd',null,edition.loading?'…':samplePoints))),
           support.error&&h('button',{type:'button',className:'dk-small',onClick:support.refresh},'Retry support count'),
           friends.length>0&&h('ul',{'aria-label':'Fictional friends'},...friends.map(peer=>
