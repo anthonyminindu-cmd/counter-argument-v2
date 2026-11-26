@@ -18,7 +18,7 @@ const friend = '/debate/start?mode=friend';
 const ai = '/debate/topic?mode=ai';
 const personalTabs = ['Table','Created','Pinned','Posters','People','Account'];
 const novemberPath = 'demo/november-2026/';
-const examplePoster = id => novemberPath+id+'.svg?v=differ-rank-v1';
+const examplePoster = id => novemberPath+id+'.svg?v=differ-impact-v1';
 const trending = feed+'&sort=trending';
 const questionRoute = id => feed+'&question='+encodeURIComponent(id);
 const isPinKind = kind => ['topic','question','debate'].includes(kind);
@@ -662,7 +662,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       const picks=impactRows.filter(r=>r.creatorSide===Number(creator)).sort((a,b)=>a.pick-b.pick);
       if(picks.length===10&&picks[0].author)return h('article',{className:'dk-panel'},
         link(posterDebateRoute(slug),'Back to debate'),h('h1',null,picks[0].author),h('p',null,'Debate contributor · '+row.title),
-        h('h2',null,'Original picks'),h('ol',null,...picks.map(p=>h('li',{key:p.id},link(posterDebateRoute(slug)+'&point='+encodeURIComponent(p.id),p.headline+' · Differ Rank #'+p.rank)))));
+        h('h2',null,'Original picks'),h('ol',null,...picks.map(p=>h('li',{key:p.id},link(posterDebateRoute(slug)+'&point='+encodeURIComponent(p.id),p.headline+(p.impact==null?'':' · Differ Impact '+p.impact+'/100')+' · Differ Rank #'+p.rank)))));
     }
     const friendTopic=friend+'&suggested='+encodeURIComponent(row.title);
     const artUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(art);
@@ -763,7 +763,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
           h(PointReader,{entry,fallback:h('div',{className:'dk-example-positions'},...entry.sideTitles.map((title,side)=>
             h('section',{className:'dk-panel',key:title},h('h3',null,(side===0?'A · ':'B · ')+title),
               h('ul',null,...entry.arguments.slice(side*10,side*10+10).map(([label,explanation,id,score],i)=>
-                h('li',{key:label},h('h4',null,h('span',null,(entry.sampleDebate?'Personal pick ':'Editorial order ')+(i+1)+' · '+(score?'Differ Rank #'+score.rank+' · ':'')),label),h('p',null,explanation)))))))})),
+                h('li',{key:label},h('h4',null,h('span',null,(entry.sampleDebate?'Personal pick ':'Editorial order ')+(i+1)+' · '+(score?'Differ Impact '+score.impact+'/100 · Differ Rank #'+score.rank+' · ':'')),label),h('p',null,explanation)))))))})),
         h('section',{className:'dk-panel dk-example-discussion',ref:discussion,tabIndex:-1},h('h2',null,'Comments'),h('p',null,entry.followUp),
           h(MemberComments,{key:user?.id||'guest',entry}),
           h(BotDiscussion,{entry})),

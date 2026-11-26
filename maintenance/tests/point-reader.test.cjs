@@ -28,7 +28,7 @@ test('all editorial portraits preserve each side’s ten points and rank by weig
     const svg=read(entry.id);
     assert.match(svg,/viewBox="0 0 1080 1350"/);
     assert.ok(svg.includes(entry.sampleDebate?'Personal pick':'Editorial order'));
-    const groups=[...svg.matchAll(/<g data-argument-id="([^"]+)"([^>]+)>/g)];
+    const groups=[...svg.matchAll(/<g data-argument-id="([^"]+)"([^>]+)>(.*?)<\/g>/gs)];
     assert.equal(groups.length,20);
     const rankOrder=[...entry.arguments].sort((a,b)=>b[3].impact-a[3].impact || a[3].pick-b[3].pick || (a[2]<b[2]?-1:1));
     for(const [i,[label,detail,id,meta]] of entry.arguments.entries()){
@@ -37,6 +37,8 @@ test('all editorial portraits preserve each side’s ten points and rank by weig
       assert.ok(label&&detail&&meta.headline&&meta.detail);
       const score=(5*meta.magnitude+3*meta.reach+2*meta.duration)/10;
       assert.equal(meta.impact,score);
+      assert.ok(group[3].includes('data-metric="impact">'+score+'</text>'),label+' visible Differ Impact');
+      assert.ok(group[3].includes('data-metric="rank">#'+meta.rank+'</text>'),label+' visible Differ Rank');
       assert.equal(meta.rank,1+rankOrder.findIndex(tuple=>tuple[2]===id));
       for(const [key,value] of Object.entries({side:Math.floor(i/10),pick:i%10+1,impact:score,rank:meta.rank,'reader-id':id})){
         assert.ok(group[2].includes('data-'+key+'="'+value+'"'), label+' / '+key);
