@@ -89,3 +89,69 @@ test('the login option follows the public Google provider setting', async t => {
     mock.mock.restore();
   }
 });
+
+test('the account remount after Google signs in shares the one-time exchange and destination', async t => {
+  const {createGoogleLogin} = await helpers, {afterLogin} = await workspace;
+  const base = 'https://www.differkindly.com/';
+  const store = memoryStorage(), navigations = [];
+  store.setItem('dk-google-login-next', '/profile');
+  const {promise, resolve} = Promise.withResolvers();
+  let calls = 0, cleanup;
+  const db = {auth: {async exchangeCodeForSession(code) {
+    calls++;
+    assert.equal(code, 'one-use');
+    if (calls > 1) throw Error('already exchanged');
+    return promise;
+  }}};
+  const React = {
+    createElement: () => null, useState: value => [value, () => {}],
+    useRef: value => ({current: value}), useEffect: effect => { cleanup = effect(); }
+  };
+  const originalWindow = global.window, originalDocument = global.document;
+  t.after(() => {
+    if (originalWindow === undefined) delete global.window; else global.window = originalWindow;
+    if (originalDocument === undefined) delete global.document; else global.document = originalDocument;
+  });
+  global.document = {baseURI:base};
+  global.window = {sessionStorage:store, location:{href:base+'login/?code=one-use', replace:url=>navigations.push(url)}};
+  const {GoogleTransition} = createGoogleLogin({React, db, safeNext:afterLogin});
+  GoogleTransition({step:'callback'});
+  await Promise.resolve();
+  cleanup();
+  GoogleTransition({step:'callback'});
+  resolve({data:{session:{}}});
+  await new Promise(done=>setImmediate(done));
+  assert.equal(calls,1);
+  assert.deepEqual(navigations,[base+'profile']);
+  assert.equal(store.getItem('dk-google-login-next'),null);
+});
+
+test('account tabs honor signup links, preserve the original destination and clear previous errors', async () => {
+  const {createGoogleLogin} = await helpers;
+  let location = {pathname:'/login/', search:'?next=%2Fprofile&tab=signup&google=failed'};
+  const {useAccountTabs} = createGoogleLogin({
+    React:{}, useLocation:()=>location, useNavigate:()=>(to,options)=>{
+      assert.equal(options.replace,true); location=to;
+    }
+  });
+  assert.equal(useAccountTabs().value,'signup');
+  useAccountTabs().select('login');
+  assert.equal(useAccountTabs().value,'login');
+  assert.equal(location.search,'next=%2Fprofile');
+  useAccountTabs().select('signup');
+  assert.equal(useAccountTabs().value,'signup');
+  assert.equal(new URLSearchParams(location.search).get('next'),'/profile');
+});
+
+test('cancelled Google signup returns to the signup tab with its original destination', async () => {
+  const {completeGoogleStep} = await helpers, {afterLogin} = await workspace;
+  const base='https://www.differkindly.com/', storage=memoryStorage();
+  storage.setItem('dk-google-login-next','/profile');
+  storage.setItem('dk-google-login-tab','signup');
+  const result=await completeGoogleStep('cancelled',{},new URL('login/',base),base,storage,afterLogin);
+  const params=new URL(result.url).searchParams;
+  assert.equal(params.get('tab'),'signup');
+  assert.equal(params.get('google'),'cancelled');
+  assert.equal(params.get('next'),'/profile');
+  assert.equal(storage.getItem('dk-google-login-tab'),null);
+});
