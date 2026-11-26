@@ -18,7 +18,7 @@ const friend = '/debate/start?mode=friend';
 const ai = '/debate/topic?mode=ai';
 const personalTabs = ['Table','Created','Pinned','Posters','People','Account'];
 const novemberPath = 'demo/november-2026/';
-const examplePoster = id => novemberPath+id+'.svg?v=impact2';
+const examplePoster = id => novemberPath+id+'.svg?v=differ-rank-v1';
 const trending = feed+'&sort=trending';
 const questionRoute = id => feed+'&question='+encodeURIComponent(id);
 const isPinKind = kind => ['topic','question','debate'].includes(kind);
@@ -189,6 +189,13 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     },[key,version]);
     return {data:value?.key===key?value.data:null,error:value?.key===key?value.error:null,
       loading:key!==null&&(value?.key!==key||value.version!==version),refresh:()=>refresh(v=>v+1)};
+  }
+  function useDebateAuthors(points) {
+    const {user}=useAuth();
+    const ids=[...new Set(points.map(row=>row.owner).filter(id=>typeof id==='string' && /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(id)))].sort();
+    const profiles=useQuery(user && ids.length ? user.id+':debate-authors:'+ids.join(',') : null,
+      ()=>db.from('profiles').select('user_id,display_name,username').in('user_id',ids));
+    return {...profiles,names:Object.fromEntries((profiles.data||[]).map(row=>[row.user_id,row.display_name||row.username]))};
   }
   const {ProfileDashboard,CommentLike,useCommentLikes,useFocusedRows,useFocusComment,FriendButton}=createSocialDashboard({
     React,db,useAuth,useLocation,Link,useQuery,link,icon,status,login,profileRoute,ProfileControls,PhotoEditor,FindFriends:People
@@ -405,7 +412,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function useNovemberEdition() {
     return useQuery('november-2026',async()=>{
-      const response=await fetch(novemberPath+'edition.json?v=iowa-followup-discussion');
+      const response=await fetch(novemberPath+'edition.json?v=differ-rank-v1');
       if(!response.ok)throw Error('The November edition is unavailable.');
       return {data:await response.json()};
     });
@@ -650,6 +657,13 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     if(q.loading&&!row)return status('Loading infographic…');
     if(!row?.artwork)return status('This infographic is unavailable.');
     const entry={...(row.published?feature:null),id:row.slug,question:row.title,private:!row.published};
+    const creator=new URLSearchParams(loc.search).get('creator');
+    if(creator==='0'||creator==='1'){
+      const picks=impactRows.filter(r=>r.creatorSide===Number(creator)).sort((a,b)=>a.pick-b.pick);
+      if(picks.length===10&&picks[0].author)return h('article',{className:'dk-panel'},
+        link(posterDebateRoute(slug),'Back to debate'),h('h1',null,picks[0].author),h('p',null,'Debate contributor · '+row.title),
+        h('h2',null,'Original picks'),h('ol',null,...picks.map(p=>h('li',{key:p.id},link(posterDebateRoute(slug)+'&point='+encodeURIComponent(p.id),p.headline+' · Differ Rank #'+p.rank)))));
+    }
     const friendTopic=friend+'&suggested='+encodeURIComponent(row.title);
     const artUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(art);
     return h('article',{className:'dk-example-debate'},h(BackToFeed,{id:slug}),
@@ -728,7 +742,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     }
     return h(React.Fragment,null,h(BackToFeed,{id:entry.id}),
       h('article',{className:'dk-example-debate'},
-        h('header',null,h('small',null,'By Differ Kindly',h(PostedDate,{slug:entry.id})),h('h1',{'data-dk-view':'poster','data-dk-item':entry.id},entry.question),h('p',null,entry.overview),
+        h('header',null,h('small',null,entry.sampleDebate?'Differ Kindly':'By Differ Kindly Editorial',h(PostedDate,{slug:entry.id})),h('h1',{'data-dk-view':'poster','data-dk-item':entry.id},entry.question),h('p',null,entry.overview),
           entry.sampleDebate&&h(BotDebaters,{entry}),
           h('button',{type:'button',className:'dk-secondary dk-read-points',onClick:readPoints},'Read all 20 points')),
         entry.research&&h('section',{className:'dk-panel','aria-labelledby':'dk-research-summary'},
@@ -749,7 +763,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
           h(PointReader,{entry,fallback:h('div',{className:'dk-example-positions'},...entry.sideTitles.map((title,side)=>
             h('section',{className:'dk-panel',key:title},h('h3',null,(side===0?'A · ':'B · ')+title),
               h('ul',null,...entry.arguments.slice(side*10,side*10+10).map(([label,explanation,id,score],i)=>
-                h('li',{key:label},h('h4',null,h('span',null,'Editorial order '+(i+1)+' · '+(score?'AI '+score.impact+'/100 · #'+score.rank+' · ':'')),label),h('p',null,explanation)))))))})),
+                h('li',{key:label},h('h4',null,h('span',null,(entry.sampleDebate?'Personal pick ':'Editorial order ')+(i+1)+' · '+(score?'Differ Rank #'+score.rank+' · ':'')),label),h('p',null,explanation)))))))})),
         h('section',{className:'dk-panel dk-example-discussion',ref:discussion,tabIndex:-1},h('h2',null,'Comments'),h('p',null,entry.followUp),
           h(MemberComments,{key:user?.id||'guest',entry}),
           h(BotDiscussion,{entry})),
@@ -964,5 +978,5 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       h('section',{className:'dk-collection'},tab==='Pinned'?h(PinnedList,{items,owner:user.id}):
         items.length?items.map(item=>h(SavedArtwork,{key:item.target,item})):h('div',{className:'dk-panel'},h('h2',null,'Your saved posters'),h('p',null,'Open a finished infographic and choose Save poster.'),link(profile,'Open your table','dk-secondary'))));
   }
-  return {TopicHighlight,SettingsRoute,FeedInterestLink,RouteContent:createRouteContent(React,useLocation),applyReadingPreferences,...createGoogleLogin({React, db, useLocation, useNavigate, safeNext: afterLogin}),withPosterActivity,initialProfileName,checkContent,useCommenterMatches,ReactionLoginCopy,PhotoEditor,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
+  return {useDebateAuthors,TopicHighlight,SettingsRoute,FeedInterestLink,RouteContent:createRouteContent(React,useLocation),applyReadingPreferences,...createGoogleLogin({React, db, useLocation, useNavigate, safeNext: afterLogin}),withPosterActivity,initialProfileName,checkContent,useCommenterMatches,ReactionLoginCopy,PhotoEditor,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
 }

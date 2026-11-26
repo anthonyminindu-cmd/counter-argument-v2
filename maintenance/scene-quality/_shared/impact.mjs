@@ -1,3 +1,4 @@
+import {calculateDifferRanks} from './differRank.mjs';
 // Opaque references remain stable across provider polls and input permutations.
 // A tie on identical argument text can affect only interchangeable claims.
 function compareStrings(a, b) {
@@ -33,10 +34,12 @@ export function impactRanking(points, assessments) {
     return { ...a, ...point, ...(Array.isArray(point.sources) ? { submittedSources: point.sources } : {}),
       sources: a.sources, scoringVersion: 'impact-v2', label: point.title, score, impactScore: score };
   });
+  const differRanks=calculateDifferRanks(result);
+  // Frozen impact-v2 snapshots also carry the original rounded wire fields.
   result.sort((a, b) => b.score - a.score || compareStrings(a.id, b.id));
   let impactRank = 1;
   return result.map((row, index) => {
     if (index && row.score !== result[index - 1].score) impactRank = index + 1;
-    return { ...row, rank: index + 1, impactRank };
+    return { ...row, rank: index + 1, impactRank, ...differRanks.get(row.id) };
   });
 }

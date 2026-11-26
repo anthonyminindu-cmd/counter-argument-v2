@@ -6,6 +6,7 @@ export function restoreImpactRanking(snapshot, ranking) {
   const owners=[...new Set(snapshot.points.map(p=>p.owner))];
   if(owners[0]==='ai')owners.reverse();
   const sorted=[...ranking].sort((a,b)=>b.score-a.score||(a.id<b.id?-1:a.id>b.id?1:0));
+  const canonical=calculateDifferRanks(ranking.map(r=>({...r,ordinal:originals.get(r.id)?.ordinal})));
   return sorted.map((r,i)=>{
     const point=originals.get(r.id);
     const components=[r.magnitude,r.reach,r.duration];
@@ -13,7 +14,7 @@ export function restoreImpactRanking(snapshot, ranking) {
     const rank=sorted.findIndex(p=>p.score===score)+1;
     if(!point||r.scoringVersion!=='impact-v2'||components.some(v=>!Number.isInteger(v)||v<1||v>100)||score!==r.score||score!==r.impactScore||rank!==r.impactRank||
       r.rank!==i+1||ranking[i].id!==r.id||!Array.isArray(r.sources)||!r.headline?.trim()||!r.detail?.trim()||!r.explanation?.trim()||!['low','moderate','high'].includes(r.confidence))throw Error('Saved impact ranking failed validation.');
-    return {...r,...point,sources:r.sources,portraitSide:owners.indexOf(point.owner)};
+    return {...r,...point,...canonical.get(r.id),sources:r.sources,portraitSide:owners.indexOf(point.owner)};
   });
 }
 export function impactPosterData(title,positions,points){
@@ -22,8 +23,9 @@ export function impactPosterData(title,positions,points){
     const point=points.find(p=>sideOf(p)===side);
     return point?.positionLabel||positions?.[point?.submissionSide==='right'?1:point?.submissionSide==='left'?0:side]||(side?'Second perspective':'First perspective');
   });
-  return {title,sides,pickLabel:points.some(p=>p.pickSource==='submission')?'Submission order':'Personal pick',rows:points.map(p=>({
-    id:p.id,side:sideOf(p),pick:p.ordinal+1,impact:p.scoringVersion==='impact-v2'?p.impactScore:null,rank:p.impactRank,
+  const authors=[0,1].map(side=>{const p=points.find(row=>sideOf(row)===side);return p?.owner==='ai'?'Differ Kindly AI':p?.author && p.author!==p.owner && !['You','Partner','Opponent','Participant'].includes(p.author)?p.author:null;});
+  return {title,sides,authors,pickLabel:points.some(p=>p.pickSource==='submission')?'Submission order':'Personal pick',rows:points.map(p=>({
+    id:p.id,side:sideOf(p),pick:p.ordinal+1, magnitude:p.magnitude,reach:p.reach,duration:p.duration,
     headline:p.headline||p.title,detail:p.detail||p.description,confidence:p.confidence,explanation:p.explanation
   }))};
 }
@@ -31,8 +33,11 @@ export function impactPosterData(title,positions,points){
 function lg({args:points,topicTitle='Debate results',positions=[],onValidated,showDetails=true}){
   const ref=p.useRef(null),[error,setError]=p.useState(''),[busy,setBusy]=p.useState(false);
   const [activity,setActivity]=p.useState(null);
-  const poster=p.useMemo(()=>{try{return {svg:renderImpactPoster(impactPosterData(topicTitle,positions,points))};}
-    catch(ex){return {error:ex.message};}},[topicTitle,positions,points]);
+  const profiles=DK.useDebateAuthors(points);
+  const poster=p.useMemo(()=>{try{
+    const named=points.map(row=>({...row,author:profiles.names[row.owner]||row.author}));
+    return {svg:renderImpactPoster(impactPosterData(topicTitle,positions,named))};}
+    catch(ex){return {error:ex.message};}},[topicTitle,positions,points,profiles.data]);
   p.useEffect(()=>{onValidated?.(!!poster.svg);},[poster.svg,onValidated]);
   async function download(format){
     const svg=ref.current?.querySelector('svg');if(!svg||busy)return;
@@ -40,13 +45,13 @@ function lg({args:points,topicTitle='Debate results',positions=[],onValidated,sh
     catch{setError('Download failed. Try opening the full-size poster.');}finally{setBusy(false);}
   }
   const h=p.createElement;
-  return h('section',{className:'space-y-4','aria-label':'Debate impact poster'},
+  return h('section',{className:'space-y-4','aria-label':'Differ Rank poster'},
     poster.svg?h(p.Fragment,null,
       h('div',{className:'dk-actions'},
         h('button',{className:'dk-secondary',onClick:()=>openPosterDetail(ref.current?.querySelector('svg'))},'View full size'),
         h('button',{className:'dk-primary',disabled:busy,onClick:()=>download('png')},'Download PNG'),
         h('button',{className:'dk-secondary',disabled:busy,onClick:()=>download('svg')},'Download SVG'),
-        h(DK.SavePoster,{title:topicTitle,svg:poster.svg,points,positions,onActivity:setActivity})),
+        !profiles.loading&&!profiles.error&&h(DK.SavePoster,{title:topicTitle,svg:poster.svg,points,positions,onActivity:setActivity})),
       h('div',{ref,className:'dk-impact-live',dangerouslySetInnerHTML:{__html:DK.withPosterActivity(poster.svg,activity?.svg===poster.svg?activity.row:null)}}),
       points.some(row=>row.scoringVersion!=='impact-v2')&&h('p',null,'The original picks are available. Impact scores have not been assessed for this archive.')):h('p',{role:'alert'},poster.error),
     h('details',null,h('summary',null,'Original debate question'),h('p',null,topicTitle)),

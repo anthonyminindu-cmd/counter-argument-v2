@@ -7,9 +7,9 @@ const rows=Array.from({length:20},(_,i)=>({
   id:'point-'+String(i).padStart(2,'0'),owner:i<10?'pat':'ai',ordinal:i%10,title:'Claim '+i,description:'Original detail '+i,sourceUrl:''
 }));
 const scores=rows.map((r,i)=>({...r,scoringVersion:'impact-v2',magnitude:80,reach:40,duration:90,confidence:'moderate',explanation:'Long-lived but local.',headline:'Time saved',detail:'Shorten the trip.',sources:[],score:70,impactScore:70,rank:i+1,impactRank:1}));
-test('both sides keep original picks and tied overall ranks after restore',async()=>{
+test('restoring a tied legacy assessment preserves original picks and assigns distinct Differ Ranks',async()=>{
   const runtime=(await import('../build.mjs')).compile().output;
-  const start=runtime.indexOf('function restoreImpactRanking('),end=runtime.indexOf('function lg(',start);
+  const start=runtime.indexOf('function calculateDifferRanks('),end=runtime.indexOf('function lg(',start);
   const context={n5:p=>assert.equal(p.length,20)};
   vm.runInNewContext(runtime.slice(start,end)+';globalThis.restore=restoreImpactRanking;globalThis.make=impactPosterData;',context);
   const originalRows=rows.map((r,i)=>i===15?{...r,sources:[{url:'https://example.org/submitted'}]}:r);
@@ -18,7 +18,7 @@ test('both sides keep original picks and tied overall ranks after restore',async
   assert.equal(ranking[15].sources[0].url,'https://example.org/reviewed');
   const poster=context.make('School hours',['Keep hours','Shift the bell'],ranking);
   assert.equal(poster.rows.length,20);
-  for(let i=0;i<20;i++)assert.deepEqual([poster.rows[i].impact,poster.rows[i].rank,poster.rows[i].pick,poster.rows[i].side],[70,1,rows[i].ordinal+1,Math.floor(i/10)]);
+  for(let i=0;i<20;i++)assert.deepEqual([ranking[i].differScore,ranking[i].differRank,poster.rows[i].pick,poster.rows[i].side],[70,rows[i].ordinal*2+1+Math.floor(i/10),rows[i].ordinal+1,Math.floor(i/10)]);
   assert.throws(()=>context.restore({points:rows},scores.map((r,i)=>i===4?{...r,score:80}:r)),/validation/);
   assert.throws(()=>context.restore({points:rows},scores.map((r,i)=>i===4?{...r,rank:6}:r)),/validation/);
 });
@@ -30,4 +30,14 @@ test('portrait uses permanent point IDs, escapes input and keeps unknown scores 
   assert.ok(svg.includes('viewBox="0 0 1080 1350"'));assert.ok(!svg.includes('<script>'));
   assert.ok(svg.includes('data-impact=""'));assert.equal(impactMetricText({views:10,comments:0}),'10 impressions   ·   0 comments');
   assert.throws(()=>renderImpactPoster({title:'Topic',sides:['Left','Right'],rows:[...args.slice(1),args[1]]}));
+});
+
+test('Differ Rank is invariant to input order and rejects incomplete assessments',async()=>{
+  const {calculateDifferRanks}=await import('../scene-quality/_shared/differRank.mjs');
+  const expected=calculateDifferRanks(scores);
+  assert.deepEqual(calculateDifferRanks([...scores].reverse()),expected);
+  assert.deepEqual([...expected.values()].map(s=>s.differRank),Array.from({length:20},(_,i)=>i+1));
+  assert.throws(()=>calculateDifferRanks(scores.slice(1)));
+  assert.throws(()=>calculateDifferRanks([...scores.slice(1),scores[1]]));
+  assert.throws(()=>calculateDifferRanks(scores.map((r,i)=>i? r : {...r,reach:null})));
 });
