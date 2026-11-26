@@ -74,7 +74,7 @@ test('comment history loads the requested page and links each entry back to its 
     {kind:'reply',item:'reply-id',topic:'question-id',label:'My reply',occurred:'2026-11-25'},
     {kind:'comment',item:'comment-id',topic:'published-id',point_id:'B.2',label:'My comment',occurred:'2026-11-25'}
   ];
-  const {ProfileDashboard}=createSocialDashboard({React,Link:'a',useLocation:()=>({search:'?section=comments&page=2'}),
+  const {ProfileDashboard}=createSocialDashboard({React,Link:'a',useLocation:()=>({search:'?section=comments&page=2&user_id=other-member&commenter=person-188'}),
     db:{rpc:(name,args)=>calls.push([name,args])},useQuery:(_,fetch)=>{fetch();return {data:{items:rows,item_count:46}};},
     link:(to,label)=>h('a',{to},label)});
   const {children}=ProfileDashboard({user:{id:'member'}});

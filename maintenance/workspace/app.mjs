@@ -136,7 +136,7 @@ const glyphs = {
   enter:'M4 12h14m-5-5 5 5-5 5', book:'M3 4h7l2 2 2-2h7v15h-7l-2 2-2-2H3zM12 6v15'
 };
 
-export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,Account,OriginalTopic,OriginalStart,Directory}) {
+export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,Account,OriginalTopic,OriginalStart,Directory,editorialFriendGroups}) {
   const h=React.createElement, {useState,useEffect,useRef,useContext,createContext}=React;
   const Collection=createContext(null);
   const PuzzlePoster=createPuzzlePoster({React,Link,useLocation});
@@ -780,7 +780,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h(CatalogPoster,{key:example,slug:example,feature:entry}));
   }
   function CommenterPage({id}) {
-    const personas = usePersonas(), edition = useNovemberEdition();
+    const personas = usePersonas();
     const person = personas.data && Object.hasOwn(personas.data, id) ? personas.data[id] : null;
     const activity=useQuery(person?id:null,()=>db.rpc('dk_bot_profile_activity',{p_persona:id}).single());
     useEffect(() => { window.scrollTo(0,0); }, [id]);
@@ -790,9 +790,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       window.addEventListener('dk-dashboard-changed',refresh);
       return ()=>{window.removeEventListener('focus',refresh);window.removeEventListener('dk-dashboard-changed',refresh);};
     },[id]);
-    const comments=activity.data?.comments;
-    const friendDebates=(edition.data??[]).filter(entry=>entry.sampleDebate?.friends.includes(id));
-    const friends=[...new Set(friendDebates.flatMap(entry=>entry.sampleDebate.friends).filter(peer=>peer!==id))];
+    const friends=[...new Set(editorialFriendGroups.filter(group=>group.includes(id)).flat())].filter(peer=>peer!==id);
     const unavailable=activity.error?'Unavailable':'…';
     return h('div',{className:'dk-main',id:'dk-main'},link(trending,'Back to Trending'),
       personas.error ? h('button',{onClick:personas.refresh},'Retry loading profile') :
@@ -804,19 +802,13 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('p',null,person.bio),
         h('section',null,h('h2',null,'Activity'),
           h('dl',{className:'dk-sample-profile-totals'},
-            h('div',null,h('dt',null,'Friends'),h('dd',null,edition.data?friends.length:edition.error?'Unavailable':'…')),
+            h('div',null,h('dt',null,'Friends'),h('dd',null,friends.length)),
             h('div',null,h('dt',null,'Support given'),h('dd',null,activity.data?.support_given??unavailable)),
             h('div',null,h('dt',null,'Support received'),h('dd',null,activity.data?.support_received??unavailable)),
-            h('div',null,h('dt',null,'Comments'),h('dd',null,comments?.length??unavailable))),
+            h('div',null,h('dt',null,'Comments'),h('dd',null,activity.data?.comment_count??unavailable))),
           activity.error&&h('button',{type:'button',className:'dk-small',onClick:activity.refresh},'Retry loading activity'),
-          edition.error&&h('button',{type:'button',className:'dk-small',onClick:edition.refresh},'Retry loading friends'),
           friends.length>0&&h('ul',{'aria-label':'Friends'},...friends.map(peer=>
-            h('li',{key:peer},link(personaRoute(peer),personas.data[peer].name))))),
-        h('section',null,h('h2',null,'Comment history'),
-          !comments&&activity.loading?status('Loading comment history…'):comments?.length===0?h('p',null,'No comments yet.'):activity.error?status('Comment history is unavailable.',true):null,
-          ...(comments??[]).map(comment=>h('article',{key:comment.id,className:'dk-card'},
-            h('h3',null,link(posterDebateRoute(comment.slug)+'&comments=1&comment='+comment.id,comment.title)),
-            h('blockquote',null,...comment.body.split('\n\n').map((part,i)=>h('p',{key:i},part))))))));
+            h('li',{key:peer},link(personaRoute(peer),personas.data[peer].name)))))));
   }
   function ReplaceDebateUrl({location, search}) {
     const navigate = useNavigate();
