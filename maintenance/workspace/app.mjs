@@ -735,6 +735,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       const picks=impactRows.filter(r=>r.creatorSide===Number(creator)).sort((a,b)=>a.pick-b.pick);
       if(picks.length===10&&picks[0].author)return h('article',{className:'dk-panel'},
         link(posterDebateRoute(slug),'Back to debate'),h('h1',null,picks[0].author),h('p',null,'Debate contributor · '+row.title),
+        h('dl',{className:'dk-sample-profile-totals'},h(DiscussionCount,{slug,points:picks.map(p=>p.id)})),
         h('h2',null,'Original picks'),h('ol',null,...picks.map(p=>h('li',{key:p.id},link(posterDebateRoute(slug)+'&point='+encodeURIComponent(p.id),p.headline+(p.impact==null?'':' · Differ Impact '+p.impact+'/100')+' · Differ Rank #'+p.rank)))));
     }
     const friendTopic=friend+'&suggested='+encodeURIComponent(row.title);
@@ -860,8 +861,10 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       november.loading?status('Loading the November debates…'):entry&&entry.kind!=='member'?h(ExampleDebate,{key:entry.id,entry}):
         h(CatalogPoster,{key:example,slug:example,feature:entry}));
   }
-  function DiscussionCount({id}) {
-    const total=useQuery(id,()=>db.rpc('dk_discussions_created',{p_profile:id}));
+  function DiscussionCount({id,slug,points}) {
+    const key=id||JSON.stringify([slug,points]);
+    const total=useQuery(key,()=>id?db.rpc('dk_discussions_created',{p_profile:id}):
+      db.rpc('dk_contributor_discussions_created',{p_slug:slug,p_points:points}));
     useEffect(()=>{
       const refresh=()=>total.refresh();
       window.addEventListener('focus',refresh);
@@ -870,7 +873,8 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         window.removeEventListener('focus',refresh);
         window.removeEventListener('dk-dashboard-changed',refresh);
       };
-    },[id]);
+    },[key]);
+    if(slug && !total.loading && !total.error && total.data==null)return null;
     return h('div',null,h('dt',null,'Discussions created'),
       h('dd',null,total.error?h('button',{type:'button',className:'dk-small',onClick:total.refresh},'Retry count'):
         total.data==null?'…':Number(total.data).toLocaleString()));
