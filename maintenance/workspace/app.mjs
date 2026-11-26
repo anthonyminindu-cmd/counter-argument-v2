@@ -20,7 +20,7 @@ const friend = '/debate/start?mode=friend';
 const ai = '/debate/topic?mode=ai';
 const personalTabs = ['Table','Created','Pinned','Posters','People','Account'];
 const novemberPath = 'demo/november-2026/';
-const examplePoster = id => novemberPath+id+'.svg?v=named-picks-v2';
+const examplePoster = id => novemberPath+id+'.svg?v=profile-names-2';
 const trending = feed+'&sort=trending';
 const questionRoute = id => feed+'&question='+encodeURIComponent(id);
 const isPinKind = kind => ['topic','question','debate'].includes(kind);
@@ -427,7 +427,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function usePersonas(enabled = true) {
     return useQuery(enabled ? 'trending-personas' : null, async () => {
-      const response = await fetch(novemberPath+'personas.json?v=public-bios-1');
+      const response = await fetch(novemberPath+'personas.json?v=profile-names-2');
       if (!response.ok) throw Error('The commenter profiles are unavailable.');
       return {data: await response.json()};
     });

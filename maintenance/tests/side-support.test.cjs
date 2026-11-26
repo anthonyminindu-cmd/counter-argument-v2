@@ -86,7 +86,7 @@ test('published support choices use distinct short captions and preserve vote ta
     for(const b of buttons)assert.ok(b.caption.split(/\s+/u).length<=3&&!b.caption.includes('…'),b.caption);
   }
   const tariff=positionButtons([{label:'Reject the proposed hikes',persona:'person-165',count:9}],'tariffs-on-subsidized-imports',people)[0];
-  assert.deepEqual([tariff.byline,tariff.caption,tariff.statement,tariff.count],['Temilade','Reject tariff hikes','Reject the proposed hikes',9]);
+  assert.deepEqual([tariff.byline,tariff.caption,tariff.statement,tariff.count],['Denise','Reject tariff hikes','Reject the proposed hikes',9]);
   const sale=edition.find(entry=>entry.kind==='member'&&entry.question.startsWith('Black Friday'));
   const friday=positionButtons([{label:'Wait for Friday and compare the price history first',author:'Riley'},{label:'Buy a planned gift early when the price meets your target',author:'Morgan'}],sale.id);
   assert.deepEqual(friday.map(b=>[b.byline,b.caption]),[['Riley','Wait for Friday'],['Morgan','Buy gifts early']]);

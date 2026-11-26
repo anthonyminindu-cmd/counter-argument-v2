@@ -11,7 +11,7 @@ test('friend search finds the existing commenter profile by name or @handle', as
   const search = vm.runInNewContext(filter + match + '\nuseCommenterMatches', {
     feed:'/home?view=feed', usePersonas:enabled=>({data:enabled ? personas : null}),
   });
-  for (const query of [' Avery Brooks ', '@AVERY-BROOKS-001']) {
+  for (const query of [' '+personas['person-001'].name+' ', '@'+personas['person-001'].handle.toUpperCase()]) {
     const {matches} = search(query);
     assert.equal(matches.length, 1);
     assert.equal(matches[0].profileUrl, '/home?view=feed&commenter=person-001');
