@@ -53,7 +53,9 @@ export function compile() {
   if (output.includes('jgmkhntqfffkwggqzxql')) throw new Error('Legacy backend identity is forbidden');
   // The module lives in assets/ on both the custom domain and the GitHub project site.
   const googleLogin = fs.readFileSync(path.join(root, 'maintenance/workspace/google-login.mjs'), 'utf8').replace(/^export /gm, '');
-  output = 'const dkBasePath = new URL("../", import.meta.url).pathname;\n' + googleLogin +
+  const recovery = fs.readFileSync(path.join(root, 'maintenance/workspace/password-recovery.mjs'), 'utf8').replace(/^export /gm, '');
+  output = 'const dkBasePath = new URL("../", import.meta.url).pathname;\n' + recovery +
+    '\nconst dkRecovery = createPasswordRecovery(new URL(window.location.href), dkBasePath, path => window.history.replaceState(window.history.state, \'\', path));\n' + googleLogin +
     '\nconst dkGoogleStep = googleLoginStep(new URL(window.location.href), dkBasePath);\n' + output;
   const sha256 = digest(output);
   return { output, origin, patches, manifest: { sourceCommit: origin.commit, sourceAsset: origin.publishedAsset, baselineSha256: origin.baselineSha256, generatedSha256: sha256, generatedAsset: `assets/index-v2-${sha256.slice(0, 16)}.js`, patchIds: patches.map(patch => patch.id) } };

@@ -30,7 +30,7 @@ Deno.serve(async req => {
     if (error || data?.length !== 1) throw new Error('Workflow checkpoint could not be saved.');
   };
   let dispatched = false, providerId = job.provider_response_id;
-  let artifactSaved = false, providerTerminal = false;
+  let artifactSaved = false, unusableResult = false;
   let ledgerHash = job.ledger_hash, ledgerToken = job.ledger_token;
   const ledgerSave = async (status: string, extra: Record<string, unknown> = {}) => {
     if (!ledgerHash || !ledgerToken) return;
@@ -56,15 +56,22 @@ Deno.serve(async req => {
       await save({ stage: researching, lease_until: null, next_attempt_at: new Date(Date.now() + 60_000).toISOString() });
       return reply(researching);
     }
-    providerTerminal = true;
-    if (response.status !== 'completed') throw new Error(response.failureReason || `Research ${response.status}. No result was published.`);
+    // Only a terminal failure or invalid provider output warrants fresh research.
+    // Keep a valid response readable by ID if persisting it fails.
+    let artifact;
+    try {
+      if (response.status !== 'completed') throw new Error(response.failureReason || `Research ${response.status}. No result was published.`);
+      artifact = counterStage ? validateCounters(job.debate_id, response.text)
+        : validateResearchResponse(snapshot.points, response.text, Boolean(job.provider_response_id));
+    } catch (err) {
+      unusableResult = true;
+      throw err;
+    }
     if (counterStage) {
-      const counters = validateCounters(job.debate_id, response.text);
-      await save({ counters, stage: 'ranking_queued', attempts: 0, provider_response_id: null, ledger_hash: null, ledger_token: null, lease_until: null, failure_reason: null, next_attempt_at: new Date().toISOString() });
+      await save({ counters: artifact, stage: 'ranking_queued', attempts: 0, provider_response_id: null, ledger_hash: null, ledger_token: null, lease_until: null, failure_reason: null, next_attempt_at: new Date().toISOString() });
       artifactSaved = true;
     } else {
-      const ranking = validateResearchResponse(snapshot.points, response.text, Boolean(job.provider_response_id));
-      await save({ ranking, stage: 'complete', lease_until: null, failure_reason: null });
+      await save({ ranking: artifact, stage: 'complete', lease_until: null, failure_reason: null });
       artifactSaved = true;
       // Completion is a server consequence of successful validation, never a timer.
       const { error } = await admin.from('debates').update({ status: 'completed', ended_at: new Date().toISOString() }).eq('id', job.debate_id);
@@ -86,18 +93,18 @@ Deno.serve(async req => {
         next_attempt_at: err.retryAt, lease_until: null, failure_reason: err.message });
       return reply(canRetry ? 'rate_limited' : 'blocked');
     }
-    // A failed GET must keep its existing paid request and reservation. A later
+    // A failed GET or database checkpoint keeps the paid request. A later
     // invocation can safely read it again without spending another request.
-    if (providerId && !providerTerminal && !(err instanceof Error && 'retryable' in err && err.retryable === false)) {
+    if (providerId && !unusableResult && !(err instanceof Error && 'retryable' in err && err.retryable === false)) {
       try {
-        await save({ stage: researching, provider_response_id: providerId, lease_until: null, failure_reason: 'Provider status is temporarily unavailable; the existing research request will be checked again.', next_attempt_at: new Date(Date.now() + 60_000).toISOString() });
+        await save({ stage: researching, provider_response_id: providerId, lease_until: null, failure_reason: 'The research checkpoint will be retried using the existing provider request.', next_attempt_at: new Date(Date.now() + 60_000).toISOString() });
       } catch { /* Keep the prior provider ID or dispatch marker for reconciliation. */ }
       return reply('poll_paused', 503);
     }
-    const ambiguous = (dispatched && !providerId) || Boolean(providerId && !providerTerminal);
+    const ambiguous = (dispatched && !providerId) || Boolean(providerId && !unusableResult);
     try {
       await ledgerSave(ambiguous ? 'ambiguous' : 'failed');
-      await save({ stage: ambiguous ? 'ambiguous' : 'blocked', retry_stage: providerTerminal ? queued : providerId ? researching : queued, provider_response_id: providerTerminal ? null : providerId, ledger_hash: ledgerHash, ledger_token: ledgerToken, lease_until: null, failure_reason: err instanceof Error ? err.message : 'Research paused.' });
+      await save({ stage: ambiguous ? 'ambiguous' : 'blocked', retry_stage: unusableResult ? queued : providerId ? researching : queued, provider_response_id: unusableResult ? null : providerId, ledger_hash: ledgerHash, ledger_token: ledgerToken, lease_until: null, failure_reason: err instanceof Error ? err.message : 'Research paused.' });
     } catch { /* Persisted dispatch marker prevents another automatic paid request. */ }
     return reply(ambiguous ? 'ambiguous' : 'blocked', 503);
   }
