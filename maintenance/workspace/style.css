@@ -543,3 +543,12 @@ html{scroll-padding-block:1rem}
 .dk-sample-profile-totals { display:flex; flex-wrap:wrap; gap:.75rem 1.5rem; }
 .dk-sample-profile-totals dt { color:var(--dk-sub); }
 .dk-sample-profile-totals dd { font-weight:700; margin:0; }
+
+.dk-support-options { display:flex; flex:1 0 100%; flex-wrap:wrap; align-items:stretch; gap:.45rem; min-width:0; margin:.3rem 0; padding:0; border:0; }
+.dk-support-options legend { margin-bottom:.35rem; font-weight:650; }
+.dk-support-options button { display:flex; align-items:center; justify-content:space-between; gap:.55rem; max-width:100%; padding:.5rem .7rem; text-align:left; border:1px solid var(--dk-border,currentColor); border-radius:.6rem; color:inherit; background:transparent; }
+.dk-support-options button[aria-pressed=true] { color:#102217; background:#b5ebc4; border-color:#43674d; }
+.dk-support-options button > span { display:grid; overflow-wrap:anywhere; }
+.dk-support-options button > b { font-variant-numeric:tabular-nums; }
+.dk-contributor { display:flex; align-items:center; gap:.5rem; margin:.6rem 0; font-size:.9rem; }
+.dk-contributor [aria-hidden] { color:var(--dk-ink,currentColor); letter-spacing:.08em; }
