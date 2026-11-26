@@ -60,7 +60,7 @@ test('even a cached older profile only renders the public bio and activity', asy
     discussion:{voice:'test-voice',persuadedBy:'test-evidence'},
     politics:{label:'test-politics',values:['test-value'],positions:['test-position']}};
   const render = runInNewContext(output.slice(start,end)+'\nCommenterPage', {
-    usePersonas:()=>({data:{[id]:person}}), editorialFriendGroups:[],
+    contributorBadge:()=>null,usePersonas:()=>({data:{[id]:person}}), editorialFriendGroups:[],
     useQuery:()=>({data:{support_given:2,support_received:1,comment_count:4}}), useEffect:()=>{},
     h:(tag,props,...children)=>({tag,children}), link:(_url,label)=>label, trending:'/home'
   });
@@ -81,7 +81,7 @@ test('public profiles show a plain comment count and never render or link to his
   const editorialFriendGroups=edition.filter(entry=>entry.sampleDebate).map(entry=>entry.sampleDebate.friends);
   const state={};
   const render=runInNewContext(source+'\nCommenterPage',{
-    usePersonas:()=>({data:profiles}),editorialFriendGroups,useQuery:()=>state.activity,
+    contributorBadge:()=>null,usePersonas:()=>({data:profiles}),editorialFriendGroups,useQuery:()=>state.activity,
     useEffect:()=>{},h:(tag,props,...children)=>({tag,props,children}),
     link:(url,label)=>({tag:'a',url,children:[label]}),trending:'/home',personaRoute:id=>'/home?commenter='+id
   });

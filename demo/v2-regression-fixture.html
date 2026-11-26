@@ -680,6 +680,29 @@ function renderImpactPoster({title,question,sides,rows,authors=[],pickLabel='Per
   return out.join('');
 }
 
+function impactSupportStrip(markup,positions){
+  if(!Array.isArray(positions)||positions.length!==2)return markup;
+  const portrait=markup.includes('data-poster-format="impact-v2"');
+  const positionsByColumn=new Map();
+  for(const tag of markup.match(/<g\b[^>]*data-reader-id="[^"]+"[^>]*>/g)||[]){
+    const id=tag.match(/data-reader-id="([^"]+)"/)[1];
+    const side=tag.match(/data-side="([01])"/);
+    if(side)positionsByColumn.set(id,Number(side[1]));
+  }
+  const ordered=[...positions].sort((a,b)=>(positionsByColumn.get(a.point_id)??0)-(positionsByColumn.get(b.point_id)??0));
+  const width=portrait?1080:1600,y=portrait?1283:931;
+  if(!portrait&&!markup.includes('viewBox="0 0 1600 900"'))return markup;
+  let strip=portrait?'':'<rect x="0" y="900" width="1600" height="46" fill="#172e23"/>';
+  for(const [index,side] of ordered.entries()){
+    const caption='Support · '+side.count+' · '+side.label;
+    const short=impactLines(caption,width/2-64,20,1)[0];
+    strip+='<text x="'+(36+index*width/2)+'" y="'+y+'" font-size="20" font-weight="700" fill="#f5f7ee"><title>'+impactXml(caption)+'</title>'+impactXml(short)+'</text>';
+  }
+  const art=portrait?markup.replaceAll('y="1296"','y="1310"').replaceAll('y="1328"','y="1339"'):
+    markup.replace('viewBox="0 0 1600 900"','viewBox="0 0 1600 946"').replace(/^(<svg\b[^>]*?height=")900(")/,(_,a,b)=>a+'946'+b);
+  return art.replace('</svg>',()=>'<g data-position-support="">'+strip+'</g></svg>');
+}
+
 function posterSvgBlob(svg, width = svg.viewBox.baseVal.width, height = svg.viewBox.baseVal.height) {
   const copy=svg.cloneNode(true);
   copy.removeAttribute('style');

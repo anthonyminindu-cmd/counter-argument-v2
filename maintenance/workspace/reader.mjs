@@ -1,5 +1,5 @@
 import {readPosterDebate,normalizeDebateSearch} from './debate-links.mjs';
-import {impactMetricText} from '../renderer/portrait.mjs';
+import {impactMetricText,impactSupportStrip} from '../renderer/portrait.mjs';
 function sourceHost(url){
   try{const parsed=new URL(url);return ['https:','http:'].includes(parsed.protocol)?parsed.hostname:null}catch{return null}
 }
@@ -59,7 +59,7 @@ export function createPuzzlePoster({React,Link,useLocation}){
     },[geometrySrc,markup]);
     const geometry=map?.geometrySrc===geometrySrc?map.geometry:null;
     return h('div',{className:'dk-puzzle'},h('img',{src,alt,width:1080,height:1350}),
-      geometry&&h('svg',{className:'dk-piece-map',viewBox:geometry.portrait?'0 0 1080 1350':'0 0 1600 900',role:'group','aria-label':'Open a debate point'},
+      geometry&&h('svg',{className:'dk-piece-map',style:geometry.portrait?undefined:{height:'auto',aspectRatio:'1600 / 900',bottom:'auto'},viewBox:geometry.portrait?'0 0 1080 1350':'0 0 1600 900',role:'group','aria-label':'Open a debate point'},
         geometry.outline&&h('defs',null,h('clipPath',{id:clipId},h('path',geometry.outline))),
         ...geometry.pieces.filter(p=>!points||points.some(point=>point.id===p.id)).map(p=>h(Link,{key:p.id,to:pointDestination(loc,p.id),replace:true,state:loc.state,
           'aria-label':'Point '+p.rank+': '+p.title+(p.impact?' · Differ Impact '+p.impact+'/100':''),className:'dk-piece-hit'},
@@ -170,11 +170,12 @@ export function withPosterActivity(markup,metrics){
   if(!markup||!metrics)return markup;
   const text=impactMetricText({views:metrics.impressions,likes:metrics.likes,comments:metrics.comments});
   if(!text)return markup;
-  return markup.replace(/(<text\b[^>]* data-activity=""[^>]*>)[^<]*(<\/text>)/,(all,start,end)=>start+text+end);
+  const updated=markup.replace(/(<text\b[^>]* data-activity=""[^>]*>)[^<]*(<\/text>)/,(all,start,end)=>start+text+end);
+  return impactSupportStrip(updated,metrics.positions);
 }
 export function useAudiencePoster(React,db,enabled,slug,original,metrics){
   const [result,setResult]=React.useState({});
-  const counts=metrics?JSON.stringify([metrics.impressions,metrics.likes,metrics.comments]):'';
+  const counts=metrics?JSON.stringify([metrics.impressions,metrics.likes,metrics.comments,metrics.positions]):'';
   React.useEffect(()=>{
     let alive=true,objectUrl='';
     async function prepare(){

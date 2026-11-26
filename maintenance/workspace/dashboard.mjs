@@ -6,6 +6,16 @@ const activityMetrics=[
   ['friends','Friends','friends','Your friends','You haven’t added any friends yet.']
 ];
 
+export function contributorStars(given,received){
+  return Math.min(5,Math.max(1,Math.floor(Math.max(given,received)/1000)));
+}
+export function contributorBadge(h,given,received){
+  if(given==null||received==null)return null;
+  const stars=contributorStars(given,received);
+  return h('p',{className:'dk-contributor'},h('span',{'aria-hidden':'true'},'★'.repeat(stars)),
+    h('span',null,stars+'-star contributor'));
+}
+
 export function dashboardView(search) {
   const params=new URLSearchParams(search);
   const section=params.get('tab')==='people'?'friends':params.get('section');
@@ -170,6 +180,7 @@ export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuer
       retry,
       h('section',{className:'dk-support-pair','aria-label':'Support'},...supportMetrics.map(([key,label])=>
         h('div',{key,className:'dk-metric dk-metric-'+key},h('span',{className:'dk-metric-label'},icon('thumb'),label),h('strong',null,count(key))))),
+      data&&contributorBadge(h,data.counts?.given??0,data.counts?.received??0),
       h('nav',{className:'dk-activity-totals','aria-label':'Your activity'},...activityMetrics.map(([key,label,glyph])=>
         h(Link,{key,to:dashboardUrl(key),className:'dk-metric dk-activity-link'},
           h('span',{className:'dk-metric-label'},icon(glyph),h('span',null,label)),h('strong',null,count(key)),

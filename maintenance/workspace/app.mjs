@@ -4,7 +4,7 @@ import {applyReadingPreferences,createRouteContent} from './accessibility.mjs';
 import {createProfilePhotos} from './profile-photo.mjs';
 import {watchContentImpressions} from './impressions.mjs';
 import {createMemberHeader} from './social-header.mjs';
-import {createSocialDashboard} from './dashboard.mjs';
+import {createSocialDashboard,contributorBadge} from './dashboard.mjs';
 import {websitePosterSvg} from '../renderer/poster-finish.mjs';
 import {pointSnapshot,createPointReader,useAudiencePoster,createPuzzlePoster,reactionIntent,withPosterActivity,posterPointData} from './reader.mjs';
 import {createFriendInvitations} from './invitations.mjs';
@@ -281,7 +281,10 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     useEffect(()=>{let active=true;if(svg) crypto.subtle.digest('SHA-256',new TextEncoder().encode(svg)).then(hash=>{
       if(active)set({svg,key:Array.from(new Uint8Array(hash),v=>v.toString(16).padStart(2,'0')).join('')});
     }).catch(()=>{});return()=>{active=false}},[svg]);
-    return identity?.svg===svg&&svg&&user?h(React.Fragment,null,h(Save,{kind:'poster',target:identity.key,label:title,artwork:svg}),h(PersonalPoster,{key:user.id+identity.key,title,svg,points:pointSnapshot(points,positions),identity:identity.key,userId:user.id,onActivity})):null;
+    const snapshot=pointSnapshot(points,positions);
+    const solo=snapshot&&user&&points.filter(row=>row.owner===user.id).length===10&&points.filter(row=>row.owner==='ai').length===10
+      ?{p_my_position:snapshot[points.findIndex(row=>row.owner===user.id)].side,p_ai_position:snapshot[points.findIndex(row=>row.owner==='ai')].side}:null;
+    return identity?.svg===svg&&svg&&user?h(React.Fragment,null,h(Save,{kind:'poster',target:identity.key,label:title,artwork:svg}),h(PersonalPoster,{key:user.id+identity.key,title,svg,points:snapshot,solo,identity:identity.key,userId:user.id,onActivity})):null;
   }
   function TopicHighlight({topic,onSelect}) {
     const [phrase,setPhrase]=useState(''), [message,setMessage]=useState('');
@@ -481,8 +484,22 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const {user}=useAuth();
     const selected=useFeedInterests()?.selected;
     const personalize=!!(user&&order==='trending'&&selected?.length);
-    const metrics=useQuery(wait?null:JSON.stringify([user?.id,order,editorialIds]),()=>feedRankingRequest(
-      ()=>posterMetricsQuery(db,order,editorialIds),()=>posterMetricsQuery(db,order,editorialIds,'dk_trending_posters'),personalize));
+    const metrics=useQuery(wait?null:JSON.stringify([user?.id,order,editorialIds]),async()=>{
+      const result=await feedRankingRequest(
+        ()=>posterMetricsQuery(db,order,editorialIds),()=>posterMetricsQuery(db,order,editorialIds,'dk_trending_posters'),personalize);
+      if(result.error||!result.data?.length)return result;
+      const rows=result.data;
+      const choices=new Map();
+      for(let offset=0;offset<rows.length;offset+=100){
+        const {data,error}=await db.rpc('dk_position_support',{p_slugs:rows.slice(offset,offset+100).map(row=>row.slug)});
+        if(!error)for(const entry of data||[])choices.set(entry.slug,entry);
+      }
+      return {data:rows.map(row=>{
+        const choice=choices.get(row.slug);
+        return choice?{...row,...choice,likes:choice.discussion_count+choice.positions.reduce((sum,s)=>sum+s.count,0)}:row;
+      })};
+    });
+    const directory=usePersonas(metrics.data?.some(row=>row.positions?.some(side=>side.persona))===true);
     const preferenceKey=personalize?JSON.stringify(selected):null;
     const previousPreferences=useRef(preferenceKey);
     useEffect(()=>{
@@ -498,25 +515,41 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       const timer=setInterval(sync,60000);
       return ()=>{window.removeEventListener('focus',sync);window.removeEventListener('dk-poster-viewed',sync);clearInterval(timer)};
     },[]);
-    return h(Engagement.Provider,{value:metrics},children);
+    return h(Engagement.Provider,{value:{...metrics,names:directory.data}},children);
+  }
+  function SupportChoices({row,positions,names,busy,onChoose}){
+    const selected=row?.liked?row.my_position:undefined;
+    const discussionCount=row?row.likes-positions.reduce((n,side)=>n+Number(side.count),0):'…';
+    return h('fieldset',{className:'dk-support-options',disabled:busy||!row},
+      h('legend',null,'Show your support'),
+      h('button',{type:'button',onClick:()=>onChoose(null),'aria-pressed':selected===null},
+        icon('thumb'),'Discussion',h('b',null,discussionCount)),
+      ...positions.map(side=>{
+        const key=side.key??side.label,name=names?.[side.persona]?.name||side.author;
+        return h('button',{key,type:'button',onClick:()=>onChoose(key),'aria-pressed':selected===key},
+          h('span',null,name&&h('strong',null,name),side.label),h('b',null,side.count));
+      }));
   }
   function PosterActions({entry,onComment,origin}) {
     const metrics=useContext(Engagement), {user}=useAuth(), navigate=useNavigate();
     const [busy,setBusy]=useState(false),[failed,setFailed]=useState(false);
     const row=metrics.data?.find(item=>item.slug===entry.id);
     const url=withOrigin(posterDebateRoute(entry.id),origin);
-    async function like(){
+    const positions=row?.positions||[];
+    const chosen=row?.liked?row.my_position:undefined;
+    async function like(position){
       if(!user){navigate(login(url));return}
-      if(!row||busy)return;
+      if(!row?.positions||busy||metrics.loading)return;
       setBusy(true);setFailed(false);
       try{
-        const {error}=await db.rpc('dk_poster_like',{p_slug:entry.id,p_liked:!row.liked});
+        const {error}=await db.rpc('dk_set_position_support',{p_slug:entry.id,p_position:position,p_enabled:chosen!==position});
         if(error)throw error;
         metrics.refresh();window.dispatchEvent(new Event('dk-dashboard-changed'));
       }catch{setFailed(true)}finally{setBusy(false)}
     }
     return h('div',{className:'dk-topic-metrics dk-social',title:entry.sampleActivity?'Totals include automated and member activity.':undefined},
-      h('button',{type:'button',className:'dk-small',onClick:like,disabled:busy||(!!user&&(!row||metrics.loading)),'aria-pressed':!!row?.liked},icon('thumb'),row?.liked?'Supported':'Support',' · ',row?.likes??'…'),
+      row&&!row.positions?h('button',{type:'button',className:'dk-small',onClick:metrics.refresh},'Retry support options'):
+      h(SupportChoices,{row,positions,names:metrics.names,busy:busy||metrics.loading,onChoose:like}),
       h('button',{type:'button',className:'dk-small','data-opens-debate':true,onClick:onComment||(()=>navigate(url+'&comments=1'))},icon('message'),'Comments · ',row?.comments??'…'),
       row?.published&&h(Save,{kind:'topic',target:entry.id,label:entry.question}),
       row?.published&&h(ShareTopic,{kind:'topic',id:entry.id,title:entry.question}),
@@ -625,8 +658,8 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     return h('div',{className:'dk-actions'},h('button',{type:'button',className:'dk-secondary',disabled:busy,onClick:change},
       row.published?'Make private':'Publish infographic and points to Latest and Trending'),failed&&status(failed,true));
   }
-  function PersonalPoster({title,svg,points,identity,userId,onActivity}) {
-    const q=useQuery(userId+':'+identity+':'+!!points,()=>points?db.rpc('dk_register_points',{p_title:title,p_svg:svg,p_points:points}):db.rpc('dk_register_personal_poster',{p_title:title,p_svg:svg}));
+  function PersonalPoster({title,svg,points,solo,identity,userId,onActivity}) {
+    const q=useQuery(userId+':'+identity+':'+!!points+':'+!!solo,()=>points?db.rpc(solo?'dk_register_solo_poster':'dk_register_points',{p_title:title,p_svg:svg,p_points:points,...solo}):db.rpc('dk_register_personal_poster',{p_title:title,p_svg:svg}));
     return q.error?h('button',{className:'dk-small',onClick:q.refresh},'Retry loading infographic activity'):
       q.data?h(PosterActivity,null,h(PersonalActions,{id:q.data,title,svg,onActivity})):null;
   }
@@ -801,6 +834,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         person.location&&h('p',{className:'dk-persona-background'},person.location.city+', '+person.location.state+' · '+person.occupation),
         h('p',null,person.bio),
         h('section',null,h('h2',null,'Activity'),
+          activity.data&&contributorBadge(h,activity.data.support_given,activity.data.support_received),
           h('dl',{className:'dk-sample-profile-totals'},
             h('div',null,h('dt',null,'Friends'),h('dd',null,friends.length)),
             h('div',null,h('dt',null,'Support given'),h('dd',null,activity.data?.support_given??unavailable)),
@@ -882,7 +916,28 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function Thread({thread,refresh}) {
     const {user}=useAuth(),[text,set]=useState(''),[busy,setBusy]=useState(false),[err,setErr]=useState('');
-    const q=useQuery(thread.id,()=>db.from('dk_replies').select('id,perspective,created_at').eq('question_id',thread.id).order('created_at',{ascending:false}).limit(100));
+    const navigate=useNavigate(),threadUrl=questionRoute(thread.id);
+    const support=useQuery(JSON.stringify([thread.id,user?.id]),()=>db.rpc('dk_question_support',{p_question:thread.id}));
+    const [sendingSupport,setSendingSupport]=useState(false),[supportError,setSupportError]=useState('');
+    async function changeSupport(key,nominate=false){
+      if(!user){navigate(login(threadUrl));return}
+      if(sendingSupport||support.loading||!support.data)return;
+      setSendingSupport(true);setSupportError('');
+      try{
+        const chosen=support.data.liked?support.data.my_position:undefined;
+        const {error}=nominate?await db.rpc('dk_name_question_position',{p_question:thread.id,p_reply:key}):
+          await db.rpc('dk_set_question_support',{p_question:thread.id,p_reply:key,p_enabled:chosen!==key});
+        if(error)throw error;
+        window.dispatchEvent(new Event('dk-dashboard-changed'));
+      }catch{setSupportError(nominate?'Could not claim this position. Check the available positions below.':'Could not update your support. Try again.');}
+      finally{support.refresh();setSendingSupport(false)}
+    }
+    useEffect(()=>{
+      const reload=()=>{if(!document.hidden)support.refresh()};
+      window.addEventListener('focus',reload);const timer=setInterval(reload,60000);
+      return ()=>{window.removeEventListener('focus',reload);clearInterval(timer)};
+    },[thread.id,user?.id]);
+    const q=useQuery(thread.id,()=>db.from('dk_replies').select('id,author_id,perspective,created_at').eq('question_id',thread.id).order('created_at',{ascending:false}).limit(100));
     const rows=useFocusedRows({rows:q.data,parent:thread.id,kind:'reply',limit:100,ready:!!q.data,userId:user?.id});
     const states=useCommentLikes('reply',rows);
     async function reply(e){e.preventDefault();if(!user||busy||!text.trim())return;setBusy(true);setErr('');
@@ -892,7 +947,14 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const next=topicRoute(thread.question);
     return h('article',{className:'dk-panel dk-thread'},h('small',null,thread.is_starter?'Starter question':'Public question',h(PostedDate,{at:thread.published_at})),h('h1',{'data-dk-view':'question','data-dk-item':thread.id},thread.question),h(Report,{kind:'question',target:thread.id}),
       h('div',{className:'dk-actions'},link(user?next:login(next),'Explore with AI','dk-primary'),h(Save,{kind:'question',target:thread.id,label:thread.question}),h(ShareTopic,{kind:'question',id:thread.id,title:thread.question})),
-      h('h2',null,'Perspectives'),q.error?h('button',{className:'dk-secondary',onClick:q.refresh},'Retry loading replies'):q.loading&&!q.data?status('Loading replies…'):rows.length?h('ul',{className:'dk-replies'},...rows.map(row=>h('li',{key:row.id,id:'dk-comment-'+row.id,tabIndex:-1},h('p',{'data-dk-view':'reply','data-dk-item':row.id},row.perspective),h('small',null,new Date(row.created_at).toLocaleDateString()),h('div',{className:'dk-actions'},h(CommentLike,{id:row.id,kind:'reply',states}),h(Report,{kind:'reply',target:row.id}))))):h('p',null,'What should someone on the other side consider?'),
+      support.error?h('button',{type:'button',onClick:support.refresh},'Retry support options'):
+        h(SupportChoices,{row:support.data,positions:support.data?.positions||[],busy:sendingSupport||support.loading,onChoose:changeSupport}),
+      supportError&&status(supportError,true),
+      user&&support.data&&support.data.positions.length<2&&!support.data.positions.some(p=>p.mine)&&
+        h('p',{className:'dk-note'},'To name a position, post a perspective of up to 160 characters and choose “Use as my position.”'),
+      h('h2',null,'Perspectives'),q.error?h('button',{className:'dk-secondary',onClick:q.refresh},'Retry loading replies'):q.loading&&!q.data?status('Loading replies…'):rows.length?h('ul',{className:'dk-replies'},...rows.map(row=>h('li',{key:row.id,id:'dk-comment-'+row.id,tabIndex:-1},h('p',{'data-dk-view':'reply','data-dk-item':row.id},row.perspective),h('small',null,new Date(row.created_at).toLocaleDateString()),h('div',{className:'dk-actions'},h(CommentLike,{id:row.id,kind:'reply',states}),
+        row.author_id===user?.id&&row.perspective.length<=160&&support.data&&support.data.positions.length<2&&!support.data.positions.some(p=>p.mine)&&
+          h('button',{type:'button',className:'dk-small',disabled:sendingSupport||support.loading,onClick:()=>changeSupport(row.id,true)},'Use as my position'),h(Report,{kind:'reply',target:row.id}))))):h('p',null,'What should someone on the other side consider?'),
       user?h('form',{className:'dk-form',onSubmit:reply},h('label',null,'Add a public perspective',h('textarea',{required:true,maxLength:1200,value:text,onChange:e=>set(e.target.value)})),h('button',{className:'dk-secondary',disabled:busy||!text.trim()},busy?'Posting…':'Post reply'),err&&status(err,true)):link(login(feed+'&question='+thread.id),'Sign in to reply','dk-secondary'));
   }
   function SavedArtwork({item}) {
