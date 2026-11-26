@@ -6,14 +6,39 @@ const activityMetrics=[
   ['friends','Friends','friends','Your friends','You haven’t added any friends yet.']
 ];
 
+const contributorThresholds=[0,2000,3000,4000,5000];
+const supportNumber=new Intl.NumberFormat('en-US');
 export function contributorStars(given,received){
-  return Math.min(5,Math.max(1,Math.floor(Math.max(given,received)/1000)));
+  const higher=Math.max(given,received);
+  return Math.max(1,contributorThresholds.filter(minimum=>higher>=minimum).length);
 }
 export function contributorBadge(h,given,received){
   if(given==null||received==null)return null;
   const stars=contributorStars(given,received);
-  return h('p',{className:'dk-contributor'},h('span',{'aria-hidden':'true'},'★'.repeat(stars)),
-    h('span',null,stars+'-star contributor'));
+  const level=stars+'-star contributor';
+  const next=contributorThresholds[stars];
+  const number=value=>supportNumber.format(value);
+  return h('details',{className:'dk-contributor'},
+    h('summary',{'aria-label':level+'. How contributor stars work',title:'How contributor stars work'},
+      h('span',{className:'dk-contributor-stars','aria-hidden':true},...contributorThresholds.map((_,i)=>
+        h('svg',{key:i,viewBox:'0 0 24 24',fill:i<stars?'currentColor':'none',stroke:'currentColor',strokeWidth:1.7,strokeLinejoin:'round'},
+          h('path',{d:'m12 2.8 2.8 5.7 6.3.9-4.6 4.5 1.1 6.3-5.6-3-5.6 3 1.1-6.3-4.6-4.5 6.3-.9z'})))),
+      h('span',null,level),
+      h('svg',{className:'dk-contributor-info',viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:1.7,strokeLinecap:'round','aria-hidden':true},
+        h('circle',{cx:12,cy:12,r:9}),h('path',{d:'M12 11v6m0-10v.2'}))),
+    h('div',{className:'dk-contributor-guide'},
+      h('h3',null,'How contributor stars work'),
+      h('p',null,'The higher of Support Given and Support Received determines the level.'),
+      h('table',{'aria-label':'Contributor star thresholds'},
+        h('thead',null,h('tr',null,h('th',{scope:'col'},'Level'),h('th',{scope:'col'},'Support given or received'))),
+        h('tbody',null,...contributorThresholds.map((minimum,i)=>{
+          const upper=contributorThresholds[i+1];
+          return h('tr',{key:minimum},h('th',{scope:'row'},(i+1)+(i===0?' star':' stars')),
+            h('td',null,upper?number(minimum)+'–'+number(upper-1):number(minimum)+'+'));
+        }))),
+      h('p',{className:'dk-contributor-next'},next
+        ?'For '+(stars+1)+' stars, this profile needs '+number(next-given)+(next-given===1?' more like given or ':' more likes given or ')+number(next-received)+' more received.'
+        :'This profile has reached the highest contributor level.')));
 }
 
 export function dashboardView(search) {

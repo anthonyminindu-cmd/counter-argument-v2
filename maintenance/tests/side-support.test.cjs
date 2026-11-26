@@ -12,6 +12,34 @@ test('contributor stars use the higher support total and exact inclusive milesto
   }
 });
 
+test('the profile guide shows five stars, threshold ranges, and both paths to the next level',async()=>{
+  const {contributorBadge}=await import('../workspace/dashboard.mjs');
+  const h=(tag,props,...children)=>({tag,props,children});
+  function nodes(node,tag){
+    if(typeof node!=='object'||!node)return [];
+    return [...(node.tag===tag?[node]:[]),...node.children.flatMap(child=>nodes(child,tag))];
+  }
+  assert.equal(contributorBadge(h,null,0),null);
+  for(const [given,received,filled,progress] of [
+    [6,0,1,'1,994 more likes given or 2,000 more received'],
+    [1999,1999,1,'1 more like given or 1 more received'],
+    [5,2999,2,'2,995 more likes given or 1 more received'],
+    [3000,0,3,'1,000 more likes given or 4,000 more received'],
+    [0,4999,4,'5,000 more likes given or 1 more received'],
+    [6500,0,5,'highest contributor level']
+  ]){
+    const badge=contributorBadge(h,given,received);
+    assert.equal(badge.tag,'details');
+    assert.equal(badge.props.open,undefined);
+    const summary=nodes(badge,'summary')[0];
+    const stars=nodes(summary,'span').find(s=>s.props?.className==='dk-contributor-stars').children;
+    assert.deepEqual(stars.map(s=>s.props.fill),Array.from({length:5},(_,i)=>i<filled?'currentColor':'none'));
+    assert.match(summary.props['aria-label'],/How contributor stars work/);
+    assert.deepEqual(nodes(badge,'td').map(td=>td.children[0]),['0–1,999','2,000–2,999','3,000–3,999','4,000–4,999','5,000+']);
+    assert.ok(nodes(badge,'p').at(-1).children[0].includes(progress));
+  }
+});
+
 test('poster labels and support counts stay on the original sides after switching',async()=>{
   const {withPosterActivity}=await import('../workspace/reader.mjs');
   const art=fs.readFileSync(path.join(__dirname,'../../demo/november-2026/federal-gas-tax.svg'),'utf8');
