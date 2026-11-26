@@ -445,6 +445,9 @@ a.dk-header-stat:hover,.dk-notice-link:hover{color:var(--dk-mint);text-decoratio
 @media(max-width:370px){.dk-member-bar .dk-notify b{position:absolute;top:-4px;right:0}}
 
 .dk-photo-heading,.dk-person-name{display:flex;align-items:center;gap:.8rem}
+.dk-photo-heading{min-width:0;max-width:100%}
+.dk-account-identity{display:grid;gap:.2rem;min-width:0;overflow-wrap:anywhere}
+.dk-account-identity bdi{color:var(--dk-text)}
 .dk-portrait{display:inline-grid;place-items:center;flex:none;overflow:hidden;border-radius:50%;background:var(--dk-soft);color:var(--dk-text)}
 .dk-portrait img{display:block;width:100%;height:100%;object-fit:cover}
 .dk-portrait-small{width:26px;height:26px}

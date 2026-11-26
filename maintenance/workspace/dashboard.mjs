@@ -118,6 +118,19 @@ export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuer
       h('li',{key:row.peer},h('div',null,h('strong',null,row.name),h('small',null,row.status==='incoming'?'Wants to be your friend':'Request sent')),
         h(FriendButton,{peer:row.peer,relation:row.status,ready:!friends.loading})))));
   }
+  function AccountIdentity({user}) {
+    const profile=useQuery(user.id,()=>db.from('profiles').select('display_name,username').eq('user_id',user.id).maybeSingle());
+    const metadata=user.user_metadata||{};
+    const name=[profile.data?.display_name,metadata.display_name,metadata.full_name,metadata.name]
+      .find(value=>typeof value==='string'&&value.trim())?.trim();
+    const username=profile.data?.username?.trim().replace(/^@+/,'');
+    const handle=username?'@'+username:null;
+    return h('div',{className:'dk-account-identity'},
+      h('h1',null,name||handle||'Your profile'),
+      name&&handle&&name!==handle&&h('p',null,handle),
+      user.email&&h('p',null,'Signed in as ',h('bdi',null,user.email)),
+      !name&&!profile.loading&&!profile.error&&link(profileRoute('Account'),'Add a display name'));
+  }
   function ProfileDashboard({user}){
     const {metric,page}=dashboardView(useLocation().search);
     const section=metric?.[0]||'overview';
@@ -153,7 +166,7 @@ export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuer
     }
     const reach=key=>formatted(data?data.reach?.[key]||0:null);
     return h('div',{className:'dk-main dk-profile dk-dashboard',id:'dk-main'},
-      h('header',{className:'dk-dashboard-heading'},h('div',{className:'dk-photo-heading'},h(PhotoEditor),h('h1',null,'Your dashboard')),h(ProfileControls)),
+      h('header',{className:'dk-dashboard-heading'},h('div',{className:'dk-photo-heading'},h(PhotoEditor),h(AccountIdentity,{user})),h(ProfileControls)),
       retry,
       h('section',{className:'dk-support-pair','aria-label':'Support'},...supportMetrics.map(([key,label])=>
         h('div',{key,className:'dk-metric dk-metric-'+key},h('span',{className:'dk-metric-label'},icon('thumb'),label),h('strong',null,count(key))))),

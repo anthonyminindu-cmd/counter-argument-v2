@@ -92,3 +92,33 @@ test('comment history loads the requested page and links each entry back to its 
     ['Previous','/profile?section=comments'],['Next','/profile?section=comments&page=3']
   ])assert.ok(links.some(([label,to])=>label===pair[0]&&to===pair[1]),pair[0]);
 });
+
+test('the personal dashboard uses the current member’s profile name and authenticated email',async()=>{
+  const {createSocialDashboard}=await import('../workspace/dashboard.mjs');
+  const h=(type,props,...children)=>({type,props:props||{},children:children.flat()});
+  const React={createElement:h,useEffect(){},useRef:()=>({})};
+  const email='current@example.invalid';
+  const records=[
+    [{display_name:'  Current name ',username:'current'},{full_name:'Previous name'},'Current name','@current'],
+    [null,{display_name:'Signup name'},'Signup name'],
+    [null,{full_name:'Google name'},'Google name'],
+    [null,{full_name:' ',name:'Provider name'},'Provider name'],
+    [{username:'@handle'},{},'@handle'],
+    [null,{},'Your profile']
+  ];
+  for(const [profile,metadata,title,handle] of records){
+    const user={id:'current',email,user_metadata:{...metadata,email:'stale@example.invalid'}};
+    const query={select(fields){assert.equal(fields,'display_name,username');return this;},
+      eq(field,id){assert.deepEqual([field,id],['user_id',user.id]);return this;},maybeSingle(){return {data:profile};}};
+    const {ProfileDashboard}=createSocialDashboard({React,db:{from:table=>{assert.equal(table,'profiles');return query;}},
+      useLocation:()=>({search:''}),useQuery:(key,read)=>key===user.id?read():{},link:(to,label)=>h('a',{to},label),
+      icon:()=>null,profileRoute:()=>'/profile?tab=account'});
+    const header=ProfileDashboard({user}).children[0];
+    const identity=header.children[0].children.find(node=>node?.props?.user===user);
+    const block=identity.type(identity.props);
+    assert.deepEqual(block.children[0].children,[title]);
+    assert.equal(block.children[1]?.children?.[0],handle);
+    assert.deepEqual(block.children[2].children[1].children,[email]);
+    assert.ok(!JSON.stringify(block).includes('stale@example.invalid'));
+  }
+});
