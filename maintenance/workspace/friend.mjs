@@ -48,7 +48,7 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
     const waiting=location.pathname.replace(/\/$/,'')==='/debate/start' && params.get('mode')==='friend' ? params.get('waiting') : null;
     const waitId=waiting && /^[a-f\d-]{36}$/i.test(waiting)?waiting:null;
     const [privacyResult,setPrivacy]=useState(null);
-    const privacy=privacyResult?.owner===owner?privacyResult.rows:[];
+    const privacy=privacyResult && privacyResult.owner===owner?privacyResult.rows:[];
     const [rows,setRows]=useState([]),[loaded,setLoaded]=useState(false),[error,setError]=useState('');
     const [panel,setPanel]=useState(null),[busy,setBusy]=useState(false);
     const refresh=useRef(()=>{}),locked=useRef(false),handled=useRef(null),alive=useRef(true);

@@ -12,3 +12,17 @@ test('reopening an accepted invite resumes the saved phase and agreed topic', as
   assert.equal(friendSessionRoute(room),'/debate/view/debate');
   assert.throws(()=>friendSessionRoute({...room,user_b:null}),/not joined/);
 });
+
+test('guest feed renders before the privacy inbox has an owner or results', async () => {
+  const {createFriendExperience} = await import('../workspace/friend.mjs');
+  const React = {
+    createElement: (component, props) => props, createContext: () => ({Provider:'inbox'}),
+    useEffect() {}, useRef: current => ({current}),
+    useState: initial => [typeof initial === 'function' ? initial() : initial, () => {}],
+  };
+  const {InboxProvider} = createFriendExperience({React,
+    useLocation:()=>({pathname:'/home',search:'?view=feed'}),useNavigate:()=>()=>{}});
+  const {value} = InboxProvider({children:'feed'});
+  assert.deepEqual(value.privacy, []);
+  assert.equal(value.pendingCount, 0);
+});
