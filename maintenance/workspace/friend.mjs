@@ -203,37 +203,49 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
         ExternalInvites&&h(ExternalInvites),
         h(Directory,{onInvitationSent:id=>{navigate(searchRoute+'&waiting='+encodeURIComponent(id));void inbox.refresh();}})));
   }
-  function PointFields({prefix,point,update}) {
+  function PointFields({prefix,point,update,next}) {
     return h('div',{className:'dk-point-fields'},
       h('label',{htmlFor:prefix+'-title'},'Title'),
-      h('input',{id:prefix+'-title',value:point.title,maxLength:150,required:true,onChange:e=>update('title',e.target.value)}),
+      h('input',{id:prefix+'-title','data-next':next==='title'||undefined,value:point.title,maxLength:150,required:true,onChange:e=>update('title',e.target.value)}),
       h('label',{htmlFor:prefix+'-explanation'},'Explanation'),
-      h('textarea',{id:prefix+'-explanation',value:point.description,maxLength:500,required:true,onChange:e=>update('description',e.target.value)}),
-      h('label',{htmlFor:prefix+'-source'},'Link to a source ',h('span',null,'(optional)')),
-      h('input',{id:prefix+'-source',inputMode:'url',value:point.sourceUrl==='No source provided'?'':point.sourceUrl,onChange:e=>update('sourceUrl',e.target.value)}));
+      h('textarea',{id:prefix+'-explanation','data-next':next==='explanation'||undefined,value:point.description,maxLength:500,required:true,onChange:e=>update('description',e.target.value)}),
+      h('details',{className:'dk-source-option',open:point.sourceUrl&&point.sourceUrl!=='No source provided'?true:undefined},
+        h('summary',null,'Source link (optional)'),
+        h('label',{htmlFor:prefix+'-source'},'Link to a source'),
+      h('input',{id:prefix+'-source',inputMode:'url',value:point.sourceUrl==='No source provided'?'':point.sourceUrl,onChange:e=>update('sourceUrl',e.target.value)})));
   }
-  function FriendPointEditor({drafts,submitted,saving,onEdit,onSave}) {
+  function PointEditor({drafts,submitted,saving,onEdit,onSave}) {
     const count=submitted.length, total=drafts.length;
     const point=drafts[count];
     const [future,setFuture]=useState(null);
     const later=Array.from({length:Math.max(0,total-count-1)},(_,i)=>count+1+i);
     const laterIndex=later.includes(future)?future:later[0];
     const previous=useRef(count), stage=useRef(null);
+    const next=!point?null:!point.title.trim()?'title':!point.description.trim()?'explanation':'submit';
+    const number=count+1;
+    const instruction=next==='title'?'Give point '+number+' a short title.':
+      next==='explanation'?'Add an explanation for point '+number+'.':
+      'Point '+number+' is ready to submit.';
     useEffect(()=>{
-      if(count>previous.current&&stage.current){
-        stage.current.focus({preventScroll:true});
-        stage.current.scrollIntoView({block:'start'});
+      if(count>previous.current){
+        if(saving!==null)return;
+        if(stage.current&&!document.querySelector('dialog[open]')){
+          const target=stage.current.querySelector('[data-next]')||stage.current;
+          target.focus({preventScroll:true});
+          target.scrollIntoView({block:'center'});
+        }
       }
       previous.current=count;
-    },[count]);
-    const fields=(index,prefix)=>h(PointFields,{prefix,point:drafts[index],update:(key,value)=>onEdit(index,key,value)});
+    },[count,saving]);
+    const fields=(index,prefix)=>h(PointFields,{key:index,prefix,point:drafts[index],next:index===count?next:null,update:(key,value)=>onEdit(index,key,value)});
     return h('div',{className:'dk-friend-points'},
       h('section',{ref:stage,tabIndex:-1,'aria-labelledby':'dk-current-point'},
-        h('h3',{id:'dk-current-point'},point?'Point '+(count+1)+' of '+total:'All '+total+' points submitted'),
+        h('h3',{id:'dk-current-point','aria-live':'polite'},point?'Point '+number+' of '+total:'All '+total+' points submitted'),
         count===0&&h('p',{className:'dk-point-instruction'},'Start with your most important point. Your submission order sets your personal picks from 1 to 10.'),
-        point&&h('form',{onSubmit:e=>{e.preventDefault();void onSave(count);}},fields(count,'dk-point'),
-          h('button',{type:'submit',className:'dk-primary',disabled:saving!==null||!point.title.trim()||!point.description.trim()},
-            saving===count?'Submitting…':'Submit point '+(count+1)))),
+        point&&h('p',{role:'status',className:'dk-point-step'},count>0?'Point '+count+' submitted. ':'',instruction),
+        point&&h('form',{onSubmit:e=>{e.preventDefault();if(next==='submit'&&saving===null)void onSave(count);}},fields(count,'dk-point'),
+          h('button',{type:'submit',className:'dk-primary','data-next':next==='submit'||undefined,disabled:saving!==null||next!=='submit'},
+            saving===count?'Submitting…':'Submit point '+number))),
       count>0&&h('details',null,h('summary',null,'Review submitted points ('+count+')'),
         h('ol',null,...submitted.map((saved,index)=>h('li',{key:index},
           h('strong',null,saved.title),h('p',null,saved.description),
@@ -342,5 +354,5 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
       };
     },[sessionId,owner,phase]);
   }
-  return {InboxProvider,Notifications,FriendSetup,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
+  return {InboxProvider,Notifications,FriendSetup,PointEditor,useFriendTopic,useFriendPreparationSync};
 }

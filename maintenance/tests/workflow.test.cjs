@@ -103,7 +103,8 @@ test('failed chat reads and writes restore the outgoing draft without overwritin
 });
 test('argument entry instructions do not confuse sequential input with research ranking',()=>{
   assert.ok(!bundle.includes('preserve your ranking order'));
-  assert.ok(bundle.includes('Submit earlier arguments first. Research will assess all ten together.'));
+  assert.ok(bundle.includes('Your submission order sets your personal picks from 1 to 10.'));
+  assert.ok(bundle.includes('Draft ahead anytime. Submit your points in order.'));
 });
 test('AI setup exposes one accurate research opponent and a working topic next step',()=>{
   const expression=slice('nD=',';function rD');

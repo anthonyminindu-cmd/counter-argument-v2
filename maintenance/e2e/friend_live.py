@@ -272,6 +272,11 @@ def check_positions_and_arguments(sender, receiver, room, topic):
         for page in pages:
             heading = f"Point {index+1} of 10" if index < 10 else "All 10 points submitted"
             expect(page.get_by_role("heading", name=heading, exact=True)).to_be_visible()
+            if index < 10:
+                next_card = argument(page, index + 1)
+                expect(next_card.get_by_role("status")).to_contain_text(f"Point {index} submitted.")
+                expect(next_card.locator("[data-next]")).to_be_focused()
+
         if index == 2:
             resume_from_table(receiver, room, topic)
             expect(argument(receiver, 3)).to_be_visible()

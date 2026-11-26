@@ -577,3 +577,9 @@ html{scroll-padding-block:1rem}
 .dk-contributor-guide .dk-contributor-next { color:var(--dk-text); font-weight:600; }
 
 .dk-name-input { width:100%; min-height:2.5rem; padding:.45rem .7rem; border:1px solid var(--dk-line); border-radius:.4rem; color:var(--dk-text); background:var(--dk-panel); }
+
+.dk-point-step { margin-bottom:12px; font-weight:650; color:var(--dk-text); }
+.dk-friend-points [data-next] { border:2px solid var(--dk-mint); }
+.dk-friend-points :is(input,textarea,button):focus-visible { outline:3px solid var(--dk-text); outline-offset:2px; }
+.dk-friend-points .dk-source-option { padding:0; border:0; }
+.dk-source-option summary { color:var(--dk-sub); }
