@@ -89,3 +89,44 @@ test('the login option follows the public Google provider setting', async t => {
     mock.mock.restore();
   }
 });
+
+test('Google signup binds the approved tab to its PKCE challenge before redirecting', async () => {
+  const {completeGoogleStep} = await helpers;
+  const {afterLogin} = await workspace;
+  const base = 'https://www.differkindly.com/';
+  const start = new URL('login/?google=start', base);
+  const authorize = new URL('https://example.test/auth/v1/authorize');
+  authorize.searchParams.set('code_challenge_method','s256');
+  authorize.searchParams.set('code_challenge','A'.repeat(43));
+  const auth = {signInWithOAuth:async () => ({data:{url:authorize.href}})};
+  for (const accepted of [true, false]) {
+    const storage = memoryStorage();
+    storage.setItem('dk-google-login-next','/profile');
+    storage.setItem('dk-google-signup-pass','test-ticket');
+    const result = await completeGoogleStep('start',auth,start,base,storage,afterLogin,async (ticket,challenge) => {
+      assert.equal(ticket,'test-ticket');
+      assert.equal(challenge,'A'.repeat(43));
+      return accepted;
+    });
+    assert.equal(storage.getItem('dk-google-signup-pass'),null);
+    if (accepted) assert.equal(result.url,authorize.href);
+    else assert.equal(new URL(result.url).searchParams.get('google'),'failed');
+  }
+});
+
+test('Google signup with a missing or weak PKCE challenge stays on the signup site', async () => {
+  const {completeGoogleStep} = await helpers;
+  const {afterLogin} = await workspace;
+  const base = 'https://www.differkindly.com/';
+  for (const url of ['https://example.test/authorize',
+      'https://example.test/authorize?code_challenge=sample&code_challenge_method=plain']) {
+    const store = memoryStorage();
+    store.setItem('dk-google-login-next','/home');
+    store.setItem('dk-google-signup-pass','test-ticket');
+    const result = await completeGoogleStep('start',{signInWithOAuth:async()=>({data:{url}})},
+      new URL(base),base,store,afterLogin,async () => assert.fail('Unexpected binding'));
+    assert.equal(new URL(result.url).origin,new URL(base).origin);
+    assert.equal(new URL(result.url).searchParams.get('google'),'failed');
+    assert.equal(store.getItem('dk-google-signup-pass'),null);
+  }
+});

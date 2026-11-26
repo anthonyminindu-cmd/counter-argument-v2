@@ -1,4 +1,5 @@
 const googleNextKey = 'dk-google-login-next';
+const googleSignupKey = 'dk-google-signup-pass';
 
 export function googleLoginStep(url, basePath) {
   if (url.pathname.replace(/\/$/, '') !== basePath + 'login') return null;
@@ -28,7 +29,7 @@ export async function googleProviderEnabled(db, signal) {
   return response.ok && (await response.json()).external?.google === true;
 }
 
-export async function completeGoogleStep(step, auth, current, base, storage, safeNext) {
+export async function completeGoogleStep(step, auth, current, base, storage, safeNext, bindSignup) {
   const callback = new URL('login/', base);
   const stored = storage.getItem(googleNextKey);
   const next = safeNext(new URLSearchParams({next: stored || ''}).toString());
@@ -39,6 +40,14 @@ export async function completeGoogleStep(step, auth, current, base, storage, saf
         provider: 'google', options: {redirectTo: callback.href, skipBrowserRedirect: true}
       });
       if (error || !data?.url) throw new Error();
+      const pass = storage.getItem(googleSignupKey);
+      if (pass) {
+        const target = new URL(data.url);
+        const challenge = target.searchParams.get('code_challenge');
+        if (target.searchParams.get('code_challenge_method')?.toLowerCase() !== 's256' ||
+            !challenge || !await bindSignup(pass, challenge)) throw new Error();
+        storage.removeItem(googleSignupKey);
+      }
       return {url: data.url};
     }
     const {data, error} = await auth.exchangeCodeForSession(current.searchParams.get('code'));
@@ -46,6 +55,7 @@ export async function completeGoogleStep(step, auth, current, base, storage, saf
     storage.removeItem(googleNextKey);
     return {url: new URL(next.slice(1), base).href};
   } catch {
+    storage.removeItem(googleSignupKey);
     storage.removeItem(googleNextKey);
     callback.searchParams.set('next', next);
     callback.searchParams.set('google', step === 'cancelled' ? 'cancelled' : 'failed');
@@ -55,7 +65,7 @@ export async function completeGoogleStep(step, auth, current, base, storage, saf
 
 export function createGoogleLogin({React, db, useLocation, safeNext}) {
   const h = React.createElement;
-  function GoogleOption() {
+  function GoogleOption({signupPass} = {}) {
     const location = useLocation();
     const [enabled, setEnabled] = React.useState(false);
     const [storageError, setStorageError] = React.useState(false);
@@ -69,6 +79,8 @@ export function createGoogleLogin({React, db, useLocation, safeNext}) {
 
     function start() {
       try {
+        if (signupPass) window.sessionStorage.setItem(googleSignupKey, signupPass);
+        else window.sessionStorage.removeItem(googleSignupKey);
         window.sessionStorage.setItem(googleNextKey, safeNext(location.search));
         window.location.assign(new URL('login/?google=start', document.baseURI).href);
       } catch { setStorageError(true); }
@@ -77,7 +89,7 @@ export function createGoogleLogin({React, db, useLocation, safeNext}) {
     const result = new URLSearchParams(location.search).get('google');
     let message;
     if (result === 'cancelled') message = 'Google sign-in was canceled. You can try again or use email.';
-    if (result === 'failed') message = 'Google sign-in could not be completed. Try again or use email.';
+    if (result === 'failed') message = 'Google sign-in could not be completed. New here? Choose Sign Up first. Returning members can try again.';
     if (storageError) message = 'Allow browser storage for Google sign-in, or continue with email.';
     return h(React.Fragment, null,
       message && h('p', {role: 'status', className: 'dk-login-message'}, message),
@@ -88,7 +100,7 @@ export function createGoogleLogin({React, db, useLocation, safeNext}) {
             h('path',{fill:'#34A853',d:'M24 44c5.5 0 10.1-1.8 13.5-4.9l-6.6-5.1c-1.8 1.2-4.1 1.9-6.9 1.9-5.3 0-9.8-3.6-11.4-8.4H5.8v5.3A20.4 20.4 0 0 0 24 44z'}),
             h('path',{fill:'#FBBC05',d:'M12.6 27.5a12 12 0 0 1 0-7.5v-5.3H5.8a20.2 20.2 0 0 0 0 18.1z'}),
             h('path',{fill:'#EA4335',d:'M24 11.9c3 0 5.6 1 7.7 3l5.8-5.8C34 5.9 29.5 4 24 4A20.4 20.4 0 0 0 5.8 15.1l6.8 5.3C14.2 15.5 18.7 11.9 24 11.9z'})),
-          'Continue with Google'),
+          signupPass ? 'Sign up with Google' : 'Sign in with Google'),
         h('span', {className: 'dk-login-divider'}, 'or continue with email')));
   }
 
@@ -99,7 +111,11 @@ export function createGoogleLogin({React, db, useLocation, safeNext}) {
       let active = true;
       // An authorization code can be exchanged only once, including across effect replays.
       pending.current ??= Promise.resolve().then(() => completeGoogleStep(step, db.auth,
-        new URL(window.location.href), document.baseURI, window.sessionStorage, safeNext));
+        new URL(window.location.href), document.baseURI, window.sessionStorage, safeNext,
+        async (pass, challenge) => {
+          const {data, error} = await db.rpc('dk_bind_google_signup', {p_ticket:pass, p_challenge:challenge});
+          return !error && data === true;
+        }));
       pending.current.then(({url}) => { if (active) window.location.replace(url); })
         .catch(() => { if (active) setError(true); });
       return () => { active = false; };
