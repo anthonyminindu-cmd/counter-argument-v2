@@ -1,0 +1,22 @@
+name: Build profile count candidate
+on:
+  push:
+    branches: [feature/profile-discussions-created-4187199a]
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - run: node maintenance/build.mjs
+      - run: node --test maintenance/tests/*.test.cjs
+      - run: node maintenance/build.mjs --check
+      - name: Record validated build on candidate branch
+        run: |
+          git add assets maintenance/build-manifest.json '*.html'
+          git -c user.name=github-actions -c user.email=41898282+github-actions[bot]@users.noreply.github.com commit -m "Build validated public discussion counts"
+          git push origin HEAD:refs/heads/feature/profile-discussions-created-4187199a
