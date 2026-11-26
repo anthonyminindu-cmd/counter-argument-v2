@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "b86d86c0815a48a8d68a132e13244451826df20112f584ca43ae3c9e401b430e",
-  "generatedAsset": "assets/index-v2-b86d86c0815a48a8.js",
+  "generatedSha256": "9b1c1b3886a4b6c289e7cad3ca0d333b683230da5a5579e40c413391e3872a90",
+  "generatedAsset": "assets/index-v2-9b1c1b3886a4b6c2.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -307,6 +307,11 @@
     "validate-live-solo-impact-assessments",
     "show-live-solo-scoring-version",
     "feed-interest-settings-route",
-    "feed-interest-settings-link"
+    "feed-interest-settings-link",
+    "separate-google-sign-in-from-new-account",
+    "existing-member-google-sign-in",
+    "check-adult-before-signup-details",
+    "pass-admission-to-email-handler",
+    "attach-one-time-signup-pass"
   ]
 }

@@ -539,3 +539,6 @@ html{scroll-padding-block:1rem}
 .dk-sample-profile-totals { display:flex; flex-wrap:wrap; gap:.75rem 1.5rem; }
 .dk-sample-profile-totals dt { color:var(--dk-sub); }
 .dk-sample-profile-totals dd { font-weight:700; margin:0; }
+
+.dk-age-form input[type=date]{display:block;width:100%;min-height:44px;padding:8px 12px;border:1px solid currentColor;border-radius:8px;background:transparent;color:inherit;font:inherit;color-scheme:inherit}
+.dk-age-form button{min-height:44px}

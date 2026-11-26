@@ -1,0 +1,27 @@
+[
+  {
+    "id": "separate-google-sign-in-from-new-account",
+    "find": "children:[i.jsx(DK.GoogleOption,{}),i.jsxs(Sd",
+    "replace": "children:[i.jsxs(Sd"
+  },
+  {
+    "id": "existing-member-google-sign-in",
+    "find": "children:i.jsx(u3,{onSubmit:n,onForgotPassword:s,isLoading:e,error:t})",
+    "replace": "children:i.jsxs(i.Fragment,{children:[i.jsx(DK.GoogleOption,{}),i.jsx(u3,{onSubmit:n,onForgotPassword:s,isLoading:e,error:t})]})"
+  },
+  {
+    "id": "check-adult-before-signup-details",
+    "find": "children:i.jsx(d3,{onSubmit:r,isLoading:e,error:t})",
+    "replace": "children:i.jsx(DK.AdultSignup,{EmailForm:d3,onSubmit:r,isLoading:e,error:t})"
+  },
+  {
+    "id": "pass-admission-to-email-handler",
+    "find": "handleSignUp:async u=>",
+    "replace": "handleSignUp:async (u,signupPass)=>"
+  },
+  {
+    "id": "attach-one-time-signup-pass",
+    "find": "data:{display_name:y}}});b?",
+    "replace": "data:{display_name:y,dk_signup_pass:signupPass}}});b?"
+  }
+]

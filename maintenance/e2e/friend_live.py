@@ -16,6 +16,7 @@ from urllib.parse import parse_qs, urlparse
 from urllib.request import Request, urlopen
 from uuid import UUID
 
+from signup_fixture import adult_fixture_metadata
 from playwright.sync_api import expect, sync_playwright
 from friend_topic_recovery import check_friend_topic_recovery
 
@@ -35,7 +36,7 @@ def create_member(role):
     email = f"dk-invite-e2e-{run}-{role.lower()}@example.com"
     password = secrets.token_urlsafe(28)
     request = Request(API + "/auth/v1/signup", data=json.dumps({
-        "email": email, "password": password, "data": {"display_name": display}
+        "email": email, "password": password, "data": adult_fixture_metadata(API, public_key, display)
     }).encode(), headers={"apikey": public_key, "Content-Type": "application/json"})
     with urlopen(request, timeout=30) as response:
         result = json.load(response)

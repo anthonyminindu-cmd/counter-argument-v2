@@ -8,8 +8,9 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from threading import Thread
 from urllib.request import urlopen
 
+from signup_fixture import adult_fixture_metadata
 from playwright.sync_api import expect, sync_playwright
-from dashboard_live import ROOT, api
+from dashboard_live import ROOT, API, api, public_key
 
 
 def solid_png(red, green, blue):
@@ -33,7 +34,7 @@ def run():
                                          args=["--no-sandbox"])
             email = "dk-photo-e2e-" + secrets.token_hex(8) + "@example.com"
             session = api("/auth/v1/signup", {"email": email, "password": secrets.token_urlsafe(28),
-                                              "data": {"display_name": "Photo QA"}})
+                                              "data": adult_fixture_metadata(API, public_key, "Photo QA")})
             assert session.get("access_token")
             print("Photo QA member", session["user"]["id"], email, flush=True)
             page = browser.new_page(viewport={"width": 390, "height": 844})

@@ -9,6 +9,7 @@ from pathlib import Path
 from threading import Thread
 from urllib.request import Request, urlopen
 
+from signup_fixture import adult_fixture_metadata
 from playwright.sync_api import expect, sync_playwright
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -28,14 +29,14 @@ def api(path, payload, token=None):
 def run():
     email = "dk-dashboard-e2e-" + secrets.token_hex(8) + "@example.com"
     session = api("/auth/v1/signup", {"email": email, "password": secrets.token_urlsafe(28),
-                                     "data": {"display_name": "Dashboard QA"}})
+                                     "data": adult_fixture_metadata(API, public_key, "Dashboard QA")})
     assert session.get("access_token"), "QA signup requires email confirmation"
     print("Dashboard QA member", session["user"]["id"], email, flush=True)
     edition = json.loads((ROOT / "demo/november-2026/edition.json").read_text())
     example = edition[0]
     comment = example["sampleActivity"]["comments"][0]["commentId"]
     peer = api("/auth/v1/signup", {"email": "dk-dashboard-e2e-" + secrets.token_hex(8) + "@example.com",
-                                  "password": secrets.token_urlsafe(28), "data": {"display_name": "Dashboard QA"}})
+                                  "password": secrets.token_urlsafe(28), "data": adult_fixture_metadata(API, public_key, "Dashboard QA")})
     assert peer.get("access_token")
     print("Dashboard QA peer", peer["user"]["id"], peer["user"]["email"], flush=True)
     token = session["access_token"]
