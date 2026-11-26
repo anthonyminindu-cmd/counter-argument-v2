@@ -25,7 +25,7 @@ function session(shared={}) {
       },
     };
   }};
-  const api=vm.runInNewContext(helpers+';({append:v2AppendFriendMessage,topic:v2UpdateTopicProposal})',{$});
+  const api=vm.runInNewContext(helpers+';({append:v2AppendFriendMessage,topic:v2UpdateTopicProposal,update:v2UpdateFriendDiscussion})',{$});
   return {api,read:()=>row,conflicts:()=>conflicts};
 }
 
@@ -60,4 +60,25 @@ test('declining a proposal preserves other state and later proposals can be subm
   assert.equal(state.read().shared_data.topic_proposal,undefined);
   await state.api.topic('s','propose',{...proposal,topic:'New question?'},event('new'),'host');
   assert.equal(state.read().shared_data.topic_proposal.topic,'New question?');
+});
+
+test('completion preserves a concurrent tenth argument, chat message and both completion flags',async()=>{
+  const {friendCompletionPatch}=await import('../workspace/friend.mjs');
+  const points = (prefix,count) => Array.from({length:count},(_,index)=>({id:prefix+index}));
+  const state=session({user_arguments:{host:points('h',10),guest:points('g',9)},chat_messages:[]});
+  const complete = member => state.api.update('s',null,(row,shared)=>friendCompletionPatch(row,shared,member));
+  const saveLast = state.api.update('s',null,(_row,shared)=>({shared_data:{...shared,
+    user_arguments:{...shared.user_arguments,guest:points('g',10)}}}));
+  await Promise.all([saveLast,complete('host'),state.api.append('s',event('latest'))]);
+  await Promise.all([complete('host'),complete('guest')]);
+  const saved=state.read().shared_data;
+  assert.ok(state.conflicts()>0);
+  assert.deepEqual(saved.user_arguments,{host:points('h',10),guest:points('g',10)});
+  assert.deepEqual(Array.from(saved.chat_messages,m=>m.id),['latest']);
+  assert.deepEqual(saved.argument_completion,{host:true,guest:true});
+  const revision=state.read().updated_at;
+  await complete('guest');
+  assert.equal(state.read().updated_at,revision);
+  await assert.rejects(complete('other'),/participant required/i);
+  assert.equal(friendCompletionPatch({user_a:'host',user_b:'guest'},{user_arguments:{host:points('h',9)}},'host'),null);
 });

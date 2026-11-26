@@ -5,6 +5,17 @@ function inviteStatus(row) {
   return row.status === 'pending' && Date.parse(row.expires_at) <= Date.now() ? 'expired' : row.status;
 }
 
+export function friendCompletionPatch(row, shared, actor) {
+  const members = [row.user_a, row.user_b];
+  if (!actor || !members.includes(actor)) throw new Error('Debate participant required.');
+  const completion = {...shared.argument_completion};
+  const newlyComplete = members.filter(member => member && !completion[member] &&
+    Array.isArray(shared.user_arguments?.[member]) && shared.user_arguments[member].length === 10);
+  if (!newlyComplete.length) return null;
+  for (const member of newlyComplete) completion[member] = true;
+  return {shared_data: {...shared, argument_completion: completion}};
+}
+
 export function friendSessionRoute(session) {
   if (!session?.user_b) throw new Error('Your friend has not joined yet.');
   const id = encodeURIComponent(session.id);
