@@ -70,7 +70,7 @@ export function dashboardDestination(row) {
   if(row.kind==='friend')return '/debate/start?mode=friend&person='+encodeURIComponent(row.label);
   return posterDebateRoute(row.topic)+(row.point_id?'&point='+encodeURIComponent(row.point_id):'&comments=1')+'&comment='+item;
 }
-export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuery,link,icon,status,login,profileRoute,ProfileControls,PhotoEditor,FindFriends}) {
+export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuery,link,icon,status,login,profileRoute,ProfileControls,PhotoEditor,DiscussionCount,FindFriends}) {
   const h=React.createElement,{useState,useEffect,useRef}=React;
   function useChanges(refresh) {
     useEffect(()=>{
@@ -206,7 +206,7 @@ export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuer
               h('li',{key:row.kind+':'+row.item},
                 h('div',null,h('small',null,({friend:'Friends since',debate:'Debate',question:'Public question',comment:'Comment',reply:'Reply'})[row.kind],' · ',
                   new Date(row.occurred).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})),
-                  friends?h('strong',null,row.label):link(dashboardDestination(row),row.label,'dk-titlelink')),
+                  friends?h(Link,{to:'/home?member='+encodeURIComponent(row.item),state:{publicName:row.label},className:'dk-titlelink'},row.label):link(dashboardDestination(row),row.label,'dk-titlelink')),
                 friends&&h('div',{className:'dk-actions'},link(dashboardDestination(row),'Invite to debate'),h(FriendButton,{peer:row.item,relation:'friends'}))))):
               h('p',{className:'dk-dashboard-empty'},page===1?metric[4]:'No more items on this page.'),
             (page>1||page*20<data.item_count)&&h('nav',{className:'dk-actions','aria-label':'Activity pages'},
@@ -220,6 +220,7 @@ export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuer
       retry,
       h('section',{className:'dk-support-pair','aria-label':'Support'},...supportMetrics.map(([key,label])=>
         h('div',{key,className:'dk-metric dk-metric-'+key},h('span',{className:'dk-metric-label'},icon('thumb'),label),h('strong',null,count(key))))),
+      h('dl',{className:'dk-sample-profile-totals'},h(DiscussionCount,{id:user.id})),
       data&&contributorBadge(h,data.counts?.given??0,data.counts?.received??0),
       h('nav',{className:'dk-activity-totals','aria-label':'Your activity'},...activityMetrics.map(([key,label,glyph])=>
         h(Link,{key,to:dashboardUrl(key),className:'dk-metric dk-activity-link'},

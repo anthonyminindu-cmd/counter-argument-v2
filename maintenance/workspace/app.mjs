@@ -200,7 +200,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     return {...profiles,names:Object.fromEntries((profiles.data||[]).map(row=>[row.user_id,row.display_name||row.username]))};
   }
   const {ProfileDashboard,CommentLike,useCommentLikes,useFocusedRows,useFocusComment,FriendButton}=createSocialDashboard({
-    React,db,useAuth,useLocation,Link,useQuery,link,icon,status,login,profileRoute,ProfileControls,PhotoEditor,FindFriends:People
+    React,db,useAuth,useLocation,Link,useQuery,link,icon,status,login,profileRoute,ProfileControls,PhotoEditor,DiscussionCount,FindFriends:People
   });
   const {InterestProvider,InterestPicker,FeedInterestLink,SettingsRoute,useFeedInterests}=createFeedInterests({React,db,useAuth,useLocation,useNavigate,useQuery,link,status,login});
   function Provider({children}) {
@@ -735,6 +735,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       const picks=impactRows.filter(r=>r.creatorSide===Number(creator)).sort((a,b)=>a.pick-b.pick);
       if(picks.length===10&&picks[0].author)return h('article',{className:'dk-panel'},
         link(posterDebateRoute(slug),'Back to debate'),h('h1',null,picks[0].author),h('p',null,'Debate contributor · '+row.title),
+        h('dl',{className:'dk-sample-profile-totals'},h(DiscussionCount,{slug,points:picks.map(p=>p.id)})),
         h('h2',null,'Original picks'),h('ol',null,...picks.map(p=>h('li',{key:p.id},link(posterDebateRoute(slug)+'&point='+encodeURIComponent(p.id),p.headline+(p.impact==null?'':' · Differ Impact '+p.impact+'/100')+' · Differ Rank #'+p.rank)))));
     }
     const friendTopic=friend+'&suggested='+encodeURIComponent(row.title);
@@ -860,6 +861,30 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       november.loading?status('Loading the November debates…'):entry&&entry.kind!=='member'?h(ExampleDebate,{key:entry.id,entry}):
         h(CatalogPoster,{key:example,slug:example,feature:entry}));
   }
+  function DiscussionCount({id,slug,points}) {
+    const key=id||JSON.stringify([slug,points]);
+    const total=useQuery(key,()=>id?db.rpc('dk_discussions_created',{p_profile:id}):
+      db.rpc('dk_contributor_discussions_created',{p_slug:slug,p_points:points}));
+    useEffect(()=>{
+      const refresh=()=>total.refresh();
+      window.addEventListener('focus',refresh);
+      window.addEventListener('dk-dashboard-changed',refresh);
+      return ()=>{
+        window.removeEventListener('focus',refresh);
+        window.removeEventListener('dk-dashboard-changed',refresh);
+      };
+    },[key]);
+    if(slug && !total.loading && !total.error && total.data==null)return null;
+    return h('div',null,h('dt',null,'Discussions created'),
+      h('dd',null,total.error?h('button',{type:'button',className:'dk-small',onClick:total.refresh},'Retry count'):
+        total.data==null?'…':Number(total.data).toLocaleString()));
+  }
+  function PublicMemberProfile({id,name}) {
+    return h('main',{id:'dk-main',className:'dk-main'},
+      link(trending,'Back to Trending'),
+      h('section',{className:'dk-panel'},h('h1',null,name||'Member profile'),
+        h('h2',null,'Activity'),h('dl',{className:'dk-sample-profile-totals'},h(DiscussionCount,{id}))));
+  }
   function CommenterPage({id}) {
     const personas = usePersonas();
     const person = personas.data && Object.hasOwn(personas.data, id) ? personas.data[id] : null;
@@ -884,6 +909,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('section',null,h('h2',null,'Activity'),
           activity.data&&contributorBadge(h,activity.data.support_given,activity.data.support_received),
           h('dl',{className:'dk-sample-profile-totals'},
+            h(DiscussionCount,{id}),
             h('div',null,h('dt',null,'Friends'),h('dd',null,friends.length)),
             h('div',null,h('dt',null,'Support given'),h('dd',null,activity.data?.support_given??unavailable)),
             h('div',null,h('dt',null,'Support received'),h('dd',null,activity.data?.support_received??unavailable)),
@@ -908,6 +934,8 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     if(search!==loc.search)return h(ReplaceDebateUrl,{location:loc,search});
     const commenter=params.get('commenter');
     if(params.has('join'))return h(JoinLink);
+    const member=params.get('member');
+    if(member && /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(member))return h(PublicMemberProfile,{id:member,name:loc.state?.publicName});
     if(commenter)return h(CommenterPage,{id:commenter});
     if(debate)return h(PosterActivity,null,h(ExamplePage,{example:debate}));
     if(landing&&interests?.offer&&!loc.search)return h(InterestPicker,{onboarding:true});
@@ -1034,7 +1062,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('p',null,'No matching people. Try another name.'),
       (rows.length>0||commenters.matches.length>0)&&h('h3',null,search.length>=2?'Search results':'Saved people'),
       (rows.length>0||commenters.matches.length>0)&&h('ul',{className:'dk-list'},
-        ...rows.map(row=>h('li',{key:row.target},h('div',null,h('strong',{className:'dk-person-name'},row.photo&&h(Portrait,{url:row.photo}),row.label),link(friend+'&person='+encodeURIComponent(row.query||row.label),'Invite to debate')),h('div',{className:'dk-actions'},h(FriendButton,{peer:row.target,relation:friends.data?.find(f=>f.peer===row.target)?.status,ready:!!friends.data&&!friends.loading}),h(Save,{kind:'person',target:row.target,label:row.label})))),
+        ...rows.map(row=>h('li',{key:row.target},h('div',null,h(Link,{className:'dk-person-name dk-link',to:'/home?member='+encodeURIComponent(row.target),state:{publicName:row.label}},row.photo&&h(Portrait,{url:row.photo}),row.label),link(friend+'&person='+encodeURIComponent(row.query||row.label),'Invite to debate')),h('div',{className:'dk-actions'},h(FriendButton,{peer:row.target,relation:friends.data?.find(f=>f.peer===row.target)?.status,ready:!!friends.data&&!friends.loading}),h(Save,{kind:'person',target:row.target,label:row.label})))),
         ...commenters.matches.map(person=>h('li',{key:person.user_id},h('div',null,
           link(person.profileUrl,person.display_name),h('small',null,'@'+person.username))))));
   }
