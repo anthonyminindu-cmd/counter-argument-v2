@@ -1,0 +1,12 @@
+[
+  {
+    "id": "feed-interest-settings-route",
+    "find": "path:\"/settings\",element:i.jsx(X3,{})",
+    "replace": "path:\"/settings\",element:i.jsx(DK.SettingsRoute,{DefaultSettings:X3})"
+  },
+  {
+    "id": "feed-interest-settings-link",
+    "find": "i.jsx(\"p\",{className:\"text-xs text-muted-foreground\",children:\"Customize your experience\"})",
+    "replace": "i.jsx(\"p\",{className:\"text-xs text-muted-foreground\",children:\"Customize your experience\"}),i.jsx(DK.FeedInterestLink,{label:\"Feed interests\"})"
+  }
+]

@@ -1,3 +1,4 @@
+import {createFeedInterests,feedRankingRequest} from './feed-interests.mjs';
 import {applyReadingPreferences,createRouteContent} from './accessibility.mjs';
 import {createProfilePhotos} from './profile-photo.mjs';
 import {watchContentImpressions} from './impressions.mjs';
@@ -91,8 +92,8 @@ export function publicPosterEntries(ranked,edition) {
   });
 }
 
-export function posterMetricsQuery(db,order,editorialIds=[]) {
-  const ranked=db.rpc('dk_ranked_posters');
+export function posterMetricsQuery(db,order,editorialIds=[],rpc='dk_ranked_posters') {
+  const ranked=db.rpc(rpc);
   if(!order)return ranked;
   const published=ranked.eq('published',true);
   const available=editorialIds.length
@@ -190,6 +191,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   const {ProfileDashboard,CommentLike,useCommentLikes,useFocusedRows,useFocusComment,FriendButton}=createSocialDashboard({
     React,db,useAuth,useLocation,Link,useQuery,link,icon,status,login,profileRoute,ProfileControls,PhotoEditor,FindFriends:People
   });
+  const {InterestProvider,InterestPicker,FeedInterestLink,SettingsRoute,useFeedInterests}=createFeedInterests({React,db,useAuth,useLocation,useNavigate,useQuery,link,status,login});
   function Provider({children}) {
     const {user,loading}=useAuth(),id=user?.id,root=useRef(null);
     useEffect(()=>{
@@ -201,7 +203,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       });
     },[id,loading]);
     const query=useQuery(id||null,()=>db.from('dk_collection').select('kind,target,label,created_at').eq('owner_id',id).order('created_at',{ascending:false}));
-    return h(Collection.Provider,{value:{id,...query,items:query.data||[]}},h(PhotoProvider,{key:id||'guest',owner:id},h(SocialProvider,{key:id||'guest',owner:id},h(InboxProvider,{owner:id},h('div',{ref:root,className:'dk-shell min-h-screen'},children)))));
+    return h(Collection.Provider,{value:{id,...query,items:query.data||[]}},h(PhotoProvider,{key:id||'guest',owner:id},h(SocialProvider,{key:id||'guest',owner:id},h(InboxProvider,{owner:id},h('div',{ref:root,className:'dk-shell min-h-screen'},h(InterestProvider,{key:id||'guest'},children))))));
   }
   function Save({kind,target,label,artwork}) {
     const c=useContext(Collection), [busy,setBusy]=useState(false),[error,setError]=useState('');
@@ -433,7 +435,18 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   const Engagement=createContext(null);
   function PosterActivity({children,order,editorialIds,wait=false}) {
     const {user}=useAuth();
-    const metrics=useQuery(wait?null:JSON.stringify([user?.id,order,editorialIds]),()=>posterMetricsQuery(db,order,editorialIds));
+    const selected=useFeedInterests()?.selected;
+    const personalize=!!(user&&order==='trending'&&selected?.length);
+    const metrics=useQuery(wait?null:JSON.stringify([user?.id,order,editorialIds]),()=>feedRankingRequest(
+      ()=>posterMetricsQuery(db,order,editorialIds),()=>posterMetricsQuery(db,order,editorialIds,'dk_trending_posters'),personalize));
+    const preferenceKey=personalize?JSON.stringify(selected):null;
+    const previousPreferences=useRef(preferenceKey);
+    useEffect(()=>{
+      if(previousPreferences.current!==preferenceKey){
+        previousPreferences.current=preferenceKey;
+        metrics.refresh();
+      }
+    },[preferenceKey]);
     useEffect(()=>{
       function sync(){if(!document.hidden)metrics.refresh()}
       window.addEventListener('focus',sync);
@@ -746,13 +759,14 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
           ...comments.map(({body},i)=>h('blockquote',{key:i},...body.split('\n\n').map((part,j)=>h('p',{key:j},part))))))));
   }
   function Start() {
-    const loc=useLocation(), landing=isWelcomeLocation(loc);
+    const loc=useLocation(), landing=isWelcomeLocation(loc), interests=useFeedInterests();
     const params=new URLSearchParams(loc.search), onFeed=params.get('view')==='feed'||params.has('edition');
     const example=params.get('example');
     const commenter=params.get('commenter');
     if(params.has('join'))return h(JoinLink);
     if(commenter)return h(CommenterPage,{id:commenter});
     if(example)return h(PosterActivity,null,h(ExamplePage,{example}));
+    if(landing&&interests?.offer&&!loc.search)return h(InterestPicker,{onboarding:true});
     return landing?h(HomeFeed):h('div',{className:'dk-main',id:'dk-main'},
       h('div',{className:'dk-grid'},h(Feed,{full:onFeed,landing:false}),h(Activity,{compact:true})));
   }
@@ -794,7 +808,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     if(chosen)return h('section',{className:'dk-feed'},h(BackToFeed,{id:chosen}),query.loading&&!query.data?status('Loading discussion…'):query.error?status('Could not load this discussion.',true):rows[0]?h(Thread,{key:rows[0].id,thread:rows[0],refresh:query.refresh}):status('This discussion is unavailable.'));
     const feedTitle=order==='trending'?'Trending':order==='latest'?'Latest':'Your people';
     return h('section',{className:'dk-feed',id:'dk-debates',tabIndex:-1,'aria-label':feedTitle},
-      h('div',{className:'dk-sectionline'},h(landing?'h2':'h1',null,landing&&icon('trend'),feedTitle)),
+      h('div',{className:'dk-sectionline'},h(landing?'h2':'h1',null,landing&&icon('trend'),feedTitle),order==='trending'&&user&&h(FeedInterestLink)),
       h('nav',{className:'dk-filters','aria-label':'Feed order'},...[[urlFor('trending'),'Trending','trending'],[urlFor('latest'),'Latest','latest'],...(user?[[urlFor('people'),'Your people','people']]:[])].map(([to,label,key])=>h(Link,{key,to,'aria-current':key===order?'page':undefined},label))),
       order!=='people'?(publicList||h(PosterFeed,{order})):
       query.error?h('div',{className:'dk-panel'},status('The feed could not be loaded.',true),h('button',{className:'dk-secondary',onClick:query.refresh},'Try again')):query.loading&&!query.data?status('Loading discussions…'):
@@ -883,5 +897,5 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       h('section',{className:'dk-collection'},tab==='Pinned'?h(PinnedList,{items,owner:user.id}):
         items.length?items.map(item=>h(SavedArtwork,{key:item.target,item})):h('div',{className:'dk-panel'},h('h2',null,'Your saved posters'),h('p',null,'Open a finished infographic and choose Save poster.'),link(profile,'Open your table','dk-secondary'))));
   }
-  return {TopicHighlight,RouteContent:createRouteContent(React,useLocation),applyReadingPreferences,...createGoogleLogin({React, db, useLocation, safeNext: afterLogin}),withPosterActivity,initialProfileName,checkContent,useCommenterMatches,ReactionLoginCopy,PhotoEditor,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
+  return {TopicHighlight,SettingsRoute,FeedInterestLink,RouteContent:createRouteContent(React,useLocation),applyReadingPreferences,...createGoogleLogin({React, db, useLocation, safeNext: afterLogin}),withPosterActivity,initialProfileName,checkContent,useCommenterMatches,ReactionLoginCopy,PhotoEditor,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
 }
