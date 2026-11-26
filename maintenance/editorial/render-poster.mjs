@@ -69,7 +69,11 @@ for (const entry of entries) {
     const id=side?.profileId||entry.sampleDebate?.friends[i];
     const name=personas[id]?.name;
     if(!name || (entry.sampleDebate && entry.sampleDebate.friends[i]!==id))throw Error('Missing or mismatched position profile: '+entry.id+' / '+label);
-    return {id,name,count:side?.supportSnapshot};
+    const count = side?.supportSnapshot;
+    if (!Number.isSafeInteger(count) || count < 0) {
+      throw Error('Record the current support total for ' + entry.id + ' / ' + label);
+    }
+    return {id,name,count};
   });
   if(positions[0].id===positions[1].id)throw Error('Two distinct position profiles are required: '+entry.id);
   const svg=renderExample({title:entry.title,question:entry.question,sides:entry.sideTitles,
