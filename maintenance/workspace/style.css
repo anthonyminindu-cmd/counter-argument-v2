@@ -418,6 +418,7 @@ a.dk-metric:hover,a.dk-metric:focus-visible{outline:2px solid var(--dk-mint);out
 a.dk-header-stat:hover,.dk-notice-link:hover{color:var(--dk-mint);text-decoration:underline}
 .dk-profile-button{gap:6px;justify-content:center;min-height:44px;padding:6px 14px;border:1px solid var(--dk-line);border-radius:9px;background:var(--dk-mint);color:var(--dk-on);font-weight:700}
 .dk-profile-controls{gap:.6rem 1rem;flex-wrap:wrap}
+.dk-profile-controls .dk-log-out{min-height:44px}
 .dk-member-bar .dk-notify{border-color:var(--dk-sub)}
 .dk-member-bar .dk-bell-label{position:static;width:auto;height:auto;clip-path:none;overflow:visible}
 .dk-inbox h3{font-weight:700;font-size:1.08rem}
