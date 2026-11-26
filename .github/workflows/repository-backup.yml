@@ -1,0 +1,43 @@
+name: Back up repository
+on:
+  schedule:
+    - cron: '17 8 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/repository-backup.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Bundle branches and tags and test recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          git clone --bare "https://github.com/$GITHUB_REPOSITORY.git" source.git
+          mkdir backup
+          git -C source.git bundle create "$RUNNER_TEMP/backup/repository.bundle" --all
+          git -C source.git bundle verify "$RUNNER_TEMP/backup/repository.bundle"
+          git clone --mirror backup/repository.bundle restored.git
+          git -C restored.git fsck --full
+          for repo in source restored; do
+            git -C "$repo.git" for-each-ref --format='%(refname) %(objectname)' refs/heads refs/tags > "$repo.refs"
+          done
+          diff -u source.refs restored.refs
+          cp source.refs backup/refs.txt
+          cd backup
+          sha256sum repository.bundle refs.txt > SHA256SUMS
+      - name: Retain verified snapshot for 30 days
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: differ-kindly-code-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/backup/
+          retention-days: 30
+          compression-level: 0
+          if-no-files-found: error
