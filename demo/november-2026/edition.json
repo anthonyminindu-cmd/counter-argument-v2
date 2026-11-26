@@ -5118,6 +5118,14 @@
       {
         "label": "U.S. Army · Public safety advisory and assistance",
         "url": "https://www.army.mil/article/297039/public_safety_advisory_controlled_mitigated_detonation_of_unstable_lead_azide_at_iowa_army_ammunition_plant"
+      },
+      {
+        "label": "Reddit · r/IowaCity discussion thread",
+        "url": "https://www.reddit.com/r/IowaCity/comments/1y4u0jp/mega_thread_lead_azide_detonation_in_middletown/"
+      },
+      {
+        "label": "Reddit · r/Iowa discussion of records and transparency",
+        "url": "https://www.reddit.com/r/Iowa/comments/1y1c15m/i_filed_a_foia_request_for_the_armys_lead_azide/"
       }
     ],
     "research": [
@@ -5214,9 +5222,190 @@
               ]
             }
           ]
+        },
+        {
+          "profileId": "person-153",
+          "commentId": "86a8539e-242f-5bda-a558-d58ea0a0003d",
+          "body": "The first air results are a relief. I look at claims after storms, and I still want to see a table showing which soil and dust samples can be compared to the same places before the blast. A map and a table answer different questions.",
+          "replies": [
+            {
+              "profileId": "person-074",
+              "commentId": "84187e0a-329b-5621-8655-2282544c2d1a",
+              "body": "What would persuade me is follow-up sampling with the locations and detection limits spelled out. An air reading can be reassuring on the day and still leave a question about what settled somewhere else."
+            }
+          ]
+        },
+        {
+          "profileId": "person-212",
+          "commentId": "aba5dd57-29be-537d-8847-ec681a4e986a",
+          "body": "At a farmers market, one vague answer can turn into ten different crop rumors. I’d rather get a plain update that says which local lab results are back, which are pending, and when the next update is due."
+        },
+        {
+          "profileId": "person-034",
+          "commentId": "8de74bab-d01c-5cb1-a7d6-f3c9cb82556f",
+          "body": "Giving a date is useful, but give people an update time too. When a plan moves, a person about to start a shift needs to know when to check again and whether their arrangements still make sense.",
+          "replies": [
+            {
+              "profileId": "person-200",
+              "commentId": "b61bc9f7-f4e9-5e1a-af95-b974491e9044",
+              "body": "I’d like an after-action review to include the people who made the closure and reopening calls at schools and other public buildings. What information reached them, and what did they have to guess?"
+            }
+          ]
+        },
+        {
+          "profileId": "person-241",
+          "commentId": "0a1c59d7-e340-5f6c-8e0e-decdf43035a3",
+          "body": "I think moving the operation to a better window was defensible. I’d still read a timeline of when the Army identified the issue, who was told and when alternatives were rejected. Those records would let us argue about the decision with something firmer than a hunch."
         }
       ],
-      "impressions": 0
+      "impressions": 0,
+      "engagement": {
+        "viewers": [
+          "person-011",
+          "person-015",
+          "person-018",
+          "person-030",
+          "person-031",
+          "person-032",
+          "person-034",
+          "person-039",
+          "person-042",
+          "person-043",
+          "person-044",
+          "person-046",
+          "person-049",
+          "person-057",
+          "person-060",
+          "person-068",
+          "person-074",
+          "person-089",
+          "person-097",
+          "person-110",
+          "person-115",
+          "person-118",
+          "person-119",
+          "person-121",
+          "person-124",
+          "person-138",
+          "person-139",
+          "person-153",
+          "person-154",
+          "person-157",
+          "person-160",
+          "person-163",
+          "person-169",
+          "person-170",
+          "person-176",
+          "person-178",
+          "person-188",
+          "person-193",
+          "person-196",
+          "person-198",
+          "person-200",
+          "person-203",
+          "person-211",
+          "person-212",
+          "person-213",
+          "person-214",
+          "person-223",
+          "person-224",
+          "person-228",
+          "person-236",
+          "person-240",
+          "person-241",
+          "person-292",
+          "person-296",
+          "person-298"
+        ],
+        "posterSupporters": [
+          "person-030",
+          "person-034",
+          "person-074",
+          "person-121",
+          "person-153",
+          "person-160",
+          "person-193",
+          "person-196",
+          "person-200",
+          "person-212",
+          "person-241",
+          "person-298"
+        ],
+        "commentSupport": [
+          {
+            "by": "person-030",
+            "comment": "3da98a2a-0777-5388-9c42-d8eb8041b7cb"
+          },
+          {
+            "by": "person-153",
+            "comment": "3da98a2a-0777-5388-9c42-d8eb8041b7cb"
+          },
+          {
+            "by": "person-196",
+            "comment": "3da98a2a-0777-5388-9c42-d8eb8041b7cb"
+          },
+          {
+            "by": "person-034",
+            "comment": "2d5bf75f-ff93-5ca1-beb2-d5c5f8ce48b0"
+          },
+          {
+            "by": "person-074",
+            "comment": "2d5bf75f-ff93-5ca1-beb2-d5c5f8ce48b0"
+          },
+          {
+            "by": "person-193",
+            "comment": "2d5bf75f-ff93-5ca1-beb2-d5c5f8ce48b0"
+          },
+          {
+            "by": "person-121",
+            "comment": "86a8539e-242f-5bda-a558-d58ea0a0003d"
+          },
+          {
+            "by": "person-200",
+            "comment": "86a8539e-242f-5bda-a558-d58ea0a0003d"
+          },
+          {
+            "by": "person-241",
+            "comment": "86a8539e-242f-5bda-a558-d58ea0a0003d"
+          },
+          {
+            "by": "person-034",
+            "comment": "aba5dd57-29be-537d-8847-ec681a4e986a"
+          },
+          {
+            "by": "person-153",
+            "comment": "aba5dd57-29be-537d-8847-ec681a4e986a"
+          },
+          {
+            "by": "person-298",
+            "comment": "aba5dd57-29be-537d-8847-ec681a4e986a"
+          },
+          {
+            "by": "person-160",
+            "comment": "8de74bab-d01c-5cb1-a7d6-f3c9cb82556f"
+          },
+          {
+            "by": "person-193",
+            "comment": "8de74bab-d01c-5cb1-a7d6-f3c9cb82556f"
+          },
+          {
+            "by": "person-196",
+            "comment": "0a1c59d7-e340-5f6c-8e0e-decdf43035a3"
+          },
+          {
+            "by": "person-212",
+            "comment": "0a1c59d7-e340-5f6c-8e0e-decdf43035a3"
+          },
+          {
+            "by": "person-121",
+            "comment": "84187e0a-329b-5621-8655-2282544c2d1a"
+          },
+          {
+            "by": "person-212",
+            "comment": "84187e0a-329b-5621-8655-2282544c2d1a"
+          }
+        ]
+      }
     }
   }
 ]
