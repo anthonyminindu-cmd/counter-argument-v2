@@ -1,0 +1,7 @@
+[
+  {
+    "id": "propagate-session-logout-errors",
+    "find": "const{error:u}=await $.auth.signOut();u&&console.error(\"Error signing out:\",u)",
+    "replace": "const{error:u}=await $.auth.signOut({scope:\"local\"});if(u)throw u"
+  }
+]

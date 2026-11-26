@@ -10,9 +10,24 @@
     "replace": "path:\"/login\",element:dkGoogleStep?i.jsx(DK.GoogleTransition,{step:dkGoogleStep}):i.jsx(h3,{})"
   },
   {
+    "id": "account-tab-entry",
+    "find": "handleForgotPassword:s}=f3();return",
+    "replace": "handleForgotPassword:s}=f3(),tabs=DK.useAccountTabs();return"
+  },
+  {
+    "id": "account-tab-default",
+    "find": "i.jsxs(ng,{defaultValue:\"login\",className:\"space-y-4\"",
+    "replace": "i.jsxs(ng,{value:tabs.value,onValueChange:tabs.select,className:\"space-y-4\""
+  },
+  {
     "id": "google-login-option",
-    "find": "i.jsx(de,{children:i.jsxs(ng,{defaultValue:\"login\",className:\"space-y-4\",children:[",
-    "replace": "i.jsx(de,{children:i.jsxs(ng,{defaultValue:\"login\",className:\"space-y-4\",children:[i.jsx(DK.GoogleOption,{}),"
+    "find": "children:i.jsx(u3,{onSubmit:n,onForgotPassword:s,isLoading:e,error:t})",
+    "replace": "children:i.jsxs(i.Fragment,{children:[i.jsx(DK.GoogleOption,{mode:\"login\"}),i.jsx(u3,{onSubmit:n,onForgotPassword:s,isLoading:e,error:t})]})"
+  },
+  {
+    "id": "google-signup-option",
+    "find": "children:i.jsx(d3,{onSubmit:r,isLoading:e,error:t})",
+    "replace": "children:i.jsxs(i.Fragment,{children:[i.jsx(DK.GoogleOption,{mode:\"signup\"}),i.jsx(d3,{onSubmit:r,isLoading:e,error:t})]})"
   },
   {
     "id": "account-login-copy",

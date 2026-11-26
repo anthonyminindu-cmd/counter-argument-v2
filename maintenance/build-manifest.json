@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "c019ff7d0791b68dfed86b7c6a7120b9f91ca597e4858c1f4e1c8c41759b5a20",
-  "generatedAsset": "assets/index-v2-c019ff7d0791b68d.js",
+  "generatedSha256": "76e86af365c735b1cb2a333c217758ed57cdde2aa8dd31c8b27158d2fbfccb05",
+  "generatedAsset": "assets/index-v2-76e86af365c735b1.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -239,7 +239,10 @@
     "custom-domain-isabella-fire-bj9st4o5",
     "google-pkce-client",
     "google-login-route",
+    "account-tab-entry",
+    "account-tab-default",
     "google-login-option",
+    "google-signup-option",
     "account-login-copy",
     "accessible-route-start",
     "accessible-route-end",
@@ -307,6 +310,7 @@
     "validate-live-solo-impact-assessments",
     "show-live-solo-scoring-version",
     "remove-sample-address-from-profile-email",
+    "propagate-session-logout-errors",
     "feed-interest-settings-route",
     "feed-interest-settings-link"
   ]
