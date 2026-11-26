@@ -49,11 +49,14 @@ test('poster labels and support counts stay on the original sides after switchin
   const positions=[{point_id:ids[1],label:'Keep & review',count:2},{point_id:ids[0],label:'Pause <temporarily>',count:1}];
   const originalRanks=art.match(/data-rank="\d+"/g);
   const result=withPosterActivity(art,{likes:9,impressions:101,comments:5,positions});
-  assert.ok(result.indexOf('1 · Pause &lt;temporarily&gt;')<result.indexOf('2 · Keep &amp; review'));
-  assert.match(result,/data-position-support=""/);
+  assert.match(result,/data-label="Pause &lt;temporarily&gt;"[^]*?data-position-support="0">Support · 1<\/text>/);
+  assert.match(result,/data-label="Keep &amp; review"[^]*?data-position-support="1">Support · 2<\/text>/);
+  assert.ok(result.indexOf('data-position-support=')<result.indexOf('data-argument-id='));
   assert.deepEqual(result.match(/data-rank="\d+"/g),originalRanks);
   const named=withPosterActivity(art,{likes:3,positions:positions.map((p,i)=>({...p,byline:i?'Bob':'José',caption:i?'Pause tax':'Keep tax'}))});
-  assert.ok(named.indexOf('1 · Bob · Pause tax')<named.indexOf('2 · José · Keep tax'));
+  assert.match(named,/data-byline="0">Bob’s picks · 1–10/);
+  assert.match(named,/data-byline="1">José’s picks · 1–10/);
+  assert.equal(withPosterActivity(result,{likes:9,impressions:101,comments:5,positions}),result);
   assert.match(result,/101 impressions/);
   assert.ok(!result.includes('Pause <temporarily>'));
   assert.match(withPosterActivity(art,{likes:9,positions:positions.map(p=>({...p,count:0}))}),/Support · 0/);
@@ -109,4 +112,26 @@ test('support shows a whole member alias while ordinary member bylines use the f
   assert.equal(aliased.fullName,'Civic Owl');
   assert.equal(positionButtons([{...position,author:'Casey Rivera',is_alias:false}])[0].byline,'Casey');
   assert.equal(aliased.key,position.label);
+});
+
+test('saved portraits acquire current names, top support, and the research footer without new point IDs',async()=>{
+  const {withPosterActivity}=await import('../workspace/reader.mjs');
+  const svg='<svg data-poster-format="impact-v2"><text x="37" y="257">Editorial order 1–10</text>'+
+    '<text x="121" y="313">Left</text><text x="590" y="329">Right</text><rect x="36" y="405"/>'+
+    '<g data-argument-id="A" data-reader-id="A" data-impact="88" data-author="Differ Kindly Editorial" data-side="0"></g>'+
+    '<g data-argument-id="B" data-reader-id="B" data-impact="77" data-author="" data-side="1"></g>'+
+    '<rect x="0" y="1260"/><text data-activity="">12 impressions</text></svg>';
+  const positions=[{label:'Right',point_id:'B',byline:'River & Stone',fullName:'River & Stone',count:0},
+    {label:'Left',point_id:'A',byline:'Lee',fullName:'Lee Kim',count:23}];
+  const result=withPosterActivity(svg,{positions});
+  assert.doesNotMatch(result,/Editorial order|Differ Kindly Editorial/);
+  assert.match(result,/Lee’s picks · 1–10/);
+  assert.match(result,/River &amp; Stone’s picks · 1–10/);
+  assert.match(result,/data-position-support="0">Support · 23/);
+  assert.match(result,/data-position-support="1">Support · 0/);
+  assert.match(result,/data-argument-id="A"[^>]*data-author="Lee Kim"/);
+  assert.ok(result.indexOf('Support · 23')<result.indexOf('data-argument-id'));
+  assert.ok(result.indexOf('data-rubric')>result.indexOf('data-argument-id="B"'));
+  assert.match(result,/12 impressions/);
+  assert.equal(withPosterActivity(result,{positions}),result);
 });

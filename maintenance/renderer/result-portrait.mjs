@@ -24,7 +24,7 @@ export function impactPosterData(title,positions,points){
     return point?.positionLabel||positions?.[point?.submissionSide==='right'?1:point?.submissionSide==='left'?0:side]||(side?'Second perspective':'First perspective');
   });
   const authors=[0,1].map(side=>{const p=points.find(row=>sideOf(row)===side);return p?.owner==='ai'?'Differ Kindly AI':p?.author && p.author!==p.owner && !['You','Partner','Opponent','Participant'].includes(p.author)?p.author:null;});
-  return {title,sides,authors,pickLabel:points.some(p=>p.pickSource==='submission')?'Submission order':'Personal pick',rows:points.map(p=>({
+  return {title,sides,authors,rows:points.map(p=>({
     id:p.id,side:sideOf(p),pick:p.ordinal+1, magnitude:p.magnitude,reach:p.reach,duration:p.duration,
     headline:p.headline||p.title,detail:p.detail||p.description,confidence:p.confidence,explanation:p.explanation
   }))};

@@ -1,3 +1,4 @@
+import {impactPickLabel} from '../renderer/portrait.mjs';
 import {posterDebateRoute,readPosterDebate,normalizeDebateSearch} from './debate-links.mjs';
 import {createFeedInterests,feedRankingRequest} from './feed-interests.mjs';
 import {applyReadingPreferences,createRouteContent} from './accessibility.mjs';
@@ -19,7 +20,7 @@ const friend = '/debate/start?mode=friend';
 const ai = '/debate/topic?mode=ai';
 const personalTabs = ['Table','Created','Pinned','Posters','People','Account'];
 const novemberPath = 'demo/november-2026/';
-const examplePoster = id => novemberPath+id+'.svg?v=differ-impact-v1';
+const examplePoster = id => novemberPath+id+'.svg?v=named-picks-v2';
 const trending = feed+'&sort=trending';
 const questionRoute = id => feed+'&question='+encodeURIComponent(id);
 const isPinKind = kind => ['topic','question','debate'].includes(kind);
@@ -419,7 +420,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   function useNovemberEdition() {
     return useQuery('november-2026',async()=>{
-      const response=await fetch(novemberPath+'edition.json?v=differ-rank-v1');
+      const response=await fetch(novemberPath+'edition.json?v=named-picks-v2');
       if(!response.ok)throw Error('The November edition is unavailable.');
       return {data:await response.json()};
     });
@@ -448,7 +449,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
 
   function PositionProfiles({entry,positions}) {
     const profiles=entry.sideTitles.map((label,i)=>{
-      const id=positions?.find(side=>side.label===label)?.persona||entry.sampleDebate?.friends[i];
+      const id=positions?.find(side=>side.label===label)?.persona||entry.positionProfiles?.[label]?.profileId||entry.sampleDebate?.friends[i];
       return {id,label,name:publicProfileNames[id]};
     });
     if(profiles.some(profile=>!profile.name))return null;
@@ -704,7 +705,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function PersonalActions({id,title,svg,onActivity}){
     const activity=useContext(Engagement);
     const row=activity.data?.find(item=>item.slug===id);
-    useEffect(()=>{onActivity?.({svg,row:row?.published?row:null});},[svg,row,onActivity]);
+    useEffect(()=>{onActivity?.({svg,row:row||null});},[svg,row,onActivity]);
     return h('div',null,h(PosterActions,{entry:{id,question:title}}),row?.mine&&h(SharePoster,{row,refresh:activity.refresh}));
   }
   function CreatedPosters({user}){
@@ -793,6 +794,15 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const [exporting,setExporting]=useState(false),[exportError,setExportError]=useState('');
     const hasAudienceExport=true;
     const liveCounts=useContext(Engagement).data?.find(r=>r.slug===entry.id);
+    const pickOwners=entry.sideTitles.map((label,i)=>{
+      const side=liveCounts?.positions?.find(p=>p.label===label);
+      const name=publicProfileNames[entry.positionProfiles?.[label]?.profileId||entry.sampleDebate?.friends[i]];
+      return {fullName:side?.fullName||name,byline:side?.byline||name?.split(/\s+/u)[0]};
+    });
+    const impactRows=entry.arguments.map(([, ,id,score],i)=>{
+      const side=Math.floor(i/10),owner=pickOwners[side];
+      return {...score,id,author:owner.fullName,creatorSide:side,pickLabel:impactPickLabel(owner.byline)};
+    });
     const [includeAudience,setIncludeAudience]=useState(false);
     const original=examplePoster(entry.id);
     const audience=useAudiencePoster(React,db,hasAudienceExport&&includeAudience,entry.id,original,liveCounts);
@@ -813,7 +823,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     }
     return h(React.Fragment,null,h(BackToFeed,{id:entry.id}),
       h('article',{className:'dk-example-debate'},
-        h('header',null,h('small',null,entry.sampleDebate?'Differ Kindly':'By Differ Kindly Editorial',h(PostedDate,{slug:entry.id})),h('h1',{'data-dk-view':'poster','data-dk-item':entry.id},entry.question),h('p',null,entry.overview),
+        h('header',null,h('small',null,'Differ Kindly',h(PostedDate,{slug:entry.id})),h('h1',{'data-dk-view':'poster','data-dk-item':entry.id},entry.question),h('p',null,entry.overview),
           h(PositionProfiles,{entry,positions:liveCounts?.positions}),
           h('button',{type:'button',className:'dk-secondary dk-read-points',onClick:readPoints},'Read all 20 points')),
         entry.research&&h('section',{className:'dk-panel','aria-labelledby':'dk-research-summary'},
@@ -831,10 +841,10 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h(PosterActions,{entry,onComment:openComments}),h(Report,{kind:'poster',target:entry.id}),
         h('section',{'aria-labelledby':'dk-example-points'},
           h('h2',{id:'dk-example-points',ref:pointsHeading,tabIndex:-1},'All 20 debate points'),
-          h(PointReader,{entry,fallback:h('div',{className:'dk-example-positions'},...entry.sideTitles.map((title,side)=>
+          h(PointReader,{entry,impactRows,fallback:h('div',{className:'dk-example-positions'},...entry.sideTitles.map((title,side)=>
             h('section',{className:'dk-panel',key:title},h('h3',null,(side===0?'A · ':'B · ')+title),
               h('ul',null,...entry.arguments.slice(side*10,side*10+10).map(([label,explanation,id,score],i)=>
-                h('li',{key:label},h('h4',null,h('span',null,(entry.sampleDebate?'Personal pick ':'Editorial order ')+(i+1)+' · '+(score?'Differ Impact '+score.impact+'/100 · Differ Rank #'+score.rank+' · ':'')),label),h('p',null,explanation)))))))})),
+                h('li',{key:label},h('h4',null,h('span',null,impactPickLabel(pickOwners[side].byline)+' '+(i+1)+' · '+(score?'Differ Impact '+score.impact+'/100 · Differ Rank #'+score.rank+' · ':'')),label),h('p',null,explanation)))))))})),
         h('section',{className:'dk-panel dk-example-discussion',ref:discussion,tabIndex:-1},h('h2',null,'Comments'),h('p',null,entry.followUp),
           h(MemberComments,{key:user?.id||'guest',entry}),
           h(BotDiscussion,{entry})),
