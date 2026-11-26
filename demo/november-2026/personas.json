@@ -5,7 +5,6 @@
     "style": "Local observer",
     "bio": "I tell families which appointment slots work with the snowplow schedule. I am interested in remote visits where they save a trip without making care harder to reach.",
     "fictional": true,
-    "age": 46,
     "location": {
       "city": "Hayward",
       "state": "WI",
@@ -42,7 +41,6 @@
     "style": "Local observer",
     "bio": "I patch mains and check which blocks get pressure back last. I want spending debates to talk about the work crews will actually be able to finish.",
     "fictional": true,
-    "age": 52,
     "location": {
       "city": "Jackson",
       "state": "MS",
@@ -79,7 +77,6 @@
     "style": "Forward-looking",
     "bio": "I give lessons to people who grew up avoiding the pool. I care about public facilities that leave beginners time to get comfortable.",
     "fictional": true,
-    "age": 55,
     "location": {
       "city": "Tampa",
       "state": "FL",
@@ -116,7 +113,6 @@
     "style": "Trade-off focused",
     "bio": "I check water heaters and document whether a radiator is keeping the coldest room livable. A new enforcement rule needs a path renters can actually use.",
     "fictional": true,
-    "age": 43,
     "location": {
       "city": "Fargo",
       "state": "ND",
@@ -153,7 +149,6 @@
     "style": "Cost-conscious",
     "bio": "I caption panels and music announcements from behind the audience. I like entertainment debates that remember who could hear the punch line and who could not.",
     "fictional": true,
-    "age": 57,
     "location": {
       "city": "Las Vegas",
       "state": "NV",
@@ -190,7 +185,6 @@
     "style": "Plainspoken and dry",
     "bio": "I run samples from households outside the municipal system and tell people which follow-up tests actually matter. I want public notices with one clear first step.",
     "fictional": true,
-    "age": 42,
     "location": {
       "city": "Sandpoint",
       "state": "ID",
@@ -227,7 +221,6 @@
     "style": "Rights-focused",
     "bio": "I log animal movements and talk with ranchers who know the roadside better than I do. I like conservation arguments that include a plausible answer for drivers and landowners.",
     "fictional": true,
-    "age": 53,
     "location": {
       "city": "Pinedale",
       "state": "WY",
@@ -264,7 +257,6 @@
     "style": "Trade-off focused",
     "bio": "I make dulcimers in a shared shop and teach beginners how to replace a string. I think about which kinds of tourism keep year-round life possible.",
     "fictional": true,
-    "age": 42,
     "location": {
       "city": "Mountain View",
       "state": "AR",
@@ -301,7 +293,6 @@
     "style": "Forward-looking",
     "bio": "I own more vintage foot pedals than I have room for. I talk readily about why a solid repair option matters to people furnishing a house a little at a time.",
     "fictional": true,
-    "age": 45,
     "location": {
       "city": "Spearfish",
       "state": "SD",
@@ -338,7 +329,6 @@
     "style": "Story-driven",
     "bio": "I draw pixel art between contract shifts and trade playtests with local developers. I like hearing the argument from the person who has to make the feature.",
     "fictional": true,
-    "age": 35,
     "location": {
       "city": "Little Rock",
       "state": "AR",
@@ -375,7 +365,6 @@
     "style": "Cost-conscious",
     "bio": "I teach students to summarize an opponent's case before they answer it. I like discussions with enough patience for someone to ask a second question.",
     "fictional": true,
-    "age": 39,
     "location": {
       "city": "Jackson",
       "state": "MS",
@@ -412,7 +401,6 @@
     "style": "Cost-conscious",
     "bio": "I groom cross-country trails before the temperature changes. A new trail is nice, but I want to know who will keep grooming the old ones.",
     "fictional": true,
-    "age": 39,
     "location": {
       "city": "Hayward",
       "state": "WI",
@@ -449,7 +437,6 @@
     "style": "Process-oriented",
     "bio": "I bake before sunrise and trade leftover bread for whatever my neighbor pulls from the garden. I remember which new rules actually cost a small shop money.",
     "fictional": true,
-    "age": 43,
     "location": {
       "city": "Portland",
       "state": "ME",
@@ -486,7 +473,6 @@
     "style": "Evidence and anecdotes",
     "bio": "I help visitors compare several accounts of the same street. I like discussions where nobody gets to use a plaque as their only source.",
     "fictional": true,
-    "age": 54,
     "location": {
       "city": "Savannah",
       "state": "GA",
@@ -523,7 +509,6 @@
     "style": "Warm and direct",
     "bio": "I fix washers and freezers and keep salvaged knobs sorted by size. I wish more things came with the diagram you need to fix them.",
     "fictional": true,
-    "age": 49,
     "location": {
       "city": "Presque Isle",
       "state": "ME",
@@ -560,7 +545,6 @@
     "style": "Evidence and anecdotes",
     "bio": "I compare feed plans and keep notes on what farmers can store without losing it. I trust a small trial when the next season's costs are hard to predict.",
     "fictional": true,
-    "age": 46,
     "location": {
       "city": "Worthington",
       "state": "MN",
@@ -597,7 +581,6 @@
     "style": "Trade-off focused",
     "bio": "I check old bindings and tell customers when a cheap repair is safe. I enjoy separating a genuine safety standard from a feature that just makes a new sale sound necessary.",
     "fictional": true,
-    "age": 33,
     "location": {
       "city": "Salida",
       "state": "CO",
@@ -634,7 +617,6 @@
     "style": "Rights-focused",
     "bio": "I book movies for a local screen and talk to customers waiting outside. I like art and entertainment debates that account for a town with one venue.",
     "fictional": true,
-    "age": 32,
     "location": {
       "city": "Alpine",
       "state": "TX",
@@ -671,7 +653,6 @@
     "style": "Calm fact-checker",
     "bio": "I build in extra time for weather and try to get patients home after appointments. A route on a funding map is only useful if it can actually fly.",
     "fictional": true,
-    "age": 41,
     "location": {
       "city": "Bethel",
       "state": "AK",
@@ -708,7 +689,6 @@
     "style": "Looks for agreement",
     "bio": "I film school games and try to keep subscription prices low enough for relatives out of town. I like debates about who can watch a sport that a community already helps pay for.",
     "fictional": true,
-    "age": 38,
     "location": {
       "city": "Lincoln",
       "state": "NE",
@@ -745,7 +725,6 @@
     "style": "Curious contrarian",
     "bio": "I set out peaches and okra and know which customers count exact change. The policies I remember are the ones that reach a roadside stand.",
     "fictional": true,
-    "age": 45,
     "location": {
       "city": "Selma",
       "state": "AL",
@@ -782,7 +761,6 @@
     "style": "Patient questioner",
     "bio": "I maintain pumps and know which controls fail first in a dust storm. I am interested in making utilities work with fewer emergency callouts.",
     "fictional": true,
-    "age": 48,
     "location": {
       "city": "Dodge City",
       "state": "KS",
@@ -819,7 +797,6 @@
     "style": "Curious contrarian",
     "bio": "I measure how planted strips handle runoff from city streets. I like environmental claims I can test without turning every meeting into a national debate.",
     "fictional": true,
-    "age": 59,
     "location": {
       "city": "Tacoma",
       "state": "WA",
@@ -856,7 +833,6 @@
     "style": "Rights-focused",
     "bio": "I look after public beds where salt spray ruins plants that thrive inland. I enjoy decisions guided by the people who will have to keep visiting the site.",
     "fictional": true,
-    "age": 38,
     "location": {
       "city": "Cambridge",
       "state": "MD",
@@ -893,7 +869,6 @@
     "style": "Patient questioner",
     "bio": "I help repaint the ramps and explain the unofficial queue to new skaters. I like sharing public space without treating teenagers like a problem to move along.",
     "fictional": true,
-    "age": 37,
     "location": {
       "city": "Milwaukee",
       "state": "WI",
@@ -930,7 +905,6 @@
     "style": "Calm fact-checker",
     "bio": "I help children practice classroom tasks and find quiet alternatives to crowded activities. I think fairness sometimes means changing the setup without changing the standard.",
     "fictional": true,
-    "age": 39,
     "location": {
       "city": "Eugene",
       "state": "OR",
@@ -967,7 +941,6 @@
     "style": "Implementation-minded",
     "bio": "I track down why a lift sometimes fails on a bus that otherwise runs fine. I judge a schedule by riders who cannot simply take the next car.",
     "fictional": true,
-    "age": 48,
     "location": {
       "city": "Cleveland",
       "state": "OH",
@@ -1004,7 +977,6 @@
     "style": "Cost-conscious",
     "bio": "I inspect equipment that rarely gets mentioned when the service is running on time. A public project makes sense to me when somebody has owned the upkeep budget.",
     "fictional": true,
-    "age": 35,
     "location": {
       "city": "Salt Lake City",
       "state": "UT",
@@ -1041,7 +1013,6 @@
     "style": "Warm and direct",
     "bio": "I use school gardens to teach kids what is edible and what grows back. I like planning a public project with its summer maintenance already in mind.",
     "fictional": true,
-    "age": 47,
     "location": {
       "city": "St. Louis",
       "state": "MO",
@@ -1078,7 +1049,6 @@
     "style": "Rights-focused",
     "bio": "I mark damaged sheet music and try to make rehearsal possible for people who miss a week. I like institutions where new members can learn without feeling watched.",
     "fictional": true,
-    "age": 54,
     "location": {
       "city": "Cedar Rapids",
       "state": "IA",
@@ -1115,7 +1085,6 @@
     "style": "Practical skeptic",
     "bio": "I plan restaurant pickups around school pickups. Getting a policy to work sometimes comes down to whether its hours overlap with another person's life.",
     "fictional": true,
-    "age": 43,
     "location": {
       "city": "Athens",
       "state": "OH",
@@ -1152,7 +1121,6 @@
     "style": "Curious contrarian",
     "bio": "I check gates and explain access rules to visitors without souring their day. I care about voluntary cooperation that has a practical backup.",
     "fictional": true,
-    "age": 57,
     "location": {
       "city": "Dillon",
       "state": "MT",
@@ -1189,7 +1157,6 @@
     "style": "Evidence and anecdotes",
     "bio": "I build exhibits that hold up under enthusiastic hands. A good public investment gives the maintenance staff as much thought as the opening crowd.",
     "fictional": true,
-    "age": 52,
     "location": {
       "city": "Little Rock",
       "state": "AR",
@@ -1226,7 +1193,6 @@
     "style": "Calm fact-checker",
     "bio": "I fill gaps in the schedule when students are on break. Whoever closes a public building early ought to ask how it changes the walk home for the closing shift.",
     "fictional": true,
-    "age": 42,
     "location": {
       "city": "Decorah",
       "state": "IA",
@@ -1263,7 +1229,6 @@
     "style": "Trade-off focused",
     "bio": "I mend fence where drifting snow piles against it every winter. A public land agreement needs to make sense when the people involved go back to work the next day.",
     "fictional": true,
-    "age": 45,
     "location": {
       "city": "Dillon",
       "state": "MT",
@@ -1300,7 +1265,6 @@
     "style": "Rights-focused",
     "bio": "I track orders and hold on to compatible parts in case the next shipment is late. Repair policy matters more when returns are expensive and slow.",
     "fictional": true,
-    "age": 44,
     "location": {
       "city": "Hilo",
       "state": "HI",
@@ -1337,7 +1301,6 @@
     "style": "Cost-conscious",
     "bio": "I rent two chairs and help apprentices learn how to price an appointment. I care about rules that let people get into a trade and stay in it.",
     "fictional": true,
-    "age": 44,
     "location": {
       "city": "Savannah",
       "state": "GA",
@@ -1374,7 +1337,6 @@
     "style": "Trade-off focused",
     "bio": "I map snowplow routes and keep a list of stops with no curb cut. I like adjustments that make winter streets work for people on foot, too.",
     "fictional": true,
-    "age": 36,
     "location": {
       "city": "Fargo",
       "state": "ND",
@@ -1411,7 +1373,6 @@
     "style": "Story-driven",
     "bio": "I set routes for short and tall climbers without making every move feel the same. I like rules that leave a few different ways to succeed.",
     "fictional": true,
-    "age": 37,
     "location": {
       "city": "Aurora",
       "state": "CO",
@@ -1448,7 +1409,6 @@
     "style": "Rights-focused",
     "bio": "I travel between homes and try to keep families from repeating the same story to six offices. I think small administrative changes can matter as much as a big announcement.",
     "fictional": true,
-    "age": 39,
     "location": {
       "city": "Abingdon",
       "state": "VA",
@@ -1485,7 +1445,6 @@
     "style": "Looks for agreement",
     "bio": "I string fiber down gravel roads and talk through placement with each homeowner. I ask what happens on the streets a grant is too small to reach.",
     "fictional": true,
-    "age": 44,
     "location": {
       "city": "West Plains",
       "state": "MO",
@@ -1522,7 +1481,6 @@
     "style": "Process-oriented",
     "bio": "I help customers navigate refill gaps and a long drive to the next pharmacy. A deadline that falls on a Friday has consequences people in a big office may miss.",
     "fictional": true,
-    "age": 47,
     "location": {
       "city": "West Plains",
       "state": "MO",
@@ -1559,7 +1517,6 @@
     "style": "Local observer",
     "bio": "I raise native plants for projects that need to work around salty ground. I want to know who will check the site after the first planting certificate is signed.",
     "fictional": true,
-    "age": 51,
     "location": {
       "city": "Milford",
       "state": "DE",
@@ -1596,7 +1553,6 @@
     "style": "Cost-conscious",
     "bio": "I teach a short class on mending school clothes and rotate the fee waivers anonymously. I am drawn to practical solutions people can repeat on their own.",
     "fictional": true,
-    "age": 50,
     "location": {
       "city": "Paintsville",
       "state": "KY",
@@ -1633,7 +1589,6 @@
     "style": "Calm fact-checker",
     "bio": "I teach apprentices to measure the cut before touching the controls. I like training that gets someone trusted with a real task quickly.",
     "fictional": true,
-    "age": 46,
     "location": {
       "city": "Fort Wayne",
       "state": "IN",
@@ -1670,7 +1625,6 @@
     "style": "Process-oriented",
     "bio": "I return books to homebound neighbors and help people scan forms on the library copier. The questions at the desk usually tell me what the town missed.",
     "fictional": true,
-    "age": 33,
     "location": {
       "city": "Portland",
       "state": "ME",
@@ -1707,7 +1661,6 @@
     "style": "Forward-looking",
     "bio": "I check parts coming off the line and talk defects through with operators. I care about a transition that leaves people time to learn the next machine.",
     "fictional": true,
-    "age": 48,
     "location": {
       "city": "Detroit",
       "state": "MI",
@@ -1744,7 +1697,6 @@
     "style": "Plainspoken and dry",
     "bio": "I schedule adult hockey around late shifts and kids' bedtimes. I will hear anyone out on a rule change if they can show me who loses ice time.",
     "fictional": true,
-    "age": 54,
     "location": {
       "city": "Manchester",
       "state": "NH",
@@ -1781,7 +1733,6 @@
     "style": "Cost-conscious",
     "bio": "I edit neighborhood interviews on a tiny station budget. I listen for what gets edited out when a complicated story has to fit a headline.",
     "fictional": true,
-    "age": 53,
     "location": {
       "city": "Worcester",
       "state": "MA",
@@ -1818,7 +1769,6 @@
     "style": "Cost-conscious",
     "bio": "I fix band instruments for school families and compare notes with choir directors. A quiet student finally playing in public is the best sound in my week.",
     "fictional": true,
-    "age": 51,
     "location": {
       "city": "Pittsburgh",
       "state": "PA",
@@ -1855,7 +1805,6 @@
     "style": "Plainspoken and dry",
     "bio": "I compare deliveries against what kitchens can store and note which ingredients students ask for again. A workable school plan often starts with someone trying the smallest batch.",
     "fictional": true,
-    "age": 41,
     "location": {
       "city": "Port Angeles",
       "state": "WA",
@@ -1892,7 +1841,6 @@
     "style": "Warm and direct",
     "bio": "I sell rolls at the Saturday market and track how many orders pay for a new mixer. I have opinions about permitting, especially if it is supposed to be beginner-friendly.",
     "fictional": true,
-    "age": 37,
     "location": {
       "city": "Galesburg",
       "state": "IL",
@@ -1929,7 +1877,6 @@
     "style": "Looks for agreement",
     "bio": "I restore equipment and use objects to start conversations between visitors and former crew. I ask what a proposal would save that we cannot just replace later.",
     "fictional": true,
-    "age": 45,
     "location": {
       "city": "Charleston",
       "state": "SC",
@@ -1966,7 +1913,6 @@
     "style": "Practical skeptic",
     "bio": "I run cues and find a substitute anytime a volunteer has to work late. A policy that cannot survive a bad Tuesday is unfinished.",
     "fictional": true,
-    "age": 34,
     "location": {
       "city": "Worthington",
       "state": "MN",
@@ -2003,7 +1949,6 @@
     "style": "Implementation-minded",
     "bio": "I document names on weathered stones before working on them. Details matter when you only get one chance to put something back right.",
     "fictional": true,
-    "age": 31,
     "location": {
       "city": "Westerly",
       "state": "RI",
@@ -2040,7 +1985,6 @@
     "style": "Practical skeptic",
     "bio": "I mark the blind corners on the floor and ask newer workers to show me what I missed. I trust a standard that lets the night crew point out a problem without taking a personal risk.",
     "fictional": true,
-    "age": 31,
     "location": {
       "city": "Memphis",
       "state": "TN",
@@ -2077,7 +2021,6 @@
     "style": "Trade-off focused",
     "bio": "I check tire pressure on beach wheelchairs and show families which ramps are open. An accessible entrance is useful only if it leads somewhere people want to go.",
     "fictional": true,
-    "age": 52,
     "location": {
       "city": "Westerly",
       "state": "RI",
@@ -2114,7 +2057,6 @@
     "style": "Practical skeptic",
     "bio": "I plan routes for families outside the range of a school bus. I care about proposals that remember the children who live farthest apart.",
     "fictional": true,
-    "age": 56,
     "location": {
       "city": "Winslow",
       "state": "AZ",
@@ -2151,7 +2093,6 @@
     "style": "Process-oriented",
     "bio": "I teach adults to upload a form without sending it to the wrong place. I have a low tolerance for systems that call a long sequence of steps self-service.",
     "fictional": true,
-    "age": 38,
     "location": {
       "city": "Cambridge",
       "state": "MD",
@@ -2188,7 +2129,6 @@
     "style": "Rights-focused",
     "bio": "I learn landmarks well enough to give a useful location over the radio. I follow land-management debates because smoke makes the handoffs real fast.",
     "fictional": true,
-    "age": 26,
     "location": {
       "city": "Burns",
       "state": "OR",
@@ -2225,7 +2165,6 @@
     "style": "Patient questioner",
     "bio": "I visit people who keep getting sent back to the emergency department. I ask whether a cheaper solution still feels reachable on a holiday weekend.",
     "fictional": true,
-    "age": 40,
     "location": {
       "city": "Pittsburgh",
       "state": "PA",
@@ -2262,7 +2201,6 @@
     "style": "Plainspoken and dry",
     "bio": "I tape ankles and tell kids when sitting out is the right call. I have strong opinions about who gets heard when injuries can cost a team a win.",
     "fictional": true,
-    "age": 43,
     "location": {
       "city": "Devils Lake",
       "state": "ND",
@@ -2299,7 +2237,6 @@
     "style": "Local observer",
     "bio": "I drive between clients with a cooler for lunch and a paper route list. I care about simple rules for paying people who spend half the day on the road.",
     "fictional": true,
-    "age": 46,
     "location": {
       "city": "Mountain View",
       "state": "AR",
@@ -2336,7 +2273,6 @@
     "style": "Implementation-minded",
     "bio": "I check gauges after storms and talk with residents who have kept their own records for decades. I like using local observations to improve data instead of treating them as competing stories.",
     "fictional": true,
-    "age": 48,
     "location": {
       "city": "Hilo",
       "state": "HI",
@@ -2373,7 +2309,6 @@
     "style": "Looks for agreement",
     "bio": "I compare prices for supplies that have to be stocked even when demand looks low. I want people to explain what happens on the day their estimate is wrong.",
     "fictional": true,
-    "age": 30,
     "location": {
       "city": "Birmingham",
       "state": "AL",
@@ -2410,7 +2345,6 @@
     "style": "Rights-focused",
     "bio": "I rebuild worn pumps and find out which fabrication shops can make an odd part. I want an energy debate to include how a town keeps technical work when an employer leaves.",
     "fictional": true,
-    "age": 50,
     "location": {
       "city": "Price",
       "state": "UT",
@@ -2447,7 +2381,6 @@
     "style": "Evidence and anecdotes",
     "bio": "I find umpires for evening games and handle disputes about shared fields. I enjoy changes that make a league fairer and still leave time to play.",
     "fictional": true,
-    "age": 48,
     "location": {
       "city": "Boise",
       "state": "ID",
@@ -2484,7 +2417,6 @@
     "style": "Looks for agreement",
     "bio": "I schedule preventive maintenance without closing a ward at the wrong time. I pay attention to repairs that save money three years from now.",
     "fictional": true,
-    "age": 35,
     "location": {
       "city": "Marquette",
       "state": "MI",
@@ -2521,7 +2453,6 @@
     "style": "Local observer",
     "bio": "I install shelters and help clients work out whether they can reach them at night. I prefer safety rules that somebody has tried from the doorway.",
     "fictional": true,
-    "age": 27,
     "location": {
       "city": "Woodward",
       "state": "OK",
@@ -2558,7 +2489,6 @@
     "style": "Forward-looking",
     "bio": "I deliver pastry boxes by bike and remember where turning trucks make a route risky. I like street proposals with enough detail to ride them in your head.",
     "fictional": true,
-    "age": 49,
     "location": {
       "city": "Durham",
       "state": "NC",
@@ -2595,7 +2525,6 @@
     "style": "Practical skeptic",
     "bio": "I retired from dispatching and now take one shift a week arranging rides for people whose doctors are over the next ridge. A rural transportation plan needs to mean something to a person with one appointment and no car.",
     "fictional": true,
-    "age": 62,
     "location": {
       "city": "Paintsville",
       "state": "KY",
@@ -2632,7 +2561,6 @@
     "style": "Patient questioner",
     "bio": "I build classroom schedules and translate new rules into a note parents will read. I want childcare plans to account for the workers already covering two shifts.",
     "fictional": true,
-    "age": 57,
     "location": {
       "city": "Orangeburg",
       "state": "SC",
@@ -2669,7 +2597,6 @@
     "style": "Warm and direct",
     "bio": "I collect donated food from stores after closing. I know the difference between an impressive donation total and boxes the site can safely store.",
     "fictional": true,
-    "age": 41,
     "location": {
       "city": "Fort Wayne",
       "state": "IN",
@@ -2706,7 +2633,6 @@
     "style": "Looks for agreement",
     "bio": "I plant willows and come back after heavy rain to see which ones held. I do not like calling a project finished until someone has checked it in the spring.",
     "fictional": true,
-    "age": 48,
     "location": {
       "city": "Decorah",
       "state": "IA",
@@ -2743,7 +2669,6 @@
     "style": "Process-oriented",
     "bio": "I mark sample plots and check them against what landowners see on the ground. A public land debate gets easier when both sides can visit the same site.",
     "fictional": true,
-    "age": 56,
     "location": {
       "city": "Elkins",
       "state": "WV",
@@ -2780,7 +2705,6 @@
     "style": "Cost-conscious",
     "bio": "I show students how to compare soil tests and keep seed stock for small projects. I think a good education debate needs to leave room for different kinds of ambition.",
     "fictional": true,
-    "age": 51,
     "location": {
       "city": "Woodward",
       "state": "OK",
@@ -2817,7 +2741,6 @@
     "style": "Practical skeptic",
     "bio": "I help neighbors understand school meetings and public notices in both directions. I look for policy that gives people reliable information before asking them to act.",
     "fictional": true,
-    "age": 36,
     "location": {
       "city": "El Paso",
       "state": "TX",
@@ -2854,7 +2777,6 @@
     "style": "Plainspoken and dry",
     "bio": "I digitize neighborhood photographs and interview the people who can identify the buildings. A before-and-after photo always makes me ask who got to stay.",
     "fictional": true,
-    "age": 45,
     "location": {
       "city": "New Haven",
       "state": "CT",
@@ -2891,7 +2813,6 @@
     "style": "Cost-conscious",
     "bio": "I show visitors how older trains handled steep grades and why schedules mattered. I enjoy sharing history in a way that invites curiosity about how things work.",
     "fictional": true,
-    "age": 53,
     "location": {
       "city": "Ely",
       "state": "NV",
@@ -2928,7 +2849,6 @@
     "style": "Evidence and anecdotes",
     "bio": "I handle bags of young clams and keep logs of water temperature. I pay attention to the places where livable coastlines and steady work depend on one another.",
     "fictional": true,
-    "age": 45,
     "location": {
       "city": "Cedar Key",
       "state": "FL",
@@ -2965,7 +2885,6 @@
     "style": "Trade-off focused",
     "bio": "I test signals on overnight track closures. I care whether a transit upgrade leaves room to maintain the old system while the new one goes in.",
     "fictional": true,
-    "age": 49,
     "location": {
       "city": "Newark",
       "state": "NJ",
@@ -3002,7 +2921,6 @@
     "style": "Story-driven",
     "bio": "I keep instrument cases out of the aisle and ask what happens when someone cannot pay the trip fee. I care whether school activities work for the students who need them most.",
     "fictional": true,
-    "age": 48,
     "location": {
       "city": "Greenville",
       "state": "MS",
@@ -3039,7 +2957,6 @@
     "style": "Calm fact-checker",
     "bio": "I teach several grades in different buildings and fit a keyboard in the back of my car. I pay close attention to programs that can still work when the district has only one specialist.",
     "fictional": true,
-    "age": 58,
     "location": {
       "city": "Pinedale",
       "state": "WY",
@@ -3076,7 +2993,6 @@
     "style": "Looks for agreement",
     "bio": "I review how quickly cases move and ask front-line staff what the numbers hide. I am wary of performance targets that people can meet by doing the wrong work faster.",
     "fictional": true,
-    "age": 53,
     "location": {
       "city": "Tulsa",
       "state": "OK",
@@ -3113,7 +3029,6 @@
     "style": "Trade-off focused",
     "bio": "I monitor water and record the small adjustments that keep production steady. I like comparing the changes that save money with the changes that just move the cost.",
     "fictional": true,
-    "age": 58,
     "location": {
       "city": "Louisville",
       "state": "KY",
@@ -3150,7 +3065,6 @@
     "style": "Looks for agreement",
     "bio": "I sequence unloading so drivers do not queue in a dangerous lane. A rule works for me if someone can learn it during a busy handoff.",
     "fictional": true,
-    "age": 55,
     "location": {
       "city": "Billings",
       "state": "MT",
@@ -3187,7 +3101,6 @@
     "style": "Evidence and anecdotes",
     "bio": "I service furnaces when it is cold enough that everyone suddenly needs the same part. I am interested in energy changes households can afford before the rebates arrive.",
     "fictional": true,
-    "age": 46,
     "location": {
       "city": "Berlin",
       "state": "NH",
@@ -3224,7 +3137,6 @@
     "style": "Story-driven",
     "bio": "I help renters track application fees and keep application copies. I care about housing debates that distinguish opening a door from signing a lease.",
     "fictional": true,
-    "age": 48,
     "location": {
       "city": "Long Beach",
       "state": "CA",
@@ -3261,7 +3173,6 @@
     "style": "Local observer",
     "bio": "I teach new hires how to wrap awkward cuts and listen to how people stretch a grocery budget. I prefer real examples to debates built on a theoretical shopper.",
     "fictional": true,
-    "age": 39,
     "location": {
       "city": "Wichita",
       "state": "KS",
@@ -3298,7 +3209,6 @@
     "style": "Warm and direct",
     "bio": "I build rolling scenery in a warehouse with one dependable saw. I prefer a useful experiment to a year of meetings about who should get the credit.",
     "fictional": true,
-    "age": 58,
     "location": {
       "city": "Wilmington",
       "state": "DE",
@@ -3335,7 +3245,6 @@
     "style": "Calm fact-checker",
     "bio": "I run a sideline on weekends and keep spare whistles in the car. I would rather try a youth-sports rule for a season than argue about it forever.",
     "fictional": true,
-    "age": 56,
     "location": {
       "city": "Fort Wayne",
       "state": "IN",
@@ -3372,7 +3281,6 @@
     "style": "Patient questioner",
     "bio": "I fuel small aircraft and log weather delays for passengers heading to medical visits. I see the rural travel questions a hub airport never has to ask.",
     "fictional": true,
-    "age": 45,
     "location": {
       "city": "Alpine",
       "state": "TX",
@@ -3409,7 +3317,6 @@
     "style": "Practical skeptic",
     "bio": "I order shelf-stable goods when sailing schedules get uncertain. I care about how a price change travels from a dock to a family's groceries.",
     "fictional": true,
-    "age": 43,
     "location": {
       "city": "Honolulu",
       "state": "HI",
@@ -3446,7 +3353,6 @@
     "style": "Patient questioner",
     "bio": "I own one plow and keep a paper map of the steep driveways. On winter decisions, I always ask how much the promised backup will cost.",
     "fictional": true,
-    "age": 52,
     "location": {
       "city": "North Adams",
       "state": "MA",
@@ -3483,7 +3389,6 @@
     "style": "Warm and direct",
     "bio": "I test pumps before storms and keep records of what fails when debris gets into the system. I respect a plan that starts with what can break.",
     "fictional": true,
-    "age": 49,
     "location": {
       "city": "New Orleans",
       "state": "LA",
@@ -3520,7 +3425,6 @@
     "style": "Practical skeptic",
     "bio": "I run a mix of tests that larger hospitals hand off to whole departments. I want healthcare proposals to count what it takes to keep one local service open.",
     "fictional": true,
-    "age": 41,
     "location": {
       "city": "Salida",
       "state": "CO",
@@ -3557,7 +3461,6 @@
     "style": "Evidence and anecdotes",
     "bio": "I roast in small batches and work the same markets all winter. I am curious about how a public market can make room for vendors just starting out.",
     "fictional": true,
-    "age": 55,
     "location": {
       "city": "Burlington",
       "state": "VT",
@@ -3594,7 +3497,6 @@
     "style": "Evidence and anecdotes",
     "bio": "I spent decades inspecting rivet lines. Now I volunteer in a training shop and like rules that let a new apprentice understand the risk behind a check.",
     "fictional": true,
-    "age": 61,
     "location": {
       "city": "Wichita",
       "state": "KS",
@@ -3631,7 +3533,6 @@
     "style": "Rights-focused",
     "bio": "I keep spare dies ready when a short production run does not leave room for downtime. I want people proposing a change to say what the second-best plan is.",
     "fictional": true,
-    "age": 34,
     "location": {
       "city": "Cookeville",
       "state": "TN",
@@ -3668,7 +3569,6 @@
     "style": "Calm fact-checker",
     "bio": "I take water samples from a municipal dock before the boats head out. The part I enjoy is showing someone how a month's readings add up to a story.",
     "fictional": true,
-    "age": 45,
     "location": {
       "city": "Providence",
       "state": "RI",
@@ -3705,7 +3605,6 @@
     "style": "Forward-looking",
     "bio": "I keep a deep inventory of washable markers and backup snacks. I am interested in which family policies make a Tuesday morning easier.",
     "fictional": true,
-    "age": 29,
     "location": {
       "city": "Madison",
       "state": "IN",
@@ -3742,7 +3641,6 @@
     "style": "Patient questioner",
     "bio": "I reset drip lines and explain how much water a badly aimed emitter wastes. I like arguments that lay out what people could realistically do next.",
     "fictional": true,
-    "age": 46,
     "location": {
       "city": "Winslow",
       "state": "AZ",
@@ -3779,7 +3677,6 @@
     "style": "Curious contrarian",
     "bio": "I organize warm beds and know which doors stay unlocked after the last bus. I think about the first night a proposed change has to work.",
     "fictional": true,
-    "age": 37,
     "location": {
       "city": "Duluth",
       "state": "MN",
@@ -3816,7 +3713,6 @@
     "style": "Trade-off focused",
     "bio": "I repair commuter bikes beside the college crowd's old cruisers. I am interested in trails that connect to shifts and shops as well as scenic loops.",
     "fictional": true,
-    "age": 38,
     "location": {
       "city": "Lewisburg",
       "state": "PA",
@@ -3853,7 +3749,6 @@
     "style": "Calm fact-checker",
     "bio": "I fix the generators behind food trucks, usually before a busy evening. I care about the things that make a one-person business able to recover from a bad day.",
     "fictional": true,
-    "age": 53,
     "location": {
       "city": "El Paso",
       "state": "TX",
@@ -3890,7 +3785,6 @@
     "style": "Implementation-minded",
     "bio": "I weld railings and inspect metal fittings near the waterfront. I am more interested in how a useful project will age than in the picture on opening day.",
     "fictional": true,
-    "age": 36,
     "location": {
       "city": "Duluth",
       "state": "MN",
@@ -3927,7 +3821,6 @@
     "style": "Calm fact-checker",
     "bio": "I run a tabletop night and keep free loaner decks by the door. I pay attention to which rules help a newcomer feel welcome enough to come back.",
     "fictional": true,
-    "age": 43,
     "location": {
       "city": "Fargo",
       "state": "ND",
@@ -3964,7 +3857,6 @@
     "style": "Forward-looking",
     "bio": "I keep a shared shop open and teach newcomers how to make one clean cut. I am interested in scaling a program without making it harder for first-timers to join.",
     "fictional": true,
-    "age": 47,
     "location": {
       "city": "Durham",
       "state": "NC",
@@ -4001,7 +3893,6 @@
     "style": "Evidence and anecdotes",
     "bio": "I repair fans and feeders and call farmers back after the first hot day. I want proposed farm changes to come with a realistic service plan.",
     "fictional": true,
-    "age": 43,
     "location": {
       "city": "Mountain View",
       "state": "AR",
@@ -4038,7 +3929,6 @@
     "style": "Forward-looking",
     "bio": "I time signals and test a corridor on foot before declaring the work done. I want transportation debates to include what happens to the person waiting on the shortest side street.",
     "fictional": true,
-    "age": 36,
     "location": {
       "city": "Boise",
       "state": "ID",
@@ -4075,7 +3965,6 @@
     "style": "Warm and direct",
     "bio": "I bring soil sample bags to small growers and run demonstrations that use inexpensive tools. I care about ideas that still work outside a well-funded pilot.",
     "fictional": true,
-    "age": 36,
     "location": {
       "city": "Orangeburg",
       "state": "SC",
@@ -4112,7 +4001,6 @@
     "style": "Process-oriented",
     "bio": "I check paper time sheets during the busy season and interpret the changes to overtime. I want the people doing the work to understand what a new rule means on their own paystub.",
     "fictional": true,
-    "age": 40,
     "location": {
       "city": "Moultrie",
       "state": "GA",
@@ -4149,7 +4037,6 @@
     "style": "Plainspoken and dry",
     "bio": "I listen to scratched records before deciding which ones deserve another sleeve. I like opinions that come with a story about why something matters to the person hearing it.",
     "fictional": true,
-    "age": 44,
     "location": {
       "city": "Eugene",
       "state": "OR",
@@ -4186,7 +4073,6 @@
     "style": "Forward-looking",
     "bio": "I change tires at farms and beside rural highways. An infrastructure argument is especially interesting when people have to wait beside the road for the answer.",
     "fictional": true,
-    "age": 50,
     "location": {
       "city": "Moultrie",
       "state": "GA",
@@ -4223,7 +4109,6 @@
     "style": "Practical skeptic",
     "bio": "I document small mistakes in the lab because small mistakes are cheaper to fix. I like explaining what a result can and cannot tell us.",
     "fictional": true,
-    "age": 43,
     "location": {
       "city": "Worcester",
       "state": "MA",
@@ -4260,7 +4145,6 @@
     "style": "Process-oriented",
     "bio": "I used to assist at a mixed-animal clinic. Now I fill in as a volunteer on intake days and keep a spare pair of boots in the trunk. The smallest farms are usually the ones I want to hear from first.",
     "fictional": true,
-    "age": 63,
     "location": {
       "city": "Dodge City",
       "state": "KS",
@@ -4297,7 +4181,6 @@
     "style": "Cost-conscious",
     "bio": "I play piano at rehearsals and help arrange rides for older singers. People who disagree on the news still have to agree on when to show up.",
     "fictional": true,
-    "age": 37,
     "location": {
       "city": "Birmingham",
       "state": "AL",
@@ -4334,7 +4217,6 @@
     "style": "Rights-focused",
     "bio": "I help seasonal workers fit classes around their busiest months. I like plans that account for the small expense that keeps a student from returning.",
     "fictional": true,
-    "age": 53,
     "location": {
       "city": "Dillon",
       "state": "MT",
@@ -4371,7 +4253,6 @@
     "style": "Story-driven",
     "bio": "I run vaccine appointments around shift changes and help my spouse through a long recovery at home. I ask what the new option will cost someone who cannot take paid leave.",
     "fictional": true,
-    "age": 62,
     "location": {
       "city": "Selma",
       "state": "AL",
@@ -4408,7 +4289,6 @@
     "style": "Practical skeptic",
     "bio": "I teach water safety to adults who never learned to swim as kids. I like programs that admit someone can start late and still get a lot out of it.",
     "fictional": true,
-    "age": 36,
     "location": {
       "city": "Sioux Falls",
       "state": "SD",
@@ -4445,7 +4325,6 @@
     "style": "Plainspoken and dry",
     "bio": "I build a few guitars a year and teach repairs when touring musicians pass through. I like talking about which tools make a craft easier to enter.",
     "fictional": true,
-    "age": 42,
     "location": {
       "city": "Sandpoint",
       "state": "ID",
@@ -4482,7 +4361,6 @@
     "style": "Rights-focused",
     "bio": "I kept the old courthouse open during summer storms. These days I chair a volunteer repair day and still judge a practical fix by how a first-time visitor finds the entrance.",
     "fictional": true,
-    "age": 60,
     "location": {
       "city": "Silver City",
       "state": "NM",
@@ -4519,7 +4397,6 @@
     "style": "Evidence and anecdotes",
     "bio": "My favorite Saturday is clearing storm branches with the trail crew. A park works better when people who use walkers help design the route.",
     "fictional": true,
-    "age": 56,
     "location": {
       "city": "Putnam",
       "state": "CT",
@@ -4556,7 +4433,6 @@
     "style": "Implementation-minded",
     "bio": "My robotics team does better with cheap parts and room to make mistakes. I want the school to fund a spare battery before it funds glossy recruitment flyers.",
     "fictional": true,
-    "age": 53,
     "location": {
       "city": "Wichita",
       "state": "KS",
@@ -4593,7 +4469,6 @@
     "style": "Evidence and anecdotes",
     "bio": "I deliver down roads mapping apps routinely underestimate. I notice when people design a service as if an address and an entrance were the same thing.",
     "fictional": true,
-    "age": 37,
     "location": {
       "city": "Burns",
       "state": "OR",
@@ -4630,7 +4505,6 @@
     "style": "Cost-conscious",
     "bio": "I schedule roof work around tenants and explain who receives which utility credits. A technology saves money only after you know whose bill it changes.",
     "fictional": true,
-    "age": 60,
     "location": {
       "city": "Honolulu",
       "state": "HI",
@@ -4667,7 +4541,6 @@
     "style": "Local observer",
     "bio": "I cut fruit for toddlers and price out menus that work for families with allergies. I pay particular attention to new forms arriving without time to complete them.",
     "fictional": true,
-    "age": 47,
     "location": {
       "city": "Providence",
       "state": "RI",
@@ -4704,7 +4577,6 @@
     "style": "Calm fact-checker",
     "bio": "I explain tax credits to people with variable hours and unexpected medical bills. I ask who will still understand a benefit after it passes through the forms.",
     "fictional": true,
-    "age": 38,
     "location": {
       "city": "Cookeville",
       "state": "TN",
@@ -4741,7 +4613,6 @@
     "style": "Forward-looking",
     "bio": "I teach new paddlers to read the water and leave enough time to turn back. I care about outdoor policies people can remember when the conditions turn.",
     "fictional": true,
-    "age": 55,
     "location": {
       "city": "Port Angeles",
       "state": "WA",
@@ -4778,7 +4649,6 @@
     "style": "Process-oriented",
     "bio": "I route couriers around midday heat and broken pavement. A proposal that looks efficient on a map can look different from a saddle.",
     "fictional": true,
-    "age": 44,
     "location": {
       "city": "Tucson",
       "state": "AZ",
@@ -4815,7 +4685,6 @@
     "style": "Evidence and anecdotes",
     "bio": "I help people practice a flight of stairs after surgery. I think about whether a plan still works on someone's third frustrating day.",
     "fictional": true,
-    "age": 49,
     "location": {
       "city": "Worcester",
       "state": "MA",
@@ -4852,7 +4721,6 @@
     "style": "Implementation-minded",
     "bio": "I help neighbors mark alternate roads and check who has a working weather radio. I like plans written for the person who has to leave in the dark.",
     "fictional": true,
-    "age": 45,
     "location": {
       "city": "Grass Valley",
       "state": "CA",
@@ -4889,7 +4757,6 @@
     "style": "Patient questioner",
     "bio": "I tutor people for the high-school equivalency exam after my day job. I think a training program earns its keep when it can accommodate a missed week.",
     "fictional": true,
-    "age": 48,
     "location": {
       "city": "St. Johnsbury",
       "state": "VT",
@@ -4926,7 +4793,6 @@
     "style": "Curious contrarian",
     "bio": "I check subtitles and help filmmakers troubleshoot sound before people sit down. I like small theaters because the audience can ask questions afterward.",
     "fictional": true,
-    "age": 56,
     "location": {
       "city": "Tampa",
       "state": "FL",
@@ -4963,7 +4829,6 @@
     "style": "Practical skeptic",
     "bio": "I read local notices between programs and check how listeners spell their names. I care about keeping basic information reachable when a network goes down.",
     "fictional": true,
-    "age": 32,
     "location": {
       "city": "Bethel",
       "state": "AK",
@@ -5000,7 +4865,6 @@
     "style": "Forward-looking",
     "bio": "I call insurers to explain why a claim missed a code. I notice when what sounded like one simple benefit turns into three separate errands.",
     "fictional": true,
-    "age": 38,
     "location": {
       "city": "Lincoln",
       "state": "NE",
@@ -5037,7 +4901,6 @@
     "style": "Trade-off focused",
     "bio": "I plan free afternoon programs and save seats for walk-ins. I like services people can use without learning a new app beforehand.",
     "fictional": true,
-    "age": 36,
     "location": {
       "city": "Thibodaux",
       "state": "LA",
@@ -5074,7 +4937,6 @@
     "style": "Warm and direct",
     "bio": "I help people mend jackets and use the 3D printer for the first time. I am interested in low-cost ways to make shared equipment useful after the launch party.",
     "fictional": true,
-    "age": 57,
     "location": {
       "city": "Billings",
       "state": "MT",
@@ -5111,7 +4973,6 @@
     "style": "Forward-looking",
     "bio": "I haul dairy and keep a notebook of receiving docks with no space to turn. I pay attention to decisions made by people who never see the last mile.",
     "fictional": true,
-    "age": 58,
     "location": {
       "city": "Milford",
       "state": "DE",
@@ -5148,7 +5009,6 @@
     "style": "Evidence and anecdotes",
     "bio": "I plan payroll for a beach hotel that has two very different economies in July and January. I want seasonal workers in the room when people talk about housing.",
     "fictional": true,
-    "age": 37,
     "location": {
       "city": "Cape May",
       "state": "NJ",
@@ -5185,7 +5045,6 @@
     "style": "Rights-focused",
     "bio": "I check handwashing setups and explain which mistakes are easy to fix. I like safety rules with a realistic path for the business owner to comply.",
     "fictional": true,
-    "age": 50,
     "location": {
       "city": "Boise",
       "state": "ID",
@@ -5222,7 +5081,6 @@
     "style": "Evidence and anecdotes",
     "bio": "I stock a roadside stand and bring back bruised tomatoes for sauce. I care about connecting the small growers who actually have a crop with families who can buy it.",
     "fictional": true,
-    "age": 47,
     "location": {
       "city": "Athens",
       "state": "OH",
@@ -5259,7 +5117,6 @@
     "style": "Cost-conscious",
     "bio": "I tune small boat engines and ask owners how much time they can spend waiting for parts. I follow coastal decisions when they change where people can reach work.",
     "fictional": true,
-    "age": 45,
     "location": {
       "city": "Thibodaux",
       "state": "LA",
@@ -5296,7 +5153,6 @@
     "style": "Process-oriented",
     "bio": "I help neighbors write down the part of a dispute they already agree on. I appreciate when people say which real result would change their mind.",
     "fictional": true,
-    "age": 39,
     "location": {
       "city": "Wilmington",
       "state": "DE",
@@ -5333,7 +5189,6 @@
     "style": "Rights-focused",
     "bio": "I protect photographs that spent decades in boxes under people's beds. A debate about preservation gets clearer when someone says what would actually be lost.",
     "fictional": true,
-    "age": 56,
     "location": {
       "city": "Baltimore",
       "state": "MD",
@@ -5370,7 +5225,6 @@
     "style": "Implementation-minded",
     "bio": "I test generators in buildings a long drive from the nearest specialist. Reliability is often the one spare someone thought to order before winter.",
     "fictional": true,
-    "age": 48,
     "location": {
       "city": "Ely",
       "state": "NV",
@@ -5407,7 +5261,6 @@
     "style": "Cost-conscious",
     "bio": "I write schedules for riders spread across long distances. I tend to notice whether a supposedly convenient transfer actually lines up.",
     "fictional": true,
-    "age": 38,
     "location": {
       "city": "Dodge City",
       "state": "KS",
@@ -5444,7 +5297,6 @@
     "style": "Practical skeptic",
     "bio": "I check interrupted service reports against what crews saw on the ground. I am interested in resilience people can notice on a dark night.",
     "fictional": true,
-    "age": 41,
     "location": {
       "city": "Anchorage",
       "state": "AK",
@@ -5481,7 +5333,6 @@
     "style": "Trade-off focused",
     "bio": "I restore old kitchen cabinets instead of throwing them out. I like learning what people can repair with ordinary tools.",
     "fictional": true,
-    "age": 52,
     "location": {
       "city": "Putnam",
       "state": "CT",
@@ -5518,7 +5369,6 @@
     "style": "Implementation-minded",
     "bio": "I stock rooms and track which supplies staff run out of between shifts. I care about whether a health reform changes the work at the bedside.",
     "fictional": true,
-    "age": 60,
     "location": {
       "city": "Sioux Falls",
       "state": "SD",
@@ -5555,7 +5405,6 @@
     "style": "Process-oriented",
     "bio": "I test menus with a controller and report when a game asks for an input its settings cannot change. I am curious about good defaults in far more than games.",
     "fictional": true,
-    "age": 53,
     "location": {
       "city": "Grass Valley",
       "state": "CA",
@@ -5592,7 +5441,6 @@
     "style": "Calm fact-checker",
     "bio": "I rig lights and label cables for the volunteer who takes the next shift. I get interested in local arts funding when it helps people acquire skills they can use anywhere.",
     "fictional": true,
-    "age": 28,
     "location": {
       "city": "Abingdon",
       "state": "VA",
@@ -5629,7 +5477,6 @@
     "style": "Curious contrarian",
     "bio": "I trace water damage after storms and never take one blurry photo as the whole story. A policy matters when you can predict how it will be interpreted under pressure.",
     "fictional": true,
-    "age": 41,
     "location": {
       "city": "Cedar Rapids",
       "state": "IA",
@@ -5666,7 +5513,6 @@
     "style": "Implementation-minded",
     "bio": "I help people plan a first appointment that does not require taking a full day off. I care about privacy in a place where everybody recognizes one another's car.",
     "fictional": true,
-    "age": 49,
     "location": {
       "city": "Elkins",
       "state": "WV",
@@ -5703,7 +5549,6 @@
     "style": "Rights-focused",
     "bio": "I record stories at kitchen tables and save a second copy for each family. I like knowing who told a story before drawing conclusions from it.",
     "fictional": true,
-    "age": 59,
     "location": {
       "city": "Selma",
       "state": "AL",
@@ -5740,7 +5585,6 @@
     "style": "Cost-conscious",
     "bio": "I mark proposed routes and record which crossings actually have sidewalks. I like to know where the last quarter mile goes before calling a station accessible.",
     "fictional": true,
-    "age": 47,
     "location": {
       "city": "Aurora",
       "state": "CO",
@@ -5777,7 +5621,6 @@
     "style": "Rights-focused",
     "bio": "I keep plant trials alive when students go home for break. I want a study to say what it could not test as plainly as what worked.",
     "fictional": true,
-    "age": 42,
     "location": {
       "city": "Lincoln",
       "state": "NE",
@@ -5814,7 +5657,6 @@
     "style": "Cost-conscious",
     "bio": "I balance what a morning customer can pay against what a small supplier needs to stay in business. I like arguments that take both ends of a transaction seriously.",
     "fictional": true,
-    "age": 52,
     "location": {
       "city": "Richmond",
       "state": "VA",
@@ -5851,7 +5693,6 @@
     "style": "Forward-looking",
     "bio": "I plan lunches around deliveries, allergies, and what kids will eat. If a pilot meal comes back untouched, I want to hear why before buying another month's worth.",
     "fictional": true,
-    "age": 39,
     "location": {
       "city": "Lewisburg",
       "state": "PA",
@@ -5888,7 +5729,6 @@
     "style": "Local observer",
     "bio": "I process substitute-teacher time sheets before coaching a rec league. I pay attention when a reform assumes someone can do a second job for free.",
     "fictional": true,
-    "age": 45,
     "location": {
       "city": "Galesburg",
       "state": "IL",
@@ -5925,7 +5765,6 @@
     "style": "Trade-off focused",
     "bio": "I proof fliers and cover the late shift when the mail run gets delayed. I have opinions about the difference between fair rules and too much paperwork.",
     "fictional": true,
-    "age": 33,
     "location": {
       "city": "Milwaukee",
       "state": "WI",
@@ -5962,7 +5801,6 @@
     "style": "Cost-conscious",
     "bio": "I measure playground surfaces before and after we put up shade. I want heat projects judged during the hottest hour kids are actually there.",
     "fictional": true,
-    "age": 42,
     "location": {
       "city": "Tucson",
       "state": "AZ",
@@ -5999,7 +5837,6 @@
     "style": "Curious contrarian",
     "bio": "I check ramps and signs before the first passengers arrive. I like service plans that say what people can do when equipment needs repair.",
     "fictional": true,
-    "age": 43,
     "location": {
       "city": "Port Angeles",
       "state": "WA",
@@ -6036,7 +5873,6 @@
     "style": "Patient questioner",
     "bio": "I look for leaky ductwork and estimate what sealing it will save. I care whether the tenant who pays the heat bill sees the benefits of an upgrade.",
     "fictional": true,
-    "age": 49,
     "location": {
       "city": "Baltimore",
       "state": "MD",
@@ -6073,7 +5909,6 @@
     "style": "Cost-conscious",
     "bio": "I install walk-in coolers for restaurants and check which used parts are safe to keep. My first question about a new standard is whether the repair shop can meet it.",
     "fictional": true,
-    "age": 43,
     "location": {
       "city": "Buffalo",
       "state": "NY",
@@ -6110,7 +5945,6 @@
     "style": "Looks for agreement",
     "bio": "I route trucks around bridge delays and make sure drivers can stop before their shifts run out. I care about traffic plans that include the trips the city needs to make money.",
     "fictional": true,
-    "age": 50,
     "location": {
       "city": "Savannah",
       "state": "GA",
@@ -6147,7 +5981,6 @@
     "style": "Looks for agreement",
     "bio": "I inspect steel and photograph rust that no one sees from the driver's seat. I like budgets that leave a line for unglamorous upkeep.",
     "fictional": true,
-    "age": 40,
     "location": {
       "city": "Pittsburgh",
       "state": "PA",
@@ -6184,7 +6017,6 @@
     "style": "Forward-looking",
     "bio": "I organize gym time for people who cannot get into a private league. Sharing a building gets more interesting when there is only one good court.",
     "fictional": true,
-    "age": 54,
     "location": {
       "city": "Milford",
       "state": "DE",
@@ -6221,7 +6053,6 @@
     "style": "Trade-off focused",
     "bio": "I troubleshoot machines on night shift and take notes for the morning crew. The maintenance contract is usually more revealing than the sales pitch.",
     "fictional": true,
-    "age": 52,
     "location": {
       "city": "Manchester",
       "state": "NH",
@@ -6258,7 +6089,6 @@
     "style": "Cost-conscious",
     "bio": "I deliver water and check when cooling sites close. I care about the person whose shift ends an hour after the program stops accepting people.",
     "fictional": true,
-    "age": 33,
     "location": {
       "city": "Las Vegas",
       "state": "NV",
@@ -6295,7 +6125,6 @@
     "style": "Practical skeptic",
     "bio": "I work from a drafty upstairs room and ski on lunch breaks when the snow holds. I enjoy an argument that gets more precise with each draft.",
     "fictional": true,
-    "age": 47,
     "location": {
       "city": "Saranac Lake",
       "state": "NY",
@@ -6332,7 +6161,6 @@
     "style": "Calm fact-checker",
     "bio": "I help neighbors sort receipts after the river comes up. Flood maps make more sense when a renter can tell what they need to do with them.",
     "fictional": true,
-    "age": 44,
     "location": {
       "city": "Lewisburg",
       "state": "PA",
@@ -6369,7 +6197,6 @@
     "style": "Warm and direct",
     "bio": "I look for hidden water around windows after heavy rain. I think about who pays if a risky building choice outlasts the original owner.",
     "fictional": true,
-    "age": 46,
     "location": {
       "city": "Tampa",
       "state": "FL",
@@ -6406,7 +6233,6 @@
     "style": "Patient questioner",
     "bio": "I map high-water marks with residents who keep careful photos. I want climate plans that say whose basement floods first and what can be done this year.",
     "fictional": true,
-    "age": 46,
     "location": {
       "city": "Athens",
       "state": "OH",
@@ -6443,7 +6269,6 @@
     "style": "Curious contrarian",
     "bio": "I compare ingredient supplies against the meals the kitchen can safely prepare on weekends. I ask whether a cost cut leaves behind a workable substitute.",
     "fictional": true,
-    "age": 35,
     "location": {
       "city": "Billings",
       "state": "MT",
@@ -6480,7 +6305,6 @@
     "style": "Cost-conscious",
     "bio": "I tell music stories and warn visitors when a walking tour crosses a weak sidewalk. I want tourism debates to include work that residents are proud to pass on.",
     "fictional": true,
-    "age": 50,
     "location": {
       "city": "Memphis",
       "state": "TN",
@@ -6517,7 +6341,6 @@
     "style": "Rights-focused",
     "bio": "I plan which trees can be removed before nesting season. I ask whether wildfire planning still works after the crew has gone home.",
     "fictional": true,
-    "age": 44,
     "location": {
       "city": "Spearfish",
       "state": "SD",
@@ -6554,7 +6377,6 @@
     "style": "Implementation-minded",
     "bio": "I restore power on steep roads and record who stayed out longest. A transition plan deserves credit when it explains how crews will handle a difficult week.",
     "fictional": true,
-    "age": 38,
     "location": {
       "city": "Charleston",
       "state": "WV",
@@ -6591,7 +6413,6 @@
     "style": "Process-oriented",
     "bio": "I fit adaptive bikes and end a session by asking where someone actually wants to ride. I am interested in streets where the trip is possible without special planning.",
     "fictional": true,
-    "age": 50,
     "location": {
       "city": "Richmond",
       "state": "VA",
@@ -6628,7 +6449,6 @@
     "style": "Local observer",
     "bio": "I remove gaps from a transcript only when I know what was said. I care about giving people a record they can actually use to challenge a decision.",
     "fictional": true,
-    "age": 49,
     "location": {
       "city": "West Plains",
       "state": "MO",
@@ -6665,7 +6485,6 @@
     "style": "Calm fact-checker",
     "bio": "I scaled back my meal-prep orders to help care for a grandchild. I still buy produce on Mondays and pay attention to which real costs went up when someone proposes a price increase.",
     "fictional": true,
-    "age": 63,
     "location": {
       "city": "Sioux Falls",
       "state": "SD",
@@ -6702,7 +6521,6 @@
     "style": "Implementation-minded",
     "bio": "I schedule productions around parents and second jobs. I believe the best casting ideas start with knowing who can realistically make rehearsal.",
     "fictional": true,
-    "age": 47,
     "location": {
       "city": "Cleveland",
       "state": "OH",
@@ -6739,7 +6557,6 @@
     "style": "Implementation-minded",
     "bio": "I keep a careful record of batches and trade practical licensing advice with new vendors. I care about making safety standards attainable for a small producer.",
     "fictional": true,
-    "age": 53,
     "location": {
       "city": "Abingdon",
       "state": "VA",
@@ -6776,7 +6593,6 @@
     "style": "Practical skeptic",
     "bio": "I place welding apprentices and check on them when the first job gets hard. I value programs that can tell you where people are a year later.",
     "fictional": true,
-    "age": 42,
     "location": {
       "city": "St. Louis",
       "state": "MO",
@@ -6813,7 +6629,6 @@
     "style": "Calm fact-checker",
     "bio": "I measure how storm tides move sand around dune fences. I believe a good coastal plan says what will be allowed to flood.",
     "fictional": true,
-    "age": 45,
     "location": {
       "city": "Cape May",
       "state": "NJ",
@@ -6850,7 +6665,6 @@
     "style": "Forward-looking",
     "bio": "I used to prepare instrument trays for surgeries that arrived without warning. After an injury cut back my hours, I started tutoring people studying for the job. Efficiency matters when it leaves staff room for emergencies.",
     "fictional": true,
-    "age": 61,
     "location": {
       "city": "Price",
       "state": "UT",
@@ -6887,7 +6701,6 @@
     "style": "Plainspoken and dry",
     "bio": "I troubleshoot power faults with a lead technician and log what changed between shifts. I like thinking about clean equipment alongside the people who keep it running.",
     "fictional": true,
-    "age": 46,
     "location": {
       "city": "Long Beach",
       "state": "CA",
@@ -6924,7 +6737,6 @@
     "style": "Calm fact-checker",
     "bio": "I book outages for maintenance crews and return calls to people who need powered medical equipment. Reliability means giving households time to get ready.",
     "fictional": true,
-    "age": 31,
     "location": {
       "city": "Burlington",
       "state": "VT",
@@ -6961,7 +6773,6 @@
     "style": "Implementation-minded",
     "bio": "I repair zippers and tents for hikers who would rather spend their money on another trip. Shop rules should show whether they make durable goods easier or harder to buy.",
     "fictional": true,
-    "age": 34,
     "location": {
       "city": "Boone",
       "state": "NC",
@@ -6998,7 +6809,6 @@
     "style": "Evidence and anecdotes",
     "bio": "I teach people how to stop on slushy roads and carry spare lights after sunset. I ask which projects help people who cannot shift a trip to better weather.",
     "fictional": true,
-    "age": 51,
     "location": {
       "city": "Marquette",
       "state": "MI",
@@ -7035,7 +6845,6 @@
     "style": "Patient questioner",
     "bio": "I match trailers to routes and watch the forecast for dangerous heat. I know how fast a plan changes when the next safe stop is an hour away.",
     "fictional": true,
-    "age": 49,
     "location": {
       "city": "Woodward",
       "state": "OK",
@@ -7072,7 +6881,6 @@
     "style": "Practical skeptic",
     "bio": "I help families ask follow-up questions during appointments. I notice when a technically accurate answer still leaves the person unable to make a decision.",
     "fictional": true,
-    "age": 50,
     "location": {
       "city": "Buffalo",
       "state": "NY",
@@ -7109,7 +6917,6 @@
     "style": "Plainspoken and dry",
     "bio": "I show customers how to tell the difference between a failing router and a bad line. I am interested in connectivity promises that include repair times.",
     "fictional": true,
-    "age": 46,
     "location": {
       "city": "Paintsville",
       "state": "KY",
@@ -7146,7 +6953,6 @@
     "style": "Rights-focused",
     "bio": "I help working parents schedule conversations with teachers and find morning care. I focus on the gap between what a program offers and when a family can use it.",
     "fictional": true,
-    "age": 39,
     "location": {
       "city": "Aurora",
       "state": "CO",
@@ -7183,7 +6989,6 @@
     "style": "Curious contrarian",
     "bio": "I keep separate lists for streets, wells, and docks after a storm. I like a recovery plan that tells people who to call before everybody calls the mayor.",
     "fictional": true,
-    "age": 41,
     "location": {
       "city": "Cedar Key",
       "state": "FL",
@@ -7220,7 +7025,6 @@
     "style": "Trade-off focused",
     "bio": "I maintain heavy equipment and keep the parts shelves labeled by model. I ask about backup power, repair crews, and lead times before anyone announces a shutdown date.",
     "fictional": true,
-    "age": 42,
     "location": {
       "city": "Peoria",
       "state": "IL",
@@ -7257,7 +7061,6 @@
     "style": "Trade-off focused",
     "bio": "I organize packets by growing conditions and ask people to return notes when something fails. Local knowledge gets more useful when somebody writes down the exception.",
     "fictional": true,
-    "age": 44,
     "location": {
       "city": "Silver City",
       "state": "NM",
@@ -7294,7 +7097,6 @@
     "style": "Warm and direct",
     "bio": "I keep keys and a list of open pharmacies at the front desk. I get interested in local decisions when the promised service disappears after dinner.",
     "fictional": true,
-    "age": 49,
     "location": {
       "city": "Saranac Lake",
       "state": "NY",
@@ -7331,7 +7133,6 @@
     "style": "Calm fact-checker",
     "bio": "I drive a refrigerated truck to neighborhoods without a grocery store. I follow changes in fuel and food prices because they can close a stop faster than you would think.",
     "fictional": true,
-    "age": 41,
     "location": {
       "city": "Greenville",
       "state": "MS",
@@ -7368,7 +7169,6 @@
     "style": "Implementation-minded",
     "bio": "I open the school for early practice and close it after adult classes. When schedules change, my first concern is who gets in and who is left standing outside.",
     "fictional": true,
-    "age": 35,
     "location": {
       "city": "Cedar Rapids",
       "state": "IA",
@@ -7405,7 +7205,6 @@
     "style": "Warm and direct",
     "bio": "I log curb ramps and compare the official route with the route a wheelchair user can actually take. Small details often tell you how serious a city is about its promise.",
     "fictional": true,
-    "age": 45,
     "location": {
       "city": "Albuquerque",
       "state": "NM",
@@ -7442,7 +7241,6 @@
     "style": "Trade-off focused",
     "bio": "I alter donated clothes for theater shows and use the offcuts for patching. A creative constraint is easier to take when the same people do not bear it every week.",
     "fictional": true,
-    "age": 43,
     "location": {
       "city": "Providence",
       "state": "RI",
@@ -7479,7 +7277,6 @@
     "style": "Calm fact-checker",
     "bio": "I check pedestrian lanes with drivers before machinery starts moving. I am interested in workplace rules that let people point out a problem early.",
     "fictional": true,
-    "age": 40,
     "location": {
       "city": "Tacoma",
       "state": "WA",
@@ -7516,7 +7313,6 @@
     "style": "Warm and direct",
     "bio": "I spent most of my working life rewiring older houses. I still walk through a neighborhood cleanup before I volunteer to handle a circuit. I care about repairs that stay affordable without making the next owner pay for a shortcut.",
     "fictional": true,
-    "age": 65,
     "location": {
       "city": "Birmingham",
       "state": "AL",
@@ -7553,7 +7349,6 @@
     "style": "Warm and direct",
     "bio": "I schedule trail work around heat, water, and what a new crew can safely learn. I trust a project more when the people reporting its progress also have to maintain it.",
     "fictional": true,
-    "age": 51,
     "location": {
       "city": "Silver City",
       "state": "NM",
@@ -7590,7 +7385,6 @@
     "style": "Warm and direct",
     "bio": "I set up practice stations and look for drills students can do without buying gear. I like competitive teams and I want late bloomers to have a way in.",
     "fictional": true,
-    "age": 42,
     "location": {
       "city": "Moultrie",
       "state": "GA",
@@ -7627,7 +7421,6 @@
     "style": "Implementation-minded",
     "bio": "I work with adults who can recognize a problem from their day job before they know its name. I like rules that leave people room to learn by trying.",
     "fictional": true,
-    "age": 51,
     "location": {
       "city": "Albuquerque",
       "state": "NM",
@@ -7664,7 +7457,6 @@
     "style": "Local observer",
     "bio": "I handle mold and electrical complaints and keep spare equipment for storm season. I like housing policy that makes maintenance duties clear to both sides.",
     "fictional": true,
-    "age": 51,
     "location": {
       "city": "Charleston",
       "state": "SC",
@@ -7701,7 +7493,6 @@
     "style": "Warm and direct",
     "bio": "I check sensors and train new staff to recognize a reading that lies. I get interested when an energy proposal names what happens during a bad handoff.",
     "fictional": true,
-    "age": 54,
     "location": {
       "city": "Tulsa",
       "state": "OK",
@@ -7738,7 +7529,6 @@
     "style": "Curious contrarian",
     "bio": "I know which driveways drift shut first after a storm. When the district changes start times, I want to see the route map before the announcement.",
     "fictional": true,
-    "age": 44,
     "location": {
       "city": "Presque Isle",
       "state": "ME",
@@ -7775,7 +7565,6 @@
     "style": "Calm fact-checker",
     "bio": "I fix old batting helmets and keep loaner gloves for kids who join late. I like judging a fair rule by what it feels like to a new player.",
     "fictional": true,
-    "age": 55,
     "location": {
       "city": "Orangeburg",
       "state": "SC",
@@ -7812,7 +7601,6 @@
     "style": "Implementation-minded",
     "bio": "I assign stalls and keep the walkways open for strollers. I am interested in what happens to the smallest vendor when people ask for one more rule.",
     "fictional": true,
-    "age": 47,
     "location": {
       "city": "Decorah",
       "state": "IA",
@@ -7849,7 +7637,6 @@
     "style": "Plainspoken and dry",
     "bio": "I reconcile freight paperwork and deal with the delays no one budgeted for. Trade policy feels concrete when a missing crate keeps people from working.",
     "fictional": true,
-    "age": 54,
     "location": {
       "city": "Wilmington",
       "state": "DE",
@@ -7886,7 +7673,6 @@
     "style": "Calm fact-checker",
     "bio": "I count spawning beds and try to translate a survey into terms anglers recognize. I like it when the people who disagree agree on what to measure.",
     "fictional": true,
-    "age": 49,
     "location": {
       "city": "Marquette",
       "state": "MI",
@@ -7923,7 +7709,6 @@
     "style": "Practical skeptic",
     "bio": "My lunch rush depends on office schedules, bus stops, and the weather. My most useful business advice came from the cart parked next to mine.",
     "fictional": true,
-    "age": 42,
     "location": {
       "city": "New Haven",
       "state": "CT",
@@ -7960,7 +7745,6 @@
     "style": "Process-oriented",
     "bio": "I organize public files and write down why a document was withheld. I value rules a stranger can check without knowing anyone in the office.",
     "fictional": true,
-    "age": 41,
     "location": {
       "city": "Richmond",
       "state": "VA",
@@ -7997,7 +7781,6 @@
     "style": "Cost-conscious",
     "bio": "I carry extra gloves and a weather radio in my car. Rural ambulance coverage sounds different when you can name the people taking the overnight calls.",
     "fictional": true,
-    "age": 32,
     "location": {
       "city": "St. Johnsbury",
       "state": "VT",
@@ -8034,7 +7817,6 @@
     "style": "Calm fact-checker",
     "bio": "I fix stock tanks and pumps on the days I am not driving my dad to appointments. I am interested in services that make sense when neighbors live miles apart.",
     "fictional": true,
-    "age": 61,
     "location": {
       "city": "Alpine",
       "state": "TX",
@@ -8071,7 +7853,6 @@
     "style": "Patient questioner",
     "bio": "I coach beginners and give receipts for every competition fee. I care about which costs make it harder for ordinary kids to compete.",
     "fictional": true,
-    "age": 39,
     "location": {
       "city": "Tulsa",
       "state": "OK",
@@ -8108,7 +7889,6 @@
     "style": "Implementation-minded",
     "bio": "I check treatment equipment and track where recycled water can go safely. I want growth plans to say how they work in a dry year.",
     "fictional": true,
-    "age": 34,
     "location": {
       "city": "El Paso",
       "state": "TX",
@@ -8145,7 +7925,6 @@
     "style": "Curious contrarian",
     "bio": "I prune trees, sharpen tools, and listen to growers compare insurance at the feed store. I approach change by asking who can afford a bad first year.",
     "fictional": true,
-    "age": 44,
     "location": {
       "city": "Grass Valley",
       "state": "CA",
@@ -8182,7 +7961,6 @@
     "style": "Cost-conscious",
     "bio": "I patch canoes and show summer staff how to check the repairs themselves. I appreciate a debate where people bring a specific example of what broke.",
     "fictional": true,
-    "age": 50,
     "location": {
       "city": "Hayward",
       "state": "WI",
@@ -8219,7 +7997,6 @@
     "style": "Trade-off focused",
     "bio": "I tag water samples and show residents how a service line gets identified. A utility should be able to explain what changes on somebody's own block.",
     "fictional": true,
-    "age": 52,
     "location": {
       "city": "Milwaukee",
       "state": "WI",
@@ -8256,7 +8033,6 @@
     "style": "Calm fact-checker",
     "bio": "I mark intersections on race mornings and bring the signs back before evening. I care about keeping recreation open to people outside organized events.",
     "fictional": true,
-    "age": 28,
     "location": {
       "city": "Cookeville",
       "state": "TN",
@@ -8293,7 +8069,6 @@
     "style": "Forward-looking",
     "bio": "I reconcile tips and try to catch the honest mistakes before payday. When someone proposes a wage rule I translate it into a Friday check.",
     "fictional": true,
-    "age": 48,
     "location": {
       "city": "New Orleans",
       "state": "LA",
@@ -8330,7 +8105,6 @@
     "style": "Calm fact-checker",
     "bio": "I set aside early appointments for shift workers and pack dental kits for the school nurse. I care about what gets people through the door before they have an emergency.",
     "fictional": true,
-    "age": 46,
     "location": {
       "city": "Putnam",
       "state": "CT",
@@ -8367,7 +8141,6 @@
     "style": "Warm and direct",
     "bio": "I order from boats and learn quickly when a closure changes what families can earn. I want conservation decisions to anticipate what happens between the first and second season.",
     "fictional": true,
-    "age": 49,
     "location": {
       "city": "Cambridge",
       "state": "MD",
@@ -8404,7 +8177,6 @@
     "style": "Warm and direct",
     "bio": "I prep skis for school teams and tell beginners which expensive supplies they can skip. I care about lowering the cost of trying a sport once.",
     "fictional": true,
-    "age": 47,
     "location": {
       "city": "Anchorage",
       "state": "AK",
@@ -8441,7 +8213,6 @@
     "style": "Local observer",
     "bio": "I teach on loaner kits and keep noise complaints from becoming neighborhood feuds. I enjoy compromises people can describe without a chart.",
     "fictional": true,
-    "age": 40,
     "location": {
       "city": "Louisville",
       "state": "KY",
@@ -8478,7 +8249,6 @@
     "style": "Warm and direct",
     "bio": "I reconcile timesheets across several small shops and remember the expense owners usually forget. I want a local contract to explain how a small shop can actually bid.",
     "fictional": true,
-    "age": 47,
     "location": {
       "city": "Spearfish",
       "state": "SD",
@@ -8515,7 +8285,6 @@
     "style": "Implementation-minded",
     "bio": "I mix shows in small rooms and measure how far the sound travels after doors close. I want neighborhood rules to help people share a block they both use.",
     "fictional": true,
-    "age": 42,
     "location": {
       "city": "Long Beach",
       "state": "CA",
@@ -8552,7 +8321,6 @@
     "style": "Local observer",
     "bio": "I track faults and hand the overnight log to the field crew. I like energy proposals that say when somebody will have to drive out to fix a problem.",
     "fictional": true,
-    "age": 40,
     "location": {
       "city": "Cheyenne",
       "state": "WY",
@@ -8589,7 +8357,6 @@
     "style": "Patient questioner",
     "bio": "I survey building elevations and explain the marks to residents who have seen several floods. I am interested in who can afford to act on a good warning.",
     "fictional": true,
-    "age": 32,
     "location": {
       "city": "Greenville",
       "state": "MS",
@@ -8626,7 +8393,6 @@
     "style": "Forward-looking",
     "bio": "I run a lunch-hour book swap that includes comics and cookbooks. I care about getting reluctant readers one book they actually want.",
     "fictional": true,
-    "age": 58,
     "location": {
       "city": "North Adams",
       "state": "MA",
@@ -8663,7 +8429,6 @@
     "style": "Plainspoken and dry",
     "bio": "I track when food and medicine change hands in freezing weather. A plan that counts on one more delivery needs to say what happens when the flight cannot land.",
     "fictional": true,
-    "age": 51,
     "location": {
       "city": "Anchorage",
       "state": "AK",
@@ -8700,7 +8465,6 @@
     "style": "Implementation-minded",
     "bio": "I turn groups back when ice makes the trail unsafe. It takes practice to explain a limit people cannot see without talking down to them.",
     "fictional": true,
-    "age": 43,
     "location": {
       "city": "Berlin",
       "state": "NH",
@@ -8737,7 +8501,6 @@
     "style": "Calm fact-checker",
     "bio": "I talk families through how a few extra work hours may change what help they get. I value public rules that make decisions easier to explain side by side.",
     "fictional": true,
-    "age": 40,
     "location": {
       "city": "Salt Lake City",
       "state": "UT",
@@ -8774,7 +8537,6 @@
     "style": "Cost-conscious",
     "bio": "I sample grain on delivery and keep records when moisture changes the price. I want producers to be able to see how a decision affecting their check gets made.",
     "fictional": true,
-    "age": 41,
     "location": {
       "city": "Devils Lake",
       "state": "ND",
@@ -8811,7 +8573,6 @@
     "style": "Process-oriented",
     "bio": "I check samples and show growers where the numbers on a delivery ticket come from. I think a dispute gets easier when everyone can see the measurement.",
     "fictional": true,
-    "age": 47,
     "location": {
       "city": "Thibodaux",
       "state": "LA",
@@ -8848,7 +8609,6 @@
     "style": "Looks for agreement",
     "bio": "I repair leaks between leases and keep a record of fixes students can do themselves. I want people to talk about the long run cost of a cheap renovation.",
     "fictional": true,
-    "age": 44,
     "location": {
       "city": "Eugene",
       "state": "OR",
@@ -8885,7 +8645,6 @@
     "style": "Process-oriented",
     "bio": "I keep freight movements and shift handoffs from getting in one another's way. I am always looking for the easy-to-miss connection that makes a plan work.",
     "fictional": true,
-    "age": 40,
     "location": {
       "city": "Galesburg",
       "state": "IL",
@@ -8922,7 +8681,6 @@
     "style": "Warm and direct",
     "bio": "I find the obscure bolt that would otherwise hold up a harvest. Big changes are easier to take when somebody has planned the transition stock.",
     "fictional": true,
-    "age": 51,
     "location": {
       "city": "Scottsbluff",
       "state": "NE",
@@ -8959,7 +8717,6 @@
     "style": "Calm fact-checker",
     "bio": "I grow herbs the cafeteria can use and let children choose one unusual plant each term. I care about school projects that still have somebody to water them during break.",
     "fictional": true,
-    "age": 50,
     "location": {
       "city": "Hilo",
       "state": "HI",
@@ -8996,7 +8753,6 @@
     "style": "Evidence and anecdotes",
     "bio": "I keep instrument rental costs visible and set aside money for sheet music that beginners can use. I care about how small membership rules invite people in or quietly push them away.",
     "fictional": true,
-    "age": 37,
     "location": {
       "city": "Cheyenne",
       "state": "WY",
@@ -9033,7 +8789,6 @@
     "style": "Story-driven",
     "bio": "I check canal gates and write down which small leaks turn into larger repairs. When competing users share one supply, I want the rules written before the dry year.",
     "fictional": true,
-    "age": 35,
     "location": {
       "city": "Scottsbluff",
       "state": "NE",
@@ -9070,7 +8825,6 @@
     "style": "Patient questioner",
     "bio": "I match accessible vehicles to bookings and try to solve weather delays before passengers arrive. I notice when a plan works only for someone with a backup ride.",
     "fictional": true,
-    "age": 45,
     "location": {
       "city": "St. Louis",
       "state": "MO",
@@ -9107,7 +8861,6 @@
     "style": "Patient questioner",
     "bio": "I teach beginners to read a tune and still leave time for the version they learned from family. I care about protecting local traditions while making room for new players.",
     "fictional": true,
-    "age": 34,
     "location": {
       "city": "New Orleans",
       "state": "LA",
@@ -9144,7 +8897,6 @@
     "style": "Forward-looking",
     "bio": "I work the early ferry and watch a missed boat turn into a missed shift. Weather is the first thing I check and the last thing I pretend to control.",
     "fictional": true,
-    "age": 43,
     "location": {
       "city": "Portland",
       "state": "ME",
@@ -9181,7 +8933,6 @@
     "style": "Warm and direct",
     "bio": "I spend weekends working in rooms where half the guests are meeting for the first time. The partnerships I trust are the ones that still hold when the schedule falls apart.",
     "fictional": true,
-    "age": 35,
     "location": {
       "city": "Newark",
       "state": "NJ",
@@ -9218,7 +8969,6 @@
     "style": "Forward-looking",
     "bio": "I track the time between a repair request and a part arriving by truck. I am interested in what a single reliable supplier means to a small shop.",
     "fictional": true,
-    "age": 50,
     "location": {
       "city": "Winslow",
       "state": "AZ",
@@ -9255,7 +9005,6 @@
     "style": "Evidence and anecdotes",
     "bio": "I used to explain coverage disputes and keep a list of words customers interpreted differently from insurers. These days I help people read the forms at a weekly drop-in clinic. Clear rules spare both sides some wasted afternoons.",
     "fictional": true,
-    "age": 64,
     "location": {
       "city": "Little Rock",
       "state": "AR",
@@ -9292,7 +9041,6 @@
     "style": "Practical skeptic",
     "bio": "I make syrup with relatives and spend mud season patching the driveway. A generous offer of help means more when you know who will still be there next spring.",
     "fictional": true,
-    "age": 40,
     "location": {
       "city": "St. Johnsbury",
       "state": "VT",
@@ -9329,7 +9077,6 @@
     "style": "Looks for agreement",
     "bio": "I help neighbors find care that fits their insurance and ride options. I notice when two sensible programs ask someone to make incompatible appointments.",
     "fictional": true,
-    "age": 44,
     "location": {
       "city": "Memphis",
       "state": "TN",
@@ -9366,7 +9113,6 @@
     "style": "Trade-off focused",
     "bio": "I schedule follow-up visits around work and childcare. The study population can change simply because the appointment takes two buses.",
     "fictional": true,
-    "age": 46,
     "location": {
       "city": "Durham",
       "state": "NC",
@@ -9403,7 +9149,6 @@
     "style": "Local observer",
     "bio": "I track potato storage temperature on a clipboard with a bent corner. The real measure of a new idea is whether I can afford to try it for one season.",
     "fictional": true,
-    "age": 43,
     "location": {
       "city": "Presque Isle",
       "state": "ME",
@@ -9440,7 +9185,6 @@
     "style": "Process-oriented",
     "bio": "I help members compare debt payments when money runs tight. Personal finance debates get more interesting when you use a real set of monthly bills.",
     "fictional": true,
-    "age": 40,
     "location": {
       "city": "Cleveland",
       "state": "OH",
@@ -9477,7 +9221,6 @@
     "style": "Forward-looking",
     "bio": "I coordinate volunteer paddlers and ask participants where a launch feels most manageable. The best accessibility changes rarely show up in a tourist photograph.",
     "fictional": true,
-    "age": 30,
     "location": {
       "city": "Honolulu",
       "state": "HI",
@@ -9514,7 +9257,6 @@
     "style": "Practical skeptic",
     "bio": "I keep score for local games and enjoy explaining a fielding decision to new fans. I like a clean rule that still gives a referee room to use judgment.",
     "fictional": true,
-    "age": 30,
     "location": {
       "city": "Peoria",
       "state": "IL",
@@ -9551,7 +9293,6 @@
     "style": "Evidence and anecdotes",
     "bio": "I repair a boat ramp that has to serve guides, anglers, and families with tubes. I give extra weight to compromises that people can enforce politely themselves.",
     "fictional": true,
-    "age": 41,
     "location": {
       "city": "Salida",
       "state": "CO",
@@ -9588,7 +9329,6 @@
     "style": "Implementation-minded",
     "bio": "I keep clean bedding on time when fresh supplies move slowly. Rural health debates make more sense to me when people explain how the last box will arrive.",
     "fictional": true,
-    "age": 44,
     "location": {
       "city": "Bethel",
       "state": "AK",
@@ -9625,7 +9365,6 @@
     "style": "Rights-focused",
     "bio": "I train belayers and organize fee waivers without putting anyone on display. I look for routes into sports that families can try before committing a paycheck.",
     "fictional": true,
-    "age": 55,
     "location": {
       "city": "Salt Lake City",
       "state": "UT",
@@ -9662,7 +9401,6 @@
     "style": "Calm fact-checker",
     "bio": "I patch slides and check for loose gravel before school buses run. The easiest fix on a map is sometimes the hardest fix to get to.",
     "fictional": true,
-    "age": 57,
     "location": {
       "city": "Boone",
       "state": "NC",
@@ -9699,7 +9437,6 @@
     "style": "Patient questioner",
     "bio": "I repair controls and talk staff through getting guests where they need to go while a car is down. I think in terms of a safe alternative people can find on their own.",
     "fictional": true,
-    "age": 40,
     "location": {
       "city": "Las Vegas",
       "state": "NV",
@@ -9736,7 +9473,6 @@
     "style": "Looks for agreement",
     "bio": "I use a community center's gym for murals after basketball practice. I have learned to ask the cleanup crew what a schedule will really require.",
     "fictional": true,
-    "age": 47,
     "location": {
       "city": "Buffalo",
       "state": "NY",
@@ -9773,7 +9509,6 @@
     "style": "Warm and direct",
     "bio": "I sample lake water after big storms and show neighbors how to read the results. I like decisions that account for what runs off a property after a sale.",
     "fictional": true,
-    "age": 48,
     "location": {
       "city": "Saranac Lake",
       "state": "NY",
@@ -9810,7 +9545,6 @@
     "style": "Evidence and anecdotes",
     "bio": "I run my schedule on a whiteboard and give early appointments to folks coming off nights. I meet people who share very little politically and still look after one another.",
     "fictional": true,
-    "age": 41,
     "location": {
       "city": "Jackson",
       "state": "MS",
@@ -9847,7 +9581,6 @@
     "style": "Local observer",
     "bio": "I calibrate scales and explain what makes a measurement valid. I am drawn to debates where people can agree on an independent way to settle one factual point.",
     "fictional": true,
-    "age": 48,
     "location": {
       "city": "Cheyenne",
       "state": "WY",
@@ -9884,7 +9617,6 @@
     "style": "Warm and direct",
     "bio": "I run scans while most of the hospital is quiet. I think about healthcare proposals from the point of view of the overnight crew who will put them into effect.",
     "fictional": true,
-    "age": 50,
     "location": {
       "city": "Baltimore",
       "state": "MD",
@@ -9921,7 +9653,6 @@
     "style": "Implementation-minded",
     "bio": "I help coworkers read shift changes and flag when somebody loses hours. I care about obligations an employer can explain in a room full of staff.",
     "fictional": true,
-    "age": 46,
     "location": {
       "city": "Charleston",
       "state": "SC",
@@ -9958,7 +9689,6 @@
     "style": "Curious contrarian",
     "bio": "I set the produce orders and donate ripe stock to the pantry on Tuesdays. A price shock is a spreadsheet problem until you watch shoppers start putting things back.",
     "fictional": true,
-    "age": 37,
     "location": {
       "city": "Berlin",
       "state": "NH",
@@ -9995,7 +9725,6 @@
     "style": "Curious contrarian",
     "bio": "I talk to small producers and regular shoppers about which staples we can keep affordable. Interviews are a lot more useful when you hear from people shopping after a late shift.",
     "fictional": true,
-    "age": 44,
     "location": {
       "city": "Duluth",
       "state": "MN",
@@ -10032,7 +9761,6 @@
     "style": "Trade-off focused",
     "bio": "I help families enroll after they move for work and walk them through the lunch forms. I want policies written for the person who is seeing them for the first time.",
     "fictional": true,
-    "age": 33,
     "location": {
       "city": "Worthington",
       "state": "MN",
@@ -10069,7 +9797,6 @@
     "style": "Forward-looking",
     "bio": "I help families read property documents and mark what they cannot change later. I am interested in keeping an affordable home affordable after the first owner moves.",
     "fictional": true,
-    "age": 51,
     "location": {
       "city": "Detroit",
       "state": "MI",
@@ -10106,7 +9833,6 @@
     "style": "Warm and direct",
     "bio": "I check flood gates with a flashlight and write down the things residents point out on walks. I trust a plan people will practice before they need it.",
     "fictional": true,
-    "age": 55,
     "location": {
       "city": "Madison",
       "state": "IN",
@@ -10143,7 +9869,6 @@
     "style": "Implementation-minded",
     "bio": "I teach on donated boards and try to pair new players with patient opponents. I want more public places where it is fine to be a beginner.",
     "fictional": true,
-    "age": 46,
     "location": {
       "city": "Charleston",
       "state": "WV",
@@ -10180,7 +9905,6 @@
     "style": "Cost-conscious",
     "bio": "I explain the lease to renters with a seasonal job and one decent option. I care that building more places translates into some that locals can afford.",
     "fictional": true,
-    "age": 39,
     "location": {
       "city": "Boone",
       "state": "NC",
@@ -10217,7 +9941,6 @@
     "style": "Story-driven",
     "bio": "I help renters photograph move-in damage and put all the paperwork in one place. I like policies that make a dispute easier for both sides to document.",
     "fictional": true,
-    "age": 27,
     "location": {
       "city": "Manchester",
       "state": "NH",
@@ -10254,7 +9977,6 @@
     "style": "Forward-looking",
     "bio": "I order extra copies when kids start asking for the same series and host a free tabletop night. I care about finding places where young people can learn how to disagree over small stakes.",
     "fictional": true,
-    "age": 42,
     "location": {
       "city": "Tacoma",
       "state": "WA",
@@ -10291,7 +10013,6 @@
     "style": "Process-oriented",
     "bio": "I help callers turn a long story into the details a lawyer needs. I care about making ordinary disputes affordable enough to resolve.",
     "fictional": true,
-    "age": 52,
     "location": {
       "city": "Louisville",
       "state": "KY",
@@ -10328,7 +10049,6 @@
     "style": "Looks for agreement",
     "bio": "I record local bands and make the first half hour cheaper for teenagers new to the studio. I think the best access policies come with room to practice.",
     "fictional": true,
-    "age": 38,
     "location": {
       "city": "Detroit",
       "state": "MI",
@@ -10365,7 +10085,6 @@
     "style": "Local observer",
     "bio": "I grade roads and ask residents which stretches still make them turn around after snow. I am interested in budgets that keep transportation working between the projects people can see.",
     "fictional": true,
-    "age": 54,
     "location": {
       "city": "Pinedale",
       "state": "WY",
@@ -10402,7 +10121,6 @@
     "style": "Cost-conscious",
     "bio": "I report on committee votes that barely fit between traffic and weather. I try to distinguish what a bill promises from what the text actually lets somebody do.",
     "fictional": true,
-    "age": 47,
     "location": {
       "city": "Charleston",
       "state": "WV",
@@ -10439,7 +10157,6 @@
     "style": "Story-driven",
     "bio": "I move sculptures and help visitors find the quietest path through a crowded gallery. A free day matters more when the bus schedule lines up.",
     "fictional": true,
-    "age": 59,
     "location": {
       "city": "North Adams",
       "state": "MA",
@@ -10476,7 +10193,6 @@
     "style": "Plainspoken and dry",
     "bio": "I stock dry gloves by the dozen and keep families posted when the air quality changes. I think through what a policy means before the children arrive.",
     "fictional": true,
-    "age": 25,
     "location": {
       "city": "Sandpoint",
       "state": "ID",
@@ -10513,7 +10229,6 @@
     "style": "Curious contrarian",
     "bio": "I schedule crews after weekend visitors and keep extra fans for damp rooms. I wonder who absorbs the cost when a seasonal economy gets interrupted.",
     "fictional": true,
-    "age": 51,
     "location": {
       "city": "Cedar Key",
       "state": "FL",
@@ -10550,7 +10265,6 @@
     "style": "Looks for agreement",
     "bio": "I learn how to keep a small floor clean without slowing down every other task. I like food policy that invites the people doing the work to describe the tradeoffs.",
     "fictional": true,
-    "age": 59,
     "location": {
       "city": "Burns",
       "state": "OR",
@@ -10587,7 +10301,6 @@
     "style": "Calm fact-checker",
     "bio": "I know how to feed a hundred guests from a rented kitchen. When a town tries to draw events, I ask whether the locals can still use their own park.",
     "fictional": true,
-    "age": 29,
     "location": {
       "city": "Madison",
       "state": "IN",
@@ -10624,7 +10337,6 @@
     "style": "Warm and direct",
     "bio": "I draw short films and trade editing work with musicians. I care about arts policies that give beginners a way to show their first finished project.",
     "fictional": true,
-    "age": 40,
     "location": {
       "city": "Albuquerque",
       "state": "NM",
@@ -10661,7 +10373,6 @@
     "style": "Curious contrarian",
     "bio": "I interview elders for a museum archive and drive letters over to people without email. I like giving someone enough time to tell you how the background changes the story.",
     "fictional": true,
-    "age": 39,
     "location": {
       "city": "Devils Lake",
       "state": "ND",
@@ -10698,7 +10409,6 @@
     "style": "Implementation-minded",
     "bio": "I track parts and downtime across a few machines old enough to remember earlier owners. Planning makes more sense when you know which equipment can be adapted.",
     "fictional": true,
-    "age": 31,
     "location": {
       "city": "Elkins",
       "state": "WV",
@@ -10735,7 +10445,6 @@
     "style": "Cost-conscious",
     "bio": "I host paperback swaps when tourist traffic is slow. Teens browsing on a rainy afternoon tell me more about what they want to read than a bestseller list.",
     "fictional": true,
-    "age": 52,
     "location": {
       "city": "Cape May",
       "state": "NJ",
@@ -10772,7 +10481,6 @@
     "style": "Implementation-minded",
     "bio": "I help customers navigate holds and explain why a check takes longer to clear. I collect examples of everyday rules that sound simple on a sign.",
     "fictional": true,
-    "age": 29,
     "location": {
       "city": "Westerly",
       "state": "RI",
@@ -10809,7 +10517,6 @@
     "style": "Looks for agreement",
     "bio": "I help families focus a telescope on the first thing they want to see. I like treating a question as an invitation to look more closely.",
     "fictional": true,
-    "age": 54,
     "location": {
       "city": "Tucson",
       "state": "AZ",
@@ -10846,7 +10553,6 @@
     "style": "Story-driven",
     "bio": "I staff a room where students can take online classes with dependable internet. I want technology arguments to include what happens when the video freezes during an exam.",
     "fictional": true,
-    "age": 34,
     "location": {
       "city": "Ely",
       "state": "NV",
@@ -10883,7 +10589,6 @@
     "style": "Curious contrarian",
     "bio": "I tighten brake cables at the dock and count how many trips end at grocery stores. I like transit ideas that handle bad weather and a bag of groceries.",
     "fictional": true,
-    "age": 42,
     "location": {
       "city": "Burlington",
       "state": "VT",
@@ -10920,7 +10625,6 @@
     "style": "Plainspoken and dry",
     "bio": "I see children at a string of small schools and carry activity sheets in the backseat. I am interested in services that remain viable outside the biggest district.",
     "fictional": true,
-    "age": 41,
     "location": {
       "city": "Scottsbluff",
       "state": "NE",
@@ -10957,7 +10661,6 @@
     "style": "Evidence and anecdotes",
     "bio": "I set up borrowed telescopes and take into account which kids have to get a ride home early. I like small projects that bring an expensive hobby into public reach.",
     "fictional": true,
-    "age": 49,
     "location": {
       "city": "Price",
       "state": "UT",
@@ -10994,7 +10697,6 @@
     "style": "Practical skeptic",
     "bio": "I register kids for swimming lessons and know which parents cannot get there before six. I want program planners to see the last bus as well as the sign-up sheet.",
     "fictional": true,
-    "age": 36,
     "location": {
       "city": "Peoria",
       "state": "IL",
@@ -11031,7 +10733,6 @@
     "style": "Calm fact-checker",
     "bio": "I teach evening lab sections and keep a box of goggles for students who forget theirs. I notice which policies quietly assume everyone works nine to five.",
     "fictional": true,
-    "age": 38,
     "location": {
       "city": "New Haven",
       "state": "CT",
@@ -11068,7 +10769,6 @@
     "style": "Patient questioner",
     "bio": "I help teenagers prepare for meetings with school staff and their families. I like asking what a fair second chance would require from everyone involved.",
     "fictional": true,
-    "age": 32,
     "location": {
       "city": "Newark",
       "state": "NJ",
