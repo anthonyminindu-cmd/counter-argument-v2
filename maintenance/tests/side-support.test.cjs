@@ -29,14 +29,16 @@ test('the profile guide shows five stars, threshold ranges, and both paths to th
     [6500,0,5,'highest contributor level']
   ]){
     const badge=contributorBadge(h,given,received);
-    assert.equal(badge.tag,'details');
-    assert.equal(badge.props.open,undefined);
-    const summary=nodes(badge,'summary')[0];
-    const stars=nodes(summary,'span').find(s=>s.props?.className==='dk-contributor-stars').children;
+    const dialog=nodes(badge,'dialog')[0];
+    assert.equal(dialog.props.open,undefined);
+    assert.equal(nodes(badge,'details').length,0);
+    const trigger=nodes(badge,'button')[0];
+    assert.equal(trigger.props['aria-haspopup'],'dialog');
+    const stars=nodes(badge,'span').find(s=>s.props?.className==='dk-contributor-stars').children;
     assert.deepEqual(stars.map(s=>s.props.fill),Array.from({length:5},(_,i)=>i<filled?'currentColor':'none'));
-    assert.match(summary.props['aria-label'],/How contributor stars work/);
-    assert.deepEqual(nodes(badge,'td').map(td=>td.children[0]),['0–1,999','2,000–2,999','3,000–3,999','4,000–4,999','5,000+']);
-    assert.ok(nodes(badge,'p').at(-1).children[0].includes(progress));
+    assert.equal(trigger.props['aria-label'],dialog.props['aria-label']);
+    assert.deepEqual(nodes(dialog,'td').map(td=>td.children[0]),['0–1,999','2,000–2,999','3,000–3,999','4,000–4,999','5,000+']);
+    assert.ok(nodes(dialog,'p').at(-1).children[0].includes(progress));
   }
 });
 

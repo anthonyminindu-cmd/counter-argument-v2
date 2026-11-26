@@ -337,12 +337,12 @@ html{scroll-padding-top:198px}
 .dk-impact-live, .dk-puzzle { max-width: 48rem; margin-inline: auto; }
 .dk-impact-live svg { display: block; width: 100%; height: auto; }
 
-.dk-share-dialog {
+.dk-share-dialog,.dk-contributor-dialog {
   margin:auto; padding:0; width:min(28rem,calc(100% - 2rem)); max-height:85vh;
   overflow:auto; border:1px solid var(--dk-line); border-radius:14px;
   background:var(--dk-panel); color:var(--dk-text); box-shadow:0 12px 48px #0005;
 }
-.dk-share-dialog::backdrop { background:rgb(0 0 0 / .6); }
+.dk-share-dialog::backdrop,.dk-contributor-dialog::backdrop { background:rgb(0 0 0 / .6); }
 .dk-share-content { padding:20px; display:grid; gap:14px; }
 .dk-share-content h2,.dk-share-content p { margin:0; }
 .dk-share-content h2 { font-size:1.25rem; }
@@ -561,13 +561,14 @@ html{scroll-padding-block:1rem}
   .dk-support-count { line-height:1rem; }
 }
 .dk-contributor { margin:.4rem 0 .7rem; color:var(--dk-text); font-size:.9rem; }
-.dk-contributor > summary { display:inline-flex; align-items:center; flex-wrap:wrap; gap:.45rem; min-height:44px; max-width:100%; cursor:pointer; list-style:none; border-radius:.3rem; }
-.dk-contributor > summary::-webkit-details-marker { display:none; }
+.dk-contributor-row { display:flex; align-items:center; flex-wrap:wrap; gap:.45rem; min-height:44px; }
+.dk-contributor-trigger { display:inline-grid; place-items:center; width:44px; height:44px; padding:0; border:0; border-radius:50%; color:var(--dk-mint); background:transparent; cursor:pointer; }
+.dk-contributor-trigger:hover { background:var(--dk-soft); }
 .dk-contributor-stars { display:inline-flex; gap:.08rem; }
 .dk-contributor-stars svg { width:1.05rem; height:1.05rem; }
 .dk-contributor-info { width:1.15rem; height:1.15rem; color:var(--dk-mint); }
-.dk-contributor-guide { box-sizing:border-box; max-width:30rem; padding:.85rem 1rem; background:var(--dk-panel); border:1px solid var(--dk-line); border-radius:.65rem; }
-.dk-contributor-guide h3 { margin:0; font-size:1rem; font-weight:700; }
+.dk-contributor-guide { padding:1.15rem; }
+.dk-contributor-guide h2 { margin:0; font-size:1.15rem; font-weight:700; }
 .dk-contributor-guide p { margin:.35rem 0 0; }
 .dk-contributor-guide table { width:100%; margin:.65rem 0; border-collapse:collapse; font-variant-numeric:tabular-nums; }
 .dk-contributor-guide th,.dk-contributor-guide td { padding:.22rem .35rem; text-align:start; }
