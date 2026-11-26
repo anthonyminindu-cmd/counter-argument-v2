@@ -78,7 +78,8 @@ export function impactSupportStrip(markup,positions){
   if(!portrait&&!markup.includes('viewBox="0 0 1600 900"'))return markup;
   let strip=portrait?'':'<rect x="0" y="900" width="1600" height="46" fill="#172e23"/>';
   for(const [index,side] of ordered.entries()){
-    const caption='Support · '+side.count+' · '+side.label;
+    const label=side.byline?side.byline+' · '+(side.caption||side.label):side.label;
+    const caption='Support · '+side.count+' · '+label;
     const short=impactLines(caption,width/2-64,20,1)[0];
     strip+='<text x="'+(36+index*width/2)+'" y="'+y+'" font-size="20" font-weight="700" fill="#f5f7ee"><title>'+impactXml(caption)+'</title>'+impactXml(short)+'</text>';
   }

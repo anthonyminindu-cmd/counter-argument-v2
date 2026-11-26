@@ -137,7 +137,7 @@ const glyphs = {
   enter:'M4 12h14m-5-5 5 5-5 5', book:'M3 4h7l2 2 2-2h7v15h-7l-2 2-2-2H3zM12 6v15'
 };
 
-export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,Account,OriginalTopic,OriginalStart,Directory,editorialFriendGroups}) {
+export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,Account,OriginalTopic,OriginalStart,Directory,editorialFriendGroups,publicProfileNames}) {
   const h=React.createElement, {useState,useEffect,useRef,useContext,createContext}=React;
   const Collection=createContext(null);
   const PuzzlePoster=createPuzzlePoster({React,Link,useLocation});
@@ -445,12 +445,16 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
 
 
-  function BotDebaters({entry}) {
-    const personas=usePersonas();
-    const friends=entry.sampleDebate.friends;
-    return h('div',{className:'dk-sample-debaters'},h('strong',null,'Participants'),
-      personas.data&&h('ul',null,...friends.map((id,side)=>
-        h('li',{key:id},link(personaRoute(id),personas.data[id].name),' · '+entry.sideTitles[side]))));
+  function PositionProfiles({entry,positions}) {
+    const profiles=entry.sideTitles.map((label,i)=>{
+      const id=positions?.find(side=>side.label===label)?.persona||entry.sampleDebate?.friends[i];
+      return {id,label,name:publicProfileNames[id]};
+    });
+    if(profiles.some(profile=>!profile.name))return null;
+    return h('div',{className:'dk-sample-debaters'},
+      h('strong',null,entry.sampleDebate?'Participants':'Position representatives'),
+      h('ul',null,...profiles.map(({id,name,label})=>
+        h('li',{key:id},link(personaRoute(id),name),' · '+label))));
   }
   function BotDiscussion({entry}) {
     const loc=useLocation(), personas=usePersonas();
@@ -497,10 +501,9 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       }
       return {data:rows.map(row=>{
         const choice=choices.get(row.slug);
-        return choice?{...row,...choice,likes:choice.discussion_count+choice.positions.reduce((sum,s)=>sum+s.count,0)}:row;
+        return choice?{...row,...choice,positions:positionButtons(choice.positions,row.slug,publicProfileNames),likes:choice.discussion_count+choice.positions.reduce((sum,s)=>sum+s.count,0)}:row;
       })};
     });
-    const directory=usePersonas(metrics.data?.some(row=>row.positions?.some(side=>side.persona))===true);
     const preferenceKey=personalize?JSON.stringify(selected):null;
     const previousPreferences=useRef(preferenceKey);
     useEffect(()=>{
@@ -516,12 +519,12 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       const timer=setInterval(sync,60000);
       return ()=>{window.removeEventListener('focus',sync);window.removeEventListener('dk-poster-viewed',sync);clearInterval(timer)};
     },[]);
-    return h(Engagement.Provider,{value:{...metrics,names:directory.data}},children);
+    return h(Engagement.Provider,{value:metrics},children);
   }
-  function SupportChoices({row,positions,names,busy,onChoose}){
+  function SupportChoices({row,positions,busy,onChoose}){
     const selected=row?.liked?row.my_position:undefined;
     const discussionCount=row?row.likes-positions.reduce((n,side)=>n+Number(side.count),0):'…';
-    const options=[{key:null,byline:'Discussion',count:discussionCount},...positionButtons(positions,row?.slug,names)];
+    const options=[{key:null,byline:'Discussion',count:discussionCount},...positions];
     return h('fieldset',{className:'dk-support-options',disabled:busy||!row},
       h('legend',null,'Show your support'),
       h('div',{className:'dk-support-grid'},...options.map(({key,byline,caption,fullName,statement,count})=>{
@@ -553,7 +556,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     }
     return h('div',{className:'dk-topic-metrics dk-social',title:entry.sampleActivity?'Totals include automated and member activity.':undefined},
       row&&!row.positions?h('button',{type:'button',className:'dk-small',onClick:metrics.refresh},'Retry support options'):
-      h(SupportChoices,{row,positions,names:metrics.names,busy:busy||metrics.loading,onChoose:like}),
+      h(SupportChoices,{row,positions,busy:busy||metrics.loading,onChoose:like}),
       h('button',{type:'button',className:'dk-small','data-opens-debate':true,onClick:onComment||(()=>navigate(url+'&comments=1'))},icon('message'),'Comments · ',row?.comments??'…'),
       row?.published&&h(Save,{kind:'topic',target:entry.id,label:entry.question}),
       row?.published&&h(ShareTopic,{kind:'topic',id:entry.id,title:entry.question}),
@@ -780,7 +783,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     return h(React.Fragment,null,h(BackToFeed,{id:entry.id}),
       h('article',{className:'dk-example-debate'},
         h('header',null,h('small',null,entry.sampleDebate?'Differ Kindly':'By Differ Kindly Editorial',h(PostedDate,{slug:entry.id})),h('h1',{'data-dk-view':'poster','data-dk-item':entry.id},entry.question),h('p',null,entry.overview),
-          entry.sampleDebate&&h(BotDebaters,{entry}),
+          h(PositionProfiles,{entry,positions:liveCounts?.positions}),
           h('button',{type:'button',className:'dk-secondary dk-read-points',onClick:readPoints},'Read all 20 points')),
         entry.research&&h('section',{className:'dk-panel','aria-labelledby':'dk-research-summary'},
           h('h2',{id:'dk-research-summary'},'Research summary'),
@@ -952,7 +955,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     return h('article',{className:'dk-panel dk-thread'},h('small',null,thread.is_starter?'Starter question':'Public question',h(PostedDate,{at:thread.published_at})),h('h1',{'data-dk-view':'question','data-dk-item':thread.id},thread.question),h(Report,{kind:'question',target:thread.id}),
       h('div',{className:'dk-actions'},link(user?next:login(next),'Explore with AI','dk-primary'),h(Save,{kind:'question',target:thread.id,label:thread.question}),h(ShareTopic,{kind:'question',id:thread.id,title:thread.question})),
       support.error?h('button',{type:'button',onClick:support.refresh},'Retry support options'):
-        h(SupportChoices,{row:support.data,positions:support.data?.positions||[],busy:sendingSupport||support.loading,onChoose:changeSupport}),
+        h(SupportChoices,{row:support.data,positions:positionButtons(support.data?.positions||[]),busy:sendingSupport||support.loading,onChoose:changeSupport}),
       supportError&&status(supportError,true),
       user&&support.data&&support.data.positions.length<2&&!support.data.positions.some(p=>p.mine)&&
         h('p',{className:'dk-note'},'To name a position, post a perspective of up to 160 characters and choose “Use as my position.”'),
