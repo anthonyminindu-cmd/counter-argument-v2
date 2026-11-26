@@ -3,6 +3,7 @@ import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
+import {calculateDifferRanks} from '../scene-quality/_shared/differRank.mjs';
 import {renderImpactPoster} from '../renderer/portrait.mjs';
 
 const editionDir = new URL('../../demo/november-2026/', import.meta.url);
@@ -25,12 +26,12 @@ function validateRows(rows) {
       throw new Error('Invalid original point order on side ' + side);
     }
   }
+  const ranks=calculateDifferRanks(rows);
   for (const point of rows) {
     const components = [point.magnitude, point.reach, point.duration];
     if (!components.every(n => Number.isInteger(n) && n >= 1 && n <= 100) ||
         !['low','moderate','high'].includes(point.confidence)) throw new Error('Invalid assessment for ' + point.id);
-    const impact = Math.round((50 * point.magnitude + 30 * point.reach + 20 * point.duration) / 100);
-    const rank = 1 + rows.filter(other => other.impact > impact).length;
+    const {differScore:impact,differRank:rank}=ranks.get(point.id);
     if (impact !== point.impact || rank !== point.rank) throw new Error('Inconsistent impact/rank for ' + point.id);
   }
 }
@@ -40,7 +41,7 @@ function renderExample(example) {
   const rows = example.rows.map(row => ({...row, explanation:
     'Estimated magnitude ' + row.magnitude + '/100, reach ' + row.reach + '/100 and duration ' + row.duration + '/100.'
   }));
-  return renderImpactPoster({...example, rows, pickLabel:'Editorial order'});
+  return renderImpactPoster({authors:['Differ Kindly Editorial','Differ Kindly Editorial'], pickLabel:'Editorial order', ...example, rows});
 }
 
 const school = read(new URL('arguments.json', schoolDir));
@@ -50,7 +51,7 @@ deliver(new URL('poster.svg', schoolDir), schoolPoster);
 const escape = value => String(value).replace(/[&<>"']/g, chr => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[chr]));
 const fullPoints = [...school.rows].sort((a,b) => a.rank-b.rank || a.id.localeCompare(b.id)).map(row => {
   const links = row.sources.map(source => '<a href="' + escape(source.url) + '" rel="noopener">' + escape(source.label) + '</a>');
-  return '<li><details><summary>' + escape(row.title) + ' <span>· ' + row.impact + '/100 · #' + row.rank + '</span></summary><p>' +
+  return '<li><details><summary>' + escape(row.title) + ' <span>· Differ Rank #' + row.rank + ' · Weighted score ' + row.impact + '/100' + '</span></summary><p>' +
     escape(row.argument) + '</p><p>' + escape(row.analysis) + '</p><p>' + links.join(' · ') + '</p></details></li>';
 }).join('\n');
 const schoolPage = fs.readFileSync(new URL('school-template.html', import.meta.url), 'utf8')
@@ -58,11 +59,12 @@ const schoolPage = fs.readFileSync(new URL('school-template.html', import.meta.u
 deliver(new URL('index.html', schoolDir), schoolPage);
 
 const entries = read(new URL('edition.json', editionDir)).filter(entry => entry.kind !== 'member');
+const personas=read(new URL('personas.json',editionDir));
 for (const entry of entries) {
   // The archived November edition contains author-selected order per side.
   // Keep full wording and permanent point IDs intact for discussions and reactions.
   const rows = entry.arguments.map(([, , id, point], i) => ({...point, id, side: Math.floor(i / 10)}));
-  const svg = renderExample({title:entry.title, question:entry.question, sides:entry.sideTitles, rows});
+  const svg = renderExample({title:entry.title, question:entry.question, sides:entry.sideTitles, ...(entry.sampleDebate?{authors:entry.sampleDebate.friends.map(id=>personas[id].name),pickLabel:'Personal pick'}:{}), rows});
   deliver(new URL(entry.id + '.svg', editionDir), svg);
   if (entry.id === 'ai-data-centers') deliver(new URL(entry.id + '-comparison.svg', editionDir), svg);
 }

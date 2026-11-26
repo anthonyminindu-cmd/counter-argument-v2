@@ -38,8 +38,9 @@ export function compile() {
   const liveStart = output.indexOf('function lg({args:');
   const liveEnd = output.indexOf('function w_({result:',liveStart);
   if(liveStart<0||liveEnd<=liveStart) throw Error('Review the debate results integration.');
-  const portraitSource = file => fs.readFileSync(path.join(root,'maintenance/renderer',file),'utf8').replace(/^export /gm,'');
-  output = output.slice(0,liveStart)+portraitSource('result-portrait.mjs')+'\n'+output.slice(liveEnd);
+  const portraitSource = file => fs.readFileSync(path.join(root,'maintenance/renderer',file),'utf8').replace(/^export /gm,'').replace(/^import .* from .*;$/gm,'');
+  const rankSource = fs.readFileSync(path.join(root,'maintenance/scene-quality/_shared/differRank.mjs'),'utf8').replace(/^export /gm,'');
+  output = output.slice(0,liveStart)+rankSource+'\n'+portraitSource('result-portrait.mjs')+'\n'+output.slice(liveEnd);
   output = output.replace('function posterSvgBlob(',()=>portraitSource('portrait.mjs')+'\nfunction posterSvgBlob(');
   const mount = 'Zw(document.getElementById("root")).render(i.jsx(aM,{}));';
   if (output.split(mount).length !== 2) throw new Error('Review the V2 mount before integrating the workspace');

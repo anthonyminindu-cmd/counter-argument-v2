@@ -18,8 +18,8 @@
         "reach": 59,
         "duration": 69,
         "confidence": "low",
-        "impact": 72,
-        "rank": 2
+        "impact": 71.5,
+        "rank": 3
       },
       {
         "id": "A-03",
@@ -31,7 +31,7 @@
         "reach": 48,
         "duration": 73,
         "confidence": "low",
-        "impact": 66,
+        "impact": 65.5,
         "rank": 5
       },
       {
@@ -44,8 +44,8 @@
         "reach": 60,
         "duration": 73,
         "confidence": "low",
-        "impact": 64,
-        "rank": 7
+        "impact": 63.6,
+        "rank": 8
       },
       {
         "id": "A-07",
@@ -57,7 +57,7 @@
         "reach": 48,
         "duration": 79,
         "confidence": "low",
-        "impact": 63,
+        "impact": 62.7,
         "rank": 9
       },
       {
@@ -70,7 +70,7 @@
         "reach": 43,
         "duration": 68,
         "confidence": "low",
-        "impact": 51,
+        "impact": 50.5,
         "rank": 16
       },
       {
@@ -83,7 +83,7 @@
         "reach": 49,
         "duration": 78,
         "confidence": "low",
-        "impact": 64,
+        "impact": 64.3,
         "rank": 7
       },
       {
@@ -96,7 +96,7 @@
         "reach": 34,
         "duration": 60,
         "confidence": "low",
-        "impact": 43,
+        "impact": 42.7,
         "rank": 20
       },
       {
@@ -110,7 +110,7 @@
         "duration": 65,
         "confidence": "low",
         "impact": 53,
-        "rank": 14
+        "rank": 15
       },
       {
         "id": "A-17",
@@ -122,7 +122,7 @@
         "reach": 34,
         "duration": 68,
         "confidence": "low",
-        "impact": 53,
+        "impact": 53.3,
         "rank": 14
       },
       {
@@ -135,7 +135,7 @@
         "reach": 55,
         "duration": 46,
         "confidence": "low",
-        "impact": 55,
+        "impact": 55.2,
         "rank": 12
       },
       {
@@ -148,7 +148,7 @@
         "reach": 60,
         "duration": 77,
         "confidence": "low",
-        "impact": 67,
+        "impact": 67.4,
         "rank": 4
       },
       {
@@ -161,7 +161,7 @@
         "reach": 48,
         "duration": 86,
         "confidence": "low",
-        "impact": 76,
+        "impact": 75.6,
         "rank": 1
       },
       {
@@ -174,7 +174,7 @@
         "reach": 38,
         "duration": 57,
         "confidence": "low",
-        "impact": 54,
+        "impact": 53.8,
         "rank": 13
       },
       {
@@ -200,7 +200,7 @@
         "reach": 40,
         "duration": 65,
         "confidence": "low",
-        "impact": 49,
+        "impact": 48.5,
         "rank": 17
       },
       {
@@ -213,7 +213,7 @@
         "reach": 41,
         "duration": 40,
         "confidence": "low",
-        "impact": 47,
+        "impact": 46.8,
         "rank": 18
       },
       {
@@ -226,7 +226,7 @@
         "reach": 29,
         "duration": 55,
         "confidence": "low",
-        "impact": 44,
+        "impact": 43.7,
         "rank": 19
       },
       {
@@ -239,7 +239,7 @@
         "reach": 42,
         "duration": 70,
         "confidence": "low",
-        "impact": 65,
+        "impact": 65.1,
         "rank": 6
       },
       {
@@ -252,7 +252,7 @@
         "reach": 42,
         "duration": 69,
         "confidence": "low",
-        "impact": 59,
+        "impact": 58.9,
         "rank": 10
       },
       {
@@ -265,7 +265,7 @@
         "reach": 74,
         "duration": 73,
         "confidence": "low",
-        "impact": 72,
+        "impact": 71.8,
         "rank": 2
       }
     ]
@@ -289,7 +289,7 @@
         "reach": 66,
         "duration": 88,
         "confidence": "low",
-        "impact": 79,
+        "impact": 78.9,
         "rank": 3
       },
       {
@@ -302,7 +302,7 @@
         "reach": 67,
         "duration": 86,
         "confidence": "low",
-        "impact": 75,
+        "impact": 75.3,
         "rank": 6
       },
       {
@@ -315,7 +315,7 @@
         "reach": 63,
         "duration": 81,
         "confidence": "low",
-        "impact": 71,
+        "impact": 71.1,
         "rank": 10
       },
       {
@@ -328,7 +328,7 @@
         "reach": 63,
         "duration": 93,
         "confidence": "low",
-        "impact": 82,
+        "impact": 81.5,
         "rank": 2
       },
       {
@@ -341,7 +341,7 @@
         "reach": 57,
         "duration": 85,
         "confidence": "low",
-        "impact": 68,
+        "impact": 68.1,
         "rank": 12
       },
       {
@@ -354,8 +354,8 @@
         "reach": 58,
         "duration": 84,
         "confidence": "low",
-        "impact": 71,
-        "rank": 10
+        "impact": 70.7,
+        "rank": 11
       },
       {
         "id": "A-13",
@@ -367,7 +367,7 @@
         "reach": 34,
         "duration": 46,
         "confidence": "low",
-        "impact": 48,
+        "impact": 48.4,
         "rank": 19
       },
       {
@@ -380,7 +380,7 @@
         "reach": 60,
         "duration": 89,
         "confidence": "low",
-        "impact": 74,
+        "impact": 73.8,
         "rank": 8
       },
       {
@@ -393,7 +393,7 @@
         "reach": 65,
         "duration": 91,
         "confidence": "low",
-        "impact": 76,
+        "impact": 76.2,
         "rank": 5
       },
       {
@@ -406,8 +406,8 @@
         "reach": 37,
         "duration": 70,
         "confidence": "low",
-        "impact": 48,
-        "rank": 19
+        "impact": 47.6,
+        "rank": 20
       },
       {
         "id": "B-02",
@@ -419,8 +419,8 @@
         "reach": 50,
         "duration": 91,
         "confidence": "low",
-        "impact": 75,
-        "rank": 6
+        "impact": 74.7,
+        "rank": 7
       },
       {
         "id": "B-04",
@@ -445,7 +445,7 @@
         "reach": 60,
         "duration": 77,
         "confidence": "low",
-        "impact": 73,
+        "impact": 73.4,
         "rank": 9
       },
       {
@@ -458,7 +458,7 @@
         "reach": 49,
         "duration": 68,
         "confidence": "low",
-        "impact": 66,
+        "impact": 65.8,
         "rank": 13
       },
       {
@@ -471,7 +471,7 @@
         "reach": 59,
         "duration": 49,
         "confidence": "low",
-        "impact": 61,
+        "impact": 60.5,
         "rank": 15
       },
       {
@@ -484,7 +484,7 @@
         "reach": 42,
         "duration": 79,
         "confidence": "low",
-        "impact": 65,
+        "impact": 65.4,
         "rank": 14
       },
       {
@@ -497,8 +497,8 @@
         "reach": 64,
         "duration": 83,
         "confidence": "low",
-        "impact": 79,
-        "rank": 3
+        "impact": 78.8,
+        "rank": 4
       },
       {
         "id": "B-16",
@@ -510,7 +510,7 @@
         "reach": 45,
         "duration": 73,
         "confidence": "low",
-        "impact": 54,
+        "impact": 53.6,
         "rank": 17
       },
       {
@@ -523,7 +523,7 @@
         "reach": 43,
         "duration": 47,
         "confidence": "low",
-        "impact": 49,
+        "impact": 49.3,
         "rank": 18
       },
       {
@@ -560,7 +560,7 @@
         "reach": 90,
         "duration": 84,
         "confidence": "low",
-        "impact": 85,
+        "impact": 85.3,
         "rank": 2
       },
       {
@@ -573,7 +573,7 @@
         "reach": 88,
         "duration": 84,
         "confidence": "low",
-        "impact": 86,
+        "impact": 86.2,
         "rank": 1
       },
       {
@@ -586,7 +586,7 @@
         "reach": 51,
         "duration": 69,
         "confidence": "low",
-        "impact": 61,
+        "impact": 60.6,
         "rank": 13
       },
       {
@@ -599,8 +599,8 @@
         "reach": 71,
         "duration": 76,
         "confidence": "low",
-        "impact": 74,
-        "rank": 6
+        "impact": 73.5,
+        "rank": 7
       },
       {
         "id": "A-09",
@@ -612,7 +612,7 @@
         "reach": 35,
         "duration": 81,
         "confidence": "low",
-        "impact": 74,
+        "impact": 73.7,
         "rank": 6
       },
       {
@@ -638,7 +638,7 @@
         "reach": 43,
         "duration": 60,
         "confidence": "low",
-        "impact": 50,
+        "impact": 49.9,
         "rank": 18
       },
       {
@@ -651,7 +651,7 @@
         "reach": 44,
         "duration": 74,
         "confidence": "low",
-        "impact": 63,
+        "impact": 62.5,
         "rank": 11
       },
       {
@@ -664,7 +664,7 @@
         "reach": 34,
         "duration": 70,
         "confidence": "low",
-        "impact": 58,
+        "impact": 57.7,
         "rank": 15
       },
       {
@@ -677,7 +677,7 @@
         "reach": 70,
         "duration": 44,
         "confidence": "low",
-        "impact": 57,
+        "impact": 56.8,
         "rank": 16
       },
       {
@@ -690,7 +690,7 @@
         "reach": 42,
         "duration": 61,
         "confidence": "low",
-        "impact": 53,
+        "impact": 53.3,
         "rank": 17
       },
       {
@@ -703,7 +703,7 @@
         "reach": 39,
         "duration": 69,
         "confidence": "low",
-        "impact": 65,
+        "impact": 64.5,
         "rank": 10
       },
       {
@@ -716,7 +716,7 @@
         "reach": 71,
         "duration": 78,
         "confidence": "low",
-        "impact": 76,
+        "impact": 75.9,
         "rank": 5
       },
       {
@@ -729,7 +729,7 @@
         "reach": 48,
         "duration": 74,
         "confidence": "low",
-        "impact": 62,
+        "impact": 61.7,
         "rank": 12
       },
       {
@@ -742,7 +742,7 @@
         "reach": 35,
         "duration": 58,
         "confidence": "low",
-        "impact": 48,
+        "impact": 48.1,
         "rank": 20
       },
       {
@@ -768,8 +768,8 @@
         "reach": 67,
         "duration": 78,
         "confidence": "low",
-        "impact": 77,
-        "rank": 3
+        "impact": 76.7,
+        "rank": 4
       },
       {
         "id": "B-16",
@@ -781,7 +781,7 @@
         "reach": 37,
         "duration": 49,
         "confidence": "low",
-        "impact": 49,
+        "impact": 48.9,
         "rank": 19
       },
       {
@@ -794,7 +794,7 @@
         "reach": 62,
         "duration": 74,
         "confidence": "low",
-        "impact": 68,
+        "impact": 67.9,
         "rank": 9
       },
       {
@@ -807,7 +807,7 @@
         "reach": 52,
         "duration": 65,
         "confidence": "low",
-        "impact": 59,
+        "impact": 58.6,
         "rank": 14
       }
     ]
@@ -831,7 +831,7 @@
         "reach": 89,
         "duration": 75,
         "confidence": "low",
-        "impact": 79,
+        "impact": 79.2,
         "rank": 1
       },
       {
@@ -844,8 +844,8 @@
         "reach": 63,
         "duration": 73,
         "confidence": "low",
-        "impact": 74,
-        "rank": 3
+        "impact": 73.5,
+        "rank": 4
       },
       {
         "id": "A-05",
@@ -857,7 +857,7 @@
         "reach": 86,
         "duration": 69,
         "confidence": "low",
-        "impact": 69,
+        "impact": 69.1,
         "rank": 9
       },
       {
@@ -883,7 +883,7 @@
         "reach": 68,
         "duration": 62,
         "confidence": "low",
-        "impact": 68,
+        "impact": 67.8,
         "rank": 10
       },
       {
@@ -896,7 +896,7 @@
         "reach": 82,
         "duration": 67,
         "confidence": "low",
-        "impact": 76,
+        "impact": 75.5,
         "rank": 2
       },
       {
@@ -922,8 +922,8 @@
         "reach": 72,
         "duration": 53,
         "confidence": "low",
-        "impact": 62,
-        "rank": 14
+        "impact": 62.2,
+        "rank": 15
       },
       {
         "id": "A-17",
@@ -935,7 +935,7 @@
         "reach": 67,
         "duration": 59,
         "confidence": "low",
-        "impact": 53,
+        "impact": 53.4,
         "rank": 20
       },
       {
@@ -948,7 +948,7 @@
         "reach": 57,
         "duration": 69,
         "confidence": "low",
-        "impact": 62,
+        "impact": 62.4,
         "rank": 14
       },
       {
@@ -961,7 +961,7 @@
         "reach": 23,
         "duration": 85,
         "confidence": "low",
-        "impact": 72,
+        "impact": 72.4,
         "rank": 6
       },
       {
@@ -974,7 +974,7 @@
         "reach": 68,
         "duration": 50,
         "confidence": "low",
-        "impact": 74,
+        "impact": 73.9,
         "rank": 3
       },
       {
@@ -1000,8 +1000,8 @@
         "reach": 52,
         "duration": 48,
         "confidence": "low",
-        "impact": 62,
-        "rank": 14
+        "impact": 61.7,
+        "rank": 16
       },
       {
         "id": "B-10",
@@ -1013,7 +1013,7 @@
         "reach": 27,
         "duration": 80,
         "confidence": "low",
-        "impact": 70,
+        "impact": 69.6,
         "rank": 8
       },
       {
@@ -1026,7 +1026,7 @@
         "reach": 52,
         "duration": 78,
         "confidence": "low",
-        "impact": 73,
+        "impact": 73.2,
         "rank": 5
       },
       {
@@ -1039,7 +1039,7 @@
         "reach": 38,
         "duration": 60,
         "confidence": "low",
-        "impact": 54,
+        "impact": 54.4,
         "rank": 19
       },
       {
@@ -1065,7 +1065,7 @@
         "reach": 74,
         "duration": 79,
         "confidence": "low",
-        "impact": 71,
+        "impact": 70.5,
         "rank": 7
       },
       {
@@ -1078,7 +1078,7 @@
         "reach": 70,
         "duration": 60,
         "confidence": "low",
-        "impact": 64,
+        "impact": 63.5,
         "rank": 13
       }
     ]

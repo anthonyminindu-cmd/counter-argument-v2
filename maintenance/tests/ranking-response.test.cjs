@@ -32,10 +32,13 @@ test('pooled model scores cannot see the participant, original ID or personal or
   assert.match(counterResearchRequest(snapshot).instructions,/own preferred priority order/);
 });
 
-test('weighted scores, tie ranks, original submissions and evidence survive a complete round trip', () => {
+test('new research carries unique Differ Ranks alongside compatible snapshot fields', () => {
   const result=validate([...assessments].reverse());
   assert.deepEqual(result.map(p=>p.rank),Array.from({length:20},(_,i)=>i+1));
   assert.deepEqual(result.map(p=>p.impactRank),[1,...Array(19).fill(2)]);
+  assert.equal(result[0].differRank,1);
+  assert.equal(result[0].differScore,70);
+  assert.deepEqual(result.map(p=>p.differRank).sort((a,b)=>a-b),Array.from({length:20},(_,i)=>i+1));
   assert.equal(result[0].impactScore,70);
   assert.deepEqual(result.slice(1).map(p=>p.id),result.slice(1).map(p=>p.id).sort());
   assert.equal(new Set(result.map(p=>p.id)).size,20);

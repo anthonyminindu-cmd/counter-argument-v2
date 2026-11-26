@@ -124,7 +124,7 @@ test('a single unbreakable question token uses full-question details rather than
 test('the infographic interface exposes the exact full topic in native accessible details',()=>{
   const question='Should school districts change the first bell? '+ 'Consider staffing, transport, family schedules, and student needs. '.repeat(28);
   const jsx=(type,props)=>({type,props});
-  const context={Xt:()=>({user:{id:'viewer'}}),Wf:'test-scene',G:'button',ag:'argument-list',
+  const context={DK:{useDebateAuthors:()=>({names:{}})},Xt:()=>({user:{id:'viewer'}}),Wf:'test-scene',G:'button',ag:'argument-list',
     p:{useState:initial=>[initial,()=>{}],useEffect:()=>{},useMemo:fn=>fn(),useRef:()=>({current:null}),createElement:(type,props,...children)=>jsx(type,{...props,children:children.length===1?children[0]:children})},i:{jsx,jsxs:jsx}};
   vm.createContext(context);
   const start=source.indexOf('function lg('),end=source.indexOf('function w_(',start);

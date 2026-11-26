@@ -14,7 +14,7 @@
   {
     "id": "clarify-shared-impact-rubric",
     "find": "children:e.scoringVersion===\"research-twenty-v1\"?\"All 20 arguments ranked together by researched impact on the topic.\"",
-    "replace": "children:e.scoringVersion===\"impact-v2\"?\"AI impact weighs magnitude (50%), reach (30%) and duration (20%). Equal scores share an overall rank.\":e.scoringVersion===\"research-twenty-v1\"?\"Archived research scores use the original assessment rubric.\"",
+    "replace": "children:e.scoringVersion===\"impact-v2\"?\"Differ Rank orders all 20 arguments by magnitude (50%), reach (30%) and duration (20%). Exact ties go to the earlier pick, then the permanent argument ID.\":e.scoringVersion===\"research-twenty-v1\"?\"Archived research scores use the original assessment rubric.\"",
     "expectedCount": 1
   },
   {
@@ -32,19 +32,19 @@
   {
     "id": "point-shared-ranking",
     "find": "children:[\"#\",n.rank]}),n.posterLabel||n.title",
-    "replace": "children:[\"#\",n.impactRank??n.rank]}),n.headline||n.posterLabel||n.title",
+    "replace": "children:[n.differRank?\"Differ Rank #\":\"#\",n.differRank??n.rank]}),n.headline||n.posterLabel||n.title",
     "expectedCount": 1
   },
   {
     "id": "explain-personal-impact",
     "find": "n.posterLabel&&n.posterLabel!==n.title&&i.jsx",
-    "replace": "n.scoringVersion===\"impact-v2\"&&i.jsxs(\"p\",{children:[\"Pick \",n.ordinal+1,\" \u00b7 AI impact \",n.impactScore,\"/100 \u00b7 \",n.confidence,\" confidence\"]}), (n.headline||n.posterLabel)&&(n.headline||n.posterLabel)!==n.title&&i.jsx",
+    "replace": "n.scoringVersion===\"impact-v2\"&&i.jsxs(\"p\",{children:[\"Pick \",n.ordinal+1,\" · Weighted score \",n.differScore,\"/100 · \",n.confidence,\" confidence\"]}), (n.headline||n.posterLabel)&&(n.headline||n.posterLabel)!==n.title&&i.jsx",
     "expectedCount": 1
   },
   {
     "id": "show-impact-components",
     "find": "[n.relevance,n.evidence,n.consequences,n.reasoning].every(Number.isFinite)&&",
-    "replace": "n.scoringVersion===\"impact-v2\"&&i.jsxs(\"p\",{children:[\"Magnitude \",n.magnitude,\" \u00b7 Reach \",n.reach,\" \u00b7 Duration \",n.duration]}),n.scoringVersion!==\"impact-v2\"&&[n.relevance,n.evidence,n.consequences,n.reasoning].every(Number.isFinite)&&",
+    "replace": "n.scoringVersion===\"impact-v2\"&&i.jsxs(\"p\",{children:[\"Magnitude \",n.magnitude,\" · Reach \",n.reach,\" · Duration \",n.duration]}),n.scoringVersion!==\"impact-v2\"&&[n.relevance,n.evidence,n.consequences,n.reasoning].every(Number.isFinite)&&",
     "expectedCount": 1
   },
   {
@@ -56,7 +56,7 @@
   {
     "id": "friend-ranking-description",
     "find": "AI ranked the points using the sources it found. Check those sources before relying on the scores.",
-    "replace": "Your picks follow submission order. Overall rank compares the AI estimates across both perspectives.",
+    "replace": "Each side keeps its ten picks. Differ Rank compares all 20 by weighted impact.",
     "expectedCount": 1
   },
   {
@@ -79,5 +79,46 @@
     "id": "show-live-solo-scoring-version",
     "find": "identity:e,scoringVersion:t5,legacyVoteKeys",
     "replace": "identity:e,scoringVersion:s[0]?.scoringVersion||t5,legacyVoteKeys"
+  },
+  {
+    "id": "order-live-result-details-by-differ-rank",
+    "find": "function ag({rows:e,research:t=!0}){return",
+    "replace": "function ag({rows:e,research:t=!0}){if(e[0]?.differRank)e=[...e].sort((a,b)=>a.differRank-b.differRank);return"
+  },
+  {
+    "id": "use-exact-result-score",
+    "find": "Number.isFinite(n.score)?`${n.score}${t?\"/100\":\" points\"}`",
+    "replace": "Number.isFinite(n.score)?`${n.differScore??n.score}${t?\"/100\":\" points\"}`"
+  },
+  {
+    "id": "read-exact-result-score",
+    "find": "Number.isFinite(n.score)?`${n.score} ${t?\"out of 100\":\"points\"}`",
+    "replace": "Number.isFinite(n.score)?`${n.differScore??n.score} ${t?\"out of 100\":\"points\"}`"
+  },
+  {
+    "id": "name-friend-rankings",
+    "find": "g.rows.length?\"Final AI rankings\":\"AI research and ranking\"",
+    "replace": "g.rows.length?\"Final rankings\":\"Researching the submitted arguments\""
+  },
+  {
+    "id": "export-differ-ranks",
+    "find": "ranking:g.rows},null,2)",
+    "replace": "ranking:g.rows[0]?.differRank?[...g.rows].sort((a,b)=>a.differRank-b.differRank).map(r=>({...r,rank:r.differRank,impactRank:r.differRank,score:r.differScore,impactScore:r.differScore})):g.rows},null,2)"
+  },
+  {
+    "id": "supply-friend-profile-names",
+    "find": "i.jsx(Nx,{workflow:Ws,userId:r==null?void 0:r.id,count:S.length",
+    "replace": "i.jsx(Nx,{names:q_,workflow:Ws,userId:r==null?void 0:r.id,count:S.length",
+    "expectedCount": 2
+  },
+  {
+    "id": "read-friend-profile-names",
+    "find": "function Nx({workflow:e,userId:t,count:n,opponentCount:r,topic:s})",
+    "replace": "function Nx({names={},workflow:e,userId:t,count:n,opponentCount:r,topic:s})"
+  },
+  {
+    "id": "attribute-original-friend-picks",
+    "find": "author:S.owner===t?\"You\":\"Partner\"",
+    "replace": "author:names[S.owner]||(S.owner===t?\"You\":\"Partner\")"
   }
 ]

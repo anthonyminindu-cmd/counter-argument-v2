@@ -73,7 +73,7 @@ export function pointSnapshot(rows,positions=[]) {
     const urls=[row.sourceUrl,...(Array.isArray(row.sources)?row.sources:[])].map(source=>typeof source==='string'?source:source?.url);
     const right=row.submissionSide?row.submissionSide==='right':row.side==='oppose';
     return {
-      id:row.id,rank:row.rank,...(Number.isInteger(row.impactRank)?{impact_rank:row.impactRank}:{}),side:row.positionLabel||positions[right?1:0]||(right?'Second perspective':'First perspective'),
+      id:row.id,rank:row.differRank??row.rank,...(Number.isInteger(row.differRank??row.impactRank)?{impact_rank:row.differRank??row.impactRank}:{}),side:row.positionLabel||positions[right?1:0]||(right?'Second perspective':'First perspective'),
       title:row.title,detail:row.description||row.explanation||'',
       sources:[...new Set(urls.filter(url=>typeof url==='string'&&/^https?:\/\/\S+$/i.test(url)&&url.length<=1000&&sourceHost(url)))].slice(0,4),
       counterpoint:typeof row.counterargument==='string'?row.counterargument:null
@@ -103,7 +103,7 @@ export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQ
       h('button',{className:'dk-point-title',type:'button','aria-expanded':open,onClick:onToggle},
         h('span',{className:'dk-point-rank'},'#'+point.rank),h('strong',null,point.title),h('span',{'aria-hidden':true},open?'−':'+')),
       open&&h('div',{className:'dk-point-body'},h('p',null,point.detail),
-        point.impact!=null&&h('p',null,(point.pickLabel+' ')+point.pick+' · AI impact '+point.impact+'/100 · Overall #'+point.rank+(point.confidence?' · '+point.confidence+' confidence':'')),
+        point.impact!=null&&h('p',null,(point.pickLabel+' ')+point.pick+' · Differ Rank #'+point.rank+' of 20 · Weighted score '+point.impact+'/100'+(point.confidence?' · '+point.confidence+' confidence':'')),
         point.explanation&&h('p',null,point.explanation),
         point.sources?.length>0&&h('div',null,h('h4',null,'Sources for this point'),h('ul',null,...point.sources.map(url=>h('li',{key:url},h('a',{href:url,rel:'noreferrer',target:'_blank'},sourceHost(url)||url))))),
         point.counterpoint&&h('div',null,h('h4',null,'Counterargument'),h('p',null,point.counterpoint)),
@@ -127,7 +127,7 @@ export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQ
     const local=useQuery(provided?null:entry.id+'|'+(user?.id||''),()=>db.rpc('dk_points',{p_slug:entry.id}));
     const q=provided||local;
     const scores=new Map((impactRows||entry.arguments?.map(item=>({id:item[2],...item[3]}))||[]).map(item=>[item.id,item]));
-    const rows=q.data?.map(point=>{const r=scores.get(point.id);return r?.impact!=null?{...point,rank:r.rank,impact:r.impact,pick:r.pick,confidence:r.confidence,pickLabel:entry.arguments?'Editorial order':r.pickLabel||'Personal pick',explanation:r.explanation||(Number.isInteger(r.magnitude)?'Magnitude '+r.magnitude+'/100 · Reach '+r.reach+'/100 · Duration '+r.duration+'/100.':'')}:point;});
+    const rows=q.data?.map(point=>{const r=scores.get(point.id);return r?.impact!=null?{...point,rank:r.rank,impact:r.impact,pick:r.pick,author:r.author,creatorSide:r.creatorSide,confidence:r.confidence,pickLabel:entry.arguments?(entry.sampleDebate?'Personal pick':'Editorial order'):r.pickLabel||'Personal pick',explanation:r.explanation||(Number.isInteger(r.magnitude)?'Magnitude '+r.magnitude+'/100 · Reach '+r.reach+'/100 · Duration '+r.duration+'/100.':'')}:point;});
 
     const ready=!!q.data;
     React.useEffect(()=>{
@@ -139,11 +139,20 @@ export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQ
     if(q.error)return h('div',null,fallback,h('button',{className:'dk-secondary',onClick:q.refresh},'Retry interactive points'));
     if(!q.data)return status('Loading debate points…');
     if(!q.data.length)return fallback||null;
-    return h('div',null,h('label',{className:'dk-audience-toggle'},h('input',{type:'checkbox',checked:counts,onChange:e=>setCounts(e.target.checked)}),'Show audience responses'),
-      h('div',{className:'dk-example-positions'},...[...new Set(rows.map(p=>p.side))].map(side=>
-        h('section',{key:side,className:'dk-panel'},h('h3',null,side),h('ol',{className:'dk-points-list'},...rows.filter(p=>p.side===side).sort((a,b)=>(a.pick??a.rank)-(b.pick??b.rank)).map(point=>h(Point,{key:point.id,entry,point,open:selected===point.id,
-          onToggle:()=>navigate(pointDestination(loc,selected===point.id?null:point.id),{replace:true,state:loc.state}),
-          intent:selected===point.id?reactionIntent(loc.pathname+loc.search):null,refresh:q.refresh,loading:q.loading,showCounts:counts})))))));
+    return h('div',null,
+      rows.some(p=>p.impact!=null)&&h('details',null,h('summary',null,'How Differ Rank works'),
+        h('p',null,'The score uses estimated magnitude (50%), reach (30%) and duration (20%). The app sorts all 20 scores at full precision. Exact ties go to the earlier pick, then the permanent argument ID.')),
+      h('label',{className:'dk-audience-toggle'},h('input',{type:'checkbox',checked:counts,onChange:e=>setCounts(e.target.checked)}),'Show audience responses'),
+      h('div',{className:'dk-example-positions'},...[...new Set(rows.map(p=>p.side))].map(side=>{
+        const picks=rows.filter(p=>p.side===side).sort((a,b)=>(a.pick??a.rank)-(b.pick??b.rank));
+        const first=picks[0];
+        return h('section',{key:side,className:'dk-panel'},h('h3',null,side),
+          first.author&&h('p',null,'By ',link(posterDebateRoute(entry.id)+'&creator='+first.creatorSide,first.author)),
+          h('ol',{className:'dk-points-list'},...picks.map(point=>h(Point,{key:point.id,entry,point,open:selected===point.id,
+            onToggle:()=>navigate(pointDestination(loc,selected===point.id?null:point.id),{replace:true,state:loc.state}),
+            intent:selected===point.id?reactionIntent(loc.pathname+loc.search):null,refresh:q.refresh,loading:q.loading,showCounts:counts}))));
+      })));
+
   };
 }
 
@@ -151,10 +160,10 @@ export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQ
 export function posterPointData(markup){
   if(!markup?.includes('data-poster-format="impact-v2"'))return [];
   const doc=new DOMParser().parseFromString(markup,'image/svg+xml');
-  const pickLabel=markup.includes('>Submission order 1–10</text>')?'Submission order':'Personal pick';
+  const pickLabel=['Submission order','Editorial order'].find(label=>markup.includes('>'+label+' 1–10</text>'))||'Personal pick';
   return [...doc.querySelectorAll('g[data-reader-id]')].map(g=>({id:g.getAttribute('data-reader-id'),
     rank:Number(g.dataset.rank),pick:Number(g.dataset.pick),impact:g.dataset.impact?Number(g.dataset.impact):null,
-    pickLabel,confidence:g.dataset.confidence,explanation:g.dataset.explanation}));
+    pickLabel,creatorSide:Number(g.dataset.side),headline:g.querySelector('title')?.textContent?.split(' — ')[0],author:g.dataset.author,confidence:g.dataset.confidence,explanation:g.dataset.explanation}));
 }
 export function withPosterActivity(markup,metrics){
   if(!markup||!metrics)return markup;

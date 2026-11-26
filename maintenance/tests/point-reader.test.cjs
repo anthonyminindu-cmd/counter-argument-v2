@@ -27,22 +27,24 @@ test('all editorial portraits preserve each side’s ten points and rank by weig
   for(const entry of entries.filter(item=>item.kind!=='member')){
     const svg=read(entry.id);
     assert.match(svg,/viewBox="0 0 1080 1350"/);
-    assert.match(svg,/Editorial order/);
+    assert.ok(svg.includes(entry.sampleDebate?'Personal pick':'Editorial order'));
     const groups=[...svg.matchAll(/<g data-argument-id="([^"]+)"([^>]+)>/g)];
     assert.equal(groups.length,20);
-    const metas=entry.arguments.map(tuple=>tuple[3]);
+    const rankOrder=[...entry.arguments].sort((a,b)=>b[3].impact-a[3].impact || a[3].pick-b[3].pick || (a[2]<b[2]?-1:1));
     for(const [i,[label,detail,id,meta]] of entry.arguments.entries()){
       const group=groups.find(([,gid])=>gid===id);
       assert.ok(group, 'live point UUID for '+label);
       assert.ok(label&&detail&&meta.headline&&meta.detail);
-      const score=Math.round((50*meta.magnitude+30*meta.reach+20*meta.duration)/100);
+      const score=(5*meta.magnitude+3*meta.reach+2*meta.duration)/10;
       assert.equal(meta.impact,score);
-      assert.equal(meta.rank,1+metas.filter(p=>p.impact>score).length);
+      assert.equal(meta.rank,1+rankOrder.findIndex(tuple=>tuple[2]===id));
       for(const [key,value] of Object.entries({side:Math.floor(i/10),pick:i%10+1,impact:score,rank:meta.rank,'reader-id':id})){
         assert.ok(group[2].includes('data-'+key+'="'+value+'"'), label+' / '+key);
       }
     }
   }
+  const gas=entries.find(entry=>entry.id==='federal-gas-tax').arguments.map(a=>a[3]);
+  assert.deepEqual(gas.filter(r=>r.rank===4||r.rank===5).map(r=>[r.headline,r.impact,r.rank]),[['Pump prices',61.4,4],['Size of savings',60.9,5]]);
   assert.equal(read('ai-data-centers-comparison'),read('ai-data-centers'));
 });
 

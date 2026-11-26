@@ -24,7 +24,7 @@
       "reach": 88,
       "duration": 84,
       "confidence": "high",
-      "impact": 86,
+      "impact": 86.2,
       "pick": 1,
       "rank": 1
     },
@@ -50,7 +50,7 @@
       "reach": 90,
       "duration": 84,
       "confidence": "high",
-      "impact": 85,
+      "impact": 85.3,
       "pick": 2,
       "rank": 2
     },
@@ -76,7 +76,7 @@
       "reach": 71,
       "duration": 78,
       "confidence": "moderate",
-      "impact": 76,
+      "impact": 75.9,
       "pick": 1,
       "rank": 5
     },
@@ -128,7 +128,7 @@
       "reach": 48,
       "duration": 74,
       "confidence": "moderate",
-      "impact": 62,
+      "impact": 61.7,
       "pick": 2,
       "rank": 12
     },
@@ -150,9 +150,9 @@
       "reach": 71,
       "duration": 76,
       "confidence": "moderate",
-      "impact": 74,
+      "impact": 73.5,
       "pick": 4,
-      "rank": 6
+      "rank": 7
     },
     {
       "id": "A07",
@@ -172,7 +172,7 @@
       "reach": 35,
       "duration": 81,
       "confidence": "moderate",
-      "impact": 74,
+      "impact": 73.7,
       "pick": 5,
       "rank": 6
     },
@@ -194,9 +194,9 @@
       "reach": 43,
       "duration": 69,
       "confidence": "moderate",
-      "impact": 57,
+      "impact": 56.7,
       "pick": 3,
-      "rank": 17
+      "rank": 18
     },
     {
       "id": "A09",
@@ -222,7 +222,7 @@
       "confidence": "moderate",
       "impact": 69,
       "pick": 4,
-      "rank": 8
+      "rank": 9
     },
     {
       "id": "A10",
@@ -246,9 +246,9 @@
       "reach": 36,
       "duration": 71,
       "confidence": "moderate",
-      "impact": 62,
+      "impact": 61.5,
       "pick": 5,
-      "rank": 12
+      "rank": 13
     },
     {
       "id": "A11",
@@ -272,9 +272,9 @@
       "reach": 67,
       "duration": 78,
       "confidence": "moderate",
-      "impact": 77,
+      "impact": 76.7,
       "pick": 6,
-      "rank": 3
+      "rank": 4
     },
     {
       "id": "A12",
@@ -298,7 +298,7 @@
       "reach": 71,
       "duration": 74,
       "confidence": "low",
-      "impact": 69,
+      "impact": 69.1,
       "pick": 6,
       "rank": 8
     },
@@ -320,7 +320,7 @@
       "reach": 39,
       "duration": 69,
       "confidence": "moderate",
-      "impact": 65,
+      "impact": 64.5,
       "pick": 7,
       "rank": 10
     },
@@ -346,7 +346,7 @@
       "reach": 37,
       "duration": 49,
       "confidence": "moderate",
-      "impact": 49,
+      "impact": 48.9,
       "pick": 8,
       "rank": 20
     },
@@ -368,7 +368,7 @@
       "reach": 51,
       "duration": 69,
       "confidence": "low",
-      "impact": 61,
+      "impact": 60.6,
       "pick": 7,
       "rank": 14
     },
@@ -394,9 +394,9 @@
       "reach": 35,
       "duration": 72,
       "confidence": "low",
-      "impact": 58,
+      "impact": 57.9,
       "pick": 8,
-      "rank": 15
+      "rank": 16
     },
     {
       "id": "A17",
@@ -420,7 +420,7 @@
       "reach": 70,
       "duration": 44,
       "confidence": "moderate",
-      "impact": 57,
+      "impact": 56.8,
       "pick": 9,
       "rank": 17
     },
@@ -446,7 +446,7 @@
       "reach": 20,
       "duration": 77,
       "confidence": "low",
-      "impact": 63,
+      "impact": 63.4,
       "pick": 9,
       "rank": 11
     },
@@ -468,7 +468,7 @@
       "reach": 64,
       "duration": 66,
       "confidence": "low",
-      "impact": 58,
+      "impact": 58.4,
       "pick": 10,
       "rank": 15
     },
@@ -490,7 +490,7 @@
       "reach": 43,
       "duration": 60,
       "confidence": "low",
-      "impact": 50,
+      "impact": 49.9,
       "pick": 10,
       "rank": 19
     }
