@@ -18,7 +18,8 @@ begin
  if s->>'full_name' is distinct from 'Casey Rivera' then raise exception 'Default name lost'; end if;
  s:=public.dk_save_profile_identity(s->>'full_name',null,'','',old_revision);
  if s->>'display_name' is distinct from 'Casey Rivera' then raise exception 'Default name never became public'; end if;
- s:=public.dk_save_profile_identity('Casey Rivera',' Civic Owl ','','',s->>'revision');
+ if s->>'revision' is distinct from old_revision then raise exception 'Publishing the initial name invalidated an open editor'; end if;
+ s:=public.dk_save_profile_identity('Casey Rivera',' Civic Owl ','','',old_revision);
  if s->>'alias' is distinct from 'Civic Owl' or s->>'display_name' is distinct from 'Civic Owl' then raise exception 'Alias not active'; end if;
  begin
    perform public.dk_save_profile_identity('Wrong Name',null,'','',old_revision);
