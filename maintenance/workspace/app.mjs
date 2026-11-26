@@ -1,6 +1,6 @@
 import {impactPickLabel} from '../renderer/portrait.mjs';
 import {posterDebateRoute,readPosterDebate,normalizeDebateSearch} from './debate-links.mjs';
-import {createFeedInterests,feedRankingRequest} from './feed-interests.mjs';
+import {createFeedInterests} from './feed-interests.mjs';
 import {applyReadingPreferences,createRouteContent} from './accessibility.mjs';
 import {createProfilePhotos} from './profile-photo.mjs';
 import {watchContentImpressions} from './impressions.mjs';
@@ -96,15 +96,15 @@ export function publicPosterEntries(ranked,edition) {
   });
 }
 
-export function posterMetricsQuery(db,order,editorialIds=[],rpc='dk_ranked_posters') {
-  const ranked=db.rpc(rpc,{p_bot_comments:true});
+export function posterMetricsQuery(db,order,editorialIds=[]) {
+  const ranked=db.rpc(order==='trending'?'dk_trending_posters':'dk_ranked_posters',{p_bot_comments:true});
   if(!order)return ranked;
   const published=ranked.eq('published',true);
   const available=editorialIds.length
     ?published.or('has_artwork.eq.true,slug.in.('+editorialIds.join(',')+')')
     :published.eq('has_artwork',true);
   if(order==='latest')return available.order('published_at',{ascending:false}).order('slug',{ascending:true}).limit(5);
-  return available;
+  return order==='trending'?available.limit(5):available;
 }
 
 const brandMark = 'maintenance/workspace/mark.svg?v=lettered-bubble';
@@ -489,11 +489,8 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   const Engagement=createContext(null);
   function PosterActivity({children,order,editorialIds,wait=false}) {
     const {user}=useAuth();
-    const selected=useFeedInterests()?.selected;
-    const personalize=!!(user&&order==='trending'&&selected?.length);
     const metrics=useQuery(wait?null:JSON.stringify([user?.id,order,editorialIds]),async()=>{
-      const result=await feedRankingRequest(
-        ()=>posterMetricsQuery(db,order,editorialIds),()=>posterMetricsQuery(db,order,editorialIds,'dk_trending_posters'),personalize);
+      const result=await posterMetricsQuery(db,order,editorialIds);
       if(result.error||!result.data?.length)return result;
       const rows=result.data;
       const choices=new Map();
@@ -506,14 +503,6 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         return choice?{...row,...choice,positions:positionButtons(choice.positions,row.slug,publicProfileNames),likes:choice.discussion_count+choice.positions.reduce((sum,s)=>sum+s.count,0)}:row;
       })};
     });
-    const preferenceKey=personalize?JSON.stringify(selected):null;
-    const previousPreferences=useRef(preferenceKey);
-    useEffect(()=>{
-      if(previousPreferences.current!==preferenceKey){
-        previousPreferences.current=preferenceKey;
-        metrics.refresh();
-      }
-    },[preferenceKey]);
     useEffect(()=>{
       function sync(){if(!document.hidden)metrics.refresh()}
       window.addEventListener('focus',sync);
@@ -825,7 +814,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     if(!metrics.data)return status('Loading topics…');
     const entries=publicPosterEntries(metrics.data,edition);
     return entries.length?h('div',{className:'dk-example-grid'},...entries.map(entry=>h(ExampleCard,{key:entry.id,entry,origin}))):
-      h('p',null,'No debates have been published yet.');
+      origin==='home'||origin==='trending'?h('p',null,'No discussions have received comments or support in the past 30 days. ',link(feed+'&sort=latest','Browse Latest')):h('p',null,'No debates have been published yet.');
   }
   function ExampleDebate({entry}) {
     const {user}=useAuth();
@@ -1023,8 +1012,9 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     if(chosen)return h('section',{className:'dk-feed'},h(BackToFeed,{id:chosen}),query.loading&&!query.data?status('Loading discussion…'):query.error?status('Could not load this discussion.',true):rows[0]?h(Thread,{key:rows[0].id,thread:rows[0],refresh:query.refresh}):status('This discussion is unavailable.'));
     const feedTitle=order==='trending'?'Trending':order==='latest'?'Latest':'Your people';
     return h('section',{className:'dk-feed',id:'dk-debates',tabIndex:-1,'aria-label':feedTitle},
-      h('div',{className:'dk-sectionline'},h(landing?'h2':'h1',null,landing&&icon('trend'),feedTitle),order==='trending'&&user&&h(FeedInterestLink)),
+      h('div',{className:'dk-sectionline'},h(landing?'h2':'h1',null,landing&&icon('trend'),feedTitle)),
       h('nav',{className:'dk-filters','aria-label':'Feed order'},...[[urlFor('trending'),'Trending','trending'],[urlFor('latest'),'Latest','latest'],...(user?[[urlFor('people'),'Your people','people']]:[])].map(([to,label,key])=>h(Link,{key,to,'aria-current':key===order?'page':undefined},label))),
+      order==='trending'&&h('p',{className:'dk-note'},'The five discussions with the most comments and support in the past 30 days. Each comment or thumbs-up counts once.'),
       order!=='people'?(publicList||h(PosterFeed,{order})):
       query.error?h('div',{className:'dk-panel'},status('The feed could not be loaded.',true),h('button',{className:'dk-secondary',onClick:query.refresh},'Try again')):query.loading&&!query.data?status('Loading discussions…'):
       h(React.Fragment,null,

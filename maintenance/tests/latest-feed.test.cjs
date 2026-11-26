@@ -53,7 +53,7 @@ test('Latest requests the five newest eligible public debates, Trending keeps th
     posterMetricsQuery(query,order,['topic-one','topic-two']);
     assert.deepEqual(calls,order==='latest'?[...eligible,
       ['order','published_at',{ascending:false}],['order','slug',{ascending:true}],['limit',5]
-    ]:eligible);
+    ]:[['rpc','dk_trending_posters',{p_bot_comments:true}],...eligible.slice(1),['limit',5]]);
   }
   calls.length=0;
   posterMetricsQuery(query);

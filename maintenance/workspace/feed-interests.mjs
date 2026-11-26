@@ -43,7 +43,7 @@ export function createFeedInterests({React, db, useAuth, useLocation, useNavigat
     const title = React.useRef(null), more = React.useId(), searchId = React.useId();
     React.useEffect(() => { if (onboarding) title.current?.focus(); }, [onboarding]);
 
-    const heading = onboarding ? 'What would you like to see more of?' : 'Feed interests';
+    const heading = onboarding ? 'Which topics interest you?' : 'Feed interests';
     const trending = '/home?view=feed&sort=trending';
     const selected = draft ?? state?.selected ?? [];
     const rows = catalog.data ?? [];
@@ -96,7 +96,7 @@ export function createFeedInterests({React, db, useAuth, useLocation, useNavigat
     return h('div',{className:'dk-main dk-feed-interests'},h('section',{className:'dk-panel'},
       !onboarding&&link('/settings','Back to Settings'),
       h('h1',{ref:title,tabIndex:-1},heading),
-      h('p',null,onboarding?'Pick a few interests to move those debates higher in Trending.':'Choose which topics get a boost in Trending. Your choices are private.'),
+      h('p',null,'Save topics that interest you. Your choices are private.'),
       !user?(loading?status('Loading account…'):link(login(feedInterestPath),'Sign in to edit interests','dk-primary')):
       h('form',{onSubmit:submit},
         catalog.error?status('Topics could not be loaded.',true):!catalog.data?status('Loading topics…'):null,
@@ -109,7 +109,7 @@ export function createFeedInterests({React, db, useAuth, useLocation, useNavigat
           h('label',{htmlFor:searchId},'Search topics'),
           h('input',{id:searchId,type:'search',value:search,onChange:event=>setSearch(event.target.value)}),
           groups.length?h('div',{className:'dk-interest-catalog'},...groups):status('No topics match your search.'))),
-        h('p',{className:'dk-note','aria-live':'polite'},selected.length ? selected.length+' selected' : 'Trending shows all eligible debates.'),
+        h('p',{className:'dk-note','aria-live':'polite'},selected.length ? selected.length+' selected' : 'No topics selected.'),
         selected.length>0&&h('ul',{className:'dk-interest-selected','aria-label':'Selected interests'},...selected.map(id=>
           h('li',{key:id},h('button',{type:'button',className:'dk-small',onClick:()=>toggle(id),disabled:busy,
             'aria-label':(labels.get(id)||id)+', remove interest'},labels.get(id)||id,h('span',{'aria-hidden':true},' ×'))))),
@@ -126,14 +126,4 @@ export function createFeedInterests({React, db, useAuth, useLocation, useNavigat
   }
 
   return {InterestProvider,InterestPicker,FeedInterestLink,SettingsRoute,useFeedInterests:()=>React.useContext(Context)};
-}
-
-export async function feedRankingRequest(ordinary, personalized, useInterests) {
-  if (useInterests) {
-    try {
-      const result = await personalized();
-      if (!result.error && Array.isArray(result.data) && result.data.length) return result;
-    } catch {}
-  }
-  return ordinary();
 }
