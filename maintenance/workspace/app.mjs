@@ -9,6 +9,7 @@ import {websitePosterSvg} from '../renderer/poster-finish.mjs';
 import {pointSnapshot,createPointReader,useAudiencePoster,createPuzzlePoster,reactionIntent,withPosterActivity,posterPointData} from './reader.mjs';
 import {createFriendInvitations} from './invitations.mjs';
 import {createFriendExperience} from './friend.mjs';
+import {positionButtons} from './support-choices.mjs';
 import {createGoogleLogin} from './google-login.mjs';
 // Editable production workspace. The V2 router, authenticated client and debate flows are injected by the build.
 const home = '/home';
@@ -520,15 +521,18 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function SupportChoices({row,positions,names,busy,onChoose}){
     const selected=row?.liked?row.my_position:undefined;
     const discussionCount=row?row.likes-positions.reduce((n,side)=>n+Number(side.count),0):'…';
+    const options=[{key:null,byline:'Discussion',count:discussionCount},...positionButtons(positions,row?.slug,names)];
     return h('fieldset',{className:'dk-support-options',disabled:busy||!row},
       h('legend',null,'Show your support'),
-      h('button',{type:'button',onClick:()=>onChoose(null),'aria-pressed':selected===null},
-        icon('thumb'),'Discussion',h('b',null,discussionCount)),
-      ...positions.map(side=>{
-        const key=side.key??side.label,name=names?.[side.persona]?.name||side.author;
-        return h('button',{key,type:'button',onClick:()=>onChoose(key),'aria-pressed':selected===key},
-          h('span',null,name&&h('strong',null,name),side.label),h('b',null,side.count));
-      }));
+      h('div',{className:'dk-support-grid'},...options.map(({key,byline,caption,fullName,statement,count})=>{
+        const target=caption?byline+' · '+caption:'Discussion';
+        const detail=caption?fullName+' — '+statement:'Support the whole discussion';
+        return h('button',{key:key===null?'discussion':'position:'+key,type:'button',className:'dk-support-button',
+          onClick:()=>onChoose(key),'aria-pressed':selected===key,title:detail,
+          'aria-label':'Support '+target+'. '+count+(count===1?' supporter.':' supporters.')+(caption?' '+detail:'')},
+          icon('thumb'),h('span',{className:'dk-support-copy'},h('strong',null,byline),caption&&h('small',null,caption)),
+          h('b',{className:'dk-support-count'},count));
+      })));
   }
   function PosterActions({entry,onComment,origin}) {
     const metrics=useContext(Engagement), {user}=useAuth(), navigate=useNavigate();
