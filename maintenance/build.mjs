@@ -44,9 +44,9 @@ export function compile() {
   output = output.replace('function posterSvgBlob(',()=>portraitSource('portrait.mjs')+'\nfunction posterSvgBlob(');
   const mount = 'Zw(document.getElementById("root")).render(i.jsx(aM,{}));';
   if (output.split(mount).length !== 2) throw new Error('Review the V2 mount before integrating the workspace');
-  const workspace = ['debate-links.mjs','feed-interests.mjs','accessibility.mjs','friend.mjs','reader.mjs','invitations.mjs','dashboard.mjs','social-header.mjs','impressions.mjs','profile-photo.mjs','app.mjs'].map(file => fs.readFileSync(path.join(root, 'maintenance/workspace',file), 'utf8')
+  const workspace = ['debate-links.mjs','feed-interests.mjs','accessibility.mjs','friend.mjs','reader.mjs','invitations.mjs','dashboard.mjs','social-header.mjs','impressions.mjs','profile-photo.mjs','support-choices.mjs','app.mjs'].map(file => fs.readFileSync(path.join(root, 'maintenance/workspace',file), 'utf8')
     .replace(/^import .* from '\.\.\/renderer\/(?:poster-finish|portrait)\.mjs';$/gm, '')
-    .replace(/^import .* from '\.\/(?:debate-links|feed-interests|accessibility|friend|reader|invitations|dashboard|social-header|impressions|profile-photo|google-login)\.mjs';$/gm, '').replace(/^export /gm, '')).join('\n');
+    .replace(/^import .* from '\.\/(?:debate-links|feed-interests|accessibility|friend|reader|invitations|dashboard|social-header|impressions|profile-photo|google-login|support-choices)\.mjs';$/gm, '').replace(/^export /gm, '')).join('\n');
   // Public profiles need the participant IDs without fetching an edition's discussions.
   const edition = JSON.parse(fs.readFileSync(path.join(root, 'demo/november-2026/edition.json'), 'utf8'));
   const editorialFriendGroups = edition.filter(entry => entry.sampleDebate).map(entry => entry.sampleDebate.friends);
