@@ -1,0 +1,7 @@
+[
+  {
+    "id": "remove-sample-address-from-profile-email",
+    "find": "placeholder:\"your.email@example.com\"",
+    "replace": "autoComplete:\"email\""
+  }
+]
