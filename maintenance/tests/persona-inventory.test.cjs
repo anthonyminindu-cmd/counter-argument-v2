@@ -70,3 +70,40 @@ test('even a cached older profile only renders the public bio and activity', asy
   }
   assert.doesNotMatch(text,/\bbots?\b|test-(style|interest|voice|evidence|politics|value|position)|Political outlook|How I debate|What might change my mind|Interests/);
 });
+
+test('profile totals count every history entry including replies and comments on other debates', async () => {
+  const {compile}=await import('../build.mjs');
+  const {runInNewContext}=require('node:vm');
+  const {output}=compile();
+  const source=output.slice(output.indexOf('  function CommenterPage('),output.indexOf('  function ReplaceDebateUrl('));
+  const id='person-188', peer='person-001';
+  const state={};
+  const directory=[{id:'own',sampleDebate:{friends:[id,peer]}}];
+  const render=runInNewContext(source+'\nCommenterPage',{
+    usePersonas:()=>({data:profiles}),useNovemberEdition:()=>state.edition,useQuery:()=>state.activity,
+    useEffect:()=>{},h:(tag,props,...children)=>({tag,props,children}),
+    link:(url,label)=>({url,label}),status:message=>message,trending:'/home',
+    personaRoute:id=>'/home?commenter='+id,posterDebateRoute:slug=>'/home?debate='+slug
+  });
+  const entry=(key,slug)=>({id:key,slug,title:'Discussion '+slug,body:'Comment '+key});
+  for (const [activity,editionResult,expected,count,empty] of [
+    [{data:{comments:[entry('1','other'),entry('2','other')]}},{data:directory},2,2,false],
+    [{data:{comments:[entry('1','own'),entry('2','other'),entry('3','third')]}},{error:true},3,3,false],
+    [{data:{comments:[]}},{data:directory},0,0,true],
+    [{loading:true},{data:directory},'…',0,false],
+    [{error:true},{data:directory},'Unavailable',0,false],
+  ]){
+    state.activity=activity; state.edition=editionResult;
+    const tree=render({id});
+    function flatten(node){
+      return node&&typeof node==='object'?[node,...(node.children||[]).flatMap(flatten)]:[];
+    }
+    const nodes=flatten(tree);
+    const metric=nodes.find(node=>node.children?.[0]?.tag==='dt'&&node.children[0].children[0]==='Comments');
+    assert.equal(metric.children[1].children[0],expected);
+    const articles=nodes.filter(node=>node.tag==='article');
+    assert.equal(articles.length,count);
+    assert.deepEqual(articles.map(a=>a.props.key),activity.data?.comments?.map(c=>c.id)??[]);
+    assert.equal(JSON.stringify(tree).includes('No comments yet.'),empty);
+  }
+});
