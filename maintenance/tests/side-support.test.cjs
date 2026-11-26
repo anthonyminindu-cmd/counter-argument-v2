@@ -97,7 +97,7 @@ test('new and open-question choices keep the reply ID and distinguish similar po
   const a={key:'first-reply',label:'I think we should keep the park open on weekends',author:'María-José Ortiz'};
   const b={key:'second-reply',label:'I think we should keep the park closed on weekends',author:'Differ Kindly AI'};
   const options=positionButtons([a,b]);
-  assert.deepEqual(options.map(b=>[b.key,b.byline,b.caption]),[['first-reply','María-José','Open on weekends'],['second-reply','DK AI','Closed on weekends']]);
+  assert.deepEqual(options.map(b=>[b.key,b.byline,b.caption]),[['first-reply','María-José','Open on weekends'],['second-reply','Diff AI','Closed on weekends']]);
   assert.deepEqual(options.map(b=>b.statement),[a.label,b.label]);
   const anonymous=positionButtons([{...a,label:'Do not ban electronic books',author:'private@example.com'},{...b,label:'Do not ban paper books',author:'   '}]);
   assert.deepEqual(anonymous.map(b=>[b.byline,b.caption]),[['Debater','Position 1'],['Debater','Position 2']]);

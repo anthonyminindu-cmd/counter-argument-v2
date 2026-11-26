@@ -29,7 +29,7 @@ export function routeTitle(path, params, heading) {
   if (path === '/debate/start') return params.get('mode') === 'friend' ? 'Debate with a friend' : 'Start a debate';
   if (path === '/debate/topic') return heading || 'Choose a debate topic';
   if (path === '/' || path === '/home') {
-    if (params.has('join')) return 'Join a private debate';
+    if (params.has('join')) return 'Join a friend debate';
     if (readPosterDebate(params) || params.has('question')) return heading || 'Debate discussion';
     if (params.has('commenter')) return heading || 'Community profile';
     if (params.has('view') || params.has('sort') || params.has('edition')) return heading || 'Debate feed';

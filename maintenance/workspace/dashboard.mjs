@@ -212,7 +212,7 @@ export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuer
             (page>1||page*20<data.item_count)&&h('nav',{className:'dk-actions','aria-label':'Activity pages'},
               page>1&&link(dashboardUrl(section,page-1),'Previous'),page*20<data.item_count&&link(dashboardUrl(section,page+1),'Next'))))),
         section==='comments'&&link('/home?view=feed','Explore discussions'),
-        section==='work'&&h('nav',{className:'dk-actions','aria-label':'Start a debate'},link('/debate/start?mode=friend','Debate with a friend'),link('/debate/topic?mode=ai','Debate with AI')));
+        section==='work'&&h('nav',{className:'dk-actions','aria-label':'Start a debate'},link('/debate/start?mode=friend','Debate with a friend'),link('/debate/topic?mode=ai','Debate with Diff AI')));
     }
     const reach=key=>formatted(data?data.reach?.[key]||0:null);
     return h('div',{className:'dk-main dk-profile dk-dashboard',id:'dk-main'},

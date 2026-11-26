@@ -24,9 +24,9 @@ export function createFriendInvitations({React,db,useAuth,useNavigate,useQuery,l
       try{await rpc('dk_revoke_link',{p_id:id});if(issued?.id===id)setIssued(null);links.refresh();setMessage('Invitation revoked.')}
       catch{setMessage('Could not revoke this invitation.')}finally{setBusy(false)}
     }
-    const share=issued&&encodeURIComponent('Join me for a private debate on Differ Kindly. '+issued.url);
+    const share=issued&&encodeURIComponent('Join me for a debate on Differ Kindly. '+issued.url);
     return h('section',{className:'dk-panel dk-invite-links'},h('h2',null,'Invite someone by email or text'),
-      h('p',null,'Each link lets one person join after signing in or creating an account. It expires in seven days.'),
+      h('p',null,'Completed debates are public by default. Both participants can agree to make the result private. Each link lets one person join after signing in or creating an account. It expires in seven days.'),
       h('div',{className:'dk-actions'},button('Create invitation link',issue,busy)),
       issued&&h('div',{className:'dk-form'},h('label',null,'Invitation link',h('input',{readOnly:true,value:issued.url,onFocus:e=>e.target.select()})),
         h('div',{className:'dk-actions'},h('a',{className:'dk-small',href:'mailto:?subject=Differ%20Kindly%20invitation&body='+share},'Email'),h('a',{className:'dk-small',href:'sms:?body='+share},'Text message'),
@@ -54,7 +54,8 @@ export function createFriendInvitations({React,db,useAuth,useNavigate,useQuery,l
         navigate('/debate/topic?session='+encodeURIComponent(data.session),{replace:true});
       }catch(e){setError(e.message||'Could not accept the invitation.');setBusy(false)}
     }
-    return h('div',{className:'dk-main'},h('section',{className:'dk-panel'},h('h1',null,'Join a private debate'),
+    return h('div',{className:'dk-main'},h('section',{className:'dk-panel'},h('h1',null,'Join a friend debate'),
+      token&&h('p',null,'New debates publish when complete. Either participant can request privacy, and the other must agree.'),
       !token?status('Open the full invitation link from your email or text.',true):loading?status('Checking account…'):user?button('Accept invitation',join,busy):link(login('/home?join=1'),'Sign in or create an account','dk-primary'),error&&status(error,true)));
   }
   return {JoinLink,InviteTools};

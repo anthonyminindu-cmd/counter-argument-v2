@@ -176,6 +176,7 @@ test('a friend invitation awaiting a partner stays out of the AI workflow and ra
     return null;
   };
   const context = vm.createContext({
+    DK: { VisibilityControl: 'visibility' },
     OA: () => ({ debateId }), c5: () => page.value, i: { jsx, jsxs: jsx },
     p: { useState: () => [null, () => {}], useEffect() {} },
     ...Object.fromEntries('Qe G Ts ce Pe Te Ae de Tb'.split(' ').map(name => [name, name])),

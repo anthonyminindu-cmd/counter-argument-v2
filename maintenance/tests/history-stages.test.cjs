@@ -85,6 +85,7 @@ function viewTypes(data, choice = null) {
   const jsx = (type, props) => { types.add(type); return { type, props }; };
   const components = 'Qe G Ts ce Pe Te Ae de Tb b_ lg w_'.split(' ');
   const context = vm.createContext({
+    DK: { VisibilityControl: 'visibility' },
     OA: () => ({ debateId }), c5: () => ({ data }), i: { jsx, jsxs: jsx },
     p: { useState: () => [choice, () => {}], useEffect() {} },
     ...Object.fromEntries(components.map(name => [name, name])),

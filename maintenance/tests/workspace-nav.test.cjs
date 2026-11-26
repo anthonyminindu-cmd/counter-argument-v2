@@ -27,7 +27,7 @@ test('The launch bar stays available outside the compact member profile', async 
       assert.equal(debate.children.length,3);
       assert.equal(discover.children.length,2);
       assert.deepEqual([withFriend,withAI,trending].map(link=>link.children[1].children[0]),
-        ['Debate with a friend','Debate with AI','Trending topics']);
+        ['Debate with a friend','Debate with Diff AI','Trending topics']);
       for(const [link,mode] of [[withFriend,'/debate/start?mode=friend'],[withAI,'/debate/topic?mode=ai']]){
         const to=link.props.to;
         if(!user)assert.match(to,/^\/login\?next=/);

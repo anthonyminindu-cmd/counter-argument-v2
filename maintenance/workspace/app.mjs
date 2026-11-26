@@ -360,7 +360,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('div',{role:'group','aria-labelledby':'dk-start-label',className:'dk-launch-group dk-start-group'},
           h('span',{id:'dk-start-label',className:'dk-launch-label'},'Start a debate with a friend or AI'),
           action(user?friend:login(friend),'Debate with a friend','friends'),
-          action(user?ai:login(ai),'Debate with AI','ai')),
+          action(user?ai:login(ai),'Debate with Diff AI','ai')),
         h('div',{role:'group','aria-labelledby':'dk-discover-label',className:'dk-launch-group dk-discover-group'},
           h('span',{id:'dk-discover-label',className:'dk-launch-label'},'Discover'),
           action(trending,'Trending topics','trend'))));
@@ -398,7 +398,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function Topic(){
     const loc=useLocation(),{user,loading}=useAuth(),navigate=useNavigate(),[question,set]=useState('');
     if(new URLSearchParams(loc.search).get('mode')!=='ai')return h(OriginalTopic);
-    return h('div',{className:'dk-main dk-topic'},h('div',{className:'dk-kicker'},'AI exploration'),h('h1',null,'What would you like to explore?'),
+    return h('div',{className:'dk-main dk-topic'},h('div',{className:'dk-kicker'},'AI exploration'),h('h1',null,'What would you like to explore?'),h('p',null,'Completed debates are public by default. You can make a debate with Diff AI private at any time.'),
       h('form',{className:'dk-form dk-panel',onSubmit:e=>{e.preventDefault();const value=question.trim();if(value){const next=topicRoute(value);navigate(user?next:login(next))}}},
         h('label',null,'Your question',h('textarea',{autoFocus:true,required:true,maxLength:320,value:question,onChange:e=>set(e.target.value),placeholder:'Should every team use the same operating system?'})),
         h('button',{className:'dk-primary',disabled:loading||!question.trim()},'Continue with AI')),
@@ -683,7 +683,43 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   }
   const PointReader=createPointReader({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,posterDebateRoute,MemberComments,status});
   const {JoinLink,InviteTools}=createFriendInvitations({React,db,useAuth,useNavigate,useQuery,link,login,status});
-  function SharePoster({row,refresh}) {
+  function useVisibility(reference) {
+    const {user}=useAuth();
+    const q=useQuery(user&&reference?user.id+':visibility:'+reference:null,()=>db.rpc('dk_result_visibility',{p_reference:reference}));
+    useEffect(()=>{
+      if(!user||!reference)return;
+      const update=()=>q.refresh();
+      window.addEventListener('dk-visibility-changed',update);
+      const timer=q.data&&(q.data.friend||['queued','working'].includes(q.data.job))?setInterval(()=>{if(!document.hidden)update()},10000):null;
+      return ()=>{clearInterval(timer);window.removeEventListener('dk-visibility-changed',update)};
+    },[user?.id,reference,q.data?.friend,q.data?.job]);
+    return q;
+  }
+  function VisibilityControl({reference,row,refresh}) {
+    const q=useVisibility(reference||row?.slug),v=q.data;
+    const [busy,setBusy]=useState(false),[message,setMessage]=useState('');
+    if(!v)return row?.mine&&!q.loading&&!q.error?h(LegacySharePoster,{row,refresh}):null;
+    async function change(action){
+      if(busy)return;setBusy(true);setMessage('');
+      try{
+        const {error}=await db.rpc('dk_change_visibility',{p_debate:v.id,p_action:action,p_request:v.request||null});
+        if(error)throw error;
+        refresh?.();
+        window.dispatchEvent(new Event('dk-visibility-changed'));
+        window.dispatchEvent(new Event('dk-activity-changed'));
+      }catch(err){setMessage(err.message||'Could not update visibility. Try again.');q.refresh()}
+      finally{setBusy(false)}
+    }
+    const button=(label,action)=>h('button',{className:'dk-secondary',type:'button',disabled:busy,onClick:()=>change(action)},label);
+    return h('section',{className:'dk-actions','aria-label':'Debate visibility'},
+      h('span',{role:'status'},v.request?(v.mine?'Waiting for your partner to acknowledge the request to go ':'Your partner requests that this debate go ')+(v.requested_public?'public.':'private.'):
+        !v.public?'Private debate':v.job==='ready'?'Public debate':v.job==='held'?'Publication paused for review.':'This result publishes after completion and review.'),
+      v.request?(v.mine?button('Cancel request','cancel'):h(React.Fragment,null,button(v.requested_public?'Acknowledge and publish':'Acknowledge and make private','acknowledge'),button('Decline','decline'))):
+        button(v.public?(v.friend?'Request private debate':'Make private'):(v.friend?'Request publication':'Publish debate'),v.public?'private':'public'),
+      v.job==='held'&&v.public&&button('Retry publication','retry'),
+      message&&status(message,true));
+  }
+  function LegacySharePoster({row,refresh}) {
     const [busy,setBusy]=useState(false),[failed,setFailed]=useState(false);
     async function change(){
       setBusy(true);setFailed(false);
@@ -698,15 +734,22 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       row.published?'Make private':'Publish infographic and points to Latest and Trending'),failed&&status(failed,true));
   }
   function PersonalPoster({title,svg,points,solo,identity,userId,onActivity}) {
-    const q=useQuery(userId+':'+identity+':'+!!points+':'+!!solo,()=>points?db.rpc(solo?'dk_register_solo_poster':'dk_register_points',{p_title:title,p_svg:svg,p_points:points,...solo}):db.rpc('dk_register_personal_poster',{p_title:title,p_svg:svg}));
+    const source=points?.[0]?.id?.split(':')[0];
+    const ref=source&&/^[a-f0-9-]{36}$/i.test(source)?source:null;
+    const visibility=useVisibility(ref);
+    const managed=!!(visibility.data?.slug||visibility.data?.automatic);
+    const q=useQuery((ref&&(!visibility.data&&visibility.loading||visibility.error))||managed?null:userId+':'+identity+':'+!!points+':'+!!solo,()=>points?db.rpc(solo?'dk_register_solo_poster':'dk_register_points',{p_title:title,p_svg:svg,p_points:points,...solo}):db.rpc('dk_register_personal_poster',{p_title:title,p_svg:svg}));
+    if(ref&&visibility.error)return h('button',{className:'dk-small',onClick:visibility.refresh},'Retry loading debate visibility');
+    if(managed&&!visibility.data.slug)return status(visibility.data.job==='held'?'Publication paused.':'Preparing the saved infographic…');
+    const slug=visibility.data?.slug||q.data;
     return q.error?h('button',{className:'dk-small',onClick:q.refresh},'Retry loading infographic activity'):
-      q.data?h(PosterActivity,null,h(PersonalActions,{id:q.data,title,svg,onActivity})):null;
+      slug?h(PosterActivity,null,h(PersonalActions,{id:slug,title,svg,onActivity})):null;
   }
   function PersonalActions({id,title,svg,onActivity}){
     const activity=useContext(Engagement);
     const row=activity.data?.find(item=>item.slug===id);
     useEffect(()=>{onActivity?.({svg,row:row||null});},[svg,row,onActivity]);
-    return h('div',null,h(PosterActions,{entry:{id,question:title}}),row?.mine&&h(SharePoster,{row,refresh:activity.refresh}));
+    return h('div',null,h(PosterActions,{entry:{id,question:title}}),row&&h(VisibilityControl,{row,refresh:activity.refresh}));
   }
   function CreatedPosters({user}){
     const q=useQuery(user.id,()=>db.rpc('dk_created_posters'));
@@ -748,7 +791,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       h(PuzzlePoster,{src:artUrl,alt:row.title,markup:art,points:points.data||[]}),
       h('div',{className:'dk-actions'},h('button',{className:'dk-primary',onClick:async()=>{try{await downloadStoredPoster(artUrl,'Differ-Kindly-impact.png');setExportError('');}catch{setExportError('PNG download failed. Try the SVG download.');}}},'Download PNG'),
         h('a',{className:'dk-secondary',href:artUrl,download:'Differ-Kindly-impact.svg'},'Download SVG'),exportError&&status(exportError,true)),
-      h(PosterActions,{entry,onComment:openComments}),h(Report,{kind:'poster',target:entry.id}),row.mine&&h(SharePoster,{row,refresh:()=>{q.refresh();metrics.refresh()}}),
+      h(PosterActions,{entry,onComment:openComments}),h(Report,{kind:'poster',target:entry.id}),user&&h(VisibilityControl,{row,refresh:()=>{q.refresh();metrics.refresh()}}),
       h('section',null,h('h2',{id:'dk-example-points',tabIndex:-1},'Explore the points'),h(PointReader,{entry,provided:points,impactRows})),
       h('section',{className:'dk-panel dk-example-discussion',ref:comments,tabIndex:-1},h('h2',null,'Comments'),h(MemberComments,{key:user?.id||'guest',entry}),
         h(BotDiscussion,{entry})));
@@ -1097,5 +1140,5 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       h('section',{className:'dk-collection'},tab==='Pinned'?h(PinnedList,{items,owner:user.id}):
         items.length?items.map(item=>h(SavedArtwork,{key:item.target,item})):h('div',{className:'dk-panel'},h('h2',null,'Your saved posters'),h('p',null,'Open a finished infographic and choose Save poster.'),link(profile,'Open your table','dk-secondary'))));
   }
-  return {useDebateAuthors,TopicHighlight,SettingsRoute,FeedInterestLink,RouteContent:createRouteContent(React,useLocation),applyReadingPreferences,...createGoogleLogin({React, db, useLocation, useNavigate, safeNext: afterLogin}),withPosterActivity,ProfileNameFields,saveProfileIdentity,checkContent,useCommenterMatches,ReactionLoginCopy,PhotoEditor,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
+  return {VisibilityControl,useDebateAuthors,TopicHighlight,SettingsRoute,FeedInterestLink,RouteContent:createRouteContent(React,useLocation),applyReadingPreferences,...createGoogleLogin({React, db, useLocation, useNavigate, safeNext: afterLogin}),withPosterActivity,ProfileNameFields,saveProfileIdentity,checkContent,useCommenterMatches,ReactionLoginCopy,PhotoEditor,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
 }

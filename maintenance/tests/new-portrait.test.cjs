@@ -6,7 +6,7 @@ for (const mode of ['friend', 'AI']) {
     const {impactPosterData} = await import('../renderer/result-portrait.mjs');
     const {renderImpactPoster} = await import('../renderer/portrait.mjs');
     const {withPosterActivity} = await import('../workspace/reader.mjs');
-    const names = ['Avery', mode === 'AI' ? 'Differ Kindly AI' : 'Jordan'];
+    const names = ['Avery', mode === 'AI' ? 'Diff AI' : 'Jordan'];
     const sides = ['Keep the garden', 'Use the space for housing'];
     const points = Array.from({length: 20}, (_, i) => {
       const side = Math.floor(i / 10);

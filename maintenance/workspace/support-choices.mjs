@@ -55,8 +55,9 @@ export function positionButtons(positions,slug,names){
     const name=String(names?.[side.persona]||side.author||'').trim();
     const publicName=name.includes('@') && !/^@[\p{L}\p{N}_.-]+$/u.test(name)?'':name;
     let byline=side.is_alias?publicName:supportWords(publicName)[0];
-    if(!side.is_alias&&publicName==='Differ Kindly AI')byline='DK AI';
+    const ai=side.ai===true || (side.ai==null && !side.is_alias && ['Differ Kindly AI','Diff AI'].includes(publicName));
+    if(ai)byline='Diff AI';
     return {...side,key:side.key??side.label,byline:byline||'Debater',caption:captions[i],
-      fullName:publicName||byline||'Debater',statement:side.label,count:side.count};
+      fullName:ai?'Diff AI':publicName||byline||'Debater',statement:side.label,count:side.count};
   });
 }

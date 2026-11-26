@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "a3c03f0d07be54cf158c25407b83d1c7ec22546a146f591d7f9fabe1d3fff210",
-  "generatedAsset": "assets/index-v2-a3c03f0d07be54cf.js",
+  "generatedSha256": "8a163eed5f9c7b278da90609a487e0cbefa53c8db53b9b57f6cc8d4b65d007a2",
+  "generatedAsset": "assets/index-v2-8a163eed5f9c7b27.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -334,6 +334,18 @@
     "online-status-carries-only-member-identity",
     "online-status-log-uses-member-id",
     "member-header-public-name-fallback",
-    "member-page-public-name-fallback"
+    "member-page-public-name-fallback",
+    "saved-ai-name",
+    "saved-vs-diff-ai",
+    "distinguish-ai-argument-label",
+    "active-opponent-default",
+    "active-initial-opponent",
+    "active-ai-position",
+    "show-diff-ai-mode",
+    "ai-response-name",
+    "active-visibility",
+    "history-visibility",
+    "active-debate-with-diff-ai",
+    "legacy-participant-diff-ai"
   ]
 }

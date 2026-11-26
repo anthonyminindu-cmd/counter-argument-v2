@@ -20,6 +20,7 @@ function render(start, end, expression, inputs, state) {
   };
   const names = 'G Te Qe Ts ce Pe Ae de Tb b_ lg w_ ag Ab rl ho Ib';
   const context = {
+    DK: { VisibilityControl: 'visibility' },
     ...Object.fromEntries(names.split(' ').map(name => [name, name])),
     i: { jsx, jsxs: jsx, Fragment: 'fragment' },
     p: { useState: () => [state, () => {}], useEffect() {}, useMemo: fn => fn(), useRef: () => ({current:null}) },

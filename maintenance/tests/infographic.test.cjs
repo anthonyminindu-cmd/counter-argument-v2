@@ -175,7 +175,7 @@ function historyProps(bundle,data) {
   const start=bundle.indexOf('function H5('), end=bundle.indexOf('const V5=',start);
   assert.ok(start>0&&end>start);
   const jsx=(type,props,key)=>({type,props,key});
-  const context={OA:()=>({debateId:'debate-id'}),c5:()=>({loading:false,error:'',data}),p:{useState:()=>[true,()=>{}],useEffect:()=>{}},i:{jsx,jsxs:jsx},window:{location:{reload(){}}}};
+  const context={DK:{VisibilityControl:'visibility'},OA:()=>({debateId:'debate-id'}),c5:()=>({loading:false,error:'',data}),p:{useState:()=>[true,()=>{}],useEffect:()=>{}},i:{jsx,jsxs:jsx},window:{location:{reload(){}}}};
   for(const key of ['Qe','G','Ts','ce','Pe','Te','Ae','de','b_','lg','w_','Tb']) context[key]=key;
   vm.createContext(context);
   const tree=vm.runInContext(bundle.slice(start,end)+';H5()',context);

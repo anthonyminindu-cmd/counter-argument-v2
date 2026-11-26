@@ -47,6 +47,8 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
     const params=new URLSearchParams(location.search);
     const waiting=location.pathname.replace(/\/$/,'')==='/debate/start' && params.get('mode')==='friend' ? params.get('waiting') : null;
     const waitId=waiting && /^[a-f\d-]{36}$/i.test(waiting)?waiting:null;
+    const [privacyResult,setPrivacy]=useState(null);
+    const privacy=privacyResult?.owner===owner?privacyResult.rows:[];
     const [rows,setRows]=useState([]),[loaded,setLoaded]=useState(false),[error,setError]=useState('');
     const [panel,setPanel]=useState(null),[busy,setBusy]=useState(false);
     const refresh=useRef(()=>{}),locked=useRef(false),handled=useRef(null),alive=useRef(true);
@@ -64,8 +66,9 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
         if (running){again=true;return;}
         running=true;
         try {
-          const fresh=await readInbox(db,owner,waitId);
+          const [fresh,requests]=await Promise.all([readInbox(db,owner,waitId),db.rpc('dk_visibility_inbox')]);
           if(active){
+            if(!requests.error)setPrivacy({owner,rows:requests.data||[]});
             const revision=fresh.map(row=>row.id+row.status).join(',');
             if(previous!==null&&previous!==revision)window.dispatchEvent(new Event('dk-activity-changed'));
             previous=revision;setRows(fresh);setLoaded(true);setError('');
@@ -81,11 +84,11 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
         .subscribe(state=>{if(state==='SUBSCRIBED')void sync();});
       void sync();
       const timer=setInterval(onVisible,6500);
-      window.addEventListener('focus',onVisible);
+      window.addEventListener('dk-visibility-changed',onVisible);window.addEventListener('focus',onVisible);
       window.addEventListener('online',onVisible);
       document.addEventListener('visibilitychange',onVisible);
       return ()=>{active=false;refresh.current=()=>{};clearInterval(timer);db.removeChannel(channel);
-        window.removeEventListener('focus',onVisible);window.removeEventListener('online',onVisible);document.removeEventListener('visibilitychange',onVisible);};
+        window.removeEventListener('dk-visibility-changed',onVisible);window.removeEventListener('focus',onVisible);window.removeEventListener('online',onVisible);document.removeEventListener('visibilitychange',onVisible);};
     },[owner,waitId]);
 
     const pending=rows.filter(row=>row.receiver_id===owner&&inviteStatus(row)==='pending');
@@ -138,7 +141,7 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
       const next=[...pending,...replies].find(row=>!dismissed.current.has(row.id));
       if(next)setPanel({id:next.id});
     },[owner,rows,waitId,panel,loaded,read]);
-    return h(Inbox.Provider,{value:{rows,loaded,error,pendingCount:pending.length+replies.length,busy,panel,waitId,owner,close,respond,
+    return h(Inbox.Provider,{value:{rows,privacy:owner?privacy:[],loaded,error,pendingCount:(owner?privacy.length:0)+pending.length+replies.length,busy,panel,waitId,owner,close,respond,
       refresh:()=>refresh.current(), open:()=>{setPanel({all:true});void refresh.current();}}},children);
   }
 
@@ -158,7 +161,7 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
         !incoming&&state==='pending'?'Waiting for '+row.person:
         row.person+' · '+state;
       return h('li',{key:row.id},h('strong',null,title),
-        state==='pending'&&incoming&&h('p',null,'Accept to choose a topic together.'),
+        state==='pending'&&incoming&&h('p',null,'New debates publish when complete. You can both agree to make yours private.'),
         state==='pending'&&incoming&&h('div',{className:'dk-actions'},action('Accept invitation',()=>inbox.respond(row,'accept'),true,inbox.busy),
           action('Decline',()=>inbox.respond(row,'decline'),false,inbox.busy)),
         state==='accepted'&&h('div',{className:'dk-actions'},action('Open debate',()=>inbox.respond(row,'join'),true,inbox.busy)));
@@ -170,6 +173,7 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
       h('dialog',{ref:dialog,className:'dk-inbox','aria-labelledby':'dk-inbox-title',onCancel:e=>{e.preventDefault();inbox.close();}},
         h('div',{className:'dk-sectionline'},h('h2',{id:'dk-inbox-title'},selected&&!inbox.panel?.all?'Debate invitation':'Notifications'),action('Close',inbox.close)),
         (inbox.panel?.error||inbox.error)&&h('p',{role:'alert'},inbox.panel?.error||inbox.error,' ',action('Refresh',inbox.refresh)),
+        inbox.panel?.all&&inbox.privacy?.length>0&&h('section',null,h('h3',null,'Debate visibility requests'),...inbox.privacy.map(item=>h('p',{key:item.id},h(Link,{to:'/debate/view/'+item.id,onClick:inbox.close},item.title),' · Request to go '+(item.requested_public?'public':'private')))),
         inbox.panel?.all&&h(SocialActivity,{close:inbox.close}),
         inbox.panel?.all&&h('h3',null,'Debate invitations'),
         displayed.length?h('ul',null,...displayed.map(rowView)):h('p',null,inbox.loaded?'No invitations yet.':'Loading invitations…')));
@@ -195,6 +199,7 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
       h(React.Fragment,null,
         suggested&&h('aside',{className:'dk-panel dk-suggested-topic'},h('h2',null,'Suggested topic'),
           h('p',null,suggested),h('small',null,'Suggest this question after your friend joins.')),
+        h('p',null,'Completed debates are public by default. Either participant can request privacy. Both must agree.'),
         ExternalInvites&&h(ExternalInvites),
         h(Directory,{onInvitationSent:id=>{navigate(searchRoute+'&waiting='+encodeURIComponent(id));void inbox.refresh();}})));
   }
@@ -291,11 +296,11 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
         .subscribe(state=>{if(state==='SUBSCRIBED')void sync();});
       void sync();
       const timer=setInterval(onVisible,5000);
-      window.addEventListener('focus',onVisible);
+      window.addEventListener('dk-visibility-changed',onVisible);window.addEventListener('focus',onVisible);
       window.addEventListener('online',onVisible);
       window.addEventListener('dk-topic-changed',sync);
       document.addEventListener('visibilitychange',onVisible);
-      return ()=>{active=false;refresh.current=()=>{};clearInterval(timer);db.removeChannel(channel);window.removeEventListener('focus',onVisible);
+      return ()=>{active=false;refresh.current=()=>{};clearInterval(timer);db.removeChannel(channel);window.removeEventListener('dk-visibility-changed',onVisible);window.removeEventListener('focus',onVisible);
         window.removeEventListener('online',onVisible);
         window.removeEventListener('dk-topic-changed',sync);document.removeEventListener('visibilitychange',onVisible);};
     },[sessionId,owner,validSession]);

@@ -1,0 +1,63 @@
+[
+  {
+    "id": "saved-ai-name",
+    "find": "m.ai=\"AI\"",
+    "replace": "m.ai=\"Diff AI\""
+  },
+  {
+    "id": "saved-vs-diff-ai",
+    "find": "r.friendInvitation?\"Invited friend\":\"AI\"",
+    "replace": "r.friendInvitation?\"Invited friend\":\"Diff AI\""
+  },
+  {
+    "id": "distinguish-ai-argument-label",
+    "find": "f.ai_user_id?\"AI\"",
+    "replace": "f.ai_user_id?\"Diff AI\""
+  },
+  {
+    "id": "active-opponent-default",
+    "find": "vt={ai:\"AI\"}",
+    "replace": "vt={ai:\"Diff AI\"}"
+  },
+  {
+    "id": "active-initial-opponent",
+    "find": "p.useState({ai:\"AI\"})",
+    "replace": "p.useState({ai:\"Diff AI\"})"
+  },
+  {
+    "id": "active-ai-position",
+    "find": "||\"Opponent\":\"AI\",\":\"",
+    "replace": "||\"Opponent\":\"Diff AI\",\":\""
+  },
+  {
+    "id": "show-diff-ai-mode",
+    "find": "`With ${Le?.name||\"your friend\"}`:\"With AI\"",
+    "replace": "`With ${Le?.name||\"your friend\"}`:\"With Diff AI\""
+  },
+  {
+    "id": "ai-response-name",
+    "find": "f.aiPersonality)==null?void 0:h.name)||\"AI\"",
+    "replace": "f.aiPersonality)==null?void 0:h.name)||\"Diff AI\""
+  },
+  {
+    "id": "active-visibility",
+    "find": "i.jsx(DK.TopicHighlight,{topic:u",
+    "replace": "i.jsx(DK.VisibilityControl,{reference:xe||o}),i.jsx(DK.TopicHighlight,{topic:u"
+  },
+  {
+    "id": "history-visibility",
+    "find": "r.friendInvitation?\"Invited friend\":\"Diff AI\"]}),a.ended_at",
+    "replace": "r.friendInvitation?\"Invited friend\":\"Diff AI\"]}),i.jsx(DK.VisibilityControl,{reference:a.id}),a.ended_at"
+  },
+  {
+    "id": "active-debate-with-diff-ai",
+    "find": "se?\"Friend debate\":\"Debate with AI\"",
+    "replace": "se?\"Friend debate\":\"Debate with Diff AI\""
+  },
+  {
+    "id": "legacy-participant-diff-ai",
+    "find": "\"DebateAI\"",
+    "replace": "\"Diff AI\"",
+    "expectedCount": 2
+  }
+]
