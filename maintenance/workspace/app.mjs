@@ -783,7 +783,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const personas = usePersonas(), edition = useNovemberEdition();
     const person = personas.data && Object.hasOwn(personas.data, id) ? personas.data[id] : null;
     const activity=useQuery(person?id:null,()=>db.rpc('dk_bot_profile_activity',{p_persona:id}).single());
-    useEffect(() => window.scrollTo(0,0), [id]);
+    useEffect(() => { window.scrollTo(0,0); }, [id]);
     useEffect(()=>{
       function refresh(){if(!document.hidden)activity.refresh();}
       window.addEventListener('focus',refresh);
