@@ -1,4 +1,5 @@
 const googleNextKey = 'dk-google-login-next';
+const googleTabKey = 'dk-google-login-tab';
 
 export function googleLoginStep(url, basePath) {
   if (url.pathname.replace(/\/$/, '') !== basePath + 'login') return null;
@@ -44,18 +45,39 @@ export async function completeGoogleStep(step, auth, current, base, storage, saf
     const {data, error} = await auth.exchangeCodeForSession(current.searchParams.get('code'));
     if (error || !data?.session) throw new Error();
     storage.removeItem(googleNextKey);
+    storage.removeItem(googleTabKey);
     return {url: new URL(next.slice(1), base).href};
   } catch {
     storage.removeItem(googleNextKey);
+    if (storage.getItem(googleTabKey) === 'signup') callback.searchParams.set('tab', 'signup');
+    storage.removeItem(googleTabKey);
     callback.searchParams.set('next', next);
     callback.searchParams.set('google', step === 'cancelled' ? 'cancelled' : 'failed');
     return {url: callback.href};
   }
 }
 
-export function createGoogleLogin({React, db, useLocation, safeNext}) {
+export function createGoogleLogin({React, db, useLocation, useNavigate, safeNext}) {
   const h = React.createElement;
-  function GoogleOption() {
+  // Signing in remounts the account-specific UI. The same document still owns
+  // the in-flight redirect or code exchange, even when its component remounts.
+  let transition;
+  function useAccountTabs() {
+    const {pathname, search} = useLocation();
+    const navigate = useNavigate();
+    const params = new URLSearchParams(search);
+    return {
+      value: params.get('tab') === 'signup' ? 'signup' : 'login',
+      select(mode) {
+        if (mode === 'signup') params.set('tab', mode);
+        else params.delete('tab');
+        params.delete('google');
+        navigate({pathname, search: params.toString()}, {replace: true});
+      }
+    };
+  }
+
+  function GoogleOption({mode}) {
     const location = useLocation();
     const [enabled, setEnabled] = React.useState(false);
     const [storageError, setStorageError] = React.useState(false);
@@ -69,6 +91,7 @@ export function createGoogleLogin({React, db, useLocation, safeNext}) {
 
     function start() {
       try {
+        window.sessionStorage.setItem(googleTabKey, mode);
         window.sessionStorage.setItem(googleNextKey, safeNext(location.search));
         window.location.assign(new URL('login/?google=start', document.baseURI).href);
       } catch { setStorageError(true); }
@@ -88,19 +111,19 @@ export function createGoogleLogin({React, db, useLocation, safeNext}) {
             h('path',{fill:'#34A853',d:'M24 44c5.5 0 10.1-1.8 13.5-4.9l-6.6-5.1c-1.8 1.2-4.1 1.9-6.9 1.9-5.3 0-9.8-3.6-11.4-8.4H5.8v5.3A20.4 20.4 0 0 0 24 44z'}),
             h('path',{fill:'#FBBC05',d:'M12.6 27.5a12 12 0 0 1 0-7.5v-5.3H5.8a20.2 20.2 0 0 0 0 18.1z'}),
             h('path',{fill:'#EA4335',d:'M24 11.9c3 0 5.6 1 7.7 3l5.8-5.8C34 5.9 29.5 4 24 4A20.4 20.4 0 0 0 5.8 15.1l6.8 5.3C14.2 15.5 18.7 11.9 24 11.9z'})),
-          'Continue with Google'),
+          mode === 'signup' ? 'Sign up with Google' : 'Sign in with Google'),
+        mode === 'signup' && h('p', {className: 'text-sm text-muted-foreground'},
+          'Use the same Google account to sign in next time. No separate password needed.'),
         h('span', {className: 'dk-login-divider'}, 'or continue with email')));
   }
 
   function GoogleTransition({step}) {
-    const pending = React.useRef(null);
     const [error, setError] = React.useState(false);
     React.useEffect(() => {
       let active = true;
-      // An authorization code can be exchanged only once, including across effect replays.
-      pending.current ??= Promise.resolve().then(() => completeGoogleStep(step, db.auth,
+      transition ??= Promise.resolve().then(() => completeGoogleStep(step, db.auth,
         new URL(window.location.href), document.baseURI, window.sessionStorage, safeNext));
-      pending.current.then(({url}) => { if (active) window.location.replace(url); })
+      transition.then(({url}) => { if (active) window.location.replace(url); })
         .catch(() => { if (active) setError(true); });
       return () => { active = false; };
     }, [step]);
@@ -108,5 +131,5 @@ export function createGoogleLogin({React, db, useLocation, safeNext}) {
       h('p', {role: 'status'}, error ? 'Google sign-in could not be completed.' : 'Connecting to Google…'),
       h('a', {href: new URL('login/', document.baseURI).href}, 'Back to sign in'));
   }
-  return {GoogleOption, GoogleTransition};
+  return {GoogleOption, GoogleTransition, useAccountTabs};
 }

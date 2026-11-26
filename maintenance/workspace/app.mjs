@@ -321,7 +321,9 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('div',{className:'dk-account'},user?[
           h(Notifications,{key:'inbox'}),
           h(Link,{key:'profile',to:profile,className:'dk-profile-button','aria-current':active==='Profile'?'page':undefined,onClick:scrollToStart},h(HeaderPortrait),'Profile')
-        ]:link(login(home),'Sign in','dk-small'))),
+        ]:h(React.Fragment,null,
+          link(login(home),'Sign in','dk-small'),
+          link('/login/?tab=signup','Sign up','dk-small')))),
       !compactProfile&&h('nav',{'aria-label':'Start and discover',className:'dk-launch'},
         h('div',{role:'group','aria-labelledby':'dk-start-label',className:'dk-launch-group dk-start-group'},
           h('span',{id:'dk-start-label',className:'dk-launch-label'},'Start a debate with a friend or AI'),
@@ -939,5 +941,5 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       h('section',{className:'dk-collection'},tab==='Pinned'?h(PinnedList,{items,owner:user.id}):
         items.length?items.map(item=>h(SavedArtwork,{key:item.target,item})):h('div',{className:'dk-panel'},h('h2',null,'Your saved posters'),h('p',null,'Open a finished infographic and choose Save poster.'),link(profile,'Open your table','dk-secondary'))));
   }
-  return {TopicHighlight,SettingsRoute,FeedInterestLink,RouteContent:createRouteContent(React,useLocation),applyReadingPreferences,...createGoogleLogin({React, db, useLocation, safeNext: afterLogin}),withPosterActivity,initialProfileName,checkContent,useCommenterMatches,ReactionLoginCopy,PhotoEditor,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
+  return {TopicHighlight,SettingsRoute,FeedInterestLink,RouteContent:createRouteContent(React,useLocation),applyReadingPreferences,...createGoogleLogin({React, db, useLocation, useNavigate, safeNext: afterLogin}),withPosterActivity,initialProfileName,checkContent,useCommenterMatches,ReactionLoginCopy,PhotoEditor,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
 }
