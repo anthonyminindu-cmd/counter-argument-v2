@@ -46,7 +46,7 @@ test('Latest requests the five newest eligible public debates, Trending keeps th
     method,(...args)=>{calls.push([method,...args]);return query;}
   ]));
   const eligible = [
-    ['rpc','dk_ranked_posters'],['eq','published',true],['or','has_artwork.eq.true,slug.in.(topic-one,topic-two)']
+    ['rpc','dk_ranked_posters',{p_bot_comments:true}],['eq','published',true],['or','has_artwork.eq.true,slug.in.(topic-one,topic-two)']
   ];
   for (const order of ['latest','trending']) {
     calls.length=0;
@@ -57,7 +57,7 @@ test('Latest requests the five newest eligible public debates, Trending keeps th
   }
   calls.length=0;
   posterMetricsQuery(query);
-  assert.deepEqual(calls,[['rpc','dk_ranked_posters']]);
+  assert.deepEqual(calls,[['rpc','dk_ranked_posters',{p_bot_comments:true}]]);
 });
 
 test('guest and member feeds open the debate list without a standalone question composer', async () => {

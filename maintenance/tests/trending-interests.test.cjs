@@ -32,7 +32,7 @@ test('personalized Trending uses the existing public eligibility rules', async (
   }]));
   posterMetricsQuery(db,'trending',['editorial'],'dk_trending_posters');
   assert.deepEqual(calls,[
-    ['rpc','dk_trending_posters'],['eq','published',true],
+    ['rpc','dk_trending_posters',{p_bot_comments:true}],['eq','published',true],
     ['or','has_artwork.eq.true,slug.in.(editorial)']
   ]);
 });
