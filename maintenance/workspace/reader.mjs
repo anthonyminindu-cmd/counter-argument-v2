@@ -1,5 +1,5 @@
 import {readPosterDebate,normalizeDebateSearch} from './debate-links.mjs';
-import {impactMetricText,impactSupportStrip} from '../renderer/portrait.mjs';
+import {impactMetricText,impactSupportStrip,impactPickLabel} from '../renderer/portrait.mjs';
 function sourceHost(url){
   try{const parsed=new URL(url);return ['https:','http:'].includes(parsed.protocol)?parsed.hostname:null}catch{return null}
 }
@@ -39,7 +39,7 @@ export function puzzleGeometry(markup){
     return {...labels.get(rank),rank,d:path.getAttribute('d'),clipped:!!path.closest('[clip-path="url(#subject-outline)"]')};
   });
   if(!pieces.length||pieces.some(p=>!p.d||!p.id||!p.title||(p.clipped&&!outline)))return null;
-  return {pieces,outline:outline&&{d:outline.getAttribute('d'),transform:outline.getAttribute('transform'),clipRule:outline.getAttribute('clip-rule')}};
+  return {pieces,viewBox:svg.documentElement.getAttribute('viewBox'),outline:outline&&{d:outline.getAttribute('d'),transform:outline.getAttribute('transform'),clipRule:outline.getAttribute('clip-rule')}};
 }
 export function createPuzzlePoster({React,Link,useLocation}){
   const h=React.createElement;
@@ -59,7 +59,7 @@ export function createPuzzlePoster({React,Link,useLocation}){
     },[geometrySrc,markup]);
     const geometry=map?.geometrySrc===geometrySrc?map.geometry:null;
     return h('div',{className:'dk-puzzle'},h('img',{src,alt,width:1080,height:1350}),
-      geometry&&h('svg',{className:'dk-piece-map',style:geometry.portrait?undefined:{height:'auto',aspectRatio:'1600 / 900',bottom:'auto'},viewBox:geometry.portrait?'0 0 1080 1350':'0 0 1600 900',role:'group','aria-label':'Open a debate point'},
+      geometry&&h('svg',{className:'dk-piece-map',style:geometry.portrait?undefined:{height:'auto',aspectRatio:geometry.viewBox==='0 -46 1600 946'?'1600 / 946':'1600 / 900',bottom:'auto'},viewBox:geometry.portrait?'0 0 1080 1350':geometry.viewBox||'0 0 1600 900',role:'group','aria-label':'Open a debate point'},
         geometry.outline&&h('defs',null,h('clipPath',{id:clipId},h('path',geometry.outline))),
         ...geometry.pieces.filter(p=>!points||points.some(point=>point.id===p.id)).map(p=>h(Link,{key:p.id,to:pointDestination(loc,p.id),replace:true,state:loc.state,
           'aria-label':'Point '+p.rank+': '+p.title+(p.impact?' · Differ Impact '+p.impact+'/100':''),className:'dk-piece-hit'},
@@ -128,7 +128,7 @@ export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQ
     const local=useQuery(provided?null:entry.id+'|'+(user?.id||''),()=>db.rpc('dk_points',{p_slug:entry.id}));
     const q=provided||local;
     const scores=new Map((impactRows||entry.arguments?.map(item=>({id:item[2],...item[3]}))||[]).map(item=>[item.id,item]));
-    const rows=q.data?.map(point=>{const r=scores.get(point.id);return r?.impact!=null?{...point,rank:r.rank,impact:r.impact,pick:r.pick,author:r.author,creatorSide:r.creatorSide,confidence:r.confidence,pickLabel:entry.arguments?(entry.sampleDebate?'Personal pick':'Editorial order'):r.pickLabel||'Personal pick',explanation:r.explanation||(Number.isInteger(r.magnitude)?'Magnitude '+r.magnitude+'/100 · Reach '+r.reach+'/100 · Duration '+r.duration+'/100.':'')}:point;});
+    const rows=q.data?.map(point=>{const r=scores.get(point.id);return r?.impact!=null?{...point,rank:r.rank,impact:r.impact,pick:r.pick,author:r.author,creatorSide:r.creatorSide,confidence:r.confidence,pickLabel:r.pickLabel||impactPickLabel(r.author),explanation:r.explanation||(Number.isInteger(r.magnitude)?'Magnitude '+r.magnitude+'/100 · Reach '+r.reach+'/100 · Duration '+r.duration+'/100.':'')}:point;});
 
     const ready=!!q.data;
     React.useEffect(()=>{
@@ -142,13 +142,13 @@ export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQ
     if(!q.data.length)return fallback||null;
     return h('div',null,
       rows.some(p=>p.impact!=null)&&h('details',null,h('summary',null,'How Differ Rank works'),
-        h('p',null,'Differ Impact combines estimated magnitude (50%), reach (30%) and duration (20%) into a score out of 100. The highest score earns Differ Rank #1. Exact ties go to the earlier pick, then the permanent argument ID.')),
+        h('p',null,'AI research estimates each argument’s impact on the issue. Differ Impact combines magnitude (50%), reach (30%) and duration (20%) into a score out of 100. The highest score earns Differ Rank #1. Exact ties go to the earlier pick, then the permanent argument ID.')),
       h('label',{className:'dk-audience-toggle'},h('input',{type:'checkbox',checked:counts,onChange:e=>setCounts(e.target.checked)}),'Show audience responses'),
       h('div',{className:'dk-example-positions'},...[...new Set(rows.map(p=>p.side))].map(side=>{
         const picks=rows.filter(p=>p.side===side).sort((a,b)=>(a.pick??a.rank)-(b.pick??b.rank));
         const first=picks[0];
         return h('section',{key:side,className:'dk-panel'},h('h3',null,side),
-          first.author&&h('p',null,'By ',link(posterDebateRoute(entry.id)+'&creator='+first.creatorSide,first.author)),
+          first.author&&h('p',null,entry.arguments?first.author:link(posterDebateRoute(entry.id)+'&creator='+first.creatorSide,first.author)),
           h('ol',{className:'dk-points-list'},...picks.map(point=>h(Point,{key:point.id,entry,point,open:selected===point.id,
             onToggle:()=>navigate(pointDestination(loc,selected===point.id?null:point.id),{replace:true,state:loc.state}),
             intent:selected===point.id?reactionIntent(loc.pathname+loc.search):null,refresh:q.refresh,loading:q.loading,showCounts:counts}))));
@@ -161,17 +161,17 @@ export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQ
 export function posterPointData(markup){
   if(!markup?.includes('data-poster-format="impact-v2"'))return [];
   const doc=new DOMParser().parseFromString(markup,'image/svg+xml');
-  const pickLabel=['Submission order','Editorial order'].find(label=>markup.includes('>'+label+' 1–10</text>'))||'Personal pick';
+  const names=[...doc.querySelectorAll('[data-pick-name]')].map(el=>el.dataset.pickName);
   return [...doc.querySelectorAll('g[data-reader-id]')].map(g=>({id:g.getAttribute('data-reader-id'),
     rank:Number(g.dataset.rank),pick:Number(g.dataset.pick),impact:g.dataset.impact?Number(g.dataset.impact):null,
-    pickLabel,creatorSide:Number(g.dataset.side),headline:g.querySelector('title')?.textContent?.split(' — ')[0],author:g.dataset.author,confidence:g.dataset.confidence,explanation:g.dataset.explanation}));
+    pickLabel:impactPickLabel(names[Number(g.dataset.side)]||g.dataset.author),creatorSide:Number(g.dataset.side),headline:g.querySelector('title')?.textContent?.split(' — ')[0],author:g.dataset.author,confidence:g.dataset.confidence,explanation:g.dataset.explanation}));
 }
 export function withPosterActivity(markup,metrics){
+  markup=impactSupportStrip(markup,metrics?.positions);
   if(!markup||!metrics)return markup;
   const text=impactMetricText({views:metrics.impressions,likes:metrics.likes,comments:metrics.comments});
   if(!text)return markup;
-  const updated=markup.replace(/(<text\b[^>]* data-activity=""[^>]*>)[^<]*(<\/text>)/,(all,start,end)=>start+text+end);
-  return impactSupportStrip(updated,metrics.positions);
+  return markup.replace(/(<text\b[^>]* data-activity=""[^>]*>)[^<]*(<\/text>)/,(all,start,end)=>start+text+end);
 }
 export function useAudiencePoster(React,db,enabled,slug,original,metrics){
   const [result,setResult]=React.useState({});
@@ -186,7 +186,7 @@ export function useAudiencePoster(React,db,enabled,slug,original,metrics){
         const {data,error}=await db.rpc('dk_points',{p_slug:slug});
         if(error||data?.length!==20)throw Error('Audience data unavailable');
         const total=key=>data.reduce((sum,p)=>sum+Number(p[key]||0),0);
-        markup=markup.replace(/(<text\b[^>]* data-rubric=""[^>]*>)[^<]*(<\/text>)/,(all,a,b)=>
+        markup=markup.replace(/(<text\b[^>]* data-audience=""[^>]*>)[^<]*(<\/text>)/,(all,a,b)=>
           a+total('informative')+' informative responses · '+total('convincing')+' convincing responses'+b);
       }
       if(!alive)return;

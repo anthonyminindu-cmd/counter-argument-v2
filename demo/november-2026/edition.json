@@ -1,6 +1,16 @@
 [
   {
     "id": "ai-data-centers",
+    "positionProfiles": {
+      "Approve with safeguards": {
+        "profileId": "person-043",
+        "supportSnapshot": 1
+      },
+      "Pause until costs are clear": {
+        "profileId": "person-111",
+        "supportSnapshot": 0
+      }
+    },
     "title": "AI data centers in your town",
     "overview": "A new data center could bring tax revenue, while its demand for power and water could change life around it.",
     "sideTitles": [
@@ -493,6 +503,16 @@
   },
   {
     "id": "grocery-tariffs",
+    "positionProfiles": {
+      "Remove grocery tariffs": {
+        "profileId": "person-270",
+        "supportSnapshot": 0
+      },
+      "Keep selected grocery tariffs": {
+        "profileId": "person-121",
+        "supportSnapshot": 1
+      }
+    },
     "title": "Tariffs at the grocery store",
     "overview": "Removing food tariffs could lower import costs. Keeping some could give U.S. growers room to compete.",
     "sideTitles": [
@@ -955,6 +975,16 @@
   },
   {
     "id": "health-insurance",
+    "positionProfiles": {
+      "Restore larger tax credits": {
+        "profileId": "person-031",
+        "supportSnapshot": 0
+      },
+      "Focus on the price of care": {
+        "profileId": "person-020",
+        "supportSnapshot": 2
+      }
+    },
     "title": "Help paying for health insurance",
     "overview": "Congress could restore extra help with monthly insurance bills or spend the money on reducing the cost of care itself.",
     "sideTitles": [
@@ -1432,6 +1462,16 @@
   },
   {
     "id": "teen-autoplay",
+    "positionProfiles": {
+      "Turn off autoplay": {
+        "profileId": "person-143",
+        "supportSnapshot": 0
+      },
+      "Let families choose": {
+        "profileId": "person-196",
+        "supportSnapshot": 1
+      }
+    },
     "title": "Autoplay for younger teens",
     "overview": "A clear place to stop versus letting families choose how videos play.",
     "sideTitles": [
@@ -1885,6 +1925,16 @@
   },
   {
     "id": "iran-war-powers",
+    "positionProfiles": {
+      "Require a public vote": {
+        "profileId": "person-031",
+        "supportSnapshot": 0
+      },
+      "Allow flexibility with oversight": {
+        "profileId": "person-123",
+        "supportSnapshot": 1
+      }
+    },
     "title": "Who decides whether the war continues?",
     "overview": "A public vote on continuing the conflict versus flexibility with regular oversight.",
     "sideTitles": [
@@ -2357,6 +2407,16 @@
   },
   {
     "id": "federal-gas-tax",
+    "positionProfiles": {
+      "Pause the gas tax": {
+        "profileId": "person-292",
+        "supportSnapshot": 1
+      },
+      "Keep the gas tax in place": {
+        "profileId": "person-079",
+        "supportSnapshot": 0
+      }
+    },
     "title": "A break from the federal gas tax?",
     "overview": "Short-term relief at the pump versus road funding and more targeted help.",
     "sideTitles": [
@@ -2824,6 +2884,16 @@
   },
   {
     "id": "office-land-housing",
+    "positionProfiles": {
+      "Allow apartments on office land": {
+        "profileId": "person-258",
+        "supportSnapshot": 0
+      },
+      "Review each site first": {
+        "profileId": "person-236",
+        "supportSnapshot": 0
+      }
+    },
     "title": "Apartments on office land",
     "overview": "Make it easier to build homes while deciding which sites can support them.",
     "sideTitles": [
@@ -3276,6 +3346,16 @@
   },
   {
     "id": "immigration-bill",
+    "positionProfiles": {
+      "A single bill": {
+        "profileId": "person-133",
+        "supportSnapshot": 1
+      },
+      "Vote on separate bills": {
+        "profileId": "person-202",
+        "supportSnapshot": 0
+      }
+    },
     "title": "One immigration bill or two?",
     "overview": "Congress could pair border security with a path to citizenship or consider each on its own.",
     "sideTitles": [
@@ -3758,6 +3838,16 @@
   },
   {
     "id": "fossil-fuel-deadline",
+    "positionProfiles": {
+      "Set a shared deadline": {
+        "profileId": "person-139",
+        "supportSnapshot": 0
+      },
+      "Let countries choose their dates": {
+        "profileId": "person-088",
+        "supportSnapshot": 1
+      }
+    },
     "title": "A global deadline for fossil fuels?",
     "overview": "A shared date could speed investment. Countries face different costs and energy needs.",
     "sideTitles": [
@@ -4220,6 +4310,16 @@
   },
   {
     "id": "cloud-outage-backup",
+    "positionProfiles": {
+      "Pay for a backup channel": {
+        "profileId": "person-180",
+        "supportSnapshot": 1
+      },
+      "Use existing emergency contacts": {
+        "profileId": "person-281",
+        "supportSnapshot": 0
+      }
+    },
     "title": "A backup channel for work outages?",
     "overview": "An independent alert channel costs money. Existing phone trees may be enough for smaller teams.",
     "sideTitles": [
@@ -4748,6 +4848,16 @@
   },
   {
     "id": "iowa-army-detonation",
+    "positionProfiles": {
+      "Proceed with safeguards": {
+        "profileId": "person-193",
+        "supportSnapshot": 1
+      },
+      "Require stronger review": {
+        "profileId": "person-121",
+        "supportSnapshot": 0
+      }
+    },
     "title": "The Iowa Army detonation",
     "overview": "Two fictional friends debate whether a planned blast was the least risky choice and what the Army still owes nearby communities.",
     "sideTitles": [

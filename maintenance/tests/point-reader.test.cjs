@@ -27,7 +27,16 @@ test('all editorial portraits preserve each side’s ten points and rank by weig
   for(const entry of entries.filter(item=>item.kind!=='member')){
     const svg=read(entry.id);
     assert.match(svg,/viewBox="0 0 1080 1350"/);
-    assert.ok(svg.includes(entry.sampleDebate?'Personal pick':'Editorial order'));
+    assert.doesNotMatch(svg,/Editorial order|By Differ Kindly Editorial/);
+    for(const [index,label] of entry.sideTitles.entries()){
+      const {profileId,supportSnapshot}=entry.positionProfiles[label];
+      const fullName=require('../../demo/november-2026/personas.json')[profileId].name;
+      assert.ok(svg.includes('data-byline="'+index+'">'+fullName.split(' ')[0]+'’s picks · 1–10</text>'));
+      assert.ok(svg.includes('data-position-support="'+index+'">Support · '+supportSnapshot+'</text>'));
+    }
+    assert.ok(svg.indexOf('data-position-support="1"')<svg.indexOf('data-argument-id='));
+    assert.ok(svg.indexOf('data-rubric=')>svg.lastIndexOf('data-argument-id='));
+    assert.match(svg,/50% magnitude \+ 30% reach \+ 20% duration/);
     const groups=[...svg.matchAll(/<g data-argument-id="([^"]+)"([^>]+)>(.*?)<\/g>/gs)];
     assert.equal(groups.length,20);
     const rankOrder=[...entry.arguments].sort((a,b)=>b[3].impact-a[3].impact || a[3].pick-b[3].pick || (a[2]<b[2]?-1:1));

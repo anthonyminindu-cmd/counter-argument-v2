@@ -15,3 +15,5 @@ Each patch has a stable ID, an exact expected source fragment, and a replacement
 Regression tests exercise recovered V2 logic and the repaired behavior. They distinguish static checks from executed behavior; they do not replace authenticated two-account browser tests or fresh provider generation.
 
 Future work should recover or replace the original editable V2 source here. Until then, keep these targeted changes small; do not use the legacy project as a source substitute. The previous deployed asset remains available for rollback.
+
+For a new published edition debate, record each side’s profile ID under its exact stance in `positionProfiles`. Each entry can include a `supportSnapshot` for the standalone image. The site refreshes those counts from the position votes. Run `node maintenance/editorial/render-poster.mjs` to generate the posters, then run it with `--check` to verify the published files. The generator validates both profiles, the ten original picks per side, and all twenty calculated Differ Ranks.

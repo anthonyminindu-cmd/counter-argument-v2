@@ -41,7 +41,7 @@ function renderExample(example) {
   const rows = example.rows.map(row => ({...row, explanation:
     'Estimated magnitude ' + row.magnitude + '/100, reach ' + row.reach + '/100 and duration ' + row.duration + '/100.'
   }));
-  return renderImpactPoster({authors:['Differ Kindly Editorial','Differ Kindly Editorial'], pickLabel:'Editorial order', ...example, rows});
+  return renderImpactPoster({...example,rows});
 }
 
 const school = read(new URL('arguments.json', schoolDir));
@@ -64,7 +64,16 @@ for (const entry of entries) {
   // The archived November edition contains author-selected order per side.
   // Keep full wording and permanent point IDs intact for discussions and reactions.
   const rows = entry.arguments.map(([, , id, point], i) => ({...point, id, side: Math.floor(i / 10)}));
-  const svg = renderExample({title:entry.title, question:entry.question, sides:entry.sideTitles, ...(entry.sampleDebate?{authors:entry.sampleDebate.friends.map(id=>personas[id].name),pickLabel:'Personal pick'}:{}), rows});
+  const positions=entry.sideTitles.map((label,i)=>{
+    const side=entry.positionProfiles?.[label];
+    const id=side?.profileId||entry.sampleDebate?.friends[i];
+    const name=personas[id]?.name;
+    if(!name || (entry.sampleDebate && entry.sampleDebate.friends[i]!==id))throw Error('Missing or mismatched position profile: '+entry.id+' / '+label);
+    return {id,name,count:side?.supportSnapshot};
+  });
+  if(positions[0].id===positions[1].id)throw Error('Two distinct position profiles are required: '+entry.id);
+  const svg=renderExample({title:entry.title,question:entry.question,sides:entry.sideTitles,
+    authors:positions.map(s=>s.name),bylines:positions.map(s=>s.name.split(/\s+/u)[0]),support:positions.map(s=>s.count),rows});
   deliver(new URL(entry.id + '.svg', editionDir), svg);
   if (entry.id === 'ai-data-centers') deliver(new URL(entry.id + '-comparison.svg', editionDir), svg);
 }
