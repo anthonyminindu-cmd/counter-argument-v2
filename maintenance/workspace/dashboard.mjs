@@ -1,3 +1,4 @@
+import {posterDebateRoute} from './debate-links.mjs';
 const supportMetrics=[['given','Support given'],['received','Support received']];
 const activityMetrics=[
   ['work','Posts & debates','book','Your posts and debates','You haven’t posted a question or started a debate yet.'],
@@ -20,9 +21,9 @@ export function dashboardDestination(row) {
   if(row.kind==='debate')return '/debate/view/'+item;
   if(row.kind==='question')return feed+'&question='+topic;
   if(row.kind==='reply')return feed+'&question='+topic+'&comment='+item;
-  if(row.kind==='poster')return feed+'&example='+topic;
+  if(row.kind==='poster')return posterDebateRoute(row.topic);
   if(row.kind==='friend')return '/debate/start?mode=friend&person='+encodeURIComponent(row.label);
-  return feed+'&example='+topic+(row.point_id?'&point='+encodeURIComponent(row.point_id):'&comments=1')+'&comment='+item;
+  return posterDebateRoute(row.topic)+(row.point_id?'&point='+encodeURIComponent(row.point_id):'&comments=1')+'&comment='+item;
 }
 export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuery,link,icon,status,login,profileRoute,ProfileControls,PhotoEditor,FindFriends}) {
   const h=React.createElement,{useState,useEffect,useRef}=React;
