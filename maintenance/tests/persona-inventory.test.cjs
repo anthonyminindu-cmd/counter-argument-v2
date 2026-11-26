@@ -65,8 +65,8 @@ test('even a cached older profile only renders the public bio and activity', asy
     h:(tag,props,...children)=>({tag,children}), link:(_url,label)=>label, trending:'/home'
   });
   const text=JSON.stringify(render({id}));
-  for (const visible of ['Bot account',person.name,person.handle,person.bio,'Activity','Comment history']) {
+  for (const visible of [person.name,person.handle,person.bio,'Activity','Comment history']) {
     assert.ok(text.includes(visible),visible);
   }
-  assert.doesNotMatch(text,/test-(style|interest|voice|evidence|politics|value|position)|Political outlook|How I debate|What might change my mind|Interests/);
+  assert.doesNotMatch(text,/\bbots?\b|test-(style|interest|voice|evidence|politics|value|position)|Political outlook|How I debate|What might change my mind|Interests/);
 });
