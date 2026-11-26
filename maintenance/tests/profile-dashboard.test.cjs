@@ -104,12 +104,13 @@ test('the personal dashboard uses the current member’s profile name and authen
     [null,{full_name:'Google name'},'Google name'],
     [null,{full_name:' ',name:'Provider name'},'Provider name'],
     [{username:'@handle'},{},'@handle'],
-    [null,{},'Your profile']
+    [null,{},'Your profile'],
+    [null,{full_name:'Private full name'},'Your profile',undefined,true]
   ];
-  for(const [profile,metadata,title,handle] of records){
+  for(const [profile,metadata,title,handle,loading=false] of records){
     const user={id:'current',email,user_metadata:{...metadata,email:'stale@example.invalid'}};
     const query={select(fields){assert.equal(fields,'display_name,username');return this;},
-      eq(field,id){assert.deepEqual([field,id],['user_id',user.id]);return this;},maybeSingle(){return {data:profile};}};
+      eq(field,id){assert.deepEqual([field,id],['user_id',user.id]);return this;},maybeSingle(){return {data:profile,loading};}};
     const {ProfileDashboard}=createSocialDashboard({React,db:{from:table=>{assert.equal(table,'profiles');return query;}},
       useLocation:()=>({search:''}),useQuery:(key,read)=>key===user.id?read():{},link:(to,label)=>h('a',{to},label),
       icon:()=>null,profileRoute:()=>'/profile?tab=account'});

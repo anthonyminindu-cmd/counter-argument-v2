@@ -160,7 +160,7 @@ export function createSocialDashboard({React,db,useAuth,useLocation,Link,useQuer
       window.addEventListener('dk-profile-name-changed',refresh);
       return ()=>window.removeEventListener('dk-profile-name-changed',refresh);
     },[user.id]);
-    const metadata=user.user_metadata||{};
+    const metadata=profile.loading||profile.error?{}:user.user_metadata||{};
     const name=[profile.data?.display_name,metadata.full_name,metadata.name,metadata.display_name]
       .find(value=>typeof value==='string'&&value.trim())?.trim();
     const username=profile.data?.username?.trim().replace(/^@+/,'');
