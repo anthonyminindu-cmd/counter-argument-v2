@@ -291,10 +291,25 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       h('span',{role:'status'},message));
   }
   function ProfileControls(){
-    const {signOut}=useAuth(),navigate=useNavigate(),[error,setError]=useState('');
-    return h('details',{className:'dk-profile-settings'},h('summary',null,'Settings'),h('div',{className:'dk-profile-controls'},link(profileRoute('Account'),'Account settings'),link('/settings','Appearance'),
-      h('button',{className:'dk-small',type:'button',onClick:async()=>{try{await signOut();navigate('/')}catch{setError('Sign-out failed. Try again.')}}},'Sign out'),
-      error&&status(error,true)));
+    const {signOut}=useAuth(),navigate=useNavigate();
+    const [busy,setBusy]=useState(false),[error,setError]=useState('');
+    async function logOut(){
+      if(busy)return;
+      setBusy(true);
+      setError('');
+      try{
+        await signOut();
+        navigate('/',{replace:true});
+      }catch{
+        setError('Could not log out. Please try again.');
+        setBusy(false);
+      }
+    }
+    return h('div',{className:'dk-profile-controls'},
+      h('details',{className:'dk-profile-settings'},h('summary',null,'Settings'),
+        h('div',{className:'dk-profile-controls'},link(profileRoute('Account'),'Account settings'),link('/settings','Appearance'))),
+      h('button',{className:'dk-small dk-log-out',type:'button',onClick:logOut,disabled:busy},busy?'Logging out…':'Log out'),
+      error&&status(error,true));
   }
   function Nav() {
     const {user}=useAuth(),loc=useLocation();
