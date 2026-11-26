@@ -53,7 +53,7 @@ test('even a cached older profile only renders the public bio and activity', asy
   const {compile} = await import('../build.mjs');
   const {runInNewContext} = require('node:vm');
   const {output} = compile();
-  const start = output.indexOf('  function CommenterPage(');
+  const start = output.indexOf('  function DiscussionCount(');
   const end = output.indexOf('  function ReplaceDebateUrl(', start);
   const id = 'person-188';
   const person = {...profiles[id], style:'test-style', interests:['test-interest'],
@@ -76,13 +76,13 @@ test('public profiles show a plain comment count and never render or link to his
   const {compile}=await import('../build.mjs');
   const {runInNewContext}=require('node:vm');
   const {output}=compile();
-  const source=output.slice(output.indexOf('  function CommenterPage('),output.indexOf('  function ReplaceDebateUrl('));
+  const source=output.slice(output.indexOf('  function DiscussionCount('),output.indexOf('  function ReplaceDebateUrl('));
   const id='person-193';
   const editorialFriendGroups=edition.filter(entry=>entry.sampleDebate).map(entry=>entry.sampleDebate.friends);
   const state={};
   const render=runInNewContext(source+'\nCommenterPage',{
-    contributorBadge:()=>null,usePersonas:()=>({data:profiles}),editorialFriendGroups,useQuery:()=>state.activity,
-    useEffect:()=>{},h:(tag,props,...children)=>({tag,props,children}),
+    contributorBadge:()=>null,usePersonas:()=>({data:profiles}),editorialFriendGroups,useQuery:(_key,read)=>read(),db:{rpc:(name,args)=>name==='dk_discussions_created' ? (assert.equal(args.p_profile,id),{data:state.total}) : {single:()=>state.activity}},
+    useEffect:()=>{},h:(tag,props,...children)=>typeof tag==='function'?tag(props):({tag,props,children}),
     link:(url,label)=>({tag:'a',url,children:[label]}),trending:'/home',personaRoute:id=>'/home?commenter='+id
   });
   function flatten(node){
@@ -97,8 +97,12 @@ test('public profiles show a plain comment count and never render or link to his
     [{error:true},'Unavailable']
   ]){
     state.activity=activity;
+    state.total=activity.data?.comment_count??0;
     const tree=render({id}),nodes=flatten(tree);
     const metric=nodes.find(node=>node.children?.[0]?.tag==='dt'&&node.children[0].children[0]==='Comments');
+    const created=nodes.find(node=>node.children?.[0]?.tag==='dt'&&node.children[0].children[0]==='Discussions created');
+    assert.equal(created.children[1].tag,'dd');
+    assert.equal(created.children[1].children[0],String(state.total));
     assert.equal(metric.children[1].tag,'dd');
     assert.deepEqual(Array.from(metric.children[1].children),[expected]);
     assert.deepEqual(nodes.filter(node=>node.tag==='a').map(node=>node.url),['/home','/home?commenter=person-121']);
