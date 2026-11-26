@@ -214,13 +214,13 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
         h('label',{htmlFor:prefix+'-source'},'Link to a source'),
       h('input',{id:prefix+'-source',inputMode:'url',value:point.sourceUrl==='No source provided'?'':point.sourceUrl,onChange:e=>update('sourceUrl',e.target.value)})));
   }
-  function PointEditor({drafts,submitted,saving,onEdit,onSave}) {
+  function PointEditor({drafts,submitted,saving,onEdit,onSave,focusOnEntry=false}) {
     const count=submitted.length, total=drafts.length;
     const point=drafts[count];
     const [future,setFuture]=useState(null);
     const later=Array.from({length:Math.max(0,total-count-1)},(_,i)=>count+1+i);
     const laterIndex=later.includes(future)?future:later[0];
-    const previous=useRef(count), stage=useRef(null);
+    const previous=useRef(focusOnEntry && count<total ? -1 : count), stage=useRef(null);
     const next=!point?null:!point.title.trim()?'title':!point.description.trim()?'explanation':'submit';
     const number=count+1;
     const instruction=next==='title'?'Give point '+number+' a short title.':

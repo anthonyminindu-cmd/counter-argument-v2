@@ -583,3 +583,13 @@ html{scroll-padding-block:1rem}
 .dk-friend-points :is(input,textarea,button):focus-visible { outline:3px solid var(--dk-text); outline-offset:2px; }
 .dk-friend-points .dk-source-option { padding:0; border:0; }
 .dk-source-option summary { color:var(--dk-sub); }
+
+.dk-ai-positions { display:grid; gap:14px; max-width:44rem; margin-inline:auto; }
+.dk-ai-positions h2 { font-size:1.4rem; font-weight:700; }
+.dk-ai-positions form,.dk-ai-positions label,.dk-stance-recap { display:grid; gap:8px; }
+.dk-ai-positions input { width:100%; min-height:44px; padding:8px 12px; border:1px solid var(--dk-line); border-radius:8px; background:var(--dk-bg); color:var(--dk-text); }
+.dk-ai-positions button { min-height:44px; justify-self:start; }
+.dk-ai-positions button:disabled { opacity:.55; }
+.dk-stance-recap { overflow-wrap:anywhere; border-inline-start:3px solid var(--dk-line); padding-inline-start:12px; }
+.dk-ai-positions [data-next],.dk-topic [data-next] { outline:2px solid var(--dk-mint); outline-offset:2px; }
+.dk-ai-positions :focus-visible,.dk-topic :focus-visible { outline:3px solid var(--dk-text); outline-offset:3px; }
