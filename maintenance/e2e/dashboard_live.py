@@ -75,7 +75,8 @@ def run():
             shortcuts.get_by_role("link", name=re.compile("^Comments")).click()
             expect(page.get_by_role("heading", name="Your comments", exact=True)).to_be_visible()
             page.get_by_role("link", name="Profile", exact=True).click()
-            expect(page.get_by_role("heading", name="Your dashboard")).to_be_visible()
+            expect(page.get_by_role("heading", name="Dashboard QA", exact=True)).to_be_visible()
+            expect(page.locator(".dk-account-identity")).to_contain_text("Signed in as " + email)
             support = page.locator(".dk-support-pair .dk-metric")
             given = support.first.locator("strong")
             cards = page.get_by_role("navigation", name="Your activity", exact=True).get_by_role("link")
@@ -104,7 +105,7 @@ def run():
                 page.get_by_role("link",name="Back to profile").click()
             for retired in ["?section=given","?section=received","?section=post_views","?section=comment_views","?tab=liked"]:
                 page.goto(base+"/profile/"+retired)
-                expect(page.get_by_role("heading",name="Your dashboard")).to_be_visible()
+                expect(page.get_by_role("heading",name="Dashboard QA", exact=True)).to_be_visible()
                 expect(page.locator(".dk-dashboard-list")).to_have_count(0)
             page.set_viewport_size({"width":1280,"height":900})
             page.goto(base + "/home/?view=feed&debate=" + example["id"] + "&comments=1&comment=" + comment)
