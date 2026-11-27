@@ -190,6 +190,16 @@ html{scroll-padding-top:198px}
   overflow-wrap:anywhere;
 }
 .dk-friend-points { display:grid; gap:14px; }
+.dk-point-index { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:6px; }
+.dk-point-index,.dk-writing-card h3 { scroll-margin-block-start:7rem; }
+.dk-friend-points .dk-point-index button { width:100%; border:1px solid var(--dk-line); border-radius:6px; }
+.dk-point-index [aria-current="step"] { background:var(--dk-mint); color:var(--dk-on); font-weight:700; }
+.dk-writing-card {
+  min-width:0; padding:clamp(14px,3vw,24px); border:1px solid var(--dk-line);
+  border-radius:12px; overflow-wrap:anywhere;
+}
+.dk-writing-card > strong,.dk-writing-card > small { display:block; }
+.dk-writing-card > small { color:var(--dk-sub); }
 /* The active form spans the title, explanation, optional source and submit action. */
 .dk-friend-points > [aria-current="step"] {
   min-width:0;
@@ -601,11 +611,10 @@ html{scroll-padding-block:1rem}
 
 .dk-ai-positions { display:grid; gap:14px; max-width:44rem; margin-inline:auto; }
 .dk-ai-positions h2 { font-size:1.4rem; font-weight:700; }
-.dk-ai-positions form,.dk-ai-positions label,.dk-stance-recap { display:grid; gap:8px; }
+.dk-ai-positions form,.dk-ai-positions label { display:grid; gap:8px; }
 .dk-ai-positions input { width:100%; min-height:44px; padding:8px 12px; border:1px solid var(--dk-line); border-radius:8px; background:var(--dk-bg); color:var(--dk-text); }
 .dk-ai-positions button { min-height:44px; justify-self:start; }
 .dk-ai-positions button:disabled { opacity:.55; }
-.dk-stance-recap { overflow-wrap:anywhere; border-inline-start:3px solid var(--dk-line); padding-inline-start:12px; }
 .dk-ai-positions [data-next],.dk-topic [data-next] { outline:2px solid var(--dk-mint); outline-offset:2px; }
 .dk-ai-positions :focus-visible,.dk-topic :focus-visible { outline:3px solid var(--dk-text); outline-offset:3px; }
 /* In a debate, passive status toasts must let clicks reach the composer.

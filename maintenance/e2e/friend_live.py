@@ -243,13 +243,12 @@ def check_positions_and_arguments(sender, receiver, room, topic):
          "A return checklist could prevent damaged tools from going back into use.",
          "A rider survey could prevent the library from buying rarely used kits."),
     )
-    future = receiver.locator(".dk-friend-points details").filter(has_text="Draft a later point")
-    future.locator("summary").click()
-    future.get_by_label("Point to draft").select_option(label="Point 2")
+    expect(receiver.locator(".dk-writing-card")).to_have_count(10)
+    future = argument(receiver, 2)
     future.get_by_label("Title", exact=True).fill(subjects[1][1])
     future.get_by_label("Explanation", exact=True).fill(descriptions[1][1])
+    expect(future.get_by_role("button",name="Submit point 2")).to_have_count(0)
     capture(receiver, "09a-mobile-draft-ahead")
-    future.locator("summary").click()
     focused = argument(receiver, 1).get_by_label("Title", exact=True)
     focused.fill(subjects[1][0])
     scroll_before = receiver.evaluate("window.scrollY")
@@ -291,7 +290,6 @@ def check_positions_and_arguments(sender, receiver, room, topic):
         if index == 2:
             resume_from_table(receiver, room, topic)
             expect(argument(receiver, 3)).to_be_visible()
-            receiver.get_by_text("Review submitted points (2)", exact=True).click()
             for own_index in range(1, 3):
                 expect(receiver.get_by_text(subjects[1][own_index-1], exact=True)).to_be_visible()
             expect(receiver.get_by_text("You: 2 of 10 points", exact=True)).to_be_visible()
