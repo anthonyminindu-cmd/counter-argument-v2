@@ -1,0 +1,7 @@
+[
+  {
+    "id": "keep-chat-composer-across-room-updates",
+    "find": "const kx=({sessionId:e,className:t=\"\"})=>{const{user:n}=Xt(),[r,s]=p.useState([]),[o,a]=p.useState(\"\")",
+    "replace": "const kx=({sessionId:e,className:t=\"\"})=>{const{user:n}=Xt(),[r,s]=p.useState([]),[o,a]=DK.useFriendChatDraft(e,n?.id)"
+  }
+]

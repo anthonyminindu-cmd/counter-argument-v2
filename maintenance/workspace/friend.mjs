@@ -42,6 +42,33 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
   const action=(text,onClick,primary=false,disabled=false)=>h('button',{type:'button',className:primary?'dk-primary':'dk-secondary',onClick,disabled},text);
   const searchRoute='/debate/start?mode=friend';
 
+  // Keep the active composer across a room refresh or a change of debate phase.
+  const chatDrafts=new Map();
+  const subscribeDraft=listener=>{
+    window.addEventListener('dk-chat-draft',listener);
+    return ()=>window.removeEventListener('dk-chat-draft',listener);
+  };
+  function useFriendChatDraft(room,member){
+    const key=room&&member?'dk-chat-draft:'+member+':'+room:null;
+    function read(){
+      if(!key)return '';
+      if(chatDrafts.has(key))return chatDrafts.get(key);
+      try{return sessionStorage.getItem(key)||''}catch{return ''}
+    }
+    const value=React.useSyncExternalStore(subscribeDraft,read);
+    function write(change){
+      if(!key)return;
+      const text=typeof change==='function'?change(read()):change;
+      chatDrafts.set(key,text);
+      try{
+        if(text)sessionStorage.setItem(key,text);else sessionStorage.removeItem(key);
+        chatDrafts.delete(key);
+      }catch{/* Keep the tab-local fallback when storage is unavailable. */}
+      window.dispatchEvent(new Event('dk-chat-draft'));
+    }
+    return [value,write];
+  }
+
   function InboxProvider({owner,children}) {
     const location=useLocation(), navigate=useNavigate();
     const params=new URLSearchParams(location.search);
@@ -199,9 +226,10 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
       h(React.Fragment,null,
         suggested&&h('aside',{className:'dk-panel dk-suggested-topic'},h('h2',null,'Suggested topic'),
           h('p',null,suggested),h('small',null,'Suggest this question after your friend joins.')),
-        h('p',null,'Completed debates are public by default. Either participant can request privacy. Both must agree.'),
-        ExternalInvites&&h(ExternalInvites),
-        h(Directory,{onInvitationSent:id=>{navigate(searchRoute+'&waiting='+encodeURIComponent(id));void inbox.refresh();}})));
+        h('p',null,'Invite one friend. Together you’ll choose a question, share your positions, and submit 10 points each. You can return later to finish.'),
+        h('p',null,'Your completed debate is published after review. To keep it private, request privacy in the debate and have your friend confirm before you finish.'),
+        h(Directory,{onInvitationSent:id=>{navigate(searchRoute+'&waiting='+encodeURIComponent(id));void inbox.refresh();}}),
+        ExternalInvites&&h(ExternalInvites)));
   }
   function PointFields({prefix,point,update}) {
     return h('div',{className:'dk-point-fields'},
@@ -342,5 +370,5 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
       };
     },[sessionId,owner,phase]);
   }
-  return {InboxProvider,Notifications,FriendSetup,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
+  return {InboxProvider,Notifications,FriendSetup,FriendPointEditor,useFriendChatDraft,useFriendTopic,useFriendPreparationSync};
 }

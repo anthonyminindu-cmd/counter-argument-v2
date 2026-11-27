@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "f67554dc9079389382785b2a19359e6835da00181ad704f498479b8bfbefb6ee",
-  "generatedAsset": "assets/index-v2-f67554dc90793893.js",
+  "generatedSha256": "7b06ba924988f71ff1cfb524d6ff66f054c0ade3a39edd68b6651a215dbf3ad3",
+  "generatedAsset": "assets/index-v2-7b06ba924988f71f.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -346,6 +346,7 @@
     "active-visibility",
     "history-visibility",
     "active-debate-with-diff-ai",
-    "legacy-participant-diff-ai"
+    "legacy-participant-diff-ai",
+    "keep-chat-composer-across-room-updates"
   ]
 }

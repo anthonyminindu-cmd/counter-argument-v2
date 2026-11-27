@@ -61,7 +61,7 @@ def send(page, sender, receiver):
                               res.request.post_data_json.get("p_query") == receiver["name"]) as lookup:
         page.get_by_label("Search for users").fill(receiver["name"])
     assert lookup.value.ok and lookup.value.json() == [], "A QA member is visible in friend search"
-    expect(page.get_by_text("No users found", exact=True)).to_be_visible()
+    expect(page.get_by_role("heading", name=re.compile(r"^(No users found|No matches\. Try another name\.)$"))).to_be_visible()
 
     # Start the private fixture invitation by ID. Its recipient is intentionally undiscoverable.
     request = Request(API + "/rest/v1/rpc/dk_invite_friend", data=json.dumps({
@@ -139,9 +139,9 @@ def check_rankings_and_poster(pages, expected_titles):
     exports, posters, dimensions = [], [], []
     for index, page in enumerate(pages):
         side = "desktop" if index == 0 else "mobile"
-        expect(page.get_by_role("heading", name="Final AI rankings", exact=True)).to_be_visible(timeout=720000)
-        expect(page.get_by_role("heading", name="Final AI rankings", exact=True)).to_have_count(1)
-        expect(page.get_by_role("heading", name="Final AI rankings", exact=True)).to_be_in_viewport()
+        expect(page.get_by_role("heading", name="Final rankings", exact=True)).to_be_visible(timeout=720000)
+        expect(page.get_by_role("heading", name="Final rankings", exact=True)).to_have_count(1)
+        expect(page.get_by_role("heading", name="Final rankings", exact=True)).to_be_in_viewport()
         expect(page.get_by_text("20 of 20 points submitted", exact=True)).to_be_visible()
         expect(page.locator(".dk-active-header")).not_to_contain_text("50% Complete")
         capture(page, "11-" + side + "-rankings")
@@ -246,7 +246,10 @@ def check_positions_and_arguments(sender, receiver, room, topic):
     focused.fill(subjects[1][0])
     scroll_before = receiver.evaluate("window.scrollY")
     chat = "I can still see where to write my point."
-    sender.get_by_placeholder("Type your message...", exact=True).fill(chat)
+    composer = sender.get_by_placeholder("Type your message...", exact=True)
+    composer.fill(chat)
+    sender.reload()
+    expect(composer).to_have_value(chat)
     button(sender, "Send message").click()
     expect(receiver.get_by_text(chat, exact=True)).to_be_attached(timeout=20000)
     expect(focused).to_be_focused()
