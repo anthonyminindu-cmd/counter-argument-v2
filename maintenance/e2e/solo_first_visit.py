@@ -84,6 +84,10 @@ def trip(page):
     expect(private).to_be_visible(timeout=20000)
     check("Set both stances and made the debate private before submitting any points")
     check_width(page,"writing")
+    final_submit=button(point(10),"Submit")
+    expect(final_submit).to_be_disabled()
+    expect(page.get_by_role("textbox",name="AI position",exact=True)).to_have_count(0)
+    expect(page.get_by_text("AI Research Status",exact=True)).to_have_count(0)
     btn=button(point(1),"Submit point 1")
     expect(btn).to_be_disabled()
     expect(page.locator(".dk-writing-card")).to_have_count(10)
@@ -101,8 +105,14 @@ def trip(page):
         else:
             title(i).fill(name)
             detail(i).fill(body)
-        button(point(i),f"Submit point {i}").click()
-        if i<10:
+        if i==10:
+            with page.expect_request(lambda req:req.method=="POST" and req.url.endswith("/functions/v1/submit-ai-debate")) as submission:
+                final_submit.click()
+            payload=submission.value.post_data_json
+            assert payload["action"]=="submit" and len(payload["arguments"])==10
+            assert payload["positions"]==[HUMAN,AI]
+        else:
+            button(point(i),f"Submit point {i}").click()
             expect(point(i+1)).to_have_attribute("aria-current","step",timeout=15000)
     check("All ten original peace arguments submitted")
     table=page.get_by_role("list",name="Ranked original arguments")
@@ -116,8 +126,6 @@ def trip(page):
         if status not in seen:
             print("OBSERVED",round(time.monotonic()-begin),status[:360],flush=True)
             seen.add(status)
-        if time.monotonic()-begin>20 and not status and button(page,"Generate AI Arguments").is_visible() and button(page,"Generate AI Arguments").is_enabled():
-            button(page,"Generate AI Arguments").click()
         alerts=page.get_by_role("alert").all_text_contents()
         if any(re.search(r"failed|paused|not finish|review the previous request",a,re.I) for a in alerts):
             raise AssertionError("Processing alert: "+" / ".join(alerts)[:350])

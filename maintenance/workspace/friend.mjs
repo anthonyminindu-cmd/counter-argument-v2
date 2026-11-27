@@ -242,10 +242,10 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
         h('label',{htmlFor:prefix+'-source'},'Link to a source'),
       h('input',{id:prefix+'-source',inputMode:'url',value:point.sourceUrl==='No source provided'?'':point.sourceUrl,onChange:e=>update('sourceUrl',e.target.value)})));
   }
-  function PointEditor({drafts,submitted,saving,onEdit,onSave,focusOnEntry=false}) {
+  function PointEditor({drafts,submitted,saving,onEdit,onSave,solo=false}) {
     const count=submitted.length, total=drafts.length;
     const point=drafts[count];
-    const previous=useRef(focusOnEntry && count<total ? -1 : count), stage=useRef(null), overview=useRef(null);
+    const previous=useRef(solo && count<total ? -1 : count), stage=useRef(null), overview=useRef(null);
     const next=!point?null:!point.title.trim()?'title':!point.description.trim()?'explanation':'submit';
     const number=count+1;
     const instruction=next==='title'?'Give point '+number+' a short title.':
@@ -274,6 +274,7 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
           onClick:()=>{const heading=document.getElementById('dk-point-'+(index+1));heading?.focus({preventScroll:true});heading?.scrollIntoView({block:'start'});}},
           index+1))),
       ...drafts.map((draft,index)=>{
+        const finalSubmit=solo&&index===total-1;
         const saved=submitted[index], active=index===count, label='dk-point-'+(index+1);
         return h('section',{key:index,className:'dk-writing-card',ref:active?stage:undefined,tabIndex:active?-1:undefined,
           'aria-current':active?'step':undefined,'aria-labelledby':label},
@@ -283,8 +284,8 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
           h(active?'form':'div',active?{onSubmit:e=>{e.preventDefault();if(next==='submit'&&saving===null)void onSave(index);}}:null,
             active&&h('p',{role:'status',className:'dk-point-step'},count?'Point '+count+' submitted. ':'',instruction),
             h(PointFields,{prefix:label,point:draft,next:active?next:null,update:(key,value)=>onEdit(index,key,value)}),
-            active&&h('button',{type:'submit',className:'dk-primary','data-next':next==='submit'||undefined,
-              disabled:saving!==null||next!=='submit'},saving===count?'Submitting…':'Submit point '+number)));
+            (active||finalSubmit)&&h('button',{type:'submit',className:'dk-primary','data-next':active&&next==='submit'||undefined,
+              disabled:!active||saving!==null||next!=='submit'},saving===index?'Submitting…':finalSubmit?'Submit':'Submit point '+number)));
       }),
       !point&&h('h3',{ref:stage,tabIndex:-1,'aria-live':'polite'},'All '+total+' points submitted'));
   }

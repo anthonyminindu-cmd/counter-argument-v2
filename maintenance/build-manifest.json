@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "978020e317df4feb16bf0386e738c1704249746c8f4d94df52dce681bf37283f",
-  "generatedAsset": "assets/index-v2-978020e317df4feb.js",
+  "generatedSha256": "c6c426ee1c29c9392190d20eca922a721ff51d6b37ffe5d73f3bedbc1c7f7e92",
+  "generatedAsset": "assets/index-v2-c6c426ee1c29c939.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -352,6 +352,12 @@
     "guide-each-point-in-both-debate-modes",
     "show-solo-stance-above-guided-editor",
     "guide-ai-debaters-through-position-setup",
-    "focus-ai-point-when-entering-writing"
+    "focus-ai-point-when-entering-writing",
+    "give-solo-writing-the-full-column",
+    "remove-manual-solo-research-panel",
+    "dispatch-the-tenth-solo-point-even-on-resume",
+    "let-saved-points-submit-without-a-second-stance-confirmation",
+    "use-setup-positions-and-recover-older-blank-stances",
+    "provide-one-submit-action-for-restored-complete-drafts"
   ]
 }
