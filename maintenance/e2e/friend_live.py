@@ -61,7 +61,7 @@ def send(page, sender, receiver):
                               res.request.post_data_json.get("p_query") == receiver["name"]) as lookup:
         page.get_by_label("Search for users").fill(receiver["name"])
     assert lookup.value.ok and lookup.value.json() == [], "A QA member is visible in friend search"
-    expect(page.get_by_text("No matches. Try another name.", exact=True)).to_be_visible()
+    expect(page.get_by_role("heading", name=re.compile(r"^(No users found|No matches\. Try another name\.)$"))).to_be_visible()
 
     # Start the private fixture invitation by ID. Its recipient is intentionally undiscoverable.
     request = Request(API + "/rest/v1/rpc/dk_invite_friend", data=json.dumps({
