@@ -75,6 +75,9 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
     const waiting=location.pathname.replace(/\/$/,'')==='/debate/start' && params.get('mode')==='friend' ? params.get('waiting') : null;
     const waitId=waiting && /^[a-f\d-]{36}$/i.test(waiting)?waiting:null;
     const [privacyResult,setPrivacy]=useState(null);
+    const [pointResult,setPointResult]=useState(null);
+    const pointInvites=pointResult?.owner===owner&&owner?pointResult.rows:[];
+    const incomingPoints=pointInvites.filter(row=>row.recipient===owner&&!row.claimed);
     const privacy=privacyResult && privacyResult.owner===owner?privacyResult.rows:[];
     const [rows,setRows]=useState([]),[loaded,setLoaded]=useState(false),[error,setError]=useState('');
     const [panel,setPanel]=useState(null),[busy,setBusy]=useState(false);
@@ -93,8 +96,9 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
         if (running){again=true;return;}
         running=true;
         try {
-          const [fresh,requests]=await Promise.all([readInbox(db,owner,waitId),db.rpc('dk_visibility_inbox')]);
+          const [fresh,requests,points]=await Promise.all([readInbox(db,owner,waitId),db.rpc('dk_visibility_inbox'),db.rpc('dk_private_points')]);
           if(active){
+            if(!points.error)setPointResult({owner,rows:points.data||[]});
             if(!requests.error)setPrivacy({owner,rows:requests.data||[]});
             const revision=fresh.map(row=>row.id+row.status).join(',');
             if(previous!==null&&previous!==revision)window.dispatchEvent(new Event('dk-activity-changed'));
@@ -127,6 +131,7 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
       try{localStorage.setItem(storageKey,JSON.stringify([...next]));}catch{}
     }
     function close(){
+      if(panel?.point)dismissed.current.add(panel.point);
       if(panel?.id){dismissed.current.add(panel.id);markRead(rows.find(row=>row.id===panel.id));}
       setPanel(null);
     }
@@ -167,8 +172,12 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
       if(panel)return;
       const next=[...pending,...replies].find(row=>!dismissed.current.has(row.id));
       if(next)setPanel({id:next.id});
-    },[owner,rows,waitId,panel,loaded,read]);
-    return h(Inbox.Provider,{value:{rows,privacy:owner?privacy:[],loaded,error,pendingCount:(owner?privacy.length:0)+pending.length+replies.length,busy,panel,waitId,owner,close,respond,
+      else if(!new URLSearchParams(location.search).has('privatePoint')){
+        const nextPoint=incomingPoints.find(row=>!dismissed.current.has(row.id));
+        if(nextPoint)setPanel({point:nextPoint.id});
+      }
+    },[owner,rows,pointResult,waitId,panel,loaded,read,location.search]);
+    return h(Inbox.Provider,{value:{rows,pointInvites,privacy:owner?privacy:[],loaded,error,pendingCount:(owner?privacy.length:0)+pending.length+replies.length+incomingPoints.length,busy,panel,waitId,owner,close,respond,
       refresh:()=>refresh.current(), open:()=>{setPanel({all:true});void refresh.current();}}},children);
   }
 
@@ -201,9 +210,12 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
         h('div',{className:'dk-sectionline'},h('h2',{id:'dk-inbox-title'},selected&&!inbox.panel?.all?'Debate invitation':'Notifications'),action('Close',inbox.close)),
         (inbox.panel?.error||inbox.error)&&h('p',{role:'alert'},inbox.panel?.error||inbox.error,' ',action('Refresh',inbox.refresh)),
         inbox.panel?.all&&inbox.privacy?.length>0&&h('section',null,h('h3',null,'Debate visibility requests'),...inbox.privacy.map(item=>h('p',{key:item.id},h(Link,{to:'/debate/view/'+item.id,onClick:inbox.close},item.title),' · Request to go '+(item.requested_public?'public':'private')))),
+        (inbox.panel?.all||inbox.panel?.point)&&inbox.pointInvites.length>0&&h('section',null,h('h3',null,'Private point invitations'),
+          ...inbox.pointInvites.filter(item=>inbox.panel.all||item.id===inbox.panel.point).map(item=>h('p',{key:item.id},
+            h(Link,{to:'/home?privatePoint='+item.id,onClick:inbox.close},item.title),' · ',item.reply?'Private reply received':item.sender===inbox.owner?'Sent':'Invited'))),
         inbox.panel?.all&&h(SocialActivity,{close:inbox.close}),
         inbox.panel?.all&&h('h3',null,'Debate invitations'),
-        displayed.length?h('ul',null,...displayed.map(rowView)):h('p',null,inbox.loaded?'No invitations yet.':'Loading invitations…')));
+        !inbox.panel?.point&&(displayed.length?h('ul',null,...displayed.map(rowView)):h('p',null,inbox.loaded?'No invitations yet.':'Loading invitations…'))));
   }
   function FriendSetup(){
     const inbox=useContext(Inbox),navigate=useNavigate(), loc=useLocation();

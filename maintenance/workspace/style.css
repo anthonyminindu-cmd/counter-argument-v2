@@ -183,6 +183,11 @@ html{scroll-padding-top:198px}
   flex-wrap:wrap;
   gap:8px 14px;
 }
+@media(max-width:600px){
+  .dk-debate-topic-line { flex-wrap:wrap; align-items:baseline; }
+  .dk-debate-topic-line > h2 { flex:none; white-space:nowrap; }
+  .dk-debate-topic-line > p { flex:1 1 70%; min-width:0; overflow-wrap:anywhere; }
+}
 .dk-active-heading > div { min-width:0; }
 .dk-active-heading .dk-active-partner {
   max-width:100%;

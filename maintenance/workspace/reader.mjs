@@ -82,7 +82,7 @@ export function pointSnapshot(rows,positions=[]) {
   return points.every(p=>typeof p.id==='string'&&p.title&&Number.isInteger(p.rank))?points:null;
 }
 
-export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,posterDebateRoute,MemberComments,status}){
+export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,posterDebateRoute,MemberComments,InviteTools,status}){
   const h=React.createElement;
   function Point({entry,point,open,onToggle,refresh,showCounts,intent,loading}){
     const {user}=useAuth(),navigate=useNavigate(),loc=useLocation();
@@ -118,9 +118,10 @@ export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQ
         })),
         notice&&status(notice),
         showCounts&&h('small',null,point.respondents+' '+(point.respondents===1?'reader has':'readers have')+' responded'),
-        h('div',{className:'dk-actions'},h('a',{className:'dk-link',href:location.pathname+route.slice(route.indexOf('?')),onClick:async e=>{
+        !entry.private&&h('div',{className:'dk-actions'},h('a',{className:'dk-link',href:location.pathname+route.slice(route.indexOf('?')),onClick:async e=>{
           if(navigator.clipboard){e.preventDefault();try{await navigator.clipboard.writeText(e.currentTarget.href);setCopied(true)}catch{navigate(route)}}
         }},copied?'Point link copied':'Share this point')),
+        user&&h('details',null,h('summary',null,'Ask a friend about this point'),h(InviteTools,{slug:entry.id,point:point.id})),
         error&&status(error,true),h('h4',null,'Discuss this point'),h(MemberComments,{key:(user?.id||'guest')+point.id,entry,point:point.id})));
   }
   return function PointReader({entry,fallback,provided,impactRows}){

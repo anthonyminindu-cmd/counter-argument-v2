@@ -690,8 +690,9 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       h(React.Fragment,null,h('ul',{className:'dk-replies'},...rows.map(c=>h('li',{key:c.id,id:'dk-comment-'+c.id,tabIndex:-1},h('strong',null,c.author),h('p',entry.private?null:{'data-dk-view':'comment','data-dk-item':c.id},c.body),h('div',{className:'dk-actions'},h(CommentLike,{id:c.id,kind:'comment',states}),h(Report,{kind:'comment',target:c.id}))))),
         q.data?.length>limit&&h('button',{className:'dk-small',onClick:()=>setLimit(limit+30)},'Show older comments')));
   }
-  const PointReader=createPointReader({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,posterDebateRoute,MemberComments,status});
-  const {JoinLink,InviteTools}=createFriendInvitations({React,db,useAuth,useNavigate,useQuery,link,login,status});
+  const {JoinLink,InviteTools,PrivatePoint}=createFriendInvitations({React,db,useAuth,useNavigate,useQuery,link,login,status,checkContent});
+  const PointReader=createPointReader({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,posterDebateRoute,MemberComments,InviteTools,status});
+
   function useVisibility(reference) {
     const {user}=useAuth();
     const q=useQuery(user&&reference?user.id+':visibility:'+reference:null,()=>db.rpc('dk_result_visibility',{p_reference:reference}));
@@ -987,7 +988,8 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const search=normalizeDebateSearch(loc.search);
     if(search!==loc.search)return h(ReplaceDebateUrl,{location:loc,search});
     const commenter=params.get('commenter');
-    if(params.has('join'))return h(JoinLink);
+    if(params.has('join'))return h(JoinLink,{key:params.get('join'),point:params.get('join')==='point'});
+    if(params.has('privatePoint'))return h(PrivatePoint,{key:params.get('privatePoint'),id:params.get('privatePoint')});
     const member=params.get('member');
     if(member && /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(member))return h(PublicMemberProfile,{id:member,name:loc.state?.publicName});
     if(commenter)return h(CommenterPage,{id:commenter});

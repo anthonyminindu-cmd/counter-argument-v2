@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "dcaa5d508b781d96bdfa68b933f26d3a93128d85890e54c71144551e76c16871",
-  "generatedAsset": "assets/index-v2-dcaa5d508b781d96.js",
+  "generatedSha256": "31482738e7b5587c2a5e07bbee681ab5d09f2057051361366e1239f3b54c4a8f",
+  "generatedAsset": "assets/index-v2-31482738e7b5587c.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -373,6 +373,7 @@
     "describe-the-correct-retry-action",
     "name-the-unconfirmed-submit-state",
     "show-progress-only-after-a-workflow-exists",
-    "explain-how-to-retry-the-ten-points"
+    "explain-how-to-retry-the-ten-points",
+    "keep-active-topic-label-readable"
   ]
 }

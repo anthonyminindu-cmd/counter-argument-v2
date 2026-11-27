@@ -1,0 +1,7 @@
+[
+  {
+    "id": "keep-active-topic-label-readable",
+    "find": "className:\"flex items-center gap-2 mb-1\",children:[i.jsx(\"h2\",{className:\"text-sm font-semibold text-muted-foreground\",children:\"Topic:\"})",
+    "replace": "className:\"flex items-center gap-2 mb-1 dk-debate-topic-line\",children:[i.jsx(\"h2\",{className:\"text-sm font-semibold text-muted-foreground\",children:\"Topic:\"})"
+  }
+]
