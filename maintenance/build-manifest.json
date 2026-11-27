@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "c6c426ee1c29c9392190d20eca922a721ff51d6b37ffe5d73f3bedbc1c7f7e92",
-  "generatedAsset": "assets/index-v2-c6c426ee1c29c939.js",
+  "generatedSha256": "dcaa5d508b781d96bdfa68b933f26d3a93128d85890e54c71144551e76c16871",
+  "generatedAsset": "assets/index-v2-dcaa5d508b781d96.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -358,6 +358,21 @@
     "dispatch-the-tenth-solo-point-even-on-resume",
     "let-saved-points-submit-without-a-second-stance-confirmation",
     "use-setup-positions-and-recover-older-blank-stances",
-    "provide-one-submit-action-for-restored-complete-drafts"
+    "provide-one-submit-action-for-restored-complete-drafts",
+    "assign-the-opposing-case-at-writing-entry",
+    "allow-revisions-to-solo-picks-before-final-submission",
+    "forward-the-revision-handler-to-the-editor",
+    "wire-revisions-to-submitted-points",
+    "track-submission-errors-separately-from-read-errors",
+    "reset-submit-error-on-scope-change",
+    "clear-uncertain-submit-after-authoritative-workflow-read",
+    "clear-submit-error-on-retry",
+    "preserve-transient-submit-failure-across-empty-polls",
+    "expose-read-error-to-recovery-gate",
+    "keep-verified-draft-available-after-a-submit-error",
+    "describe-the-correct-retry-action",
+    "name-the-unconfirmed-submit-state",
+    "show-progress-only-after-a-workflow-exists",
+    "explain-how-to-retry-the-ten-points"
   ]
 }

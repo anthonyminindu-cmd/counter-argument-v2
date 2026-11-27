@@ -129,7 +129,7 @@ test('AI setup exposes one accurate research opponent and a working topic next s
   assert.deepEqual(navigations,['/debate/topic?mode=ai']);
 });
 
-test('AI preparation accepts both positions together and proceeds once both are filled',()=>{
+test('AI preparation asks only for the participant stance and retains an existing opponent stance',()=>{
   const state={I:'',P:'',Oo:false,_r:false};
   let starts=0;
   const changes={k:value=>state.I=value,A:value=>state.P=value,Ll:value=>state.Oo=value,
@@ -137,15 +137,16 @@ test('AI preparation accepts both positions together and proceeds once both are 
   const nodes=()=>walk(renderPreparation(false,{...state,...changes}));
   const inputs=()=>nodes().filter(n=>n.type==='input');
   const submit=()=>nodes().find(n=>n.type==='form').props.onSubmit({preventDefault:noop});
-  assert.equal(inputs().length,2);
-  inputs()[0].props.onChange({target:{value:'My stance'}});
-  inputs()[1].props.onChange({target:{value:'   '}});
-  assert.equal(nodes().find(n=>n.type==='button').props.disabled,true);
+  assert.equal(inputs().length,1);
+  inputs()[0].props.onChange({target:{value:'   '}});
   submit();assert.equal(starts,0);
-  inputs()[1].props.onChange({target:{value:'Opposing stance'}});
+  inputs()[0].props.onChange({target:{value:'My stance'}});
   submit();assert.equal(starts,1);
   assert.ok(state.Oo&&state._r);
-  assert.equal(inputs()[1].props.value,'Opposing stance');
+  assert.equal(state.P,'The opposing case');
+  state.P='Previously saved opposing stance';
+  submit();
+  assert.equal(state.P,'Previously saved opposing stance');
 });
 
 test('final solo submission starts research once with all ten points and completion opens the infographic',async()=>{

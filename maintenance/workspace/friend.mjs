@@ -231,10 +231,10 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
         h(Directory,{onInvitationSent:id=>{navigate(searchRoute+'&waiting='+encodeURIComponent(id));void inbox.refresh();}}),
         ExternalInvites&&h(ExternalInvites)));
   }
-  function PointFields({prefix,point,update,next}) {
+  function PointFields({prefix,point,update,next,autoFocus}) {
     return h('div',{className:'dk-point-fields'},
       h('label',{htmlFor:prefix+'-title'},'Title'),
-      h('input',{id:prefix+'-title','data-next':next==='title'||undefined,value:point.title,maxLength:150,required:true,onChange:e=>update('title',e.target.value)}),
+      h('input',{id:prefix+'-title',autoFocus,'data-next':next==='title'||undefined,value:point.title,maxLength:150,required:true,onChange:e=>update('title',e.target.value)}),
       h('label',{htmlFor:prefix+'-explanation'},'Explanation'),
       h('textarea',{id:prefix+'-explanation','data-next':next==='explanation'||undefined,value:point.description,maxLength:500,required:true,onChange:e=>update('description',e.target.value)}),
       h('details',{className:'dk-source-option',open:point.sourceUrl&&point.sourceUrl!=='No source provided'?true:undefined},
@@ -242,9 +242,15 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
         h('label',{htmlFor:prefix+'-source'},'Link to a source'),
       h('input',{id:prefix+'-source',inputMode:'url',value:point.sourceUrl==='No source provided'?'':point.sourceUrl,onChange:e=>update('sourceUrl',e.target.value)})));
   }
-  function PointEditor({drafts,submitted,saving,onEdit,onSave,solo=false}) {
+  function PointEditor({drafts,submitted,saving,onEdit,onSave,onRevise,solo=false}) {
     const count=submitted.length, total=drafts.length;
     const point=drafts[count];
+    const [editing,setEditing]=useState(null);
+    function closeEdit(){
+      const buttonId='dk-point-'+(editing.index+1)+'-edit';
+      setEditing(null);
+      requestAnimationFrame(()=>document.getElementById(buttonId)?.focus());
+    }
     const previous=useRef(solo && count<total ? -1 : count), stage=useRef(null), overview=useRef(null);
     const next=!point?null:!point.title.trim()?'title':!point.description.trim()?'explanation':'submit';
     const number=count+1;
@@ -279,13 +285,23 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
         return h('section',{key:index,className:'dk-writing-card',ref:active?stage:undefined,tabIndex:active?-1:undefined,
           'aria-current':active?'step':undefined,'aria-labelledby':label},
           h('h3',{id:label,tabIndex:-1},'Point '+(index+1)+' of '+total),
+          editing?.index===index?h('form',{onSubmit:event=>{
+            event.preventDefault();
+            if(!editing.title.trim()||!editing.description.trim())return;
+            onRevise(index,{title:editing.title.trim(),description:editing.description.trim(),sourceUrl:editing.sourceUrl.trim()});
+            closeEdit();
+          }},h(PointFields,{prefix:label,point:editing,autoFocus:true,update:(key,value)=>setEditing(old=>({...old,[key]:value}))}),
+            h('button',{className:'dk-primary',disabled:!editing.title.trim()||!editing.description.trim()},'Save changes'),
+            h('button',{type:'button',className:'dk-secondary',onClick:closeEdit},'Cancel')):
           saved?h(React.Fragment,null,h('small',null,'Submitted'),h('strong',null,saved.title),h('p',null,saved.description),
-            /^https?:\/\//i.test(saved.sourceUrl||'')&&h('a',{href:saved.sourceUrl,target:'_blank',rel:'noopener noreferrer'},'Open source')):
-          h(active?'form':'div',active?{onSubmit:e=>{e.preventDefault();if(next==='submit'&&saving===null)void onSave(index);}}:null,
+            /^https?:\/\//i.test(saved.sourceUrl||'')&&h('a',{href:saved.sourceUrl,target:'_blank',rel:'noopener noreferrer'},'Open source'),
+            onRevise&&count<total&&h('button',{type:'button',className:'dk-secondary',disabled:!!editing||saving!==null,
+              id:label+'-edit',onClick:()=>setEditing({...saved,index})},'Edit point '+(index+1))):
+          h(active?'form':'div',active?{onSubmit:e=>{e.preventDefault();if(!editing&&next==='submit'&&saving===null)void onSave(index);}}:null,
             active&&h('p',{role:'status',className:'dk-point-step'},count?'Point '+count+' submitted. ':'',instruction),
             h(PointFields,{prefix:label,point:draft,next:active?next:null,update:(key,value)=>onEdit(index,key,value)}),
             (active||finalSubmit)&&h('button',{type:'submit',className:'dk-primary','data-next':active&&next==='submit'||undefined,
-              disabled:!active||saving!==null||next!=='submit'},saving===index?'Submitting…':finalSubmit?'Submit':'Submit point '+number)));
+              disabled:!!editing||!active||saving!==null||next!=='submit'},saving===index?'Submitting…':finalSubmit?'Submit':'Submit point '+number)));
       }),
       !point&&h('h3',{ref:stage,tabIndex:-1,'aria-live':'polite'},'All '+total+' points submitted'));
   }

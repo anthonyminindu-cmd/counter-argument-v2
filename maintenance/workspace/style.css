@@ -292,9 +292,9 @@ html{scroll-padding-top:198px}
 .dk-example-card > .dk-link { display:inline-block; margin:0 18px 12px; }
 .dk-points-list { list-style:none; padding:0; margin:0; }
 .dk-reader-point { padding:.65rem 0; border-bottom:1px solid var(--dk-line); }
-.dk-point-title { width:100%; display:grid; grid-template-columns:2.2em 1fr 1em; gap:.5rem; align-items:baseline; text-align:left; min-height:44px; }
+.dk-point-title { width:100%; display:grid; grid-template-columns:minmax(0,1fr) 1em; gap:.5rem; align-items:baseline; text-align:left; min-height:44px; }
 .dk-point-impact { display:block; color:var(--dk-sub); font-variant-numeric:tabular-nums; }
-.dk-point-rank { color:var(--dk-sub); }
+.dk-point-title { overflow-wrap:anywhere; }
 .dk-point-body { padding:.5rem; overflow-wrap:anywhere; }
 .dk-point-body p { white-space:pre-wrap; }
 .dk-audience-toggle { display:flex; align-items:center; gap:.6rem; margin:1rem 0; }

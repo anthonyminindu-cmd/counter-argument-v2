@@ -1,0 +1,77 @@
+[
+  {
+    "id": "assign-the-opposing-case-at-writing-entry",
+    "find": "position:I,opposing:P,pointCount:S.length,onPosition:k,onOpposing:A,onStart:()=>{Ll(true);",
+    "replace": "position:I,pointCount:S.length,onPosition:k,onStart:()=>{if(!P.trim())A(\"The opposing case\");Ll(true);"
+  },
+  {
+    "id": "allow-revisions-to-solo-picks-before-final-submission",
+    "find": "userId:r==null?void 0:r.id,onSubmit:Y_",
+    "replace": "userId:r==null?void 0:r.id,onRevise:se?undefined:(index,point)=>N(current=>current.map((row,i)=>i===index?point:row)),onSubmit:Y_"
+  },
+  {
+    "id": "forward-the-revision-handler-to-the-editor",
+    "find": "onSubmit:o,storageKey:a}){const[l,c]=p.useState(()=>HD",
+    "replace": "onSubmit:o,onRevise,storageKey:a}){const[l,c]=p.useState(()=>HD"
+  },
+  {
+    "id": "wire-revisions-to-submitted-points",
+    "find": "solo:!r,drafts:l,submitted:e,saving:u",
+    "replace": "solo:!r,onRevise,drafts:l,submitted:e,saving:u"
+  },
+  {
+    "id": "track-submission-errors-separately-from-read-errors",
+    "find": "function $D(e){const[t,n]=p.useState(null)",
+    "replace": "function $D(e){const[submitError,setSubmitError]=p.useState(\"\"),[t,n]=p.useState(null)"
+  },
+  {
+    "id": "reset-submit-error-on-scope-change",
+    "find": "m.current=\"\",n(null),s(\"\"),a(!1),e.enabled",
+    "replace": "m.current=\"\",n(null),s(\"\"),setSubmitError(\"\"),a(!1),e.enabled"
+  },
+  {
+    "id": "clear-uncertain-submit-after-authoritative-workflow-read",
+    "find": "if(n(A),s(\"\"),A){const{snapshot:L",
+    "replace": "if(n(A),s(\"\"),A){setSubmitError(\"\");const{snapshot:L"
+  },
+  {
+    "id": "clear-submit-error-on-retry",
+    "find": "h.current=I,a(!0),s(\"\");try{const A=C&&v",
+    "replace": "h.current=I,a(!0),setSubmitError(\"\");try{const A=C&&v"
+  },
+  {
+    "id": "preserve-transient-submit-failure-across-empty-polls",
+    "find": "d.current===R&&s(A instanceof Error?A.message:\"Submission could not be saved.\")",
+    "replace": "d.current===R&&setSubmitError(A instanceof Error?A.message:\"Submission could not be saved.\")"
+  },
+  {
+    "id": "expose-read-error-to-recovery-gate",
+    "find": "busy:o||S.busy,error:r||S.error",
+    "replace": "busy:o||S.busy,readError:r,error:submitError||r||S.error"
+  },
+  {
+    "id": "keep-verified-draft-available-after-a-submit-error",
+    "find": "workflow:vn.record,loading:vn.loading,error:vn.error,topic:u",
+    "replace": "workflow:vn.record,loading:vn.loading,error:vn.readError,topic:u"
+  },
+  {
+    "id": "describe-the-correct-retry-action",
+    "find": "children:\"Retry saved processing\"",
+    "replace": "children:vn.record?\"Retry saved processing\":\"Retry submission\""
+  },
+  {
+    "id": "name-the-unconfirmed-submit-state",
+    "find": "Lo=tM(vn.record,h,zl)",
+    "replace": "Lo=!vn.record&&vn.error&&h===\"results\"?{label:\"Submission not confirmed\",message:\"\",progressPercent:null}:tM(vn.record,h,zl)"
+  },
+  {
+    "id": "show-progress-only-after-a-workflow-exists",
+    "find": "children:[i.jsx(b_,{record:vn.record}),zl?",
+    "replace": "children:[vn.record&&i.jsx(b_,{record:vn.record}),zl?"
+  },
+  {
+    "id": "explain-how-to-retry-the-ten-points",
+    "find": "children:Cg||\"Waiting for all twenty arguments to be researched and ranked together.\"",
+    "replace": "children:Cg&&!vn.record?\"Your ten points are here. Retry submission to send them again. \"+Cg:Cg||\"Waiting for all twenty arguments to be researched and ranked together.\""
+  }
+]
