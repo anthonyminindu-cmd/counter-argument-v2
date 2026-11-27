@@ -55,8 +55,10 @@ export function createFriendInvitations({React,db,useAuth,useNavigate,useQuery,l
       }catch(e){setError(e.message||'Could not accept the invitation.');setBusy(false)}
     }
     return h('div',{className:'dk-main'},h('section',{className:'dk-panel'},h('h1',null,'Join a friend debate'),
-      token&&h('p',null,'New debates publish when complete. Either participant can request privacy, and the other must agree.'),
-      !token?status('Open the full invitation link from your email or text.',true):loading?status('Checking account…'):user?button('Accept invitation',join,busy):link(login('/home?join=1'),'Sign in or create an account','dk-primary'),error&&status(error,true)));
+      token&&h('p',null,'You’ll choose a question together and write 10 points each. Completed debates publish after review unless you both agree to keep yours private.'),
+      !token?status('Open the full invitation link from your email or text.',true):loading?status('Checking account…'):user?button('Accept invitation',join,busy):h('div',{className:'dk-actions'},
+        link(login('/home?join=1')+'&tab=signup','Create an account to join','dk-primary'),
+        link(login('/home?join=1'),'Sign in to join','dk-secondary')),error&&status(error,true)));
   }
   return {JoinLink,InviteTools};
 }

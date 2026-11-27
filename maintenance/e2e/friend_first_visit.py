@@ -6,11 +6,14 @@ from contextlib import ExitStack
 from urllib.parse import urlparse
 
 from playwright.sync_api import expect, sync_playwright
-from friend_live import APP, argument, button, check, check_positions_and_arguments, run, session, topic_to_suggest
+from friend_live import APP, button, check, check_positions_and_arguments, run, session, topic_to_suggest
 
 
-def sign_up(page, role):
-    page.get_by_role("tab", name="Sign Up", exact=True).click()
+def sign_up(page, role, select_tab=True):
+    signup = page.get_by_role("tab", name="Sign Up", exact=True)
+    if select_tab:
+        signup.click()
+    expect(signup).to_have_attribute("aria-selected", "true")
     form = page.locator("form").filter(has=page.locator("#confirmPassword"))
     password = "Xy9!" + secrets.token_urlsafe(20)
     form.get_by_label("First name", exact=True).fill("InboxQA" + run + role)
@@ -45,8 +48,9 @@ def run_flow():
         url = invite.input_value()
         assert urlparse(url).netloc == urlparse(APP).netloc
         guest.goto(url)
-        guest.get_by_role("link", name="Sign in or create an account").click()
-        sign_up(guest, "Receiver")
+        expect(guest.get_by_role("link", name="Sign in to join")).to_be_visible()
+        guest.get_by_role("link", name="Create an account to join").click()
+        sign_up(guest, "Receiver", select_tab=False)
         accept = button(guest, "Accept invitation")
         expect(accept).to_be_visible(timeout=30000)
         accept.click()

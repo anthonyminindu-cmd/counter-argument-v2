@@ -1,6 +1,11 @@
 name: Live two-browser friend invitations
 on:
   workflow_dispatch:
+    inputs:
+      first_visit:
+        description: Test two new accounts through a private debate and both poster downloads
+        type: boolean
+        default: false
   push:
     branches:
       - qa/friend-candidate
@@ -10,12 +15,19 @@ permissions:
 jobs:
   two-members:
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: ${{ inputs.first_visit && 22 || 6 }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - run: python -m pip install playwright==1.55.0
       - name: Run real invitations in separate Chrome processes
+        if: ${{ !inputs.first_visit }}
         env:
           DK_TEST_URL: ${{ github.ref_name == 'qa/friend-candidate' && 'http://127.0.0.1:8172/counter-argument-v2' || 'https://anthonyminindu-cmd.github.io/counter-argument-v2' }}
           DK_TEST_SERVE_CHECKOUT: ${{ github.ref_name == 'qa/friend-candidate' && '1' || '' }}
         run: python maintenance/e2e/friend_live.py
+      - name: Test first-time desktop and phone participants on Differ Kindly
+        if: ${{ inputs.first_visit }}
+        env:
+          DK_TEST_URL: https://www.differkindly.com
+          DK_TEST_RANKING: '1'
+        run: python -u maintenance/e2e/friend_first_visit.py
