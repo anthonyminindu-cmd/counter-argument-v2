@@ -26,3 +26,21 @@ test('guest feed renders before the privacy inbox has an owner or results', asyn
   assert.deepEqual(value.privacy, []);
   assert.equal(value.pendingCount, 0);
 });
+
+test('an unsent chat draft survives remount and is isolated by member and room',async()=>{
+  const {createFriendExperience}=await import('../workspace/friend.mjs');
+  const React={createContext:()=>null,useSyncExternalStore:(_,read)=>read()};
+  const previousWindow=global.window,previousStorage=global.sessionStorage;
+  const saved=new Map();
+  global.window=new EventTarget();
+  global.sessionStorage={getItem:key=>saved.get(key),setItem:(key,v)=>saved.set(key,v),removeItem:key=>saved.delete(key)};
+  try{
+    const open=()=>createFriendExperience({React}).useFriendChatDraft;
+    open()('one','member')[1]('Still drafting');
+    assert.equal(open()('one','member')[0],'Still drafting');
+    assert.equal(open()('two','member')[0],'');
+    assert.equal(open()('one','other')[0],'');
+    open()('one','member')[1]('');
+    assert.equal(saved.size,0);
+  }finally{global.window=previousWindow;global.sessionStorage=previousStorage}
+});
