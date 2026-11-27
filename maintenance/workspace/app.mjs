@@ -140,38 +140,18 @@ const glyphs = {
 
 export function createAiPositions(React) {
   const h=React.createElement;
-  return function AiPositions({position,opposing,submitted,confirmed,pointCount,onPosition,onOpposing,onSubmit,onConfirm,onStart}) {
-    const stage=!submitted?'own':(!confirmed||!opposing.trim())?'ai':'write';
-    const own=stage==='own', draft=own?position:opposing;
-    const ready=stage==='write'||Boolean(draft.trim());
-    const field=React.useRef(null), action=React.useRef(null);
-    React.useEffect(()=>{
-      if(document.querySelector('dialog[open]'))return;
-      const target=stage==='write'?action.current:field.current;
-      target?.focus({preventScroll:true});
-      target?.scrollIntoView({block:'center'});
-    },[stage]);
-    const instructions=own?'In one sentence, what do you believe about this topic?':
-      stage==='ai'?'What opposing view should Diff AI argue?':'Both positions are set. You can now write your points.';
-    const label=own?'Submit my position':stage==='ai'?'Confirm AI position':pointCount?'Continue writing points':'Write point 1';
-    function submit(event) {
-      event.preventDefault();
-      if(!ready)return;
-      if(own)void onSubmit();
-      else if(stage==='ai')void onConfirm();
-      else void onStart();
-    }
+  return function AiPositions({position,opposing,pointCount,onPosition,onOpposing,onStart}) {
+    const ready=Boolean(position.trim()&&opposing.trim());
     return h('section',{className:'dk-panel dk-ai-positions','aria-labelledby':'dk-ai-positions-title'},
-      h('h2',{id:'dk-ai-positions-title'},'Set up your debate with Diff AI'),
-      submitted&&h('p',{className:'dk-stance-recap'},h('strong',null,'Your position'),position),
-      stage==='write'&&h('div',{className:'dk-stance-recap'},h('strong',null,'AI position'),opposing,
-        h('button',{type:'button',className:'dk-link',onClick:()=>onOpposing(opposing)},'Edit AI position')),
-      h('p',{role:'status',id:'dk-ai-position-hint'},instructions),
-      h('form',{onSubmit:submit},
-        stage!=='write'&&h('label',{key:stage},own?'Your position':'AI position',
-          h('input',{ref:field,value:draft,required:true,maxLength:60,'aria-describedby':'dk-ai-position-hint',
-            'data-next':!ready||undefined,onChange:e=>(own?onPosition:onOpposing)(e.target.value)})),
-        h('button',{ref:action,type:'submit',className:'dk-primary',disabled:!ready,'data-next':ready||undefined},label)));
+      h('h2',{id:'dk-ai-positions-title'},'Choose your positions'),
+      h('form',{onSubmit:event=>{event.preventDefault();if(ready)onStart();}},
+        h('label',null,'Your position',h('input',{value:position,maxLength:60,required:true,
+          placeholder:'What do you believe?',onChange:event=>onPosition(event.target.value),'data-next':!position.trim()||undefined})),
+        h('label',null,'AI position',h('input',{value:opposing,maxLength:60,required:true,
+          placeholder:'What should Diff AI argue?',onChange:event=>onOpposing(event.target.value),
+          'data-next':Boolean(position.trim()&&!opposing.trim())||undefined})),
+        h('button',{type:'submit',className:'dk-primary',disabled:!ready,'data-next':ready||undefined},
+          pointCount?'Continue writing points':'Write my 10 points')));
   };
 }
 

@@ -245,10 +245,7 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
   function PointEditor({drafts,submitted,saving,onEdit,onSave,focusOnEntry=false}) {
     const count=submitted.length, total=drafts.length;
     const point=drafts[count];
-    const [future,setFuture]=useState(null);
-    const later=Array.from({length:Math.max(0,total-count-1)},(_,i)=>count+1+i);
-    const laterIndex=later.includes(future)?future:later[0];
-    const previous=useRef(focusOnEntry && count<total ? -1 : count), stage=useRef(null);
+    const previous=useRef(focusOnEntry && count<total ? -1 : count), stage=useRef(null), overview=useRef(null);
     const next=!point?null:!point.title.trim()?'title':!point.description.trim()?'explanation':'submit';
     const number=count+1;
     const instruction=next==='title'?'Give point '+number+' a short title.':
@@ -262,30 +259,34 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
           // On touch entry, show the first field before the reader opens the keyboard.
           const touchEntry=previous.current===-1&&window.matchMedia('(pointer: coarse)').matches;
           if(!touchEntry)target.focus({preventScroll:true});
-          target.scrollIntoView({block:'center'});
+          if(touchEntry&&count===0)overview.current?.scrollIntoView({block:'start'});
+          else target.scrollIntoView({block:'center'});
         }
       }
       previous.current=count;
     },[count,saving]);
-    const fields=(index,prefix)=>h(PointFields,{key:index,prefix,point:drafts[index],next:index===count?next:null,update:(key,value)=>onEdit(index,key,value)});
     return h('div',{className:'dk-friend-points'},
-      h('section',{ref:stage,tabIndex:-1,'aria-current':point?'step':undefined,'aria-labelledby':'dk-current-point'},
-        h('h3',{id:'dk-current-point','aria-live':'polite'},point?'Point '+number+' of '+total:'All '+total+' points submitted'),
-        count===0&&h('p',{className:'dk-point-instruction'},'Start with your most important point. Your submission order sets your personal picks from 1 to 10.'),
-        point&&h('p',{role:'status',className:'dk-point-step'},count>0?'Point '+count+' submitted. ':'',instruction),
-        point&&h('form',{onSubmit:e=>{e.preventDefault();if(next==='submit'&&saving===null)void onSave(count);}},fields(count,'dk-point'),
-          h('button',{type:'submit',className:'dk-primary','data-next':next==='submit'||undefined,disabled:saving!==null||next!=='submit'},
-            saving===count?'Submitting…':'Submit point '+number))),
-      count>0&&h('details',null,h('summary',null,'Review submitted points ('+count+')'),
-        h('ol',null,...submitted.map((saved,index)=>h('li',{key:index},
-          h('strong',null,saved.title),h('p',null,saved.description),
-          /^https?:\/\//i.test(saved.sourceUrl||'')&&h('a',{href:saved.sourceUrl,target:'_blank',rel:'noopener noreferrer'},'Open source'))))),
-      laterIndex!==undefined&&h('details',null,h('summary',null,'Draft a later point'),
-        h('p',null,'Draft ahead anytime. Submit your points in order.'),
-        h('label',{htmlFor:'dk-later-point'},'Point to draft'),
-        h('select',{id:'dk-later-point',value:laterIndex,onChange:e=>setFuture(Number(e.target.value))},
-          ...later.map(index=>h('option',{key:index,value:index},'Point '+(index+1)))),
-        fields(laterIndex,'dk-draft-point')));
+      h('p',{className:'dk-point-instruction'},count+' of '+total+' submitted. Draft ahead anytime. Submit your points in order.'),
+      count===0&&h('p',{className:'dk-point-instruction'},'Start with your most important point. Your submission order sets your personal picks from 1 to 10.'),
+      h('nav',{ref:overview,className:'dk-point-index','aria-label':'Jump to a point'},
+        ...drafts.map((_,index)=>h('button',{key:index,type:'button','aria-current':index===count?'step':undefined,
+          'aria-label':'Go to point '+(index+1)+(index<count?', submitted':index===count?', current point':''),
+          onClick:()=>{const heading=document.getElementById('dk-point-'+(index+1));heading?.focus({preventScroll:true});heading?.scrollIntoView({block:'start'});}},
+          index+1))),
+      ...drafts.map((draft,index)=>{
+        const saved=submitted[index], active=index===count, label='dk-point-'+(index+1);
+        return h('section',{key:index,className:'dk-writing-card',ref:active?stage:undefined,tabIndex:active?-1:undefined,
+          'aria-current':active?'step':undefined,'aria-labelledby':label},
+          h('h3',{id:label,tabIndex:-1},'Point '+(index+1)+' of '+total),
+          saved?h(React.Fragment,null,h('small',null,'Submitted'),h('strong',null,saved.title),h('p',null,saved.description),
+            /^https?:\/\//i.test(saved.sourceUrl||'')&&h('a',{href:saved.sourceUrl,target:'_blank',rel:'noopener noreferrer'},'Open source')):
+          h(active?'form':'div',active?{onSubmit:e=>{e.preventDefault();if(next==='submit'&&saving===null)void onSave(index);}}:null,
+            active&&h('p',{role:'status',className:'dk-point-step'},count?'Point '+count+' submitted. ':'',instruction),
+            h(PointFields,{prefix:label,point:draft,next:active?next:null,update:(key,value)=>onEdit(index,key,value)}),
+            active&&h('button',{type:'submit',className:'dk-primary','data-next':next==='submit'||undefined,
+              disabled:saving!==null||next!=='submit'},saving===count?'Submitting…':'Submit point '+number)));
+      }),
+      !point&&h('h3',{ref:stage,tabIndex:-1,'aria-live':'polite'},'All '+total+' points submitted'));
   }
   function useFriendTopic({sessionId,owner,authLoading,onTopicSelected,messages,participants,proposal}){
     const [connection,setConnection]=useState(null);
