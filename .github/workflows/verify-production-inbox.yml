@@ -1,0 +1,45 @@
+name: Verify production friend notifications
+on:
+  push:
+    branches: ['qa/first-visit-inbox-fe6b489760']
+permissions:
+  contents: read
+jobs:
+  notifications:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - run: python -m pip install --quiet playwright==1.55.0
+      - name: Deliver only to the two isolated test members
+        env:
+          DK_TEST_URL: https://www.differkindly.com
+          PYTHONPATH: maintenance/e2e
+        run: |
+          python -u - <<'PY'
+          from friend_live import *
+          a,b=create_member("Sender"),create_member("Receiver")
+          with sync_playwright() as pw:
+              browser=pw.chromium.launch(executable_path=shutil.which("google-chrome"))
+              host=browser.new_page(viewport={"width":1180,"height":850})
+              mobile=browser.new_page(viewport={"width":390,"height":850})
+              login(host,a)
+              login(mobile,b)
+              send(host,a,b)
+              dialog=await_popup(mobile,a["name"])
+              button(dialog,"Decline").click()
+              expect(host.get_by_role("heading",name=b["name"]+" declined")).to_be_visible(timeout=30000)
+              check("Mobile recipient declined the invitation and the desktop host saw the response")
+              if host.get_by_role("dialog").is_visible():
+                  button(host.get_by_role("dialog"),"Close").click()
+              mobile.close()
+              send(host,a,b)
+              mobile=browser.new_page(viewport={"width":390,"height":850})
+              login(mobile,b)
+              button(await_popup(mobile,a["name"]),"Accept invitation").click()
+              for page in (host,mobile):
+                  expect(topic_to_suggest(page)).to_be_visible(timeout=35000)
+              assert session(host)==session(mobile)
+              check("Invitation survived an offline recipient; both participants landed in the same topic room")
+              browser.close()
+          PY
