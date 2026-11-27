@@ -29,6 +29,7 @@ POINTS = [
 def check_width(page, step):
     sizes=page.evaluate("() => [document.documentElement.scrollWidth,innerWidth]")
     print("LAYOUT",step,*sizes,flush=True)
+    assert sizes[0]<=sizes[1], f"Horizontal overflow on {step}: {sizes}"
 
 def summary(page):
     print("HEADINGS",page.get_by_role("heading").all_text_contents()[:22],flush=True)
@@ -58,11 +59,13 @@ def trip(page):
     entry=page.get_by_role("link",name="Debate with Diff AI",exact=True).first
     expect(entry).to_be_visible()
     entry.click()
-    sign_up(page,"Solo")
+    page.get_by_role("link",name="Sign up",exact=True).click()
+    sign_up(page,"Solo",select_tab=False)
     q=page.get_by_label("Your question")
     expect(q).to_be_visible(timeout=35000)
     check("New account returned to the AI topic entry")
     check_width(page,"topic")
+    expect(page.get_by_text(re.compile("write 10 points"))).to_be_visible()
     q.fill(QUESTION)
     button(page,"Continue with AI").click()
     mine=page.get_by_role("textbox",name="Your position",exact=True)
@@ -107,8 +110,9 @@ def trip(page):
     complete=page.get_by_role("heading",name="Final rankings",exact=True)
     begin=time.monotonic()
     seen=set()
+    ready=page.get_by_role("heading",name="Your debate results are ready",exact=True)
     while time.monotonic()-begin<950:
-        if complete.is_visible(): break
+        if complete.is_visible() or ready.is_visible(): break
         status=" | ".join(" ".join(t.split()) for t in page.get_by_role("status").all_text_contents() if t.strip())
         if status not in seen:
             print("OBSERVED",round(time.monotonic()-begin),status[:360],flush=True)
@@ -119,12 +123,17 @@ def trip(page):
         if any(re.search(r"failed|paused|not finish|review the previous request",a,re.I) for a in alerts):
             raise AssertionError("Processing alert: "+" / ".join(alerts)[:350])
         page.wait_for_timeout(4000)
-    expect(complete).to_be_visible(timeout=5000)
+    if ready.is_visible():
+        button(page,"View ranked arguments").click()
+    expect(complete).to_be_visible(timeout=15000)
     print("RANKS READY after seconds",round(time.monotonic()-begin),flush=True)
     expect(table.get_by_role("listitem")).to_have_count(20)
     print("RESULT HEADINGS",table.get_by_role("heading").all_text_contents(),flush=True)
+    for item in table.locator("details > summary").all():
+        item.click()
     links=table.get_by_role("link").evaluate_all("(ns)=>[...new Set(ns.map(n=>new URL(n.href).hostname))]")
     print("SOURCE DOMAINS",links,flush=True)
+    assert links, "The ranked arguments did not include any source links"
     check_width(page,"rankings")
     a,img=poster(page)
     check_width(page,"poster")
@@ -134,8 +143,7 @@ def trip(page):
     hist=page.get_by_role("region",name="Your posts and debates")
     hist.get_by_role("link",name=QUESTION,exact=True).click()
     expect(private).to_be_visible(timeout=30000)
-    if not page.locator('svg[data-poster-format="impact-v2"]').is_visible():
-        expect(button(page,"View infographic")).to_be_visible(timeout=35000)
+    expect(page.locator('svg[data-poster-format="impact-v2"]').or_(button(page,"View infographic")).first).to_be_visible(timeout=35000)
     b,img2=poster(page)
     assert a==b
     print("POSTER exports same bytes",img==img2,flush=True)

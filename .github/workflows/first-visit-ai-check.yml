@@ -1,17 +1,25 @@
-name: First-visit Diff AI peace debate
+name: Build tested first-visit solo flow
 on:
   push:
     branches: ['qa/diff-ai-first-visit-819b95c48']
 permissions:
-  contents: read
+  contents: write
 jobs:
-  journey:
+  validate:
     runs-on: ubuntu-latest
     timeout-minutes: 22
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-      - run: python -m pip install --quiet playwright==1.55.0
-      - name: Test a private debate on the public site
-        env:
-          DK_TEST_URL: https://www.differkindly.com
-        run: python -u maintenance/e2e/solo_first_visit.py
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - run: node maintenance/build.mjs > /dev/null
+      - run: node --test maintenance/tests/*.test.cjs > "$RUNNER_TEMP/test.log" || (tail -100 "$RUNNER_TEMP/test.log"; exit 1)
+      - run: node maintenance/build.mjs --check > /dev/null
+      - name: Keep validated build on this candidate
+        run: |
+          git add assets maintenance/build-manifest.json '*.html'
+          if ! git diff --cached --quiet; then
+            git -c user.name=github-actions -c user.email=41898282+github-actions[bot]@users.noreply.github.com commit -m 'Build first-visit Diff AI improvements'
+            git push origin HEAD:refs/heads/qa/diff-ai-first-visit-819b95c48
+          fi

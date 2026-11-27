@@ -1,0 +1,15 @@
+name: Live first-visit Diff AI debate
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  first-visit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - run: python -m pip install --quiet playwright==1.55.0
+      - name: Complete a private debate as a new member
+        env:
+          DK_TEST_URL: https://www.differkindly.com
+        run: python -u maintenance/e2e/solo_first_visit.py
