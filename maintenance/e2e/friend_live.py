@@ -6,10 +6,7 @@ import re
 import secrets
 import shutil
 import struct
-import threading
 import time
-from functools import partial
-from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from contextlib import ExitStack
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -19,12 +16,10 @@ from uuid import UUID
 from playwright.sync_api import expect, sync_playwright
 from friend_topic_recovery import check_friend_topic_recovery
 
-ROOT = Path(__file__).resolve().parents[2]
-APP = os.environ["DK_TEST_URL"].rstrip("/")
-API = "https://bqhyropctavxjdnogmor.supabase.co"
-build = json.loads((ROOT / "maintenance/build-manifest.json").read_text())
-runtime = (ROOT / build["generatedAsset"]).read_text()
-public_key = re.search(r'sb_publishable_[A-Za-z0-9_-]+', runtime).group()
+from isolated_target import APP, target, verify_preview
+
+API, public_key = target()
+verify_preview()
 run = secrets.token_hex(5)
 SCREENSHOTS = os.getenv("DK_TEST_SCREENSHOTS")
 print("QA cohort dk-invite-e2e-" + run, flush=True)
@@ -305,17 +300,6 @@ def check_positions_and_arguments(sender, receiver, room, topic):
 if __name__ == "__main__":
     expect.set_options(timeout=15000)
     with ExitStack() as stack:
-        if os.getenv("DK_TEST_SERVE_CHECKOUT"):
-            # Match the published Pages base path, including static deep-link shells.
-            import tempfile
-            basedir = Path(stack.enter_context(tempfile.TemporaryDirectory()))
-            (basedir / "counter-argument-v2").symlink_to(ROOT, target_is_directory=True)
-            server = ThreadingHTTPServer(("127.0.0.1",8172), partial(SimpleHTTPRequestHandler,directory=str(basedir)))
-            threading.Thread(target=server.serve_forever,daemon=True).start()
-            stack.callback(server.server_close)
-            stack.callback(server.shutdown)
-        with urlopen(APP + "/?qa_build=" + run, timeout=20) as response:
-            assert build["generatedAsset"] in response.read().decode(), "The test URL is serving a different build"
         a, b = create_member("Sender"), create_member("Receiver")
         assert a["id"] != b["id"]
         pw = stack.enter_context(sync_playwright())

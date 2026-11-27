@@ -140,16 +140,14 @@ const glyphs = {
 
 export function createAiPositions(React) {
   const h=React.createElement;
-  return function AiPositions({position,opposing,pointCount,onPosition,onOpposing,onStart}) {
-    const ready=Boolean(position.trim()&&opposing.trim());
+  return function AiPositions({position,pointCount,onPosition,onStart}) {
+    const ready=Boolean(position.trim());
     return h('section',{className:'dk-panel dk-ai-positions','aria-labelledby':'dk-ai-positions-title'},
-      h('h2',{id:'dk-ai-positions-title'},'Choose your positions'),
+      h('h2',{id:'dk-ai-positions-title'},'Choose your position'),
       h('form',{onSubmit:event=>{event.preventDefault();if(ready)onStart();}},
         h('label',null,'Your position',h('input',{value:position,maxLength:60,required:true,
           placeholder:'What do you believe?',onChange:event=>onPosition(event.target.value),'data-next':!position.trim()||undefined})),
-        h('label',null,'AI position',h('input',{value:opposing,maxLength:60,required:true,
-          placeholder:'What should Diff AI argue?',onChange:event=>onOpposing(event.target.value),
-          'data-next':Boolean(position.trim()&&!opposing.trim())||undefined})),
+        h('p',null,'Diff AI will make the opposing case after you submit your ten points.'),
         h('button',{type:'submit',className:'dk-primary',disabled:!ready,'data-next':ready||undefined},
           pointCount?'Continue writing points':'Write my 10 points')));
   };
@@ -418,12 +416,12 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const loc=useLocation(),{user,loading}=useAuth(),navigate=useNavigate(),[question,set]=useState('');
     if(new URLSearchParams(loc.search).get('mode')!=='ai')return h(OriginalTopic);
     return h('div',{className:'dk-main dk-topic'},h('div',{className:'dk-kicker'},'AI exploration'),h('h1',null,'What would you like to explore?'),
-      h('p',null,'Choose your position and the one you want Diff AI to argue. You’ll write 10 points. Diff AI researches 10 counterarguments, then ranks all 20 by their impact on your question.'),
+      h('p',null,'Choose your position. You’ll write 10 points. Diff AI researches 10 counterarguments, then ranks all 20 by their impact on your question.'),
       h('p',null,'Research takes a few minutes. Once it starts, you can leave and reopen the debate from your profile.'),
       h('p',null,'Completed debates are public by default. You can make a debate with Diff AI private at any time.'),
       h('form',{className:'dk-form dk-panel',onSubmit:e=>{e.preventDefault();const value=question.trim();if(value){const next=topicRoute(value);navigate(user?next:login(next))}}},
         h('label',null,'Your question',h('textarea',{autoFocus:true,required:true,maxLength:320,value:question,'data-next':!question.trim()||undefined,onChange:e=>set(e.target.value),placeholder:'Should every team use the same operating system?'})),
-        h('button',{className:'dk-primary',disabled:loading||!question.trim(),'data-next':Boolean(!loading&&question.trim())||undefined},user?'Continue to positions':'Sign in to continue')),
+        h('button',{className:'dk-primary',disabled:loading||!question.trim(),'data-next':Boolean(!loading&&question.trim())||undefined},user?'Continue to your position':'Sign in to continue')),
       link(feed,'Pick a question from the feed','dk-secondary'));
   }
   function Welcome() {
@@ -692,8 +690,9 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       h(React.Fragment,null,h('ul',{className:'dk-replies'},...rows.map(c=>h('li',{key:c.id,id:'dk-comment-'+c.id,tabIndex:-1},h('strong',null,c.author),h('p',entry.private?null:{'data-dk-view':'comment','data-dk-item':c.id},c.body),h('div',{className:'dk-actions'},h(CommentLike,{id:c.id,kind:'comment',states}),h(Report,{kind:'comment',target:c.id}))))),
         q.data?.length>limit&&h('button',{className:'dk-small',onClick:()=>setLimit(limit+30)},'Show older comments')));
   }
-  const PointReader=createPointReader({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,posterDebateRoute,MemberComments,status});
-  const {JoinLink,InviteTools}=createFriendInvitations({React,db,useAuth,useNavigate,useQuery,link,login,status});
+  const {JoinLink,InviteTools,PrivatePoint}=createFriendInvitations({React,db,useAuth,useNavigate,useQuery,link,login,status,checkContent});
+  const PointReader=createPointReader({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,posterDebateRoute,MemberComments,InviteTools,status});
+
   function useVisibility(reference) {
     const {user}=useAuth();
     const q=useQuery(user&&reference?user.id+':visibility:'+reference:null,()=>db.rpc('dk_result_visibility',{p_reference:reference}));
@@ -799,10 +798,11 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         entry.overview&&h('p',null,entry.overview),
         entry.sources?.length>0&&h('ul',null,...entry.sources.map(({label,url})=>h('li',{key:url},h('a',{className:'dk-link',href:url},label)))),
         row.published&&link(user?friendTopic:login(friendTopic),'Debate this with a friend','dk-primary')),
+      h(PosterActions,{entry,onComment:openComments}),
       h(PuzzlePoster,{src:artUrl,alt:row.title,markup:art,points:points.data||[]}),
       h('div',{className:'dk-actions'},h('button',{className:'dk-primary',onClick:async()=>{try{await downloadStoredPoster(artUrl,'Differ-Kindly-impact.png');setExportError('');}catch{setExportError('PNG download failed. Try the SVG download.');}}},'Download PNG'),
         h('a',{className:'dk-secondary',href:artUrl,download:'Differ-Kindly-impact.svg'},'Download SVG'),exportError&&status(exportError,true)),
-      h(PosterActions,{entry,onComment:openComments}),h(Report,{kind:'poster',target:entry.id}),user&&h(VisibilityControl,{row,refresh:()=>{q.refresh();metrics.refresh()}}),
+      h(Report,{kind:'poster',target:entry.id}),user&&h(VisibilityControl,{row,refresh:()=>{q.refresh();metrics.refresh()}}),
       h('section',null,h('h2',{id:'dk-example-points',tabIndex:-1},'Explore the points'),h(PointReader,{entry,provided:points,impactRows})),
       h('section',{className:'dk-panel dk-example-discussion',ref:comments,tabIndex:-1},h('h2',null,'Comments'),h(MemberComments,{key:user?.id||'guest',entry}),
         h(BotDiscussion,{entry})));
@@ -881,6 +881,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
         h('header',null,h('small',null,'Differ Kindly',h(PostedDate,{slug:entry.id})),h('h1',{'data-dk-view':'poster','data-dk-item':entry.id},entry.question),h('p',null,entry.overview),
           h(PositionProfiles,{entry,positions:liveCounts?.positions}),
           h('button',{type:'button',className:'dk-secondary dk-read-points',onClick:readPoints},'Read all 20 points')),
+        h(PosterActions,{entry,onComment:openComments}),
         entry.research&&h('section',{className:'dk-panel','aria-labelledby':'dk-research-summary'},
           h('h2',{id:'dk-research-summary'},'Research summary'),
           ...entry.research.map(section=>h('section',{key:section.heading,className:'dk-sample-research'},
@@ -893,7 +894,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
           h('figcaption',{className:'dk-actions'},h('a',{className:'dk-secondary',href:poster,target:'_blank',rel:'noopener'},'Open full-size poster'),
             h('button',{className:'dk-secondary',type:'button',disabled:exporting||(hasAudienceExport&&includeAudience&&!audience.url),onClick:download},exporting?'Preparing PNG…':'Download PNG'),
             link(user?friendTopic:login(friendTopic),'Debate this with a friend','dk-primary'),exportError&&status(exportError,true))),
-        h(PosterActions,{entry,onComment:openComments}),h(Report,{kind:'poster',target:entry.id}),
+        h(Report,{kind:'poster',target:entry.id}),
         h('section',{'aria-labelledby':'dk-example-points'},
           h('h2',{id:'dk-example-points',ref:pointsHeading,tabIndex:-1},'All 20 debate points'),
           h(PointReader,{entry,impactRows,fallback:h('div',{className:'dk-example-positions'},...entry.sideTitles.map((title,side)=>
@@ -987,7 +988,8 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const search=normalizeDebateSearch(loc.search);
     if(search!==loc.search)return h(ReplaceDebateUrl,{location:loc,search});
     const commenter=params.get('commenter');
-    if(params.has('join'))return h(JoinLink);
+    if(params.has('join'))return h(JoinLink,{key:params.get('join'),point:params.get('join')==='point'});
+    if(params.has('privatePoint'))return h(PrivatePoint,{key:params.get('privatePoint'),id:params.get('privatePoint')});
     const member=params.get('member');
     if(member && /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(member))return h(PublicMemberProfile,{id:member,name:loc.state?.publicName});
     if(commenter)return h(CommenterPage,{id:commenter});

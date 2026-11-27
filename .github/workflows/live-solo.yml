@@ -11,5 +11,6 @@ jobs:
       - run: python -m pip install --quiet playwright==1.55.0
       - name: Complete a private debate as a new member
         env:
-          DK_TEST_URL: https://www.differkindly.com
-        run: python -u maintenance/e2e/solo_first_visit.py
+          DK_TEST_PROJECT_REF: ${{ vars.DK_TEST_PROJECT_REF }}
+          DK_TEST_PUBLISHABLE_KEY: ${{ vars.DK_TEST_PUBLISHABLE_KEY }}
+        run: python -u maintenance/e2e/isolated_target.py solo_first_visit

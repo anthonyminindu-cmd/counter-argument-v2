@@ -19,14 +19,14 @@ function environment(store, readOwnership) {
   return {api,context,calls};
 }
 
-function hookHarness(env) {
+function hookHarness(env, hook=env.api.v2UseSoloDraft) {
   const slots=[];let cursor=0,effects=[],dirty=false,input,last;
   env.context.p={
     useState(initial){const index=cursor++;if(!slots[index])slots[index]={value:typeof initial==='function'?initial():initial};return [slots[index].value,value=>{slots[index].value=typeof value==='function'?value(slots[index].value):value;dirty=true}]},
     useRef(initial){const index=cursor++;if(!slots[index])slots[index]={current:initial};return slots[index]},
     useEffect(callback,deps){const index=cursor++;const old=slots[index];if(!old||deps.some((dep,i)=>!Object.is(dep,old.deps[i]))){effects.push(()=>{old?.cleanup?.();slots[index]={deps,cleanup:callback()}})}},
   };
-  function render(value){input=value;cursor=0;dirty=false;last=env.api.v2UseSoloDraft(value);return last}
+  function render(value){input=value;cursor=0;dirty=false;last=hook(value);return last}
   function runEffects(){const current=effects;effects=[];for(const effect of current)effect()}
   async function flush(){for(let i=0;i<15;i++){runEffects();await new Promise(resolve=>setImmediate(resolve));if(dirty)render(input);else if(!effects.length)break;}return last}
   return {render,runEffects,flush,get value(){return last}};
@@ -132,4 +132,36 @@ test('older solo drafts keep every submitted argument when their confirmed AI st
   assert.equal(recovered.positionSubmitted,true);
   assert.equal(recovered.submitted.length,10);
   assert.equal(recovered.phase,'arguments');
+});
+
+test('a failed submit retains its retry after a successful poll that finds no workflow',async()=>{
+  const env=environment(storage(),()=>({data:null,error:null}));
+  const calls=[];
+  let poll;
+  Object.assign(env.context,{
+    setInterval:callback=>{poll=callback;return 1},
+    clearInterval:()=>{},
+    cg:()=>({busy:false,error:null}),
+  });
+  env.context.$.functions={invoke:async(name,{body})=>{
+    calls.push(body);
+    return {error:{message:'Temporarily unavailable'}};
+  }};
+  const start=output.indexOf('function $D(');
+  const end=output.indexOf('function UD(',start);
+  const useWorkflow=vm.runInContext('('+output.slice(start,end)+')',env.context);
+  const harness=hookHarness(env,useWorkflow);
+  harness.render({debateId:debate,owner:ownerA,enabled:true,onStart(){},
+    positions:['Expand hours','The opposing case'],position:'for'});
+  const workflow=await harness.flush(), points=makeDraft(ownerA,10).submitted;
+  await Promise.all([workflow.run(points),workflow.run(points)]);
+  assert.equal(calls.length,1);
+  await poll();
+  const failed=await harness.flush();
+  assert.equal(failed.error,'Temporarily unavailable');
+  assert.equal(failed.readError,'');
+  await failed.run(points,[],true);
+  assert.equal(calls.length,2);
+  assert.deepEqual(calls[1],calls[0]);
+  assert.equal(calls[1].arguments.length,10);
 });

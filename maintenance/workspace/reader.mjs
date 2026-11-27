@@ -82,7 +82,7 @@ export function pointSnapshot(rows,positions=[]) {
   return points.every(p=>typeof p.id==='string'&&p.title&&Number.isInteger(p.rank))?points:null;
 }
 
-export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,posterDebateRoute,MemberComments,status}){
+export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQuery,link,login,posterDebateRoute,MemberComments,InviteTools,status}){
   const h=React.createElement;
   function Point({entry,point,open,onToggle,refresh,showCounts,intent,loading}){
     const {user}=useAuth(),navigate=useNavigate(),loc=useLocation();
@@ -101,10 +101,12 @@ export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQ
     }
     return h('li',{className:'dk-reader-point',id:'point-'+point.id},
       h('button',{className:'dk-point-title',type:'button','aria-expanded':open,onClick:onToggle},
-        h('span',{className:'dk-point-rank'},'#'+point.rank),h('span',null,h('strong',null,point.title),
+        h('span',null,h('strong',null,point.title),
+          h('small',{className:'dk-point-impact'},point.impact==null?'Rank #'+point.rank:
+            point.pickLabel+' '+point.pick+' · Differ Rank #'+point.rank+' of 20'),
           point.impact!=null&&h('small',{className:'dk-point-impact'},'Differ Impact '+point.impact+'/100')),h('span',{'aria-hidden':true},open?'−':'+')),
       open&&h('div',{className:'dk-point-body'},h('p',null,point.detail),
-        point.impact!=null&&h('p',null,(point.pickLabel+' ')+point.pick+' · Differ Rank #'+point.rank+' of 20'+(point.confidence?' · '+point.confidence+' confidence':'')),
+        point.confidence&&h('p',null,point.confidence+' confidence'),
         point.explanation&&h('p',null,point.explanation),
         point.sources?.length>0&&h('div',null,h('h4',null,'Sources for this point'),h('ul',null,...point.sources.map(url=>h('li',{key:url},h('a',{href:url,rel:'noreferrer',target:'_blank'},sourceHost(url)||url))))),
         point.counterpoint&&h('div',null,h('h4',null,'Counterargument'),h('p',null,point.counterpoint)),
@@ -116,9 +118,10 @@ export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQ
         })),
         notice&&status(notice),
         showCounts&&h('small',null,point.respondents+' '+(point.respondents===1?'reader has':'readers have')+' responded'),
-        h('div',{className:'dk-actions'},h('a',{className:'dk-link',href:location.pathname+route.slice(route.indexOf('?')),onClick:async e=>{
+        !entry.private&&h('div',{className:'dk-actions'},h('a',{className:'dk-link',href:location.pathname+route.slice(route.indexOf('?')),onClick:async e=>{
           if(navigator.clipboard){e.preventDefault();try{await navigator.clipboard.writeText(e.currentTarget.href);setCopied(true)}catch{navigate(route)}}
         }},copied?'Point link copied':'Share this point')),
+        user&&h('details',null,h('summary',null,'Ask a friend about this point'),h(InviteTools,{slug:entry.id,point:point.id})),
         error&&status(error,true),h('h4',null,'Discuss this point'),h(MemberComments,{key:(user?.id||'guest')+point.id,entry,point:point.id})));
   }
   return function PointReader({entry,fallback,provided,impactRows}){
@@ -141,8 +144,6 @@ export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQ
     if(!q.data)return status('Loading debate points…');
     if(!q.data.length)return fallback||null;
     return h('div',null,
-      rows.some(p=>p.impact!=null)&&h('details',null,h('summary',null,'How Differ Rank works'),
-        h('p',null,'AI research estimates each argument’s impact on the issue. Differ Impact combines magnitude (50%), reach (30%) and duration (20%) into a score out of 100. The highest score earns Differ Rank #1. Exact ties go to the earlier pick, then the permanent argument ID.')),
       h('label',{className:'dk-audience-toggle'},h('input',{type:'checkbox',checked:counts,onChange:e=>setCounts(e.target.checked)}),'Show audience responses'),
       h('div',{className:'dk-example-positions'},...[...new Set(rows.map(p=>p.side))].map(side=>{
         const picks=rows.filter(p=>p.side===side).sort((a,b)=>(a.pick??a.rank)-(b.pick??b.rank));
@@ -152,7 +153,9 @@ export function createPointReader({React,db,useAuth,useLocation,useNavigate,useQ
           h('ol',{className:'dk-points-list'},...picks.map(point=>h(Point,{key:point.id,entry,point,open:selected===point.id,
             onToggle:()=>navigate(pointDestination(loc,selected===point.id?null:point.id),{replace:true,state:loc.state}),
             intent:selected===point.id?reactionIntent(loc.pathname+loc.search):null,refresh:q.refresh,loading:q.loading,showCounts:counts}))));
-      })));
+      })),
+      rows.some(p=>p.impact!=null)&&h('details',null,h('summary',null,'How Differ Rank works'),
+        h('p',null,'AI research estimates each argument’s impact on the issue. Differ Impact combines magnitude (50%), reach (30%) and duration (20%) into a score out of 100. The highest score earns Differ Rank #1. Exact ties go to the earlier pick, then the permanent argument ID.')));
 
   };
 }
