@@ -1,45 +1,44 @@
-name: Verify production friend notifications
+name: Verify published first-time friend debate
 on:
   push:
     branches: ['qa/first-visit-inbox-fe6b489760']
 permissions:
   contents: read
 jobs:
-  notifications:
+  first-visit:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 22
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: '819b95c48f8068b3383a0971821cff26529c3e01'
       - run: python -m pip install --quiet playwright==1.55.0
-      - name: Deliver only to the two isolated test members
+      - name: Verify public entry pages have the new build
         env:
-          DK_TEST_URL: https://www.differkindly.com
-          PYTHONPATH: maintenance/e2e
+          ASSET: 'assets/index-v2-7b06ba924988f71f.js'
+          RELEASE: '819b95c48f8068b3383a0971821cff26529c3e01'
         run: |
           python -u - <<'PY'
-          from friend_live import *
-          a,b=create_member("Sender"),create_member("Receiver")
-          with sync_playwright() as pw:
-              browser=pw.chromium.launch(executable_path=shutil.which("google-chrome"))
-              host=browser.new_page(viewport={"width":1180,"height":850})
-              mobile=browser.new_page(viewport={"width":390,"height":850})
-              login(host,a)
-              login(mobile,b)
-              send(host,a,b)
-              dialog=await_popup(mobile,a["name"])
-              button(dialog,"Decline").click()
-              expect(host.get_by_role("heading",name=b["name"]+" declined")).to_be_visible(timeout=30000)
-              check("Mobile recipient declined the invitation and the desktop host saw the response")
-              if host.get_by_role("dialog").is_visible():
-                  button(host.get_by_role("dialog"),"Close").click()
-              mobile.close()
-              send(host,a,b)
-              mobile=browser.new_page(viewport={"width":390,"height":850})
-              login(mobile,b)
-              button(await_popup(mobile,a["name"]),"Accept invitation").click()
-              for page in (host,mobile):
-                  expect(topic_to_suggest(page)).to_be_visible(timeout=35000)
-              assert session(host)==session(mobile)
-              check("Invitation survived an offline recipient; both participants landed in the same topic room")
-              browser.close()
+          import os,time
+          from urllib.request import Request,urlopen
+          from urllib.error import URLError
+          root="https://www.differkindly.com"
+          for path in ("/","/debate/start/","/debate/active/"):
+              for attempt in range(45):
+                  try:
+                      req=Request(root+path+"?release="+os.environ["RELEASE"],headers={"Cache-Control":"no-cache"})
+                      with urlopen(req,timeout=10) as res:
+                          if os.environ["ASSET"].split("/")[-1] in res.read().decode():
+                              print("PASS published release at",path)
+                              break
+                  except URLError:
+                      pass
+                  time.sleep(4)
+              else:
+                  raise RuntimeError("Release not yet visible at "+path)
           PY
+      - name: Complete a private debate from the public homepage
+        env:
+          DK_TEST_URL: https://www.differkindly.com
+          DK_TEST_RANKING: '1'
+        run: python -u maintenance/e2e/friend_first_visit.py
