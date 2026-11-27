@@ -2,8 +2,8 @@
   "sourceCommit": "3ab30f64805837f07fa8e2892e07f89fb62a768a",
   "sourceAsset": "assets/index-CQGBJk00.js",
   "baselineSha256": "3192d0f87f6fd517945a3cc94ed5b7216ca5d2329b4b2eb550cf99baa5032022",
-  "generatedSha256": "fb1be954f66a1914abe13eeffdb49edc921f18983bd9d466c36d190ce16d11d3",
-  "generatedAsset": "assets/index-v2-fb1be954f66a1914.js",
+  "generatedSha256": "b65bd472a132bd85a88f2271aef83be6f3000a71558f83a9da49c364714bd120",
+  "generatedAsset": "assets/index-v2-b65bd472a132bd85.js",
   "patchIds": [
     "solo-draft-recovery-helpers",
     "create-ai-draft-during-preparation",
@@ -348,6 +348,10 @@
     "active-debate-with-diff-ai",
     "legacy-participant-diff-ai",
     "keep-chat-composer-across-room-updates",
-    "name-the-completed-solo-debate-and-its-ranked-view"
+    "name-the-completed-solo-debate-and-its-ranked-view",
+    "guide-each-point-in-both-debate-modes",
+    "show-solo-stance-above-guided-editor",
+    "guide-ai-debaters-through-position-setup",
+    "focus-ai-point-when-entering-writing"
   ]
 }

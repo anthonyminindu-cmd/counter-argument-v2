@@ -1,0 +1,12 @@
+[
+  {
+    "id": "guide-ai-debaters-through-position-setup",
+    "find": "h===\"preparation\"&&i.jsx(\"div\",{className:\"space-y-4\",children:i.jsxs",
+    "replace": "h===\"preparation\"&&i.jsx(\"div\",{className:\"space-y-4\",children:!se?i.jsx(DK.AiPositions,{position:I,opposing:P,submitted:Oo,confirmed:_r,pointCount:S.length,onPosition:k,onOpposing:value=>{A(value);xg(false);en(false)},onSubmit:Dl,onConfirm:()=>xg(true),onStart:Md}):i.jsxs"
+  },
+  {
+    "id": "focus-ai-point-when-entering-writing",
+    "find": "return i.jsx(DK.PointEditor,{drafts:l",
+    "replace": "return i.jsx(DK.PointEditor,{focusOnEntry:!r,drafts:l"
+  }
+]

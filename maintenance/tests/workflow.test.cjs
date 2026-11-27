@@ -4,8 +4,13 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const {pathToFileURL}=require('node:url');
-let bundle,css,prep,chatExpr;
+let bundle,css,prep,chatExpr,renderAiPositions;
 before(async()=>{
+  const {createAiPositions}=await import('../workspace/app.mjs');
+  renderAiPositions=createAiPositions({
+    createElement:(type,props,...children)=>jsx(type,{...props,children}),
+    useRef:()=>({current:null}),useEffect:noop,
+  });
   const {compile}=await import(pathToFileURL(path.resolve(__dirname,'../build.mjs')).href);
   bundle=process.env.V2_TEST_BUNDLE?fs.readFileSync(process.env.V2_TEST_BUNDLE,'utf8'):compile().output;
   css=fs.readFileSync(process.env.V2_TEST_CSS||path.resolve(__dirname,'../../assets/index-BG6mjP5E.css'),'utf8');
@@ -39,17 +44,20 @@ function slice(start,end) {
   return bundle.slice(a+start.length,b);
 }
 function renderPreparation(friend, overrides={}) {
-  const c=context(prep,{h:'preparation',se:friend,o:friend?'session-1':null,I:'A submitted position',u:'A custom debate',Oo:false,Td:'Other position',P:'AI opposing position',Le:{name:'Friend'},$l:false,_r:false,or:false,qr:false,Dl:noop,Md:noop,...overrides});
-  return c.run();
+  const c=context(prep,{h:'preparation',se:friend,o:friend?'session-1':null,I:'A submitted position',u:'A custom debate',Oo:false,Td:'Other position',P:'AI opposing position',Le:{name:'Friend'},$l:false,_r:false,or:false,qr:false,Dl:noop,Md:noop,S:[],k:noop,DK:{AiPositions:'AiPositions'},...overrides});
+  const tree=c.run();
+  if(!friend)tree.props.children=renderAiPositions(tree.props.children.props);
+  return tree;
 }
 
 test('solo preparation renders one full-width form without dead chat or false partner waiting',()=>{
   const tree=renderPreparation(false),nodes=walk(tree);
   assert.equal(nodes.filter(n=>n.type==='kx').length,0);
-  assert.equal(nodes[1].props.className,'space-y-4');
+  assert.equal(nodes[1].props.className,'dk-panel dk-ai-positions');
   assert.ok(!nodes.some(n=>String(n.props.className||'').includes('w-1/2')));
   assert.ok(!text(tree).includes('Reviewing their position'));
-  assert.ok(text(tree).includes('AI Position'));
+  assert.ok(text(tree).includes('Submit my position'));
+  assert.ok(!text(tree).includes('Confirm AI position'));
 });
 test('friend preparation keeps working session chat and uses mobile-first grid',()=>{
   const tree=renderPreparation(true),nodes=walk(tree),chat=nodes.find(n=>n.type==='kx');
@@ -104,7 +112,8 @@ test('failed chat reads and writes restore the outgoing draft without overwritin
 });
 test('argument entry instructions do not confuse sequential input with research ranking',()=>{
   assert.ok(!bundle.includes('preserve your ranking order'));
-  assert.ok(bundle.includes('Submit earlier arguments first. Research will assess all ten together.'));
+  assert.ok(bundle.includes('Your submission order sets your personal picks from 1 to 10.'));
+  assert.ok(bundle.includes('Draft ahead anytime. Submit your points in order.'));
 });
 test('AI setup exposes one accurate research opponent and a working topic next step',()=>{
   const expression=slice('nD=',';function rD');
@@ -127,17 +136,19 @@ test('editing a confirmed solo stance requires confirmation of the new text befo
     Ol:async()=>{},Ke:noop,
   };
   const nodes=()=>walk(renderPreparation(false,{...state,...actions}));
-  const aiField=()=>nodes().find(n=>n.props['aria-label']==='AI position');
-  assert.ok(nodes().some(n=>n.props['aria-label']==='Your position'));
+  const findButton=label=>nodes().find(n=>n.type==='button'&&text(n)===label);
+  const aiField=()=>nodes().find(n=>n.type==='input');
+  assert.ok(findButton('Write point 1'));
+  findButton('Edit AI position').props.onClick();
   assert.equal(aiField().props.value,'Original opposing stance');
   aiField().props.onChange({target:{value:''}});
   assert.deepEqual([state.P,state._r,state.or],['',false,false]);
-  assert.equal(nodes().find(n=>n.type==='G'&&text(n)==='Complete Position Setup First').props.disabled,true);
+  assert.equal(findButton('Confirm AI position').props.disabled,true);
+  assert.equal(findButton('Write point 1'),undefined);
   aiField().props.onChange({target:{value:'Updated opposing stance'}});
-  const confirm=nodes().find(n=>n.type==='G'&&text(n)==='Set AI Position');
-  assert.equal(confirm.props.disabled,false);
-  await confirm.props.onClick();
-  assert.equal(nodes().find(n=>n.type==='G'&&text(n)==='Ready for Counter Arguments').props.disabled,false);
+  assert.equal(findButton('Confirm AI position').props.disabled,false);
+  nodes().find(n=>n.type==='form').props.onSubmit({preventDefault:noop});
+  assert.ok(findButton('Write point 1'));
   const friendField=walk(renderPreparation(true)).find(n=>n.props['aria-label']==='Friend position');
   assert.equal(friendField.props.disabled,true);
 });

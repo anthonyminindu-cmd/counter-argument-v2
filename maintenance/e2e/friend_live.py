@@ -203,6 +203,14 @@ def check_positions_and_arguments(sender, receiver, room, topic):
     expect(argument(receiver, 1).get_by_role("heading", name="Point 1 of 10", exact=True)).to_be_in_viewport()
     assert receiver.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
     expect(receiver.locator(".dk-friend-points form")).to_have_count(1)
+    for page in pages:
+        card = argument(page, 1)
+        title = card.get_by_label("Title", exact=True)
+        expect(card).to_have_attribute("aria-current", "step")
+        expect(card).to_have_css("border-left-width", "5px")
+        expect(title).not_to_be_focused()
+        expect(title).to_have_attribute("data-next", "true")
+        expect(title).not_to_have_css("box-shadow", "none")
     capture(receiver, "09-mobile-writing-points")
     capture(sender, "09-desktop-write-points")
     subjects = (
@@ -275,6 +283,11 @@ def check_positions_and_arguments(sender, receiver, room, topic):
         for page in pages:
             heading = f"Point {index+1} of 10" if index < 10 else "All 10 points submitted"
             expect(page.get_by_role("heading", name=heading, exact=True)).to_be_visible()
+            if index < 10:
+                next_card = argument(page, index + 1)
+                expect(next_card.get_by_role("status")).to_contain_text(f"Point {index} submitted.")
+                expect(next_card.locator("[data-next]")).to_be_focused()
+
         if index == 2:
             resume_from_table(receiver, room, topic)
             expect(argument(receiver, 3)).to_be_visible()
