@@ -1,0 +1,7 @@
+[
+  {
+    "id": "name-the-completed-solo-debate-and-its-ranked-view",
+    "find": "return n&&(!d||u)?i.jsxs(\"section\",{className:\"space-y-4\",children:[i.jsxs(G,{variant:\"outline\",onClick:s,children:[i.jsx(Ts,{\"aria-hidden\":\"true\"}),\"Back to results\"]})",
+    "replace": "return n&&(!d||u)?i.jsxs(\"section\",{className:\"space-y-4\",children:[h&&i.jsx(\"h2\",{className:\"text-2xl font-bold\",children:\"Your debate results are ready\"}),i.jsxs(G,{variant:\"outline\",onClick:s,children:[i.jsx(Ts,{\"aria-hidden\":\"true\"}),h?\"View ranked arguments\":\"Back to results\"]})"
+  }
+]

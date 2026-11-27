@@ -191,11 +191,12 @@ html{scroll-padding-top:198px}
 }
 .dk-friend-points { display:grid; gap:14px; }
 /* The active form spans the title, explanation, optional source and submit action. */
-.dk-friend-points > section:has(> form) {
+.dk-friend-points > [aria-current="step"] {
   min-width:0;
   padding:clamp(14px,3vw,24px);
   border:2px solid var(--dk-mint);
   border-inline-start-width:5px;
+  box-shadow:0 0 10px color-mix(in srgb,var(--dk-mint) 30%,transparent);
   border-radius:12px;
   background:var(--dk-soft);
   background:color-mix(in srgb,var(--dk-mint) 16%,var(--dk-panel));
@@ -590,7 +591,10 @@ html{scroll-padding-block:1rem}
 .dk-name-input { width:100%; min-height:2.5rem; padding:.45rem .7rem; border:1px solid var(--dk-line); border-radius:.4rem; color:var(--dk-text); background:var(--dk-panel); }
 
 .dk-point-step { margin-bottom:12px; font-weight:650; color:var(--dk-text); }
-.dk-friend-points [data-next] { border:2px solid var(--dk-mint); }
+.dk-friend-points [data-next] {
+  border:2px solid var(--dk-mint);
+  box-shadow:0 0 0 2px var(--dk-bg),0 0 0 4px var(--dk-mint);
+}
 .dk-friend-points :is(input,textarea,button):focus-visible { outline:3px solid var(--dk-text); outline-offset:2px; }
 .dk-friend-points .dk-source-option { padding:0; border:0; }
 .dk-source-option summary { color:var(--dk-sub); }
@@ -604,3 +608,7 @@ html{scroll-padding-block:1rem}
 .dk-stance-recap { overflow-wrap:anywhere; border-inline-start:3px solid var(--dk-line); padding-inline-start:12px; }
 .dk-ai-positions [data-next],.dk-topic [data-next] { outline:2px solid var(--dk-mint); outline-offset:2px; }
 .dk-ai-positions :focus-visible,.dk-topic :focus-visible { outline:3px solid var(--dk-text); outline-offset:3px; }
+/* In a debate, passive status toasts must let clicks reach the composer.
+   Close buttons and other toast actions keep their normal pointer targets. */
+body:has(.dk-active-header) [data-swipe-direction][data-radix-collection-item]{pointer-events:none}
+body:has(.dk-active-header) [data-swipe-direction][data-radix-collection-item] :is(button,a){pointer-events:auto}

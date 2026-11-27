@@ -215,7 +215,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   const icon=name=>h(Icon,{name});
   const {PhotoProvider,PhotoEditor,HeaderPortrait,Portrait}=createProfilePhotos({React,db,useQuery,icon});
   const {SocialProvider,HeaderStats,SocialActivity,useSocial}=createMemberHeader({React,db,Link,useQuery,icon});
-  const {InboxProvider,Notifications,FriendSetup,PointEditor,useFriendTopic,useFriendPreparationSync}=createFriendExperience({React,db,Link,useLocation,useNavigate,Directory,icon,SocialActivity,useSocial,ExternalInvites:()=>h(InviteTools)});
+  const {InboxProvider,Notifications,FriendSetup,PointEditor,useFriendChatDraft,useFriendTopic,useFriendPreparationSync}=createFriendExperience({React,db,Link,useLocation,useNavigate,Directory,icon,SocialActivity,useSocial,ExternalInvites:()=>h(InviteTools)});
   const link=(to,label,cls='dk-link')=>h(Link,{to,className:cls},label);
   const status=(message,alert=false)=>h('p',{className:'dk-note',role:alert?'alert':'status'},message);
   function useQuery(key,load) {
@@ -367,6 +367,7 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
     const onHome=['/','/home','/home/'].includes(loc.pathname);
     const compactProfile=!!user&&loc.pathname.startsWith('/profile');
     const params=new URLSearchParams(loc.search);
+    const accountReturn=/^\/login\/?$/.test(loc.pathname)&&params.has('next')?login(afterLogin(loc.search)):null;
     const viewingCommenter=onHome&&Boolean(params.get('commenter'));
     const inFeed=onHome&&params.get('view')==='feed';
     const active=loc.pathname.startsWith('/profile')?'Profile':inFeed?'Feed':onHome?'Home':'';
@@ -392,8 +393,8 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
           h(Notifications,{key:'inbox'}),
           h(Link,{key:'profile',to:profile,className:'dk-profile-button','aria-current':active==='Profile'?'page':undefined,onClick:scrollToStart},h(HeaderPortrait),'Profile')
         ]:h(React.Fragment,null,
-          link(login(home),'Sign in','dk-small'),
-          link('/login/?tab=signup','Sign up','dk-small')))),
+          link(accountReturn||login(home),'Sign in','dk-small'),
+          link(accountReturn?accountReturn+'&tab=signup':'/login/?tab=signup','Sign up','dk-small')))),
       !compactProfile&&h('nav',{'aria-label':'Start and discover',className:'dk-launch'},
         h('div',{role:'group','aria-labelledby':'dk-start-label',className:'dk-launch-group dk-start-group'},
           h('span',{id:'dk-start-label',className:'dk-launch-label'},'Start a debate with a friend or AI'),
@@ -436,7 +437,10 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
   function Topic(){
     const loc=useLocation(),{user,loading}=useAuth(),navigate=useNavigate(),[question,set]=useState('');
     if(new URLSearchParams(loc.search).get('mode')!=='ai')return h(OriginalTopic);
-    return h('div',{className:'dk-main dk-topic'},h('div',{className:'dk-kicker'},'AI exploration'),h('h1',null,'What would you like to explore?'),h('p',null,'Completed debates are public by default. You can make a debate with Diff AI private at any time.'),
+    return h('div',{className:'dk-main dk-topic'},h('div',{className:'dk-kicker'},'AI exploration'),h('h1',null,'What would you like to explore?'),
+      h('p',null,'Choose your position and the one you want Diff AI to argue. You’ll write 10 points. Diff AI researches 10 counterarguments, then ranks all 20 by their impact on your question.'),
+      h('p',null,'Research takes a few minutes. Once it starts, you can leave and reopen the debate from your profile.'),
+      h('p',null,'Completed debates are public by default. You can make a debate with Diff AI private at any time.'),
       h('form',{className:'dk-form dk-panel',onSubmit:e=>{e.preventDefault();const value=question.trim();if(value){const next=topicRoute(value);navigate(user?next:login(next))}}},
         h('label',null,'Your question',h('textarea',{autoFocus:true,required:true,maxLength:320,value:question,'data-next':!question.trim()||undefined,onChange:e=>set(e.target.value),placeholder:'Should every team use the same operating system?'})),
         h('button',{className:'dk-primary',disabled:loading||!question.trim(),'data-next':Boolean(!loading&&question.trim())||undefined},user?'Continue to positions':'Sign in to continue')),
@@ -1168,5 +1172,5 @@ export function createWorkspace({React,Link,useAuth,useLocation,useNavigate,db,A
       h('section',{className:'dk-collection'},tab==='Pinned'?h(PinnedList,{items,owner:user.id}):
         items.length?items.map(item=>h(SavedArtwork,{key:item.target,item})):h('div',{className:'dk-panel'},h('h2',null,'Your saved posters'),h('p',null,'Open a finished infographic and choose Save poster.'),link(profile,'Open your table','dk-secondary'))));
   }
-  return {AiPositions,VisibilityControl,useDebateAuthors,TopicHighlight,SettingsRoute,FeedInterestLink,RouteContent:createRouteContent(React,useLocation),applyReadingPreferences,...createGoogleLogin({React, db, useLocation, useNavigate, safeNext: afterLogin}),withPosterActivity,ProfileNameFields,saveProfileIdentity,checkContent,useCommenterMatches,ReactionLoginCopy,PhotoEditor,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,PointEditor,useFriendTopic,useFriendPreparationSync};
+  return {AiPositions,VisibilityControl,useDebateAuthors,TopicHighlight,SettingsRoute,FeedInterestLink,RouteContent:createRouteContent(React,useLocation),applyReadingPreferences,...createGoogleLogin({React, db, useLocation, useNavigate, safeNext: afterLogin}),withPosterActivity,ProfileNameFields,saveProfileIdentity,checkContent,useCommenterMatches,ReactionLoginCopy,PhotoEditor,Nav,Provider,Start,Setup,Topic,Profile,SavePoster,PointEditor,useFriendChatDraft,useFriendTopic,useFriendPreparationSync};
 }

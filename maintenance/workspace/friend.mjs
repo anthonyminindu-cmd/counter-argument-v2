@@ -42,6 +42,33 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
   const action=(text,onClick,primary=false,disabled=false)=>h('button',{type:'button',className:primary?'dk-primary':'dk-secondary',onClick,disabled},text);
   const searchRoute='/debate/start?mode=friend';
 
+  // Keep the active composer across a room refresh or a change of debate phase.
+  const chatDrafts=new Map();
+  const subscribeDraft=listener=>{
+    window.addEventListener('dk-chat-draft',listener);
+    return ()=>window.removeEventListener('dk-chat-draft',listener);
+  };
+  function useFriendChatDraft(room,member){
+    const key=room&&member?'dk-chat-draft:'+member+':'+room:null;
+    function read(){
+      if(!key)return '';
+      if(chatDrafts.has(key))return chatDrafts.get(key);
+      try{return sessionStorage.getItem(key)||''}catch{return ''}
+    }
+    const value=React.useSyncExternalStore(subscribeDraft,read);
+    function write(change){
+      if(!key)return;
+      const text=typeof change==='function'?change(read()):change;
+      chatDrafts.set(key,text);
+      try{
+        if(text)sessionStorage.setItem(key,text);else sessionStorage.removeItem(key);
+        chatDrafts.delete(key);
+      }catch{/* Keep the tab-local fallback when storage is unavailable. */}
+      window.dispatchEvent(new Event('dk-chat-draft'));
+    }
+    return [value,write];
+  }
+
   function InboxProvider({owner,children}) {
     const location=useLocation(), navigate=useNavigate();
     const params=new URLSearchParams(location.search);
@@ -199,9 +226,10 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
       h(React.Fragment,null,
         suggested&&h('aside',{className:'dk-panel dk-suggested-topic'},h('h2',null,'Suggested topic'),
           h('p',null,suggested),h('small',null,'Suggest this question after your friend joins.')),
-        h('p',null,'Completed debates are public by default. Either participant can request privacy. Both must agree.'),
-        ExternalInvites&&h(ExternalInvites),
-        h(Directory,{onInvitationSent:id=>{navigate(searchRoute+'&waiting='+encodeURIComponent(id));void inbox.refresh();}})));
+        h('p',null,'Invite one friend. Together you’ll choose a question, share your positions, and submit 10 points each. You can return later to finish.'),
+        h('p',null,'Your completed debate is published after review. To keep it private, request privacy in the debate and have your friend confirm before you finish.'),
+        h(Directory,{onInvitationSent:id=>{navigate(searchRoute+'&waiting='+encodeURIComponent(id));void inbox.refresh();}}),
+        ExternalInvites&&h(ExternalInvites)));
   }
   function PointFields({prefix,point,update,next}) {
     return h('div',{className:'dk-point-fields'},
@@ -231,7 +259,9 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
         if(saving!==null)return;
         if(stage.current&&!document.querySelector('dialog[open]')){
           const target=stage.current.querySelector('[data-next]')||stage.current;
-          target.focus({preventScroll:true});
+          // On touch entry, show the first field before the reader opens the keyboard.
+          const touchEntry=previous.current===-1&&window.matchMedia('(pointer: coarse)').matches;
+          if(!touchEntry)target.focus({preventScroll:true});
           target.scrollIntoView({block:'center'});
         }
       }
@@ -239,7 +269,7 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
     },[count,saving]);
     const fields=(index,prefix)=>h(PointFields,{key:index,prefix,point:drafts[index],next:index===count?next:null,update:(key,value)=>onEdit(index,key,value)});
     return h('div',{className:'dk-friend-points'},
-      h('section',{ref:stage,tabIndex:-1,'aria-labelledby':'dk-current-point'},
+      h('section',{ref:stage,tabIndex:-1,'aria-current':point?'step':undefined,'aria-labelledby':'dk-current-point'},
         h('h3',{id:'dk-current-point','aria-live':'polite'},point?'Point '+number+' of '+total:'All '+total+' points submitted'),
         count===0&&h('p',{className:'dk-point-instruction'},'Start with your most important point. Your submission order sets your personal picks from 1 to 10.'),
         point&&h('p',{role:'status',className:'dk-point-step'},count>0?'Point '+count+' submitted. ':'',instruction),
@@ -354,5 +384,5 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
       };
     },[sessionId,owner,phase]);
   }
-  return {InboxProvider,Notifications,FriendSetup,PointEditor,useFriendTopic,useFriendPreparationSync};
+  return {InboxProvider,Notifications,FriendSetup,PointEditor,useFriendChatDraft,useFriendTopic,useFriendPreparationSync};
 }

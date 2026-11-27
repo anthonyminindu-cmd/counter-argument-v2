@@ -69,3 +69,19 @@ test('a fresh landing shows the welcome before the feed and keeps focused destin
     }
   }
 });
+
+test('switching accounts from the login header retains the validated debate destination', async () => {
+  const {createWorkspace,afterLogin}=await import('../workspace/app.mjs');
+  const React={createElement:(type,props,...children)=>({type,props,children}),createContext:()=>({})};
+  for(const [next,expected] of [['/debate/topic?mode=ai','/debate/topic?mode=ai'],['/home?join=1','/home?join=1'],['//outside.example','/home']]){
+    const loc=new URL('/login/?tab=signup&next='+encodeURIComponent(next),'https://example.test');
+    const nav=createWorkspace({React,Link:'link',useAuth:()=>({}),useLocation:()=>loc}).Nav();
+    const walk=n=>n&&typeof n==='object'?[n,...(n.children||[]).flatMap(walk)]:[];
+    for(const label of ['Sign up','Sign in']){
+      const link=walk(nav).find(n=>n.type==='link'&&n.children.includes(label));
+      const destination=new URL(link.props.to,loc);
+      assert.equal(afterLogin(destination.search),expected);
+      assert.equal(destination.searchParams.get('tab'),label==='Sign up'?'signup':null);
+    }
+  }
+});

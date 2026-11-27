@@ -34,6 +34,7 @@ function context(expression, extra={}) {
     Xt:()=>({user:{id:'test-user'}}),_t:()=>({toast:noop}),Mn:()=>noop,
     window:new EventTarget(),CustomEvent,Date,setTimeout:noop,
     ...extra};
+  if(expression===chatExpr)ctx.DK={useFriendChatDraft:()=>ctx.p.useState('')};
   for(const m of expression.matchAll(/i\.jsx[s]?\(([$\w]+),/g)) if(!(m[1] in ctx))ctx[m[1]]=m[1];
   return {ctx,effects,states,run:()=>vm.runInNewContext('('+expression+')',ctx)};
 }
