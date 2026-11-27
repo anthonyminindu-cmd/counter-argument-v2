@@ -199,9 +199,10 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
       h(React.Fragment,null,
         suggested&&h('aside',{className:'dk-panel dk-suggested-topic'},h('h2',null,'Suggested topic'),
           h('p',null,suggested),h('small',null,'Suggest this question after your friend joins.')),
-        h('p',null,'Completed debates are public by default. Either participant can request privacy. Both must agree.'),
-        ExternalInvites&&h(ExternalInvites),
-        h(Directory,{onInvitationSent:id=>{navigate(searchRoute+'&waiting='+encodeURIComponent(id));void inbox.refresh();}})));
+        h('p',null,'Invite one friend. Together you’ll choose a question, share your positions, and submit 10 points each. You can return later to finish.'),
+        h('p',null,'Your completed debate is published after review. To keep it private, request privacy in the debate and have your friend confirm before you finish.'),
+        h(Directory,{onInvitationSent:id=>{navigate(searchRoute+'&waiting='+encodeURIComponent(id));void inbox.refresh();}}),
+        ExternalInvites&&h(ExternalInvites)));
   }
   function PointFields({prefix,point,update}) {
     return h('div',{className:'dk-point-fields'},

@@ -26,9 +26,9 @@ export function createFriendInvitations({React,db,useAuth,useNavigate,useQuery,l
     }
     const share=issued&&encodeURIComponent('Join me for a debate on Differ Kindly. '+issued.url);
     return h('section',{className:'dk-panel dk-invite-links'},h('h2',null,'Invite someone by email or text'),
-      h('p',null,'Completed debates are public by default. Both participants can agree to make the result private. Each link lets one person join after signing in or creating an account. It expires in seven days.'),
+      h('p',null,'Send a one-use link to a friend, even if they haven’t signed up yet. The link expires in seven days.'),
       h('div',{className:'dk-actions'},button('Create invitation link',issue,busy)),
-      issued&&h('div',{className:'dk-form'},h('label',null,'Invitation link',h('input',{readOnly:true,value:issued.url,onFocus:e=>e.target.select()})),
+      issued&&h('div',{className:'dk-form'},h('p',{role:'status'},'Your link is ready. Send it to your friend. When they accept, open their notification to join the debate.'),h('label',null,'Invitation link',h('input',{readOnly:true,value:issued.url,onFocus:e=>e.target.select()})),
         h('div',{className:'dk-actions'},h('a',{className:'dk-small',href:'mailto:?subject=Differ%20Kindly%20invitation&body='+share},'Email'),h('a',{className:'dk-small',href:'sms:?body='+share},'Text message'),
         button('Copy link',async()=>{try{await navigator.clipboard.writeText(issued.url);setMessage('Invitation copied.')}catch{setMessage('Select the invitation link to copy it.')}}),
         navigator.share&&button('Share',async()=>{try{await navigator.share({title:'Differ Kindly invitation',url:issued.url})}catch(e){if(e.name!=='AbortError')setMessage('Select the invitation link to share it.')}}))),

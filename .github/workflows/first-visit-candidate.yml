@@ -1,0 +1,33 @@
+name: First visit friend debate check
+on:
+  push:
+    branches: ['qa/first-visit-fe6b489760']
+permissions:
+  contents: write
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - run: node maintenance/build.mjs > /dev/null
+      - run: node --test maintenance/tests/*.test.cjs > "$RUNNER_TEMP/test.log" || (tail -100 "$RUNNER_TEMP/test.log"; exit 1)
+      - run: node maintenance/build.mjs --check > /dev/null
+      - run: python -m pip install --quiet playwright==1.55.0
+      - name: Host and guest complete a private debate
+        env:
+          DK_TEST_URL: http://127.0.0.1:8172
+          DK_TEST_RANKING: '1'
+        run: |
+          python -m http.server 8172 --bind 127.0.0.1 > "$RUNNER_TEMP/server.log" 2>&1 &
+          python -u maintenance/e2e/friend_first_visit.py
+      - name: Keep validated build on this candidate
+        run: |
+          git add assets maintenance/build-manifest.json '*.html'
+          if ! git diff --cached --quiet; then
+            git -c user.name=github-actions -c user.email=41898282+github-actions[bot]@users.noreply.github.com commit -m 'Build verified friend debate flow'
+            git push origin HEAD:refs/heads/qa/first-visit-fe6b489760
+          fi
