@@ -7,6 +7,6 @@
   {
     "id": "focus-ai-point-when-entering-writing",
     "find": "return i.jsx(DK.PointEditor,{drafts:l",
-    "replace": "return i.jsx(DK.PointEditor,{focusOnEntry:!r,drafts:l"
+    "replace": "return i.jsx(DK.PointEditor,{solo:!r,drafts:l"
   }
 ]

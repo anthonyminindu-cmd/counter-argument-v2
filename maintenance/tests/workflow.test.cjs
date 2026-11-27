@@ -148,29 +148,22 @@ test('AI preparation accepts both positions together and proceeds once both are 
   assert.equal(inputs()[1].props.value,'Opposing stance');
 });
 
-test('the argument-stage editor invalidates the previous stance and research waits for reconfirmation',async()=>{
-  const placeholder=bundle.indexOf('placeholder:"AI\'s stance on this topic..."');
-  const start=bundle.lastIndexOf('i.jsx(Je,',placeholder);
-  const end=bundle.indexOf(',i.jsxs("div"',placeholder);
-  assert.ok(start>=0&&placeholder>start&&end>placeholder);
-  const state={P:'Confirmed stance',_r:true};
-  const editor=context(bundle.slice(start,end),{
-    ...state,A:value=>{state.P=value},xg:value=>{state._r=value},
-  }).run();
-  editor.props.onChange({target:{value:'Unconfirmed newer stance'}});
-  assert.equal(state._r,false);
-  const research=slice('$d=async','},kg=()=>')+'}';
-  const argumentsList=Array.from({length:10},(_,n)=>({title:'Argument '+(n+1)}));
-  const calls=[],errors=[];
-  const run=(flags)=>vm.runInNewContext('(async'+research+')',{
-    ...flags,S:argumentsList,Eg:value=>errors.push(value),vn:{run:(...args)=>calls.push(args)},
-  })();
-  await run(state);
-  assert.equal(calls.length,0);
-  assert.match(errors.at(-1),/confirm the AI position/i);
-  await run({...state,_r:true});
+test('final solo submission starts research once with all ten points and completion opens the infographic',async()=>{
+  const writing=slice('children:"Step 2: Write your 10 points"',',!se&&(h==="voting"||h==="results")');
+  assert.doesNotMatch(writing,/AI Research Status|Generate AI Arguments|Set AI Position|Refresh Research/);
+  const trigger=slice('j({title:"",description:"",sourceUrl:""}),','console.log("✅ UI UPDATED').replace(/,$/,'');
+  const submit=slice('const $d=async','},kg=()=>')+'}';
+  const calls=[], submitTen=vm.runInNewContext('(async'+submit+')',{vn:{run:rows=>calls.push(rows)}});
+  for(const count of [1,9,10]){
+    const rows=Array.from({length:count},(_,i)=>({title:'Argument '+(i+1)}));
+    for(const friend of [true,false]){
+      await vm.runInNewContext(trigger,{se:friend,D:rows,ml:10,$d:submitTen});
+    }
+  }
   assert.equal(calls.length,1);
-  assert.equal(calls[0][0],argumentsList);
+  assert.equal(calls[0].length,10);
+  assert.equal(calls[0][9].title,'Argument 10');
+  assert.ok(bundle.includes('onComplete:async()=>{f("infographic"),await Sg(!0)}'));
 });
 
 test('account entry identifies Differ Kindly and renders the action-specific sign-in prompt',()=>{

@@ -116,9 +116,7 @@ test('recovery performs only a scoped ordinary ownership read and never invokes 
 });
 
 test('compiled V2 retains a manual ten-argument submit action and a guarded recovery gate',()=>{
-  assert.ok(!baseline.includes('Submit saved arguments'));
-  assert.ok(output.includes('children:"Submit saved arguments"'));
-  assert.ok(output.includes('onClick:()=>void $d(S),disabled:vn.loading||zl||!P.trim()||!_r'));
+  assert.ok(output.includes('Dd&&!se&&!vn.record&&i.jsx(G,{onClick:()=>void $d(S),disabled:vn.loading||zl,children:"Submit"'));
   assert.ok(output.includes('||v2Draft.ready,owner:'));
   assert.ok(output.includes('loading:vn.loading||v2Draft.loading'));
   assert.ok(output.includes('draftIdentity:xe||`topic:${u}`'),'existing owner/debate-scoped ten unsent slots remain in use');
