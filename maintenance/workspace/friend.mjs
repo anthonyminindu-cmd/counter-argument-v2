@@ -42,6 +42,33 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
   const action=(text,onClick,primary=false,disabled=false)=>h('button',{type:'button',className:primary?'dk-primary':'dk-secondary',onClick,disabled},text);
   const searchRoute='/debate/start?mode=friend';
 
+  // Keep the active composer across a room refresh or a change of debate phase.
+  const chatDrafts=new Map();
+  const subscribeDraft=listener=>{
+    window.addEventListener('dk-chat-draft',listener);
+    return ()=>window.removeEventListener('dk-chat-draft',listener);
+  };
+  function useFriendChatDraft(room,member){
+    const key=room&&member?'dk-chat-draft:'+member+':'+room:null;
+    function read(){
+      if(!key)return '';
+      if(chatDrafts.has(key))return chatDrafts.get(key);
+      try{return sessionStorage.getItem(key)||''}catch{return ''}
+    }
+    const value=React.useSyncExternalStore(subscribeDraft,read);
+    function write(change){
+      if(!key)return;
+      const text=typeof change==='function'?change(read()):change;
+      chatDrafts.set(key,text);
+      try{
+        if(text)sessionStorage.setItem(key,text);else sessionStorage.removeItem(key);
+        chatDrafts.delete(key);
+      }catch{/* Keep the tab-local fallback when storage is unavailable. */}
+      window.dispatchEvent(new Event('dk-chat-draft'));
+    }
+    return [value,write];
+  }
+
   function InboxProvider({owner,children}) {
     const location=useLocation(), navigate=useNavigate();
     const params=new URLSearchParams(location.search);
@@ -343,5 +370,5 @@ export function createFriendExperience({React,db,Link,useLocation,useNavigate,Di
       };
     },[sessionId,owner,phase]);
   }
-  return {InboxProvider,Notifications,FriendSetup,FriendPointEditor,useFriendTopic,useFriendPreparationSync};
+  return {InboxProvider,Notifications,FriendSetup,FriendPointEditor,useFriendChatDraft,useFriendTopic,useFriendPreparationSync};
 }

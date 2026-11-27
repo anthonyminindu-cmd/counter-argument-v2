@@ -577,3 +577,8 @@ html{scroll-padding-block:1rem}
 .dk-contributor-guide .dk-contributor-next { color:var(--dk-text); font-weight:600; }
 
 .dk-name-input { width:100%; min-height:2.5rem; padding:.45rem .7rem; border:1px solid var(--dk-line); border-radius:.4rem; color:var(--dk-text); background:var(--dk-panel); }
+
+/* In a debate, passive status toasts must let clicks reach the composer.
+   Close buttons and other toast actions keep their normal pointer targets. */
+body:has(.dk-active-header) [data-swipe-direction][data-radix-collection-item]{pointer-events:none}
+body:has(.dk-active-header) [data-swipe-direction][data-radix-collection-item] :is(button,a){pointer-events:auto}

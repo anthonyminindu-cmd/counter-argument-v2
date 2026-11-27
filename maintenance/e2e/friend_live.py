@@ -246,7 +246,10 @@ def check_positions_and_arguments(sender, receiver, room, topic):
     focused.fill(subjects[1][0])
     scroll_before = receiver.evaluate("window.scrollY")
     chat = "I can still see where to write my point."
-    sender.get_by_placeholder("Type your message...", exact=True).fill(chat)
+    composer = sender.get_by_placeholder("Type your message...", exact=True)
+    composer.fill(chat)
+    sender.reload()
+    expect(composer).to_have_value(chat)
     button(sender, "Send message").click()
     expect(receiver.get_by_text(chat, exact=True)).to_be_attached(timeout=20000)
     expect(focused).to_be_focused()
